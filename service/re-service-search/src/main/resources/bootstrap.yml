@@ -1,0 +1,15 @@
+spring:
+  application:
+    name: re-search
+  elasticsearch:
+    rest:
+      uris:
+        - localhost:9200
+  cloud:
+    nacos:
+      server-addr: @nacos-server-addr@
+      username: nacos
+      password: nacos
+      config:
+        namespace:
+        file-extension: yml

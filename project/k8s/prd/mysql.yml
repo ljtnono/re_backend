@@ -1,0 +1,111 @@
+# mysql Service 由于是有状态服务，所以需要部署为无头Service供内部的pod进行访问
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-headless-service
+  namespace: rootelement
+spec:
+  # headless service
+  clusterIP: None
+  selector:
+    app: mysql8
+  ports:
+    - port: 3306
+      name: mysql
+
+
+#mysql extern service 需要对外暴露服务
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-extern-service
+  namespace: rootelement
+spec:
+  selector:
+    app: mysql8
+  type: NodePort
+  ports:
+    - port: 3306
+      name: mysql
+      protocol: TCP
+      nodePort: 30006
+      targetPort: 3306
+
+---
+# mysql StatefulSet
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mysql-statefulset
+  namespace: rootelement
+spec:
+  selector:
+    matchLabels:
+      app: mysql8
+  serviceName: "mysql-headless-service"
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: mysql8
+    spec:
+      containers:
+        - name: mysql8
+          image: ljtnono/re-mysql
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              value: 're#mysql2022'
+            - name: MYSQL_ROOT_HOST
+              value: '%'
+          # 容器开放端口
+          ports:
+            - containerPort: 3306
+              name: mysql
+          # 容器挂载目录
+          volumeMounts:
+            - mountPath: /etc/mysql/my.cnf
+              name: mysql-cnf
+              subPath: my.cnf
+            - mountPath: /var/lib/mysql
+              name: mysql-data
+            - mountPath: /var/log/mysql
+              name: mysql-log
+
+      # 挂载主数据库配置文件
+      volumes:
+        - name: mysql-cnf
+          configMap:
+            name: re-configmap
+            items:
+              - key: mysql-master.cnf
+                path: my.cnf
+
+  # pvc 模板
+  volumeClaimTemplates:
+    - metadata:
+        name: mysql-data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 20Gi
+        storageClassName: nfs
+        volumeMode: Filesystem
+        selector:
+          matchLabels:
+            pv: mysql-data-pv
+    - metadata:
+        name: mysql-log
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        resources:
+          requests:
+            storage: 2Gi
+        storageClassName: nfs
+        volumeMode: Filesystem
+        selector:
+          matchLabels:
+            pv: mysql-log-pv
+

@@ -1,0 +1,1 @@
+package cn.ljtnono.re.common.feign.search;

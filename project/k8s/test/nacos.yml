@@ -1,0 +1,109 @@
+# nacos 无头服务
+apiVersion: v1
+kind: Service
+metadata:
+  name: nacos-headless-service
+  namespace: rootelement
+spec:
+  clusterIP: None
+  selector:
+    app: nacos
+  ports:
+    - port: 8848
+      name: nacos
+
+---
+# nacos extern service 对外暴露服务
+apiVersion: v1
+kind: Service
+metadata:
+  name: nacos-extern-service
+  namespace: rootelement
+spec:
+  type: NodePort
+  ports:
+    - port: 8848
+      name: nacos
+      nodePort: 30048
+      targetPort: 8848
+  selector:
+    app: nacos
+
+---
+
+# nacos statefulset
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: nacos-statefulset
+  namespace: rootelement
+spec:
+  selector:
+    matchLabels:
+      app: nacos
+  serviceName: "nacos-headless-service"
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: nacos
+    spec:
+      containers:
+        - name: nacos
+          imagePullPolicy: IfNotPresent
+          image: ljtnono/re-nacos
+          ports:
+            - containerPort: 8848
+              name: nacos
+          env:
+            - name: JVM_XMS
+              value: 256m
+            - name: JVM_XMX
+              value: 256m
+            - name: MODE
+              value: standalone
+            - name: PERFER_HOST_MODE
+              value: ip
+          volumeMounts:
+            - mountPath: /home/nacos/data
+              name: nacos-data
+            - mountPath: /home/nacos/logs
+              name: nacos-log
+            - mountPath: /home/nacos/conf/application.properties
+              name: nacos-config
+              subPath: application.properties
+
+      volumes:
+        - name: nacos-config
+          configMap:
+            name: re-configmap
+            items:
+              - key: nacos.properties
+                path: application.properties
+
+  # pvc 模板
+  volumeClaimTemplates:
+    - metadata:
+        name: nacos-data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 10Gi
+        storageClassName: nfs
+        volumeMode: Filesystem
+        selector:
+          matchLabels:
+            pv: nacos-data-pv
+    - metadata:
+        name: nacos-log
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        resources:
+          requests:
+            storage: 2Gi
+        storageClassName: nfs
+        volumeMode: Filesystem
+        selector:
+          matchLabels:
+            pv: nacos-log-pv

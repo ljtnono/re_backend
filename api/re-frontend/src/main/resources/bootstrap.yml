@@ -1,0 +1,12 @@
+server:
+  port: 8001
+  servlet:
+    context-path: /re/fontend
+spring:
+  application:
+    name: RE-FRONTEND
+  # 配置nacos地址
+  cloud:
+    nacos:
+      config:
+        server-addr: @nacos-server-addr@
