@@ -1,0 +1,12 @@
+server:
+  port: 8001
+  servlet:
+    context-path: /sys
+spring:
+  application:
+    name: re-service-sys
+  profiles:
+    active: dev
+  cloud:
+    nacos:
+      server-addr: @nacos-server-addr@

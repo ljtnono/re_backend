@@ -1,9 +1,0 @@
-server:
-  servlet:
-    context-path: /blog
-spring:
-  application:
-    name: re-blog
-  cloud:
-    nacos:
-      server-addr: @nacos-server-addr@
