@@ -1,5 +1,5 @@
 server:
-  port: 8001
+  port: 8003
   servlet:
     context-path: /sys
 spring:
@@ -9,4 +9,21 @@ spring:
     active: dev
   cloud:
     nacos:
-      server-addr: @nacos-server-addr@
+      discovery:
+        namespace: f2cc4448-831f-41da-9aa8-b89d4a81d90c
+        server-addr: @nacos-server-addr@
+  datasource:
+    username: root
+    password: re#mysql2022
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://www.lingjiatong.cn:30006/re?useUnicode=true&allowPublicKeyRetrieval=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&serverTimezone=Asia/Shanghai&allowMultiQueries=true
+    hikari:
+      connection-timeout: 600000
+      maximum-pool-size: 20
+      minimum-idle: 15
+
+# mybatis-plus配置
+mybatis-plus:
+  mapper-locations: classpath*:/mapper/**/*.xml
+  global-config:
+    banner: false

@@ -9,13 +9,13 @@ import org.springframework.cloud.openfeign.SpringQueryMap;
 import org.springframework.web.bind.annotation.GetMapping;
 
 /**
- * 站点设置相关接口
+ * 前端站点设置feign接口层
  *
  * @author Ling, Jiatong
  * Date: 2022/9/17 18:49
  */
 @FeignClient(name = "re-service-sys", path = "/sys")
-public interface WebsiteConfigFeignClient {
+public interface FrontendWebsiteConfigFeignClient {
 
     /**
      * 获取前端站点设置接口
@@ -23,7 +23,7 @@ public interface WebsiteConfigFeignClient {
      * @param dto 获取前端站点配置DTO对象
      * @return 获取前端站点配置VO对象
      */
-    @GetMapping("/api/v1/websiteConfig")
+    @GetMapping("/api/v1/frontendWebsiteConfig")
     @ApiOperation(value = "获取站点设置接口", httpMethod = "GET")
     ResultVO<FrontendWebsiteConfigVO> findFrontendWebsiteConfig(@SpringQueryMap FrontendWebsiteConfigDTO dto);
 }

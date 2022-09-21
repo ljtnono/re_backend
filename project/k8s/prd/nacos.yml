@@ -26,6 +26,14 @@ spec:
       name: nacos
       nodePort: 30048
       targetPort: 8848
+    - port: 9848
+      name: client-to-server
+      nodePort: 31048
+      targetPort: 9848
+    - port: 9849
+      name: server-to-server
+      nodePort: 31049
+      targetPort: 9849
   selector:
     app: nacos
 
@@ -55,6 +63,10 @@ spec:
           ports:
             - containerPort: 8848
               name: nacos
+            - containerPort: 9848
+              name: client-rpc
+            - containerPort: 9849
+              name: raft-rpc
           env:
             - name: JVM_XMS
               value: 256m

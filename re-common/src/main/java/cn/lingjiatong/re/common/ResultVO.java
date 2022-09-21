@@ -1,6 +1,6 @@
-package cn.ljtnono.re.common;
+package cn.lingjiatong.re.common;
 
-import cn.ljtnono.re.common.exception.ErrorEnum;
+import cn.lingjiatong.re.common.exception.ErrorEnum;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import lombok.Data;
@@ -39,8 +39,21 @@ public class ResultVO <T> {
     /**
      * 数据
      */
-    private  T t;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private T data;
 
+    private ResultVO() {}
+
+    /**
+     * 私有构造方法 供失败响应调用
+     *
+     * @param code    响应码
+     * @param message 错误信息
+     */
+    private ResultVO(Integer code, String message) {
+        this.code = code;
+        this.message = message;
+    }
 
     /**
      * 返回成功消息
@@ -53,7 +66,7 @@ public class ResultVO <T> {
         ResultVO<T> vo = new ResultVO<T>();
         vo.setCode(CODE_SUCCESS);
         vo.setMessage(MESSAGE_SUCCESS);
-        vo.setT(t);
+        vo.setData(t);
         return vo;
     }
 
@@ -70,5 +83,27 @@ public class ResultVO <T> {
         return vo;
     }
 
+    /**
+     * 失败响应 传入code和message
+     *
+     * @param code    响应码
+     * @param message 错误信息
+     * @param <T>     范型
+     * @return 统一返回值封装
+     */
+    public static <T> ResultVO<T> error(Integer code, String message) {
+        return new ResultVO<>(code, message);
+    }
+
+    /**
+     * 失败响应 传入错误枚举
+     *
+     * @param errorEnum HTTP Restful Api 错误枚举
+     * @param <T>       范型
+     * @return 统一返回值封装
+     */
+    public static <T> ResultVO<T> error(ErrorEnum errorEnum) {
+        return new ResultVO<>(errorEnum.getCode(), errorEnum.getMessage());
+    }
 
 }

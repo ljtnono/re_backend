@@ -15,7 +15,7 @@ spec:
   storageClassName: nfs
   nfs:
     path: /home/nfs/mysql/data
-    server: 192.168.31.113
+    server: 192.168.8.132
 
 ---
 # mysql 日志目录pv
@@ -35,7 +35,7 @@ spec:
   storageClassName: nfs
   nfs:
     path: /home/nfs/mysql/log
-    server: 192.168.31.113
+    server: 192.168.8.132
 
 ---
 # nacos 数据目录pv
@@ -55,7 +55,7 @@ spec:
   storageClassName: nfs
   nfs:
     path: /home/nfs/nacos/data
-    server: 192.168.31.113
+    server: 192.168.8.132
 
 ---
 # nacos 日志目录pv
@@ -75,7 +75,7 @@ spec:
   storageClassName: nfs
   nfs:
     path: /home/nfs/nacos/log
-    server: 192.168.31.113
+    server: 192.168.8.132
 
 
 ---
@@ -96,7 +96,7 @@ spec:
   storageClassName: nfs
   nfs:
     path: /home/nfs/redis/data
-    server: 192.168.31.113
+    server: 192.168.8.132
 
 ---
 # es 数据目录pv
@@ -116,7 +116,7 @@ spec:
   storageClassName: nfs
   nfs:
     path: /home/nfs/es/data
-    server: 192.168.31.113
+    server: 192.168.8.132
 
 ---
 # es 日志目录pv
@@ -136,7 +136,7 @@ spec:
   storageClassName: nfs
   nfs:
     path: /home/nfs/es/log
-    server: 192.168.31.113
+    server: 192.168.8.132
 
 ---
 
@@ -157,7 +157,7 @@ spec:
   storageClassName: nfs
   nfs:
     path: /home/nfs/minio/data
-    server: 192.168.31.113
+    server: 192.168.8.132
 
 ---
 
@@ -178,4 +178,4 @@ spec:
   storageClassName: nfs
   nfs:
     path: /home/nfs/minio/config
-    server: 192.168.31.113
+    server: 192.168.8.132

@@ -1,4 +1,4 @@
-package cn.ljtnono.re.common.exception;
+package cn.lingjiatong.re.common.exception;
 
 /**
  * 错误消息枚举类
@@ -9,5 +9,36 @@ package cn.ljtnono.re.common.exception;
 public enum ErrorEnum {
 
 
+    /** 400 Bad Request */
+
+    /**
+     * 请求参数为空 ｜ 请求参数格式有误
+     */
+    REQUEST_PARAM_ERROR(400001, "请求参数有误"),
+
+    ;
+
+    /**
+     * 错误码
+     */
+    private final Integer code;
+
+    /**
+     * 错误信息
+     */
+    private final String message;
+
+    ErrorEnum(Integer code, String message) {
+        this.code = code;
+        this.message = message;
+    }
+
+    public Integer getCode() {
+        return code;
+    }
+
+    public String getMessage() {
+        return message;
+    }
 
 }

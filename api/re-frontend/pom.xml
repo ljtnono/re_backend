@@ -3,8 +3,8 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>re</artifactId>
-        <groupId>cn.ljtnono</groupId>
+        <artifactId>re_backend</artifactId>
+        <groupId>cn.lingjiatong</groupId>
         <version>${re-version}</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
@@ -12,21 +12,50 @@
     <artifactId>re-frontend</artifactId>
 
     <dependencies>
+        <!-- re-common -->
+        <dependency>
+            <groupId>cn.lingjiatong</groupId>
+            <artifactId>re-common</artifactId>
+            <version>${project.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>mysql</groupId>
+                    <artifactId>mysql-connector-java</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.baomidou</groupId>
+                    <artifactId>mybatis-plus-boot-starter</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <!-- re-service-sys-api -->
+        <dependency>
+            <groupId>cn.lingjiatong</groupId>
+            <artifactId>re-service-sys-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <!-- nacos服务发现 -->
         <dependency>
             <groupId>com.alibaba.cloud</groupId>
             <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
         </dependency>
-        <!-- openFeign -->
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-openfeign</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>cn.ljtnono</groupId>
-            <artifactId>re-service-blog</artifactId>
-            <version>${project.version}</version>
-        </dependency>
     </dependencies>
+
+    <build>
+        <finalName>api-re-frontend</finalName>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+        <plugins>
+            <!-- 打包配置 -->
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>

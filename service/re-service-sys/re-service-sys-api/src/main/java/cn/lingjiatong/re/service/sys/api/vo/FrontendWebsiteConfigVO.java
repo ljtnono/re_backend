@@ -7,14 +7,14 @@ import lombok.Data;
 import java.util.Map;
 
 /**
- * 获取站点配置VO对象
+ * 获取前端站点配置VO对象
  *
  * @author Ling, Jiatong
  * Date: 2022/9/17 18:59
  */
 @Data
-@ApiModel(description = "获取站点配置VO对象")
-public class WebsiteConfigVO {
+@ApiModel(description = "获取前端站点配置VO对象")
+public class FrontendWebsiteConfigVO {
 
     /**
      * 站点配置列表

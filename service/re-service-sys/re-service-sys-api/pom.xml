@@ -5,16 +5,29 @@
     <parent>
         <artifactId>re-service-sys</artifactId>
         <groupId>cn.lingjiatong</groupId>
-        <version>v0.0.1</version>
+        <version>${re-version}</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>re-service-sys-api</artifactId>
-
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
+
+    <dependencies>
+        <!-- re-common -->
+        <dependency>
+            <groupId>cn.lingjiatong</groupId>
+            <artifactId>re-common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <!-- openfeign -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-openfeign</artifactId>
+        </dependency>
+    </dependencies>
 
 </project>

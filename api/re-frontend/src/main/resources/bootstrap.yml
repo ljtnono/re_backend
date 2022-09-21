@@ -1,12 +1,15 @@
 server:
   port: 8001
   servlet:
-    context-path: /re/fontend
+    context-path: /re-frontend
 spring:
   application:
-    name: RE-FRONTEND
+    name: api-re-frontend
+  profiles:
+    active: dev
   # 配置nacos地址
   cloud:
     nacos:
-      config:
+      discovery:
+        namespace: f2cc4448-831f-41da-9aa8-b89d4a81d90c
         server-addr: @nacos-server-addr@

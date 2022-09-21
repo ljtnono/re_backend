@@ -1,17 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="cn.xmirror.oss.dao.core.iast.AppDao">
+<mapper namespace="cn.lingjiatong.re.service.sys.mapper.SysConfigMapper">
     <!-- ********************************结果映射******************************** -->
 
-    <!-- 详情页组件资产列表VO对象结果映射 -->
-    <resultMap id="assetComponentDetailListVOResultMap"
-               type="cn.xmirror.oss.vo.core.asset.component.AssetComponentDetailListVO" autoMapping="true">
-        <result column="vul_num" property="vulNumVO.total"/>
-        <result column="vul_num_serious" property="vulNumVO.serious"/>
-        <result column="vul_num_high" property="vulNumVO.high"/>
-        <result column="vul_num_medium" property="vulNumVO.medium"/>
-        <result column="vul_num_low" property="vulNumVO.low"/>
-    </resultMap>
+
 
     <!-- ********************************新增类接口******************************** -->
 
@@ -22,287 +14,28 @@
     <!-- ********************************查询类接口******************************** -->
 
 
-    <!-- 获取应用下所有的漏洞信息 -->
-    <select id="getVulList" resultType="cn.xmirror.oss.vo.core.data.vul.DataVulVO">
-        SELECT dv.id AS data_vul_id,
-        dicv.cve_id,
-        dicv.cnnvd_id,
-        dicv.cnvd_id,
-        dicv.xmirror_id,
-        dicv.description,
-        dicv.description_en,
-        dicv.suggestion,
-        dicv.cwe_id,
-        dicv.NAME AS vul_name,
-        IFNULL(MIN(dicv.security_level_id), 5) AS security_level,
-        dicv.release_date,
-        dicv.vul_type,
-        COUNT(dv.dic_component_id) AS component_num,
-        t.id AS task_id,
-        dicv.exploit_level_id AS exploit_level
-        FROM iast_node node
-        LEFT JOIN asset_project ap ON ap.id = node.project_id
-        LEFT JOIN iast_app app ON app.node_id = node.id
-        LEFT JOIN iast_data data ON data.app_id = app.id
-        LEFT JOIN task t ON t.id = data.task_id AND t.`status` = 2
-        LEFT JOIN asset_component ac ON t.id = ac.task_id AND ac.STATUS != 2
-        LEFT JOIN data_vul dv ON dv.dic_component_id = ac.dic_component_id AND dv.task_id = ac.task_id
-        LEFT JOIN dic_vul dicv ON dv.dic_vul_id = dicv.id
+
+    <!-- 获取前端站点配置信息 -->
+    <select id="findFrontendWebsiteConfig" resultType="cn.lingjiatong.re.service.sys.entity.SysConfig">
+        SELECT
+            `key`,
+            `value`
+        FROM sys_config
         <where>
-            ap.del = 1
-            AND node.del = 1
-            AND t.del = 1
-            AND app.id = #{dto.appId,jdbcType=INTEGER}
-            <!-- cveId筛选条件 -->
-            <if test="dto.cveId != null and dto.cveId != ''">
-                AND LOCATE(#{dto.cveId, jdbcType=VARCHAR}, dicv.cve_id) > 0
+            <!-- 获取全部站点配置 -->
+            <if test="dto.acquireType == @cn.lingjiatong.re.service.sys.constant.SysConfigConstant@WEBSITE_ACQUIRE_TYPE_ALL">
+                AND `key` IN
+                <foreach collection="@cn.lingjiatong.re.service.sys.constant.SysConfigConstant@WEBSITE_KEY_LIST" item="key" open="(" close=")" separator=",">
+                    #{key, jdbcType=VARCHAR}
+                </foreach>
             </if>
-            <!-- cnnvdId筛选条件 -->
-            <if test="dto.cnnvdId != null and dto.cnnvdId != ''">
-                AND LOCATE(#{dto.cnnvdId, jdbcType=VARCHAR}, dicv.cnnvd_id) > 0
-            </if>
-            <!-- cnvdId筛选条件 -->
-            <if test="dto.cnvdId != null and dto.cnvdId != ''">
-                AND LOCATE(#{dto.cnvdId, jdbcType=VARCHAR}, dicv.cnvd_id) > 0
-            </if>
-            <!-- xmirrorId筛选条件 -->
-            <if test="dto.xmirrorId != null and dto.xmirrorId != ''">
-                AND LOCATE(#{dto.xmirrorId, jdbcType=VARCHAR}, dicv.xmirror_id) > 0
-            </if>
-            <!-- cweId筛选条件 -->
-            <if test="dto.cweId != null and dto.cweId != ''">
-                AND LOCATE(#{dto.cweId, jdbcType=VARCHAR}, dicv.cwe_id) > 0
-            </if>
-            <!-- 漏洞名筛选条件 -->
-            <if test="dto.vulName != null and dto.vulName != ''">
-                AND LOCATE(#{dto.vulName, jdbcType=VARCHAR}, dicv.name) > 0
-            </if>
-            <!-- 风险等级筛选条件 -->
-            <if test="dto != null and dto.securityLevels != null and dto.securityLevels.size() != 0">
-                AND dicv.security_level_id IN
-                <foreach collection="dto.securityLevels" item="level" open="(" close=")" separator=",">
-                    #{level}
+            <!-- 获取部分站点配置 -->
+            <if test="dto.acquireType == @cn.lingjiatong.re.service.sys.constant.SysConfigConstant@WEBSITE_ACQUIRE_TYPE_MULTIPLE">
+                AND `key` IN
+                <foreach collection="dto.acquireKeyList" item="key" open="(" close=")" separator=",">
+                    #{key, jdbcType=VARCHAR}
                 </foreach>
             </if>
         </where>
-        GROUP BY dv.dic_vul_id
-        HAVING COUNT(DISTINCT dv.dic_vul_id) > 0
-        <!-- 排序条件 -->
-        <if test="dto != null and dto.sortCondition != null and dto.sortCondition != ''">
-            ORDER BY ${dto.sortCondition}
-        </if>
-    </select>
-
-    <!-- 应用组件列表分页查询 -->
-    <select id="getComponentList" resultMap="assetComponentDetailListVOResultMap">
-        SELECT dc.id AS dic_component_id,
-        ac.id AS asset_component_id,
-        dc.NAME,
-        dc.version,
-        ac.STATUS,
-        COUNT(DISTINCT dv.dic_vul_id) AS vul_count,
-        COUNT(DISTINCT dv.dic_vul_id) AS vul_num,
-        COUNT(DISTINCT dicv.id, IF(dicv.security_level_id = 1, 1, NULL)) AS vul_num_serious,
-        COUNT(DISTINCT dicv.id, IF(dicv.security_level_id = 2, 1, NULL)) AS vul_num_high,
-        COUNT(DISTINCT dicv.id, IF(dicv.security_level_id = 3, 1, NULL)) AS vul_num_medium,
-        COUNT(DISTINCT dicv.id, IF(dicv.security_level_id = 4, 1, NULL)) AS vul_num_low,
-        t.id AS task_id
-        FROM asset_project ap
-        LEFT JOIN iast_node node ON ap.id = node.project_id AND node.center_id != -1
-        LEFT JOIN iast_app ip ON node.id = ip.node_id
-        LEFT JOIN iast_data id ON ip.id = id.app_id
-        LEFT JOIN task t ON t.id = id.task_id AND t.status = 2
-        LEFT JOIN asset_component ac ON id.task_id = ac.task_id AND ac.status != 2
-        LEFT JOIN dic_component dc ON ac.dic_component_id = dc.id
-        LEFT JOIN data_vul dv ON ac.dic_component_id = dv.dic_component_id AND ac.task_id = dv.task_id
-        LEFT JOIN dic_vul dicv ON dicv.id = dv.dic_vul_id
-        <where>
-            ap.del = 1
-            AND t.del = 1
-            AND ip.id = #{dto.appId}
-            <if test="dto.projectId != -1">
-                AND ac.project_id = #{dto.projectId}
-            </if>
-            <!-- 组件三件套 -->
-            <if test="dto.vendor != null and dto.vendor != ''">
-                AND LOCATE(#{dto.vendor, jdbcType=VARCHAR}, dc.vendor) > 0
-            </if>
-            <if test="dto.product != null and dto.product != ''">
-                AND LOCATE(#{dto.product, jdbcType=VARCHAR}, dc.name) > 0
-            </if>
-            <if test="dto.version != null and dto.version != ''">
-                AND LOCATE(#{dto.version, jdbcType=VARCHAR}, dc.version) > 0
-            </if>
-            <!-- 解析深度 -->
-            <if test="dto.parseDeep != null">
-                AND ac.parse_deep = #{dto.parseDeep}
-            </if>
-            <!-- 组件依赖类型 -->
-            <if test="dto.dependencyType != null">
-                <if test="dto.dependencyType == 0">
-                    AND ac.parse_deep <![CDATA[<]]> 2
-                </if>
-                <if test="dto.dependencyType == 1">
-                    AND ac.parse_deep <![CDATA[>=]]> 2
-                </if>
-            </if>
-            <!-- 组件风险等级列表筛选 -->
-            <if test="dto.securityLevelList != null and dto.securityLevelList.size() > 0" >
-                <choose>
-                    <when test="dto.securityLevelList.size() != 1 or not dto.securityLevelList.contains(5)">
-                        AND ( dicv.security_level_id IN
-                        <foreach collection="dto.securityLevelList" item="securityLevel" open="(" separator="," close=")">
-                            <if test="securityLevel != 5">
-                                #{securityLevel,jdbcType=INTEGER}
-                            </if>
-                        </foreach>
-                        <if test="dto.securityLevelList.contains(5)">
-                            OR dicv.security_level_id IS NULL
-                        </if> )
-                    </when>
-                    <otherwise>
-                        AND dicv.security_level_id IS NULL
-                    </otherwise>
-                </choose>
-            </if>
-            <!-- 是否真实引入组件筛选 -->
-            <if test="dto.realInUse != null">
-                AND ac.real_in_use = #{dto.realInUse,jdbcType=INTEGER}
-            </if>
-        </where>
-        GROUP BY ac.dic_component_id
-        HAVING ac.dic_component_id IS NOT NULL
-        ORDER BY IFNULL(dicv.security_level_id, 5), COUNT(DISTINCT dv.dic_vul_id) DESC
-    </select>
-
-    <!-- 根据节点id获取节点下所有的应用详情VO对象下拉列表 -->
-    <select id="select" resultType="cn.xmirror.oss.vo.core.iast.app.AppSelectVO">
-        SELECT app.id,
-        node.ip,
-        node.`language`,
-        COUNT(DISTINCT ac.dic_component_id) AS component_total,
-        IFNULL(middleware.name, '') AS middleware,
-        IFNULL(app.`name`, '') AS `name`,
-        COUNT(DISTINCT dv.dic_vul_id) AS vul_total,
-        MAX(ac.create_date) AS last_scan_date,
-        IFNULL(MIN(dicv.security_level_id), 5) AS security_level,
-        t.id AS task_id,
-        COUNT(DISTINCT al.dic_license_id) AS license_num
-        FROM iast_node node
-        LEFT JOIN asset_project ap ON ap.id = node.project_id
-        LEFT JOIN iast_middleware middleware ON middleware.id = node.middleware_id
-        LEFT JOIN iast_app app ON app.node_id = node.id
-        LEFT JOIN iast_data data ON data.app_id = app.id
-        LEFT JOIN task t ON t.id = data.task_id AND t.`status` = 2 AND t.detect_engine_id = 2
-        LEFT JOIN asset_component ac ON ac.task_id = t.id AND ac.`status` != 2
-        LEFT JOIN asset_license al ON ac.id = al.component_id
-        LEFT JOIN data_vul dv ON ac.dic_component_id = dv.dic_component_id AND ac.task_id = dv.task_id
-        LEFT JOIN dic_vul dicv ON dicv.id = dv.dic_vul_id
-        WHERE ap.del = 1
-        AND node.del = 1
-        AND t.del = 1
-        AND node.id = #{nodeId,jdbcType=INTEGER}
-        AND app.id IN (SELECT app.id FROM iast_app app WHERE app.node_id = #{nodeId,jdbcType=INTEGER})
-        GROUP BY app.id
-        HAVING app.id IS NOT NULL
-        ORDER BY FIELD(app.`name`, <![CDATA['<system>']]>) ASC, FIELD(app.`name`, <![CDATA['<common>']]>) ASC,
-        app.`name` DESC
-    </select>
-
-    <!-- 根据节点id列表获取节点应用导出数据列表 -->
-    <select id="getAppExcelDataListByNodeIdList" resultType="cn.xmirror.oss.excel.core.asset.iast.app.AppExcelData">
-        SELECT app.id,
-        (CASE app.name
-        WHEN <![CDATA['<common>']]> THEN '其他应用'
-        WHEN <![CDATA['<system>']]> THEN '系统应用'
-        ELSE app.name
-        END) AS NAME,
-        node.ip AS nodeIp,
-        IFNULL(middleware.NAME, '') AS middleware,
-        COUNT(DISTINCT ac.dic_component_id) AS component_total,
-        COUNT(DISTINCT dv.dic_vul_id) AS vul_total,
-        COUNT(DISTINCT dv.dic_vul_id, IF(dicv.security_level_id = 1, 1, NULL)) AS vul_serious,
-        COUNT(DISTINCT dv.dic_vul_id, IF(dicv.security_level_id = 2, 1, NULL)) AS vul_high,
-        COUNT(DISTINCT dv.dic_vul_id, IF(dicv.security_level_id = 3, 1, NULL)) AS vul_medium,
-        COUNT(DISTINCT dv.dic_vul_id, IF(dicv.security_level_id = 4, 1, NULL)) AS vul_low,
-        IFNULL(MAX(ac.create_date), app.create_date) AS last_scan_date,
-        ap.`name` AS project_name
-        FROM iast_node node
-        LEFT JOIN asset_project ap ON ap.id = node.project_id
-        LEFT JOIN iast_middleware middleware ON middleware.id = node.middleware_id
-        LEFT JOIN iast_app app ON app.node_id = node.id
-        LEFT JOIN iast_data DATA ON DATA.app_id = app.id
-        LEFT JOIN task t ON t.id = DATA.task_id AND t.`status` = 2 AND t.detect_engine_id = 2
-        LEFT JOIN asset_component ac ON ac.task_id = t.id AND ac.`status` != 2
-        LEFT JOIN data_vul dv ON ac.dic_component_id = dv.dic_component_id AND ac.task_id = dv.task_id
-        LEFT JOIN dic_vul dicv ON dicv.id = dv.dic_vul_id
-        WHERE ap.del = 1
-        AND node.del = 1
-        AND node.id IN
-        <foreach collection="nodeIdList" item="nodeId" open="(" close=")" separator=",">
-            #{nodeId}
-        </foreach>
-        GROUP BY app.id
-        HAVING COUNT(app.id) > 0
-    </select>
-
-    <!-- 分页获取许可证列表 -->
-    <select id="getLicenseList" resultType="cn.xmirror.oss.vo.core.asset.license.AssetLicenseListVO">
-        SELECT dl.short_name,
-        al.dic_license_id,
-        t.id AS task_id,
-        dl.security_level
-        FROM task t
-        LEFT JOIN asset_license al ON al.task_id = t.id AND t.status = 2
-        LEFT JOIN dic_license dl ON dl.id = al.dic_license_id
-        LEFT JOIN asset_component ac ON ac.id = al.component_id AND ac.task_id = al.task_id
-        <where>
-            t.del = 1
-            <if test="dto != null and dto.taskIdList != null and dto.taskIdList.size > 0">
-                AND t.id IN
-                <foreach collection="dto.taskIdList" item="taskId" separator="," open="(" close=")">
-                    #{taskId}
-                </foreach>
-            </if>
-            <!-- 许可证模糊查询 -->
-            <if test="dto.shortName != null and dto.shortName != ''">
-                AND LOCATE(#{dto.shortName, jdbcType=VARCHAR}, dl.short_name) > 0
-            </if>
-            <!-- 防止taskIdList为空 -->
-            <if test="dto.taskIdList.size == 0">
-                AND t.id = -1
-            </if>
-        </where>
-        GROUP BY
-        al.dic_license_id
-        HAVING
-        al.dic_license_id IS NOT NULL
-        <!-- 排序字段 -->
-        <if test="dto != null and dto.sortCondition != null and dto.sortCondition != ''">
-            ORDER BY ${dto.sortCondition}
-        </if>
-    </select>
-
-    <!-- 根据id列表获取项目id列表 -->
-    <select id="getProjectIdListByIdList" resultType="java.lang.Integer">
-        SELECT node.project_id
-        FROM iast_app app
-        LEFT JOIN iast_node node ON node.id = app.node_id
-        <where>
-            node.del = 1
-            AND app.id IN
-            <foreach collection="idList" item="appId" open="(" close=")" separator=",">
-                #{appId}
-            </foreach>
-        </where>
-    </select>
-
-    <!-- 获取应用最大解析层级 -->
-    <select id="getMaxParseDeep" resultType="java.lang.Integer">
-        SELECT MAX(ac.parse_deep)
-        FROM iast_app app
-        LEFT JOIN iast_data data ON data.app_id = app.id
-        LEFT JOIN asset_component ac ON ac.task_id = data.task_id
-        WHERE app.id = #{appId, jdbcType=INTEGER}
     </select>
 </mapper>

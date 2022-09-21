@@ -51,19 +51,19 @@ chmod 777 -R /home/nfs/minio/config
 
 # 编辑/etc/exports文件内容如下
 # mysql
-/home/nfs/mysql/data 192.168.31.0/24(rw,no_root_squash,sync)
-/home/nfs/mysql/log 192.168.31.0/24(rw,no_root_squash,sync)
+/home/nfs/mysql/data 192.168.8.0/24(rw,no_root_squash,sync)
+/home/nfs/mysql/log 192.168.8.0/24(rw,no_root_squash,sync)
 # nacos
-/home/nfs/nacos/data 192.168.31.0/24(rw,no_root_squash,sync)
-/home/nfs/nacos/log 192.168.31.0/24(rw,no_root_squash,sync)
+/home/nfs/nacos/data 192.168.8.0/24(rw,no_root_squash,sync)
+/home/nfs/nacos/log 192.168.8.0/24(rw,no_root_squash,sync)
 # redis
-/home/nfs/redis/data 192.168.31.0/24(rw,no_root_squash,sync)
+/home/nfs/redis/data 192.168.8.0/24(rw,no_root_squash,sync)
 # elasticsearch
-/home/nfs/es/data 192.168.31.0/24(rw,no_root_squash,sync)
-/home/nfs/es/log 192.168.31.0/24(rw,no_root_squash,sync)
+/home/nfs/es/data 192.168.8.0/24(rw,no_root_squash,sync)
+/home/nfs/es/log 192.168.8.0/24(rw,no_root_squash,sync)
 # minio
-/home/nfs/minio/data 192.168.31.0/24(rw,no_root_squash,sync)
-/home/nfs/minio/config 192.168.31.0/24(rw,no_root_squash,sync)
+/home/nfs/minio/data 192.168.8.0/24(rw,no_root_squash,sync)
+/home/nfs/minio/config 192.168.8.0/24(rw,no_root_squash,sync)
 
 # 更新配置
 exportfs -ar
@@ -103,3 +103,6 @@ kubectl apply -f minio.yml
 ### k8s安装ingress博客
 
 https://github.com/anjia0532/gcr.io_mirror
+
+
+### 

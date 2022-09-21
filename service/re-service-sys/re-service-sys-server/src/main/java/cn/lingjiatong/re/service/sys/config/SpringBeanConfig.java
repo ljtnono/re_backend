@@ -1,4 +1,4 @@
-package cn.lingjiatong.re.common.config;
+package cn.lingjiatong.re.service.sys.config;
 
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Lazy;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 /**
- * 通用spring bean配置类
+ * spring bean配置类
  *
  * @author Ling, Jiatong
  * Date: 2022/9/19 16:59

@@ -1,7 +1,8 @@
-package cn.lingjiatong.re.api;
+package cn.lingjiatong.re.api.frontend;
 
 import org.springframework.boot.SpringApplication;
-import org.springframework.cloud.client.SpringCloudApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 
 /**
@@ -10,8 +11,9 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
  * @author Ling, Jiatong
  * Date: 2022/9/17 17:41
  */
-@SpringCloudApplication
-@EnableFeignClients
+@EnableDiscoveryClient
+@EnableFeignClients(basePackages = {"cn.lingjiatong.re.service.sys.api"})
+@SpringBootApplication(scanBasePackages = {"cn.lingjiatong.re.api.frontend", "cn.lingjiatong.re.common"})
 public class FrontendApiApplication {
 
     public static void main(String[] args) {

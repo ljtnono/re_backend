@@ -6,13 +6,13 @@ package cn.lingjiatong.re.common.exception;
  * @author Ling, Jiatong
  * Date: 2022/9/17 19:07
  */
-public class ResourceAlreadyException extends BaseException{
+public class ResourceAlreadyExistException extends BaseException{
 
-    public ResourceAlreadyException(ErrorEnum errorEnum) {
+    public ResourceAlreadyExistException(ErrorEnum errorEnum) {
         super(errorEnum);
     }
 
-    public ResourceAlreadyException(Integer code, String message) {
+    public ResourceAlreadyExistException(Integer code, String message) {
         super(code, message);
     }
 }

@@ -1,9 +1,9 @@
-package cn.lingjiatong.re.api.controller;
+package cn.lingjiatong.re.api.frontend.controller;
 
 import cn.lingjiatong.re.common.ResultVO;
-import cn.lingjiatong.re.service.sys.api.client.WebsiteConfigFeignClient;
-import cn.lingjiatong.re.service.sys.api.dto.WebsiteConfigDTO;
-import cn.lingjiatong.re.service.sys.api.vo.WebsiteConfigVO;
+import cn.lingjiatong.re.service.sys.api.client.FrontendWebsiteConfigFeignClient;
+import cn.lingjiatong.re.service.sys.api.dto.FrontendWebsiteConfigDTO;
+import cn.lingjiatong.re.service.sys.api.vo.FrontendWebsiteConfigVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,15 +18,21 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @Slf4j
 @RestController
-@RequestMapping("/api/v1/index")
+@RequestMapping("/index")
 public class IndexController {
     @Autowired
-    private WebsiteConfigFeignClient websiteConfigFeignClient;
+    private FrontendWebsiteConfigFeignClient frontendWebsiteConfigFeignClient;
 
-    @GetMapping("/websiteConfig")
-    public ResultVO<WebsiteConfigVO> findWebsiteConfig(WebsiteConfigDTO dto) {
-        log.info(">>>>>>>>>>>>>");
-        return websiteConfigFeignClient.findWebsiteConfig(dto);
+    /**
+     * 获取前端站点设置
+     *
+     * @param dto 获取前端站点配置DTO对象
+     * @return 获取前端站点配置VO对象
+     */
+    @GetMapping("/frontendWebsiteConfig")
+    public ResultVO<FrontendWebsiteConfigVO> findWebsiteConfig(FrontendWebsiteConfigDTO dto) {
+        log.info("==========获取前端站点设置接口，参数：{}", dto);
+        return frontendWebsiteConfigFeignClient.findFrontendWebsiteConfig(dto);
     }
-    
+
 }

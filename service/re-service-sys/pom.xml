@@ -4,18 +4,15 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>re_backend</artifactId>
-        <groupId>cn.ljtnono</groupId>
-        <version>0.0.1</version>
+        <groupId>cn.lingjiatong</groupId>
+        <version>${re-version}</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-
+    <modules>
+        <module>re-service-sys-api</module>
+    </modules>
+    <packaging>pom</packaging>
     <artifactId>re-service-sys</artifactId>
-
-    <properties>
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
 
 </project>
