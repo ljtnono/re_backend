@@ -6,10 +6,16 @@
         <artifactId>re_backend</artifactId>
         <groupId>cn.lingjiatong</groupId>
         <version>${re-version}</version>
-        <relativePath>../../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>re-frontend</artifactId>
+
+    <artifactId>re-gateway</artifactId>
+
+    <properties>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
 
     <dependencies>
         <!-- re-common -->
@@ -26,13 +32,11 @@
                     <groupId>com.baomidou</groupId>
                     <artifactId>mybatis-plus-boot-starter</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-web</artifactId>
+                </exclusion>
             </exclusions>
-        </dependency>
-        <!-- re-service-sys-api -->
-        <dependency>
-            <groupId>cn.lingjiatong</groupId>
-            <artifactId>re-service-sys-api</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <!-- nacos服务发现 -->
         <dependency>
@@ -43,6 +47,11 @@
         <dependency>
             <groupId>com.alibaba.cloud</groupId>
             <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
+        </dependency>
+        <!-- spring cloud gateway -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-gateway</artifactId>
         </dependency>
     </dependencies>
 
@@ -63,9 +72,8 @@
             </properties>
         </profile>
     </profiles>
-
     <build>
-        <finalName>api-re-frontend</finalName>
+        <finalName>re-gateway</finalName>
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
@@ -79,7 +87,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
                     <!-- 指定全局唯一入口 -->
-                    <mainClass>cn.lingjiatong.re.api.frontend.FrontendApiApplication</mainClass>
+                    <mainClass>cn.lingjiatong.re.gateway.ReGatewayApplication</mainClass>
                     <layout>ZIP</layout>
                     <fork>true</fork>
                 </configuration>

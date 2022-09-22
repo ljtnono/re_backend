@@ -3,20 +3,20 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   namespace: rootelement
-  name: api-re-frontend
+  name: re-gateway
 spec:
   selector:
     matchLabels:
-      app: api-re-frontend
+      app: re-gateway
   replicas: 1
   template:
     metadata:
       labels:
-        app: api-re-frontend
+        app: re-gateway
     spec:
       containers:
-        - name: api-re-frontend
-          image: ljtnono/api-re-frontend:v0.0.5
+        - name: re-gateway
+          image: ljtnono/re-gateway:<VERSION>
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
@@ -27,14 +27,14 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: api-re-frontend
+  name: re-gateway
   namespace: rootelement
 spec:
   type: NodePort
   ports:
     - port: 8080
       name: web
-      nodePort: 30081
+      nodePort: 30083
       targetPort: 8080
   selector:
-    app: api-re-frontend
+    app: re-gateway

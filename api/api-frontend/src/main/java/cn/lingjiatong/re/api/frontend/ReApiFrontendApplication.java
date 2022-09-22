@@ -14,10 +14,10 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 @EnableDiscoveryClient
 @EnableFeignClients(basePackages = {"cn.lingjiatong.re.service.sys.api"})
 @SpringBootApplication(scanBasePackages = {"cn.lingjiatong.re.api.frontend", "cn.lingjiatong.re.common"})
-public class FrontendApiApplication {
+public class ReApiFrontendApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(FrontendApiApplication.class, args);
+        SpringApplication.run(ReApiFrontendApplication.class, args);
     }
 
 }

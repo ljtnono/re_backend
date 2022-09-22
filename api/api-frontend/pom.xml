@@ -6,29 +6,36 @@
         <artifactId>re_backend</artifactId>
         <groupId>cn.lingjiatong</groupId>
         <version>${re-version}</version>
-        <relativePath>../../../pom.xml</relativePath>
+        <relativePath>../../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-
-    <artifactId>re-service-sys-server</artifactId>
-
+    <artifactId>api-frontend</artifactId>
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
-
     <dependencies>
-        <!-- 引入系统设置相关接口 -->
-        <dependency>
-            <groupId>cn.lingjiatong</groupId>
-            <artifactId>re-service-sys-api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
         <!-- re-common -->
         <dependency>
             <groupId>cn.lingjiatong</groupId>
             <artifactId>re-common</artifactId>
+            <version>${project.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>mysql</groupId>
+                    <artifactId>mysql-connector-java</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.baomidou</groupId>
+                    <artifactId>mybatis-plus-boot-starter</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <!-- re-service-sys-api -->
+        <dependency>
+            <groupId>cn.lingjiatong</groupId>
+            <artifactId>re-service-sys-api</artifactId>
             <version>${project.version}</version>
         </dependency>
         <!-- nacos服务发现 -->
@@ -60,8 +67,9 @@
             </properties>
         </profile>
     </profiles>
+
     <build>
-        <finalName>re-service-sys-server</finalName>
+        <finalName>api-re-frontend</finalName>
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
@@ -75,7 +83,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
                     <!-- 指定全局唯一入口 -->
-                    <mainClass>cn.lingjiatong.re.service.sys.ReSysServiceServerApplication</mainClass>
+                    <mainClass>cn.lingjiatong.re.api.frontend.ReApiFrontendApplication</mainClass>
                     <layout>ZIP</layout>
                     <fork>true</fork>
                 </configuration>
@@ -90,4 +98,5 @@
             </plugin>
         </plugins>
     </build>
+
 </project>

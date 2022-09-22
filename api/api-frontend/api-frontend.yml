@@ -3,20 +3,20 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   namespace: rootelement
-  name: re-service-sys-server
+  name: api-frontend
 spec:
   selector:
     matchLabels:
-      app: re-service-sys-server
+      app: api-frontend
   replicas: 1
   template:
     metadata:
       labels:
-        app: re-service-sys-server
+        app: api-frontend
     spec:
       containers:
-        - name: re-service-sys-server
-          image: ljtnono/re-service-sys-server:<VERSION>
+        - name: api-frontend
+          image: ljtnono/api-frontend:<VERSION>
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
@@ -27,14 +27,14 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: re-service-sys-server
+  name: api-frontend
   namespace: rootelement
 spec:
   type: NodePort
   ports:
     - port: 8080
       name: web
-      nodePort: 30084
+      nodePort: 30081
       targetPort: 8080
   selector:
-    app: re-service-sys-server
+    app: api-frontend
