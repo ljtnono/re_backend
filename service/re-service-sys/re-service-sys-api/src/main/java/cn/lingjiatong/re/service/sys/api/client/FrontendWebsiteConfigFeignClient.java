@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping;
  * @author Ling, Jiatong
  * Date: 2022/9/17 18:49
  */
-@FeignClient(name = "re-service-sys", path = "/sys")
+@FeignClient(name = "re-service-sys-server", path = "/sys")
 public interface FrontendWebsiteConfigFeignClient {
 
     /**
