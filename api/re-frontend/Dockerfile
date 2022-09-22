@@ -1,4 +1,4 @@
-FROM java:11
+FROM bitnami/java:11
 MAINTAINER lingjiatong 935188400@qq.com
 COPY target/api-re-frontend.jar /
 RUN chmod 755 /api-re-frontend.jar
