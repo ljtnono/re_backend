@@ -69,7 +69,7 @@
     </profiles>
 
     <build>
-        <finalName>api-re-frontend</finalName>
+        <finalName>api-frontend</finalName>
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
