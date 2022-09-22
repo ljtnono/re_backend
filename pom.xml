@@ -21,7 +21,7 @@
 		<java.version>11</java.version>
 		<maven.compiler.source>11</maven.compiler.source>
 		<maven.compiler.target>11</maven.compiler.target>
-		<re-version>v0.0.4</re-version>
+		<re-version>v0.0.5</re-version>
 		<spring-cloud.version>Hoxton.SR12</spring-cloud.version>
 		<spring-cloud-alibaba.version>2.2.9.RELEASE</spring-cloud-alibaba.version>
 		<springboot.version>2.3.12.RELEASE</springboot.version>

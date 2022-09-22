@@ -1,0 +1,40 @@
+# Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: rootelement
+  name: re-service-sys-server
+spec:
+  selector:
+    matchLabels:
+      app: re-service-sys-server
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: re-service-sys-server
+    spec:
+      containers:
+        - name: re-service-sys-server
+          image: ljtnono/re-service-sys-server:v0.0.5
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+              name: web
+
+---
+# api-re-frontend service
+apiVersion: v1
+kind: Service
+metadata:
+  name: re-service-sys-server
+  namespace: rootelement
+spec:
+  type: NodePort
+  ports:
+    - port: 8080
+      name: web
+      nodePort: 30083
+      targetPort: 8080
+  selector:
+    app: api-re-frontend

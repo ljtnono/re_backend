@@ -16,10 +16,10 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 @SpringBootApplication(scanBasePackages = {"cn.lingjiatong.re.service.sys", "cn.lingjiatong.re.common"})
 @EnableFeignClients(basePackages = {"cn.lingjiatong.re.service.sys.api"})
 @MapperScan(basePackages = {"cn.lingjiatong.re.service.sys.mapper"})
-public class SysServiceApplication {
+public class SysServiceServerApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(SysServiceApplication.class, args);
+        SpringApplication.run(SysServiceServerApplication.class, args);
     }
 
 }

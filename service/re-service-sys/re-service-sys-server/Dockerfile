@@ -1,4 +1,4 @@
-FROM java:8
+FROM java:11
 MAINTAINER lingjiatong 935188400@qq.com
 COPY target/re-service-sys-server.jar /
 RUN chmod 755 /re-service-sys-server.jar
