@@ -2,6 +2,7 @@ package cn.lingjiatong.re.common.exception;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.springframework.util.StringUtils;
 
 /**
  * 异常基类

@@ -2,8 +2,8 @@ package cn.lingjiatong.re.api.frontend.controller;
 
 import cn.lingjiatong.re.common.ResultVO;
 import cn.lingjiatong.re.service.sys.api.client.FrontendWebsiteConfigFeignClient;
-import cn.lingjiatong.re.service.sys.api.dto.FrontendWebsiteConfigDTO;
-import cn.lingjiatong.re.service.sys.api.vo.FrontendWebsiteConfigVO;
+import cn.lingjiatong.re.service.sys.api.dto.FrontendWebsiteConfigFindDTO;
+import cn.lingjiatong.re.service.sys.api.vo.FrontendWebsiteConfigAddVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,7 +30,7 @@ public class IndexController {
      * @return 获取前端站点配置VO对象
      */
     @GetMapping("/frontendWebsiteConfig")
-    public ResultVO<FrontendWebsiteConfigVO> findWebsiteConfig(FrontendWebsiteConfigDTO dto) {
+    public ResultVO<FrontendWebsiteConfigAddVO> findWebsiteConfig(FrontendWebsiteConfigFindDTO dto) {
         log.info("==========获取前端站点设置接口，参数：{}", dto);
         return frontendWebsiteConfigFeignClient.findFrontendWebsiteConfig(dto);
     }

@@ -14,7 +14,7 @@ import java.util.Map;
  */
 @Data
 @ApiModel(description = "获取前端站点配置VO对象")
-public class FrontendWebsiteConfigVO {
+public class FrontendWebsiteConfigAddVO {
 
     /**
      * 站点配置列表

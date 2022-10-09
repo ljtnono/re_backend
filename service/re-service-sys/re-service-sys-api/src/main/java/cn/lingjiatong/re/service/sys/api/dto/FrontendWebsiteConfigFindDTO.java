@@ -14,7 +14,7 @@ import java.util.List;
  */
 @Data
 @ApiModel(description = "获取前端站点配置DTO对象")
-public class FrontendWebsiteConfigDTO {
+public class FrontendWebsiteConfigFindDTO {
 
     /**
      * 获取类型

@@ -38,4 +38,46 @@
             </if>
         </where>
     </select>
+
+    <!-- 新增前端站点配置信息 -->
+    <insert id="addFrontendWebsiteConfig" parameterType="java.util.List">
+        INSERT INTO
+            sys_config(`description`, `key`, `value`)
+        VALUES
+        <foreach collection="list" separator="," open="(" close=")" item="config">
+            #{config.description, jdbcType=VARCHAR}, #{config.key,jdbcType=VARCHAR}, #{config.value, jdbcType=VARCHAR}
+        </foreach>
+    </insert>
+
+    <!-- 更新前端站点配置信息 -->
+    <update id="updateFrontendWebsiteConfig" parameterType="java.util.List">
+        UPDATE
+            sys_config
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="`value` = CASE" suffix="END,">
+                <foreach collection="list" item="config" index="index">
+                    <if test="config.value != null and config.value != ''">
+                        WHEN `key` = #{config.key,jdbcType=VARCHAR} THEN #{config.value,jdbcType=VARCHAR}
+                    </if>
+                    <if test="config.value == null or config.value == ''">
+                        WHEN `key` = #{config.key,jdbcType=VARCHAR} THEN `value`
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="`description` = CASE" suffix="END,">
+                <foreach collection="list" item="config" index="index">
+                    <if test="config.description != null and config.description != ''">
+                        WHEN `key` = #{config.key,jdbcType=VARCHAR} THEN #{config.description,jdbcType=VARCHAR}
+                    </if>
+                    <if test="config.description == null or config.description == ''">
+                        WHEN `key` = #{config.key,jdbcType=VARCHAR} THEN `description`
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        WHERE `key` IN
+        <foreach collection="list" item="config" separator="," open="(" close=")">
+            #{config.key,jdbcType=VARCHAR}
+        </foreach>
+    </update>
 </mapper>
