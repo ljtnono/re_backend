@@ -1,11 +1,9 @@
-版本号：v0.0.9
+版本号：v0.1.0
 新特性：
 无
 
 BUG修复：
-1、修复redis不用密码就能登录的BUG
-2、修复redis默认连接池异常BUG
-3、修复gateway无法启动的BUG
+1、修复gateway无法启动的BUG
 
 优化：
 无
