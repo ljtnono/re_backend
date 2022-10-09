@@ -36,7 +36,7 @@ data:
     nacos.naming.data.warmup=true
     nacos.naming.expireInstance=true
   redis.conf: |
-    bind: 0.0.0.0
+    bind 0.0.0.0
     protected-mode no
     port 6379
     tcp-backlog 511
@@ -46,7 +46,6 @@ data:
     supervised no
     pidfile /var/run/redis_6379.pid
     loglevel notice
-    logfile /var/log/redis/redis.log
     databases 16
     always-show-logo yes
     save 900 1

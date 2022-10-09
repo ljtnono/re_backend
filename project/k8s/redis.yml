@@ -53,6 +53,7 @@ spec:
         - name: redis
           imagePullPolicy: IfNotPresent
           image: ljtnono/re-redis
+          command: ["redis-server", "/etc/redis/redis.conf"]
           ports:
             - containerPort: 6379
               name: redis
