@@ -21,6 +21,8 @@ spec:
           ports:
             - containerPort: 8080
               name: web
+            - containerPort: 8081
+              name: netty
 ---
 # re-job service
 apiVersion: v1
@@ -35,5 +37,9 @@ spec:
       name: web
       nodePort: 30085
       targetPort: 8080
+    - port: 8081
+      name: netty
+      nodePort: 30086
+      targetPort: 8081
   selector:
     app: re-job
