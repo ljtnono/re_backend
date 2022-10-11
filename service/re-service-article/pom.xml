@@ -9,11 +9,11 @@
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <modules>
-        <module>re-service-sys-api</module>
-        <module>re-service-sys-server</module>
-    </modules>
+    <artifactId>re-service-article</artifactId>
     <packaging>pom</packaging>
-    <artifactId>re-service-sys</artifactId>
+    <modules>
+        <module>re-service-article-api</module>
+        <module>re-service-article-server</module>
+    </modules>
 
 </project>

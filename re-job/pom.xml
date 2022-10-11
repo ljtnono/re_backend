@@ -3,14 +3,12 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>re-service-sys</artifactId>
+        <artifactId>re_backend</artifactId>
         <groupId>cn.lingjiatong</groupId>
         <version>${re-version}</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-
-    <artifactId>re-service-sys-server</artifactId>
-
+    <artifactId>re-job</artifactId>
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
@@ -18,40 +16,39 @@
     </properties>
 
     <dependencies>
-        <!-- 引入系统设置相关接口 -->
-        <dependency>
-            <groupId>cn.lingjiatong</groupId>
-            <artifactId>re-service-sys-api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
         <!-- re-common -->
         <dependency>
             <groupId>cn.lingjiatong</groupId>
             <artifactId>re-common</artifactId>
             <version>${project.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.baomidou</groupId>
+                    <artifactId>mybatis-plus-boot-starter</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>mysql</groupId>
+                    <artifactId>mysql-connector-java</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
-        <!-- nacos服务发现 -->
+        <!-- xxl-job -->
         <dependency>
-            <groupId>com.alibaba.cloud</groupId>
-            <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
+            <groupId>com.xuxueli</groupId>
+            <artifactId>xxl-job-core</artifactId>
+            <version>${xxl-job.version}</version>
         </dependency>
         <!-- nacos配置中心 -->
         <dependency>
             <groupId>com.alibaba.cloud</groupId>
             <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
         </dependency>
-        <!-- redis -->
+        <!-- nacos服务发现 -->
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-redis</artifactId>
-        </dependency>
-        <!-- commons-pool2 -->
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-pool2</artifactId>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
         </dependency>
     </dependencies>
-
     <profiles>
         <profile>
             <id>dev</id>
@@ -70,7 +67,7 @@
         </profile>
     </profiles>
     <build>
-        <finalName>re-service-sys-server</finalName>
+        <finalName>re-job</finalName>
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
@@ -84,7 +81,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
                     <!-- 指定全局唯一入口 -->
-                    <mainClass>cn.lingjiatong.re.service.sys.ReSysServiceServerApplication</mainClass>
+                    <mainClass>cn.lingjiatong.re.job.ReJobApplication</mainClass>
                     <layout>ZIP</layout>
                     <fork>true</fork>
                 </configuration>

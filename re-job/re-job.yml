@@ -1,0 +1,39 @@
+# Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: re-job
+  namespace: rootelement
+spec:
+  selector:
+    matchLabels:
+      app: re-job
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: re-job
+    spec:
+      containers:
+        - name: re-job
+          image: ljtnono/re-job:<VERSION>
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+              name: web
+---
+# re-job service
+apiVersion: v1
+kind: Service
+metadata:
+  name: re-job
+  namespace: rootelement
+spec:
+  type: NodePort
+  ports:
+    - port: 8080
+      name: web
+      nodePort: 30085
+      targetPort: 8080
+  selector:
+    app: re-job

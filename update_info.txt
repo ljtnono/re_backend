@@ -1,9 +1,9 @@
-版本号：v0.1.0
+版本号：v0.1.1
 新特性：
-无
+1、新增xxl-job定时任务
 
 BUG修复：
 1、修复gateway无法启动的BUG
 
 优化：
-无
+1、优化re-service-sys的pom依赖设置

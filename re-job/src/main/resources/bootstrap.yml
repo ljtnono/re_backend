@@ -1,6 +1,6 @@
 spring:
   application:
-    name: re-gateway
+    name: re-job
   profiles:
     active: @profiles.active@
   cloud:

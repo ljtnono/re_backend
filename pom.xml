@@ -9,10 +9,11 @@
 	<modules>
 		<module>re-common</module>
 		<module>api/api-frontend</module>
-        <module>service/re-service-sys</module>
-		<module>service/re-service-sys/re-service-sys-server</module>
 		<module>re-gateway</module>
-	</modules>
+        <module>service/re-service-sys</module>
+		<module>service/re-service-article</module>
+        <module>re-job</module>
+    </modules>
 	<name>re_backend</name>
 	<description>根元素博客网站后端</description>
 	<!-- 全局版本管理 -->
@@ -22,7 +23,7 @@
 		<java.version>11</java.version>
 		<maven.compiler.source>11</maven.compiler.source>
 		<maven.compiler.target>11</maven.compiler.target>
-		<re-version>v0.1.0</re-version>
+		<re-version>v0.1.1</re-version>
 		<spring-cloud.version>Hoxton.SR12</spring-cloud.version>
 		<spring-cloud-alibaba.version>2.2.9.RELEASE</spring-cloud-alibaba.version>
 		<spring-cloud-gateway.version>2.2.9.RELEASE</spring-cloud-gateway.version>
@@ -32,6 +33,7 @@
 		<swagger.version>3.0.0</swagger.version>
 		<mybatis-plus.version>3.4.3</mybatis-plus.version>
 		<mysql-connector.version>8.0.26</mysql-connector.version>
+		<xxl-job.version>2.3.0</xxl-job.version>
 		<!-- nacos配置 -->
 		<nacos-server-addr>www.lingjiatong.cn:30048</nacos-server-addr>
 		<!-- 各模块端口配置 -->
