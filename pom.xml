@@ -36,6 +36,7 @@
 		<xxl-job.version>2.3.0</xxl-job.version>
 		<webmagic.version>0.7.5</webmagic.version>
 		<minio.version>7.0.2</minio.version>
+		<selenium-java.version>3.141.59</selenium-java.version>
 		<!-- nacos配置 -->
 		<nacos-server-addr>www.lingjiatong.cn:30048</nacos-server-addr>
 		<!-- 各模块端口配置 -->
@@ -108,26 +109,31 @@
 				<artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
 				<version>${spring-cloud-alibaba.version}</version>
 			</dependency>
+			<!-- nacos配置中心 -->
 			<dependency>
 				<groupId>com.alibaba.cloud</groupId>
 				<artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
 				<version>${spring-cloud-alibaba.version}</version>
 			</dependency>
+			<!-- elasticsearch -->
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-data-elasticsearch</artifactId>
 				<version>${springboot.version}</version>
 			</dependency>
+			<!-- 健康监控 -->
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-actuator</artifactId>
 				<version>${springboot.version}</version>
 			</dependency>
+			<!-- web -->
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-web</artifactId>
 				<version>${springboot.version}</version>
 			</dependency>
+			<!-- aop -->
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-aop</artifactId>
@@ -168,6 +174,12 @@
 				<groupId>io.minio</groupId>
 				<artifactId>minio</artifactId>
 				<version>${minio.version}</version>
+			</dependency>
+			<!-- selenium-java -->
+			<dependency>
+				<groupId>org.seleniumhq.selenium</groupId>
+				<artifactId>selenium-java</artifactId>
+				<version>${selenium-java.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

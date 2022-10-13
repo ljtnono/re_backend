@@ -44,4 +44,5 @@ public class ToutiaoHotBO {
      */
     @JsonProperty("Label")
     private String label;
+
 }

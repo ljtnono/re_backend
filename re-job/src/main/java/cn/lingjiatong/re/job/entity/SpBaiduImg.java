@@ -1,0 +1,61 @@
+package cn.lingjiatong.re.job.entity;
+
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.Data;
+
+import java.time.LocalDateTime;
+
+/**
+ * 百度图片爬虫数据实体类
+ *
+ * @author Ling, Jiatong
+ * Date: 2022/10/14 00:53
+ */
+@Data
+@TableName("sp_baidu_img")
+public class SpBaiduImg {
+
+    /**
+     * 主键id
+     */
+    @TableId(type = IdType.AUTO)
+    private Long id;
+
+    /**
+     * 图片标题
+     */
+    private String title;
+
+    /**
+     * 图片链接地址
+     */
+    private String src;
+
+    /**
+     * 图片宽度
+     */
+    private Integer width;
+
+    /**
+     * 图片高度
+     */
+    private Integer height;
+
+    /**
+     * 图片格式
+     */
+    private String format;
+    
+    /**
+     * 记录创建时间
+     */
+    private LocalDateTime createTime;
+
+    /**
+     * 记录最后修改时间
+     */
+    private LocalDateTime modifyTime;
+
+}
