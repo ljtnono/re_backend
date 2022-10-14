@@ -48,6 +48,7 @@ public class SpringBeanConfig {
             System.setProperty("webdriver.chrome.driver", webDirverHome);
             /* linux */
             ChromeOptions options = new ChromeOptions();
+            options.addArguments("--window-size=1920,1050");
             // 禁用沙盒
             options.addArguments("no-sandbox");
             // 禁止加载图片
