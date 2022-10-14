@@ -22,7 +22,6 @@ import org.springframework.util.StringUtils;
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -70,15 +69,15 @@ public class BaiduImageSpiderProcessor  {
         }
         int currentPageCount = 1;
         while (true) {
-            List<WebElement> elements = webDriver.findElements(By.xpath("//*[@id=\"imgid\"]/div[" + currentPageCount + "]/ul/li/div[1]/div[2]/a/img"));
-            int i = 1;
-            for (WebElement element : elements) {
-                String title = webDriver.findElement(By.xpath("//*[@id=\"imgid\"]/div[" + currentPageCount + "]/ul/li[" + i +  "]/a")).getAttribute("title");
-                i++;
+            List<WebElement> imgElements = webDriver.findElements(By.xpath("//*[@id=\"imgid\"]/div[" + currentPageCount + "]/ul/li/div[1]/div[2]/a/img"));
+            List<WebElement> aElements = webDriver.findElements(By.xpath("//*[@id=\"imgid\"]/div[" + currentPageCount + "]/ul/li/a"));
+            for (int i = 0; i < imgElements.size(); i++) {
+                WebElement imgElement = imgElements.get(i);
+                String title = aElements.get(i).getAttribute("title");
                 if (StringUtils.isEmpty("title")) {
                     title = "暂无";
                 }
-                String src = element.getAttribute("src");
+                String src = imgElement.getAttribute("src");
                 Map<String, String> paramter = UrlUtil.getUrlQueryParamter(src);
                 log.info("==========src地址的查询参数列表：{}", JSONUtil.objectToString(paramter));
                 SpBaiduImg spBaiduImg = new SpBaiduImg();
