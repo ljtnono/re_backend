@@ -47,6 +47,12 @@ public class SpBaiduImg {
      * 图片格式
      */
     private String format;
+
+    /**
+     * md5标识
+     * 此字段由 title + src + width + height + format计算而成
+     */
+    private String uniqueMd5;
     
     /**
      * 记录创建时间

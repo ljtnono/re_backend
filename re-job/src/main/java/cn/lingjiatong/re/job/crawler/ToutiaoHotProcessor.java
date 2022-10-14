@@ -1,5 +1,6 @@
 package cn.lingjiatong.re.job.crawler;
 
+import cn.lingjiatong.re.common.util.EncryptUtil;
 import cn.lingjiatong.re.common.util.JSONUtil;
 import cn.lingjiatong.re.job.bo.ToutiaoHotBO;
 import cn.lingjiatong.re.job.entity.SpToutiaoRb;
@@ -8,6 +9,7 @@ import cn.lingjiatong.re.job.mapper.SpToutiaoRbMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.util.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -74,13 +76,30 @@ public class ToutiaoHotProcessor implements PageProcessor {
             } else {
                 spToutiaoRb.setState(ToutiaoRbEnum.NORMAL.getCode());
             }
+            String uniqueMd5Key = new StringBuilder()
+                    .append(spToutiaoRb.getTitle())
+                    .append(spToutiaoRb.getLink())
+                    .append(spToutiaoRb.getHotValue())
+                    .append(spToutiaoRb.getState())
+                    .append(spToutiaoRb.getQueryWord())
+                    .toString();
+            spToutiaoRb.setUniqueMd5(EncryptUtil.getInstance().getMd5(uniqueMd5Key));
             spToutiaoRbList.add(spToutiaoRb);
         });
 
         // 一条一条的插入
         spToutiaoRbList.forEach(rb -> {
-            spToutiaoRbMapper.insert(rb);
-            elasticsearchRestTemplate.save(rb);
+            try {
+                spToutiaoRbMapper.insert(rb);
+            } catch (DuplicateKeyException e) {
+                log.error("==========重复热榜新闻数据");
+            }
+
+            try {
+                elasticsearchRestTemplate.save(rb);
+            } catch (Exception e) {
+                log.error("==========插入es失败");
+            }
         });
 
     }

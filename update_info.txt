@@ -1,4 +1,4 @@
-版本号：v0.1.6
+版本号：v0.1.7
 新特性：
 1、新增xxl-job定时任务
 2、新增头条热榜爬虫
@@ -9,6 +9,7 @@ BUG修复：
 1、修复gateway无法启动的BUG
 2、解决feignClient同名导致无法启动的BUG
 3、修复re-job执行器没有暴露netty端口的问题
+4、爬虫数据表加入唯一索引
 
 优化：
 1、优化re-service-sys的pom依赖设置

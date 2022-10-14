@@ -1,5 +1,6 @@
 package cn.lingjiatong.re.job.crawler;
 
+import cn.lingjiatong.re.common.util.EncryptUtil;
 import cn.lingjiatong.re.common.util.JSONUtil;
 import cn.lingjiatong.re.common.util.UrlUtil;
 import cn.lingjiatong.re.job.bo.BaiduImageSpiderSearchConditionBO;
@@ -14,6 +15,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -69,7 +71,13 @@ public class BaiduImageSpiderProcessor  {
         int currentPageCount = 1;
         while (true) {
             List<WebElement> elements = webDriver.findElements(By.xpath("//*[@id=\"imgid\"]/div[" + currentPageCount + "]/ul/li/div[1]/div[2]/a/img"));
+            int i = 1;
             for (WebElement element : elements) {
+                String title = webDriver.findElement(By.xpath("//*[@id=\"imgid\"]/div[" + currentPageCount + "]/ul/li[" + i +  "]/a")).getAttribute("title");
+                i++;
+                if (StringUtils.isEmpty("title")) {
+                    title = "暂无";
+                }
                 String src = element.getAttribute("src");
                 Map<String, String> paramter = UrlUtil.getUrlQueryParamter(src);
                 log.info("==========src地址的查询参数列表：{}", JSONUtil.objectToString(paramter));
@@ -79,15 +87,30 @@ public class BaiduImageSpiderProcessor  {
                     spBaiduImg.setFormat(matcher.group(3));
                 }
                 spBaiduImg.setSrc(src);
-                if (paramter.get("height") != null) {
-                    spBaiduImg.setHeight(Integer.valueOf(paramter.get("height")));
+                String height = paramter.get("h");
+                String width = paramter.get("w");
+                if (!StringUtils.isEmpty(height)) {
+                    spBaiduImg.setHeight(Integer.valueOf(height));
                 }
-                if (paramter.get("width") != null) {
-                    spBaiduImg.setHeight(Integer.valueOf(paramter.get("width")));
+                if (!StringUtils.isEmpty(width)) {
+                    spBaiduImg.setWidth(Integer.valueOf(width));
                 }
+                spBaiduImg.setTitle(title);
                 spBaiduImg.setCreateTime(LocalDateTime.now(ZoneId.of("Asia/Shanghai")));
                 spBaiduImg.setModifyTime(LocalDateTime.now(ZoneId.of("Asia/Shanghai")));
-                spBaiduImgMapper.insert(spBaiduImg);
+                String uniqueMd5Key = new StringBuilder()
+                        .append(title)
+                        .append(src)
+                        .append(StringUtils.isEmpty(width) ? "NULL" : width)
+                        .append(StringUtils.isEmpty(height) ? "NULL" : height)
+                        .append(StringUtils.isEmpty(spBaiduImg.getFormat()) ? "NULL" : spBaiduImg.getFormat())
+                        .toString();
+                spBaiduImg.setUniqueMd5(EncryptUtil.getInstance().getMd5(uniqueMd5Key));
+                try {
+                    spBaiduImgMapper.insert(spBaiduImg);
+                } catch (DuplicateKeyException e) {
+                    log.error("==========重复图片");
+                }
             }
             ((JavascriptExecutor) webDriver).executeScript("window.scrollTo(0," + (currentPageCount * 100000) + ")");
             Thread.sleep(1000);
