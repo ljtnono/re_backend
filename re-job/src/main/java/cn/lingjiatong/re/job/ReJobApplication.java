@@ -1,7 +1,5 @@
 package cn.lingjiatong.re.job;
 
-import cn.lingjiatong.re.job.bo.BaiduImageSpiderSearchConditionBO;
-import cn.lingjiatong.re.job.crawler.BaiduImageSpiderProcessor;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
