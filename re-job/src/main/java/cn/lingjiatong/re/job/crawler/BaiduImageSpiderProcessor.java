@@ -48,7 +48,7 @@ public class BaiduImageSpiderProcessor  {
     }
 
     // 从src中获取format的正则表达式
-    public static final Pattern IMG_FORMAT_REX_PATTERN = Pattern.compile("http(s)?://(.*)&f=(.*)\\?", 0x08);
+    public static final Pattern IMG_FORMAT_REX_PATTERN = Pattern.compile("http(s)?://(.*)&f=(.*)\\?");
 
     public void process() throws InterruptedException {
         if (StringUtils.isEmpty(spiderParam)) {
