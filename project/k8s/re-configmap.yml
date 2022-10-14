@@ -16,7 +16,7 @@ data:
     server.port=8848
     spring.datasource.platform=mysql
     db.num=1
-    db.url.0=jdbc:mysql://mysql-extern-service:3306/nacos?characterEncoding=utf8&connectTimeout=1000&socketTimeout=3000&autoReconnect=true&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+    db.url.0=jdbc:mysql://mysql-extern-service/nacos?characterEncoding=utf8&connectTimeout=1000&socketTimeout=3000&autoReconnect=true&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
     db.user=root
     db.password=re#mysql2022
     nacos.cmdb.dumpTaskInterval=3600
