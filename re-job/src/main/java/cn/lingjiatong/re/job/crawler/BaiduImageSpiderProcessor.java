@@ -70,7 +70,7 @@ public class BaiduImageSpiderProcessor  {
         int currentPageCount = 1;
         while (true) {
             List<WebElement> imgElements = webDriver.findElements(By.xpath("//*[@id=\"imgid\"]/div[" + currentPageCount + "]/ul/li/div[1]/div[2]/a/img"));
-            List<WebElement> aElements = webDriver.findElements(By.xpath("//*[@id=\"imgid\"]/div[" + currentPageCount + "]/ul/li/a"));
+            List<WebElement> aElements = webDriver.findElements(By.xpath("//*[@id=\"imgid\"]/div/ul[" + currentPageCount + "]/li/a"));
             for (int i = 0; i < imgElements.size(); i++) {
                 WebElement imgElement = imgElements.get(i);
                 String title = aElements.get(i).getAttribute("title");
