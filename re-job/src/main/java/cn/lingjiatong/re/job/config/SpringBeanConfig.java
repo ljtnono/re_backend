@@ -50,10 +50,12 @@ public class SpringBeanConfig {
             ChromeOptions options = new ChromeOptions();
             // 禁用沙盒
             options.addArguments("no-sandbox");
-            options.setHeadless(Boolean.TRUE);
             // 禁止加载图片
 //            options.addArguments("blink-settings=imagesEnabled=false");
+            options.addArguments("--whitelisted-ips=\"\"");
+            options.addArguments("--disable-dev-shm-usage");
             // 无界面模式 在Linux中一定是不能唤起浏览器的（很重要）
+            options.setHeadless(Boolean.TRUE);
             webDriver = new ChromeDriver(options);
         }
         return webDriver;
