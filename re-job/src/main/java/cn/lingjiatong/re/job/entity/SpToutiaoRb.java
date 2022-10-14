@@ -64,6 +64,7 @@ public class SpToutiaoRb {
      * md5标识
      * 此字段由 title + link + hotValue + state + queryWord计算而成
      */
+    @Field(name = "uniqueMd5", type = FieldType.Text)
     private String uniqueMd5;
 
     /**
