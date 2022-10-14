@@ -1,5 +1,6 @@
 package cn.lingjiatong.re.job.crawler;
 
+import cn.lingjiatong.re.common.util.JSONUtil;
 import cn.lingjiatong.re.common.util.UrlUtil;
 import cn.lingjiatong.re.job.bo.BaiduImageSpiderSearchConditionBO;
 import cn.lingjiatong.re.job.entity.SpBaiduImg;
@@ -19,6 +20,7 @@ import org.springframework.util.StringUtils;
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -54,8 +56,10 @@ public class BaiduImageSpiderProcessor  {
         if (StringUtils.isEmpty(spiderParam)) {
             spiderParam = BaiduImageSpiderSearchConditionBO.ONLY_SEARCH_CONDITION_PREFIX + "美图";
         }
+        String u = URL + spiderParam;
+        log.info("==========完整请求URL：{}", u);
         // 发起请求
-        webDriver.get(URL + spiderParam);
+        webDriver.get(u);
         Thread.sleep(2000);
         int oldPageCount = webDriver.findElements(By.xpath("//*[@id=\"imgid\"]/div")).size();
         if (0 == oldPageCount) {
@@ -68,14 +72,19 @@ public class BaiduImageSpiderProcessor  {
             for (WebElement element : elements) {
                 String src = element.getAttribute("src");
                 Map<String, String> paramter = UrlUtil.getUrlQueryParamter(src);
+                log.info("==========src地址的查询参数列表：{}", JSONUtil.objectToString(paramter));
                 SpBaiduImg spBaiduImg = new SpBaiduImg();
                 Matcher matcher = IMG_FORMAT_REX_PATTERN.matcher(src);
                 if (matcher.find()) {
                     spBaiduImg.setFormat(matcher.group(3));
                 }
                 spBaiduImg.setSrc(src);
-                spBaiduImg.setHeight(Integer.valueOf(paramter.get("height")));
-                spBaiduImg.setWidth(Integer.valueOf(paramter.get("width")));
+                if (paramter.get("height") != null) {
+                    spBaiduImg.setHeight(Integer.valueOf(paramter.get("height")));
+                }
+                if (paramter.get("width") != null) {
+                    spBaiduImg.setHeight(Integer.valueOf(paramter.get("width")));
+                }
                 spBaiduImg.setCreateTime(LocalDateTime.now(ZoneId.of("Asia/Shanghai")));
                 spBaiduImg.setModifyTime(LocalDateTime.now(ZoneId.of("Asia/Shanghai")));
                 spBaiduImgMapper.insert(spBaiduImg);
