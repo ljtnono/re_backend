@@ -1,4 +1,4 @@
-FROM bitnami/java:11
+FROM ljtnono/java11-chrome-headless:latest
 MAINTAINER lingjiatong 935188400@qq.com
 COPY target/re-job.jar /
 RUN chmod 755 /re-job.jar

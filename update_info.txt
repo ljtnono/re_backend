@@ -1,8 +1,9 @@
-版本号：v0.1.5
+版本号：v0.1.6
 新特性：
 1、新增xxl-job定时任务
 2、新增头条热榜爬虫
 3、新增百度图片爬虫
+4、re-job镜像改为ljtnono/java11-chrome-headless
 
 BUG修复：
 1、修复gateway无法启动的BUG
