@@ -22,7 +22,7 @@ import java.util.List;
  */
 @Slf4j
 @RestController
-public class FrontendFrontendWebsiteConfigController implements FrontendWebsiteConfigFeignClient {
+public class FrontendWebsiteConfigController implements FrontendWebsiteConfigFeignClient {
 
     @Autowired
     private FrontendWebsiteConfigService frontendWebsiteConfigService;

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.lingjiatong.re.service.sys.mapper.SysNoticeMapper">
+    <!-- ********************************结果映射******************************** -->
+
+
+
+    <!-- ********************************新增类接口******************************** -->
+
+    <!-- ********************************删除类接口******************************** -->
+
+    <!-- ********************************修改类接口******************************** -->
+
+    <!-- ********************************查询类接口******************************** -->
+
+    <!-- 根据时间获取通知消息 -->
+    <select id="findNoticeByDateTime" resultType="cn.lingjiatong.re.service.sys.entity.SysNotice">
+        SELECT
+            title,
+            link,
+            type,
+            news_state,
+            news_date
+        FROM sys_notice
+        <where>
+            <if test="startTime != null and startTime != ''">
+                start_time <= #{startTime, jdbcType=VARCHAR}
+                AND
+                end_time >= #{startTime,jdbcType=VARCHAR}
+            </if>
+        </where>
+        ORDER BY type ASC
+        LIMIT 50
+    </select>
+</mapper>

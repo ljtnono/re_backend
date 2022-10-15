@@ -24,6 +24,7 @@ public class SpringBeanConfig {
     // 浏览器
     @Bean(name = "chromeWebDriver")
     public WebDriver webDriver() {
+        // TODO 后期改为使用池化技术
         // 设置系统环境变量
         String osName = System.getProperty("os.name");
         WebDriver webDriver;
