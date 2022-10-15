@@ -1,10 +1,11 @@
-版本号：v0.1.9
+版本号：v0.2.0
 新特性：
 1、新增xxl-job定时任务
 2、新增头条热榜爬虫
 3、新增百度图片爬虫
 4、re-job镜像改为ljtnono/java11-chrome-headless
 5、新增获取通知消息接口
+6、新增获取友情链接接口
 
 BUG修复：
 1、修复gateway无法启动的BUG
@@ -17,3 +18,4 @@ BUG修复：
 1、优化re-service-sys的pom依赖设置
 2、首页接口/index改为/sy
 3、re-job的配置文件改为放在resources的log文件夹下
+4、前端消息表加入操作用户字段

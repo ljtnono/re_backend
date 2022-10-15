@@ -7,7 +7,7 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 
 /**
- * 系统设置微服务
+ * 系统相关模块微服务
  *
  * @author Ling, Jiatong
  * Date: 2022/9/17 17:41

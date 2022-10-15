@@ -1,5 +1,6 @@
 package cn.lingjiatong.re.service.sys.service;
 
+import cn.lingjiatong.re.common.constant.UserConstant;
 import cn.lingjiatong.re.common.util.DateUtil;
 import cn.lingjiatong.re.service.sys.api.vo.FrontendNoticeListVO;
 import cn.lingjiatong.re.service.sys.constant.SysNoticeConstant;
@@ -10,16 +11,13 @@ import cn.lingjiatong.re.service.sys.mapper.SpToutiaoRbMapper;
 import cn.lingjiatong.re.service.sys.mapper.SysNoticeMapper;
 import com.alibaba.nacos.shaded.com.google.common.collect.Lists;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import static cn.lingjiatong.re.service.sys.constant.SysNoticeConstant.NO_NOTICE_MESSAGE_DEFAULT_NEWS_ITEM_COUNT;
@@ -30,6 +28,7 @@ import static cn.lingjiatong.re.service.sys.constant.SysNoticeConstant.NO_NOTICE
  * @author Ling, Jiatong
  * Date: 2022/10/15 14:21
  */
+@Slf4j
 @Service
 public class FrontendNoticeService {
 
@@ -59,9 +58,9 @@ public class FrontendNoticeService {
 
         // 当消息不存在时，返回默认消息 + 10 条今天的热榜消息
         if (CollectionUtils.isEmpty(noticeByDateTime)) {
-            FrontendNoticeListVO notNoticeMessageVO = new FrontendNoticeListVO();
-            notNoticeMessageVO.setTitle(SysNoticeConstant.NO_NOTICE_MESSAGE);
-            notNoticeMessageVO.setType(SysNoticeTypeEnum.NORMAL_NOTICE.getCode());
+            FrontendNoticeListVO noNoticeMessageVO = new FrontendNoticeListVO();
+            noNoticeMessageVO.setTitle(SysNoticeConstant.NO_NOTICE_MESSAGE);
+            noNoticeMessageVO.setType(SysNoticeTypeEnum.NORMAL_NOTICE.getCode());
 
             List<SpToutiaoRb> spToutiaoRbList = spToutiaoRbMapper.selectList(new LambdaQueryWrapper<SpToutiaoRb>()
                     .select(SpToutiaoRb::getTitle, SpToutiaoRb::getLink, SpToutiaoRb::getState, SpToutiaoRb::getCreateTime)
@@ -84,18 +83,23 @@ public class FrontendNoticeService {
                 sysNotice.setTitle(rb.getTitle());
                 sysNotice.setType(SysNoticeTypeEnum.NEWS_NOTICE.getCode());
                 // 设置为当前时间
-                sysNotice.setStartTime(LocalDateTime.now(ZoneId.of("Asia/Shanghai")));
+                sysNotice.setStartTime(DateUtil.getLocalDateTimeNow());
                 // 默认展示3天
-                sysNotice.setEndTime(LocalDateTime.now(ZoneId.of("Asia/Shanghai")).plusDays(3));
+                sysNotice.setEndTime(DateUtil.getLocalDateTimeNow().plusDays(3));
                 sysNotice.setNewsDate(LocalDate.from(rb.getCreateTime()));
                 sysNotice.setNewsState(rb.getState());
-                sysNotice.setCreateTime(LocalDateTime.now(ZoneId.of("Asia/Shanghai")));
-                sysNotice.setModifyTime(LocalDateTime.now(ZoneId.of("Asia/Shanghai")));
-                // 这里理论上不会出现重复插入数据，所以不捕获异常
-                sysNoticeMapper.insert(sysNotice);
+                sysNotice.setCreateTime(DateUtil.getLocalDateTimeNow());
+                sysNotice.setModifyTime(DateUtil.getLocalDateTimeNow());
+                // 默认为系统操作用户
+                sysNotice.setOptUser(UserConstant.SYSTEM_USER);
+                try {
+                    sysNoticeMapper.insert(sysNotice);
+                } catch (DuplicateKeyException e) {
+                    log.error("==========重复的通知，不插入");
+                }
             });
 
-            resultVOList.add(notNoticeMessageVO);
+            resultVOList.add(noNoticeMessageVO);
             return resultVOList;
         }
 

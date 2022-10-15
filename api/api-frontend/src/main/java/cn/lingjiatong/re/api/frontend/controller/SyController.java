@@ -1,11 +1,14 @@
 package cn.lingjiatong.re.api.frontend.controller;
 
 import cn.lingjiatong.re.common.ResultVO;
+import cn.lingjiatong.re.service.sys.api.client.FrontendFriendLinkFeignClient;
 import cn.lingjiatong.re.service.sys.api.client.FrontendNoticeFeignClient;
 import cn.lingjiatong.re.service.sys.api.client.FrontendWebsiteConfigFeignClient;
 import cn.lingjiatong.re.service.sys.api.dto.FrontendWebsiteConfigFindDTO;
+import cn.lingjiatong.re.service.sys.api.vo.FrontendFriendLinkListVO;
 import cn.lingjiatong.re.service.sys.api.vo.FrontendNoticeListVO;
 import cn.lingjiatong.re.service.sys.api.vo.FrontendWebsiteConfigAddVO;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,6 +32,8 @@ public class SyController {
     private FrontendWebsiteConfigFeignClient frontendWebsiteConfigFeignClient;
     @Autowired
     private FrontendNoticeFeignClient frontendNoticeFeignClient;
+    @Autowired
+    private FrontendFriendLinkFeignClient frontendFriendLinkFeignClient;
 
     /**
      * 获取前端站点设置
@@ -37,6 +42,7 @@ public class SyController {
      * @return 获取前端站点配置VO对象
      */
     @GetMapping("/frontendWebsiteConfig")
+    @ApiOperation(value = "获取前端站点设置", httpMethod = "GET")
     public ResultVO<FrontendWebsiteConfigAddVO> findWebsiteConfig(FrontendWebsiteConfigFindDTO dto) {
         log.info("==========获取前端站点设置接口，参数：{}", dto);
         return frontendWebsiteConfigFeignClient.findFrontendWebsiteConfig(dto);
@@ -48,9 +54,21 @@ public class SyController {
      * @return 前端通知列表VO对象列表
      */
     @GetMapping("/noticeList")
+    @ApiOperation(value = "获取前端消息通知列表", httpMethod = "GET")
     public ResultVO<List<FrontendNoticeListVO>> findNoticeList() {
         log.info("==========获取前端通知消息列表");
         return frontendNoticeFeignClient.findFrontendNoticeList();
     }
 
+    /**
+     * 获取前端友情链接列表
+     *
+     * @return 前端友情链接列表VO对象列表
+     */
+    @GetMapping("/friendLinkList")
+    @ApiOperation(value = "获取前端友情链接列表", httpMethod = "GET")
+    public ResultVO<List<FrontendFriendLinkListVO>> findFriendLinkList() {
+        log.info("==========获取前端友情链接列表");
+        return frontendFriendLinkFeignClient.findFrontendNoticeList();
+    }
 }

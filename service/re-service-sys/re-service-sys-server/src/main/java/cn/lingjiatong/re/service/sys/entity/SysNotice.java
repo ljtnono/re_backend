@@ -75,4 +75,9 @@ public class SysNotice {
      */
     private LocalDateTime modifyTime;
 
+    /**
+     * 操作用户
+     */
+    private String optUser;
+
 }

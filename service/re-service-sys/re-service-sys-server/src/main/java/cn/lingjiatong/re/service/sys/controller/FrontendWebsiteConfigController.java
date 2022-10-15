@@ -30,14 +30,12 @@ public class FrontendWebsiteConfigController implements FrontendWebsiteConfigFei
     @Override
     @GetMapping("/api/v1/frontendWebsiteConfig")
     public ResultVO<FrontendWebsiteConfigAddVO> findFrontendWebsiteConfig(FrontendWebsiteConfigFindDTO dto) {
-        log.info("==========获取前端站点设置接口，参数：{}", dto);
         return ResultVO.success(frontendWebsiteConfigService.findFrontendWebsiteConfig(dto));
     }
 
     @Override
     @PostMapping("/api/v1/frontendWebsiteConfig")
     public ResultVO<?> addFrontendWebsiteConfig(List<FrontendWebsiteConfigAddDTO> list) {
-        log.info("==========新增前端站点设置接口，参数：{}", list);
         frontendWebsiteConfigService.addFrontendWebsiteConfig(list);
         return ResultVO.success();
     }

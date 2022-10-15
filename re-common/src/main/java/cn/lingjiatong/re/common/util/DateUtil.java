@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.Calendar;
 import java.util.Date;
@@ -31,6 +32,16 @@ public class DateUtil {
         simpleDateFormat.setTimeZone(TimeZone.getTimeZone("Asia/Shanghai"));
         return simpleDateFormat.format(date);
     }
+
+    /**
+     * 获取当前时间的LocalDateTime对象，默认为Asia/Shanghai时区
+     *
+     * @return LocalDateTime对象
+     */
+    public static LocalDateTime getLocalDateTimeNow() {
+        return LocalDateTime.now(ZoneId.of("Asia/Shanghai"));
+    }
+
 
     /**
      * 根据时间获取时间字符串

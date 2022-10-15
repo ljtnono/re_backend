@@ -1,9 +1,9 @@
 package cn.lingjiatong.re.service.sys.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
-import io.swagger.annotations.ApiModel;
 import lombok.Data;
-import lombok.ToString;
+
+import java.time.LocalDateTime;
 
 /**
  * 系统友情链接实体
@@ -12,11 +12,58 @@ import lombok.ToString;
  * Date: 2022/10/11 00:26
  */
 @Data
-@ToString(callSuper = true)
 @TableName("sys_friend_link")
-@ApiModel(description = "系统友情链接实体类")
 public class SysFriendLink {
 
+    /**
+     * 主键id
+     */
+    private Integer id;
 
+    /**
+     * 友情链接名
+     */
+    private String name;
 
+    /**
+     * 链接地址
+     */
+    private String url;
+
+    /**
+     * 链接类型
+     * 1 官方网站
+     * 2 个人网站
+     */
+    private Byte type;
+
+    /**
+     * 链接主体
+     */
+    private String master;
+
+    /**
+     * 链接主体电子邮箱
+     */
+    private String masterEmail;
+
+    /**
+     * 网站图标标志地址
+     */
+    private String faviconUrl;
+
+    /**
+     * 创建时间
+     */
+    private LocalDateTime createTime;
+
+    /**
+     * 最后修改时间
+     */
+    private LocalDateTime modifyTime;
+
+    /**
+     * 操作用户
+     */
+    private String optUser;
 }
