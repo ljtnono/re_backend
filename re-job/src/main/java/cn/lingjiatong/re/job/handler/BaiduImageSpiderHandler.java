@@ -24,7 +24,7 @@ public class BaiduImageSpiderHandler {
     @XxlJob("baiduImageSpider")
     public void run() throws InterruptedException {
         String jobParam = XxlJobHelper.getJobParam();
-//        baiduImageSpiderProcessor.setSpiderParam(jobParam);
+        baiduImageSpiderProcessor.setSpiderParam(jobParam);
         log.info("==========开始执行百度图片爬虫，当前时间：{}", DateUtil.getNowString("yyyy-MM-dd HH:mm:ss"));
         baiduImageSpiderProcessor.process();
         log.info("==========百度图片爬虫执行完毕，当前时间：{}", DateUtil.getNowString("yyyy-MM-dd HH:mm:ss"));

@@ -61,13 +61,6 @@ public class SpToutiaoRb {
     private String queryWord;
 
     /**
-     * md5标识
-     * 此字段由 title + link + hotValue + state + queryWord计算而成
-     */
-    @Field(name = "uniqueMd5", type = FieldType.Text)
-    private String uniqueMd5;
-
-    /**
      * 记录创建时间
      */
     @Field(name = "createTime", type = FieldType.Date, format = DateFormat.date_hour_minute_second)
