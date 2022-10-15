@@ -89,6 +89,8 @@ public class FrontendNoticeService {
                 sysNotice.setEndTime(LocalDateTime.now(ZoneId.of("Asia/Shanghai")).plusDays(3));
                 sysNotice.setNewsDate(LocalDate.from(rb.getCreateTime()));
                 sysNotice.setNewsState(rb.getState());
+                sysNotice.setCreateTime(LocalDateTime.now(ZoneId.of("Asia/Shanghai")));
+                sysNotice.setModifyTime(LocalDateTime.now(ZoneId.of("Asia/Shanghai")));
                 // 这里理论上不会出现重复插入数据，所以不捕获异常
                 sysNoticeMapper.insert(sysNotice);
             });
