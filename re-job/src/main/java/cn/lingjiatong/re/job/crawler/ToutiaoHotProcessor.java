@@ -76,8 +76,6 @@ public class ToutiaoHotProcessor implements PageProcessor {
             } else {
                 spToutiaoRb.setState(ToutiaoRbEnum.NORMAL.getCode());
             }
-
-            spToutiaoRb.setUniqueMd5(EncryptUtil.getInstance().getMd5(spToutiaoRb.getTitle()));
             spToutiaoRbList.add(spToutiaoRb);
         });
 
