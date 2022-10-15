@@ -67,6 +67,7 @@ public class FrontendNoticeService {
                     .last("LIMIT " + NO_NOTICE_MESSAGE_DEFAULT_NEWS_ITEM_COUNT)
             );
 
+            // TODO 将这些新闻消息插入sys_notice表
             List<FrontendNoticeListVO> resultVOList =  Lists.newArrayList();
             spToutiaoRbList.forEach(rb -> {
                 FrontendNoticeListVO v = new FrontendNoticeListVO();

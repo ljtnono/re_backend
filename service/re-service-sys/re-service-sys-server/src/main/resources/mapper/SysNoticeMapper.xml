@@ -24,9 +24,9 @@
         FROM sys_notice
         <where>
             <if test="startTime != null and startTime != ''">
-                start_time <= #{startTime, jdbcType=VARCHAR}
+                start_time <![CDATA[<=]]> #{startTime, jdbcType=VARCHAR}
                 AND
-                end_time >= #{startTime,jdbcType=VARCHAR}
+                end_time <![CDATA[>=]]> #{startTime,jdbcType=VARCHAR}
             </if>
         </where>
         ORDER BY type ASC
