@@ -16,6 +16,8 @@ import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -67,14 +69,28 @@ public class FrontendNoticeService {
                     .last("LIMIT " + NO_NOTICE_MESSAGE_DEFAULT_NEWS_ITEM_COUNT)
             );
 
-            // TODO 将这些新闻消息插入sys_notice表
+            // 将这些新闻消息插入sys_notice表，
             List<FrontendNoticeListVO> resultVOList =  Lists.newArrayList();
             spToutiaoRbList.forEach(rb -> {
                 FrontendNoticeListVO v = new FrontendNoticeListVO();
+                SysNotice sysNotice = new SysNotice();
                 v.setTitle(rb.getTitle());
                 v.setLink(rb.getLink());
                 v.setNewsDate(LocalDate.from(rb.getCreateTime()));
                 v.setNewsState(rb.getState());
+                resultVOList.add(v);
+
+                sysNotice.setLink(rb.getLink());
+                sysNotice.setTitle(rb.getTitle());
+                sysNotice.setType(SysNoticeTypeEnum.NEWS_NOTICE.getCode());
+                // 设置为当前时间
+                sysNotice.setStartTime(LocalDateTime.now(ZoneId.of("Asia/Shanghai")));
+                // 默认展示3天
+                sysNotice.setEndTime(LocalDateTime.now(ZoneId.of("Asia/Shanghai")).plusDays(3));
+                sysNotice.setNewsDate(LocalDate.from(rb.getCreateTime()));
+                sysNotice.setNewsState(rb.getState());
+                // 这里理论上不会出现重复插入数据，所以不捕获异常
+                sysNoticeMapper.insert(sysNotice);
             });
 
             resultVOList.add(notNoticeMessageVO);
