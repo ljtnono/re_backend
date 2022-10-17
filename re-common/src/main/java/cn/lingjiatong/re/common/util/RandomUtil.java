@@ -1,8 +1,8 @@
 package cn.lingjiatong.re.common.util;
 
-import cn.hutool.core.lang.UUID;
 
 import java.util.Random;
+import java.util.UUID;
 
 /**
  * 随机工具类
@@ -99,15 +99,6 @@ public class RandomUtil {
      */
     public String generateUUID() {
         return UUID.randomUUID().toString();
-    }
-
-    /**
-     * 生成简单UUID
-     *
-     * @return UUID字符串
-     */
-    public String generateSimpleUUID() {
-        return UUID.randomUUID().toString(true);
     }
 
 }

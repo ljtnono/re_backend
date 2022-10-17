@@ -82,7 +82,7 @@ public class BackendArticleServcie {
         String redisKey = RedisCacheKeyEnum.ARTICLE_DRAFT.getValue()
                 .replace("draftTitle", draftTitle)
                 .replace("timestamp", String.valueOf(System.currentTimeMillis()))
-                .replace("uuid", RandomUtil.getInstance().generateSimpleUUID());
+                .replace("uuid", RandomUtil.getInstance().generateUUID());
 
         // 不设置过期时间
         redisUtil.setCacheObject(redisKey, markdownContent);
