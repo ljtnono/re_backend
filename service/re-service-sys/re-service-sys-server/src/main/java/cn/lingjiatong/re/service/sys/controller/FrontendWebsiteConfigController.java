@@ -39,4 +39,11 @@ public class FrontendWebsiteConfigController implements FrontendWebsiteConfigFei
         frontendWebsiteConfigService.addFrontendWebsiteConfig(list);
         return ResultVO.success();
     }
+
+    @Override
+    @GetMapping("/api/v1/frontendSwiperImageList")
+    public ResultVO<List<String>> getFrontendSwiperImageList() {
+        return ResultVO.success(frontendWebsiteConfigService.getFrontendSwiperImageList());
+    }
+
 }

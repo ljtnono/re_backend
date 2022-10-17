@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: re-service-article-server
+  profiles:
+    active: @profiles.active@
+  cloud:
+    nacos:
+      config:
+        namespace: f2cc4448-831f-41da-9aa8-b89d4a81d90c
+        server-addr: @nacos-server-addr@
+        file-extension: yaml
+      discovery:
+        namespace: f2cc4448-831f-41da-9aa8-b89d4a81d90c
+        server-addr: @nacos-server-addr@

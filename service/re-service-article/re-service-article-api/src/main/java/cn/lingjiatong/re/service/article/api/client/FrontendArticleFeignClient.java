@@ -8,8 +8,7 @@ import org.springframework.cloud.openfeign.FeignClient;
  * @author Ling, Jiatong
  * Date: 2022/10/11 00:22
  */
-@FeignClient(name = "re-service-article-server", path = "/article")
+@FeignClient(name = "re-service-article-server", path = "/article", contextId = "FrontendArticleFeignClient")
 public interface FrontendArticleFeignClient {
-
 
 }

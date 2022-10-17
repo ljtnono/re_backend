@@ -40,4 +40,13 @@ public interface FrontendWebsiteConfigFeignClient {
     @PostMapping("/api/v1/frontendWebsiteConfig")
     @ApiOperation(value = "新增前端站点设置接口", httpMethod = "POST")
     ResultVO<?> addFrontendWebsiteConfig(@SpringQueryMap List<FrontendWebsiteConfigAddDTO> list);
+
+    /**
+     * 获取前端swiper图片列表
+     *
+     * @return 图片url列表
+     */
+    @GetMapping("/api/v1/frontendSwiperImageList")
+    @ApiOperation("获取前端swpier图片列表")
+    ResultVO<List<String>> getFrontendSwiperImageList();
 }

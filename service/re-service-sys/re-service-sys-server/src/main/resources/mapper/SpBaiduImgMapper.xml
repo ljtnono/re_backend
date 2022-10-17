@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.lingjiatong.re.service.sys.mapper.SpBaiduImgMapper">
+    <!-- ********************************结果映射******************************** -->
+
+
+
+    <!-- ********************************新增类接口******************************** -->
+
+    <!-- ********************************删除类接口******************************** -->
+
+    <!-- ********************************修改类接口******************************** -->
+
+    <!-- ********************************查询类接口******************************** -->
+
+
+    <!-- 获取前端swpier轮播图列表 -->
+    <select id="getFrontendSwiperImageList" resultType="java.lang.String">
+        SELECT src
+        FROM sp_baidu_img
+        WHERE width IS NOT NULL
+          AND height IS NOT NULL
+          AND (width / height) <![CDATA[>=]]> 1.8
+          AND (width / height) <![CDATA[<=]]> 2.0
+        LIMIT 10
+    </select>
+</mapper>

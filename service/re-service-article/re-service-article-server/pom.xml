@@ -18,4 +18,92 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
+    <dependencies>
+        <!-- 引入系统设置相关接口 -->
+        <dependency>
+            <groupId>cn.lingjiatong</groupId>
+            <artifactId>re-service-article-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <!-- re-common -->
+        <dependency>
+            <groupId>cn.lingjiatong</groupId>
+            <artifactId>re-common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <!-- nacos服务发现 -->
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
+        </dependency>
+        <!-- nacos配置中心 -->
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
+        </dependency>
+        <!-- redis -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
+        <!-- elasticsearch -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-elasticsearch</artifactId>
+        </dependency>
+        <!-- commons-pool2 -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-pool2</artifactId>
+        </dependency>
+    </dependencies>
+
+    <profiles>
+        <profile>
+            <id>dev</id>
+            <properties>
+                <profiles.active>dev</profiles.active>
+            </properties>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+        </profile>
+        <profile>
+            <id>prd</id>
+            <properties>
+                <profiles.active>prd</profiles.active>
+            </properties>
+        </profile>
+    </profiles>
+    <build>
+        <finalName>re-service-article-server</finalName>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+        <plugins>
+            <!-- 打包配置 -->
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <!-- 指定全局唯一入口 -->
+                    <mainClass>cn.lingjiatong.re.service.article.ReArticleServiceServerApplication</mainClass>
+                    <layout>ZIP</layout>
+                    <fork>true</fork>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <!-- 依赖打入jar包 -->
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
 </project>

@@ -9,9 +9,12 @@ import cn.lingjiatong.re.service.sys.api.vo.FrontendWebsiteConfigAddVO;
 import cn.lingjiatong.re.service.sys.constant.SysConfigConstant;
 import cn.lingjiatong.re.service.sys.constant.SysConfigErrorMessageConstant;
 import cn.lingjiatong.re.service.sys.constant.SysConfigRegexConstant;
+import cn.lingjiatong.re.service.sys.entity.SpBaiduImg;
 import cn.lingjiatong.re.service.sys.entity.SysConfig;
+import cn.lingjiatong.re.service.sys.mapper.SpBaiduImgMapper;
 import cn.lingjiatong.re.service.sys.mapper.SysConfigMapper;
 import com.alibaba.nacos.shaded.com.google.common.collect.Lists;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +38,8 @@ public class FrontendWebsiteConfigService {
 
     @Autowired
     private SysConfigMapper sysConfigMapper;
+    @Autowired
+    private SpBaiduImgMapper spBaiduImgMapper;
 
     // ********************************新增类接口********************************
 
@@ -136,6 +141,17 @@ public class FrontendWebsiteConfigService {
         });
         vo.setValues(map);
         return vo;
+    }
+
+    /**
+     * 获取前端swpier轮播图图片列表
+     * 默认获取10张长宽比在 1.8 - 2.0之间的图片
+     *
+     * TODO 此值应该由后台接口控制，目前实现为随机获取百度图片表中的一些图片
+     * @return 图片url列表
+     */
+    public List<String> getFrontendSwiperImageList() {
+        return spBaiduImgMapper.getFrontendSwiperImageList();
     }
 
     // ********************************私有函数********************************

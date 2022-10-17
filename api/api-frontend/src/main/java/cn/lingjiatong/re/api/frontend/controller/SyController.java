@@ -71,4 +71,16 @@ public class SyController {
         log.info("==========获取前端友情链接列表");
         return frontendFriendLinkFeignClient.findFrontendNoticeList();
     }
+
+    /**
+     * 获取前端swiper图片列表
+     *
+     * @return 前端友情链接列表VO对象列表
+     */
+    @GetMapping("/swiperImageList")
+    @ApiOperation(value = "获取前端swiper图片列表", httpMethod = "GET")
+    public ResultVO<List<String>> swiperImageList() {
+        log.info("==========获取前端swiper图片列表");
+        return frontendWebsiteConfigFeignClient.getFrontendSwiperImageList();
+    }
 }
