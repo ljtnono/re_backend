@@ -16,6 +16,11 @@ public enum ErrorEnum {
      */
     REQUEST_PARAM_ERROR(400001, "请求参数有误"),
 
+
+    /** 500 Bad Request */
+
+    MINIO_SERVER_ERROR(500001, "图片服务器异常，上传失败"),
+
     ;
 
     /**

@@ -35,7 +35,7 @@
 		<mysql-connector.version>8.0.26</mysql-connector.version>
 		<xxl-job.version>2.3.0</xxl-job.version>
 		<webmagic.version>0.7.5</webmagic.version>
-		<minio.version>7.0.2</minio.version>
+		<minio.version>8.2.2</minio.version>
 		<selenium-java.version>3.141.59</selenium-java.version>
 		<!-- nacos配置 -->
 		<nacos-server-addr>www.lingjiatong.cn:30048</nacos-server-addr>
