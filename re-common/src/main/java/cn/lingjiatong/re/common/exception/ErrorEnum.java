@@ -10,16 +10,20 @@ public enum ErrorEnum {
 
 
     /** 400 Bad Request */
-
-    /**
-     * 请求参数为空 ｜ 请求参数格式有误
-     */
+    // 请求参数为空 ｜ 请求参数格式有误
     REQUEST_PARAM_ERROR(400001, "请求参数有误"),
+    // 参数值不在合法的范围内
+    ILLEGAL_PARAM_ERROR(400002, "异常的参数值"),
 
 
     /** 500 Bad Request */
-
+    // MINIO服务器出现异常
     MINIO_SERVER_ERROR(500001, "图片服务器异常，上传失败"),
+
+
+
+    /** 600 业务类异常 */
+    SAVE_ARTICLE_ERROR(600001, "保存文章失败")
 
     ;
 

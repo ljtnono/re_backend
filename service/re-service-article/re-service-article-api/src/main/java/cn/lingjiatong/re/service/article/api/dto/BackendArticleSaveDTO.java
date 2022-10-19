@@ -4,6 +4,8 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.util.List;
+
 /**
  * 后台保存文章接口DTO对象
  *
@@ -86,4 +88,10 @@ public class BackendArticleSaveDTO {
      */
     @ApiModelProperty("文章封面图片url")
     private String coverUrl;
+
+    /**
+     * 文章标签列表
+     */
+    @ApiModelProperty("文章标签")
+    private List<String> tagList;
 }

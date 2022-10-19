@@ -28,8 +28,9 @@ public class BackendArticleController {
      * @param dto 后台保存文章接口DTO对象
      */
     @PostMapping("/api/v1/saveArticle")
-    public void saveArticle(@RequestBody BackendArticleSaveDTO dto) {
+    public ResultVO<?> saveArticle(@RequestBody BackendArticleSaveDTO dto) {
         backendArticleServcie.saveArticle(dto);
+        return ResultVO.success();
     }
 
     /**
@@ -43,8 +44,6 @@ public class BackendArticleController {
         return ResultVO.success(backendArticleServcie.saveArticleCoverImage(title, multipartFile));
     }
 
-
-
     /**
      * 后端保存文章草稿
      * 默认保存到redis中
@@ -53,8 +52,9 @@ public class BackendArticleController {
      * @param markdownContent 文章草稿markdown内容
      */
     @PostMapping("/api/v1/saveDraftArticle")
-    public void saveDraftArticle(String draftTitle, String markdownContent) {
+    public ResultVO<?> saveDraftArticle(String draftTitle, String markdownContent) {
         backendArticleServcie.saveDraftArticle(draftTitle, markdownContent);
+        return ResultVO.success();
     }
 
 }
