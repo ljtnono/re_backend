@@ -7,4 +7,4 @@ COPY target/re-service-sys-server.jar /
 RUN chmod 755 /re-service-sys-server.jar && \
     ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && echo 'Asia/Shanghai' >/etc/timezone
 EXPOSE 8080
-CMD ["java", "${JAVA_OPTS}", "-jar", "/re-service-sys-server.jar"]
+CMD ["java", "-jar", "${JAVA_OPTS}", "/re-service-sys-server.jar"]

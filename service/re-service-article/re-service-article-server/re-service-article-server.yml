@@ -39,7 +39,7 @@ spec:
   ports:
     - port: 8080
       name: web
-      nodePort: 30086
+      nodePort: 30088
       targetPort: 8080
   selector:
     app: re-service-article-server
