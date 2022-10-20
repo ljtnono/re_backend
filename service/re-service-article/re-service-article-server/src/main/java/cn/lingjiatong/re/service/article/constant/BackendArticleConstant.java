@@ -13,11 +13,12 @@ public interface BackendArticleConstant {
 
     // 默认封面图片
     String DEFAULT_COVER_URL = "http://f.lingjiatong.cn:30090/rootelement/sys/default_article_cover.gif";
-
     // 校验标题的正则表达式
     Pattern TITLE_REGEX = Pattern.compile("^[\\u4e00-\\u9fa5\\S\\s,.，。‘’“”'()（）]{10,100}$");
     // 校验简介的正则表达式
     Pattern SUMMARY_REGEX = Pattern.compile("^[\\u4e00-\\u9fa5\\S\\s,.，。‘’“”'()（）]{0,200}$");
+    // 校验标签名的正则表达式
+    Pattern TAG_NAME_REGEX = Pattern.compile("^[\\u4e00-\\u9fa5\\S]{2,20}$");
 
     // 推荐
     Byte ARTICLE_RECOMMEND = 1;

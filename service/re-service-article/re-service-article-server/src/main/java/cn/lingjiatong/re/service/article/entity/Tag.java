@@ -1,6 +1,7 @@
 package cn.lingjiatong.re.service.article.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
@@ -42,5 +43,11 @@ public class Tag {
      * 操作用户
      */
     private String optUser;
+
+    /**
+     * 是否删除 0 正常 1 删除
+     */
+    @TableField("is_deleted")
+    private Byte delete;
 
 }

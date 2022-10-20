@@ -24,6 +24,7 @@ public interface BackendArticleErrorMessageConstant {
     String ARTICLE_CATEGORY_NOT_EXIST_ERROR_MESSAGE = "文章分类不存在";
     // 当文章是转载类型时，请填写转载信息
     String NO_TRANSPORT_INFO_ERROR_MESSAGE = "转载文章需附加转载说明";
-
+    // 标签名格式错误消息
+    String TAG_NAME_FORMAT_ERROR_MESSAGE = "标签名为2-20个字符";
 
 }

@@ -13,11 +13,11 @@ import cn.lingjiatong.re.service.article.api.dto.BackendArticleSaveDTO;
 import cn.lingjiatong.re.service.article.constant.BackendArticleConstant;
 import cn.lingjiatong.re.service.article.constant.BackendArticleErrorMessageConstant;
 import cn.lingjiatong.re.service.article.entity.Article;
-import cn.lingjiatong.re.service.article.entity.Category;
+import cn.lingjiatong.re.service.article.entity.ArticleEs;
 import cn.lingjiatong.re.service.article.mapper.ArticleMapper;
-import io.minio.ObjectWriteResponse;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
 import org.springframework.stereotype.Service;
@@ -27,7 +27,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
-import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -51,6 +51,8 @@ public class BackendArticleServcie {
     private ElasticsearchRestTemplate elasticsearchRestTemplate;
     @Autowired
     private BackendCategoryService backendCategoryService;
+    @Autowired
+    private BackendTagService backendTagService;
 
     // ********************************新增类接口********************************
 
@@ -73,6 +75,7 @@ public class BackendArticleServcie {
         String markdownContent = dto.getMarkdownContent();
         String htmlContent = dto.getHtmlContent();
         String quoteInfo = dto.getQuoteInfo();
+        List<String> tagList = dto.getTagList();
 
         Article article = new Article();
         article.setTitle(title);
@@ -94,17 +97,21 @@ public class BackendArticleServcie {
         article.setModifyTime(DateUtil.getLocalDateTimeNow());
         article.setQuoteInfo(quoteInfo);
         article.setTransportInfo(dto.getTransportInfo());
+        article.setDeleted(CommonConstant.ENTITY_NORMAL);
 
         try {
             articleMapper.insert(article);
-//            elasticsearchRestTemplate.save(article);
-
-            // TODO 对文章标签的处理
+            // 插入标签
+            backendTagService.saveBatch(article.getId(), tagList);
+            // 插入es
+            ArticleEs articleEs = new ArticleEs();
+            BeanUtils.copyProperties(article, articleEs);
+            articleEs.setTagList(tagList);
+            elasticsearchRestTemplate.save(articleEs);
         } catch (Exception e) {
             log.error("==========保存文章失败，异常：{}", e.getMessage());
             throw new BusinessException(ErrorEnum.SAVE_ARTICLE_ERROR);
         }
-
     }
 
 
@@ -187,6 +194,7 @@ public class BackendArticleServcie {
         Integer top = dto.getTop();
         String markdownContent = dto.getMarkdownContent();
         String transportInfo = dto.getTransportInfo();
+        List<String> tagList = dto.getTagList();
 
         // 空值校验
         if (StringUtils.isEmpty(title)) {
@@ -256,8 +264,14 @@ public class BackendArticleServcie {
         if (BackendArticleConstant.ARTICLE_CREATION_ZZ.intValue() == creationType && StringUtils.isEmpty(transportInfo)) {
             throw new ParamErrorException(ErrorEnum.REQUEST_PARAM_ERROR.getCode(), BackendArticleErrorMessageConstant.NO_TRANSPORT_INFO_ERROR_MESSAGE);
         }
-
-        // TODO 标签格式校验
+        // 标签格式校验
+        if (!CollectionUtils.isEmpty(tagList)) {
+            tagList.forEach(tag -> {
+                if (!BackendArticleConstant.TAG_NAME_REGEX.matcher(tag).matches()) {
+                    throw new ParamErrorException(ErrorEnum.REQUEST_PARAM_ERROR.getCode(), BackendArticleErrorMessageConstant.TAG_NAME_FORMAT_ERROR_MESSAGE);
+                }
+            });
+        }
     }
 
     // ********************************私有函数********************************
@@ -284,7 +298,11 @@ public class BackendArticleServcie {
                 }
             }
         }
-        return result.toString();
+        if (result.length() > 200) {
+            return result.substring(0, 200);
+        } else {
+            return result.toString();
+        }
     }
 
 
