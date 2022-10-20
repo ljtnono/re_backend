@@ -14,7 +14,8 @@ public enum ErrorEnum {
     REQUEST_PARAM_ERROR(400001, "请求参数有误"),
     // 参数值不在合法的范围内
     ILLEGAL_PARAM_ERROR(400002, "异常的参数值"),
-
+    // 请求对象不存在
+    RESOURCE_NOT_EXIST_ERROR(400003, "请求资源不存在"),
 
     /** 500 Bad Request */
     // MINIO服务器出现异常

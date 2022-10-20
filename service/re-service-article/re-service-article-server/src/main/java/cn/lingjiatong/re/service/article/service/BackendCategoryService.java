@@ -30,6 +30,7 @@ public class BackendCategoryService {
 
     /**
      * 根据分类id校验文章分类是否存在
+     * 这里不论是否删除
      *
      * @param categoryId 文章分类id
      * @return 存在返回true， 不存在返回false

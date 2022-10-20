@@ -12,7 +12,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
  * Date: 2022/9/17 17:41
  */
 @EnableDiscoveryClient
-@EnableFeignClients(basePackages = {"cn.lingjiatong.re.service.sys.api"})
+@EnableFeignClients(basePackages = {"cn.lingjiatong.re.service.sys.api", "cn.lingjiatong.re.service.article.api"})
 @SpringBootApplication(scanBasePackages = {"cn.lingjiatong.re.api.frontend", "cn.lingjiatong.re.common"})
 public class ReApiFrontendApplication {
 

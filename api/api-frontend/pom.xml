@@ -30,12 +30,26 @@
                     <groupId>com.baomidou</groupId>
                     <artifactId>mybatis-plus-boot-starter</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-data-redis</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-data-elasticsearch</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
         <!-- re-service-sys-api -->
         <dependency>
             <groupId>cn.lingjiatong</groupId>
             <artifactId>re-service-sys-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <!-- re-service-article-api -->
+        <dependency>
+            <groupId>cn.lingjiatong</groupId>
+            <artifactId>re-service-article-api</artifactId>
             <version>${project.version}</version>
         </dependency>
         <!-- nacos服务发现 -->
