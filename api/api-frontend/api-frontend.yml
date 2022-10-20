@@ -18,6 +18,11 @@ spec:
         - name: api-frontend
           image: ljtnono/api-frontend:<VERSION>
           imagePullPolicy: Always
+          resources:
+            requests:
+              memory: "1024Mi"
+            limits:
+              memory: "2048Mi"
           ports:
             - containerPort: 8080
               name: web

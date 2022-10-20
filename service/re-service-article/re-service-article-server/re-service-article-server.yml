@@ -18,6 +18,11 @@ spec:
         - name: re-service-sys-server
           image: ljtnono/re-service-article-server:<VERSION>
           imagePullPolicy: Always
+          resources:
+            requests:
+              memory: "1024Mi"
+            limits:
+              memory: "2048Mi"
           ports:
             - containerPort: 8080
               name: web
