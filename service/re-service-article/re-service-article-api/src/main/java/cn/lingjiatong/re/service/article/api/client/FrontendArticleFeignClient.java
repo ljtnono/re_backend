@@ -1,5 +1,6 @@
 package cn.lingjiatong.re.service.article.api.client;
 
+import cn.lingjiatong.re.common.ResultVO;
 import cn.lingjiatong.re.service.article.api.vo.FrontendArticleVO;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.lang.NonNull;
@@ -24,6 +25,6 @@ public interface FrontendArticleFeignClient {
      */
     @NonNull
     @GetMapping("/api/v1/article/{articleId}")
-    FrontendArticleVO findArticleById(@PathVariable("articleId") @NonNull Long articleId);
+    ResultVO<FrontendArticleVO> findArticleById(@PathVariable("articleId") @NonNull Long articleId);
 
 }

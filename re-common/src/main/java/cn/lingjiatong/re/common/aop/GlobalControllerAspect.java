@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 /**
  * 全局异常处理
@@ -26,7 +27,7 @@ public class GlobalControllerAspect {
      * @param e 请求参数错误异常
      * @return 通用消息返回对象
      */
-    @ExceptionHandler(ParamErrorException.class)
+    @ExceptionHandler({ParamErrorException.class, MethodArgumentTypeMismatchException.class})
     @ResponseStatus(value = HttpStatus.OK)
     public ResultVO<?> handleParamErrorException(ParamErrorException e) {
         log.error("==========请求参数错误异常");
@@ -61,6 +62,8 @@ public class GlobalControllerAspect {
         log.error(e.toString(), e);
         return ResultVO.error(e.getCode(), e.getMessage());
     }
+
+
 
 
     /**

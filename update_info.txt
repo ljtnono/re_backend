@@ -1,4 +1,4 @@
-版本号：v0.2.3
+版本号：v0.2.4
 新特性：
 1、新增xxl-job定时任务
 2、新增头条热榜爬虫
@@ -17,6 +17,7 @@ BUG修复：
 4、爬虫数据表加入唯一索引
 5、删除头条热榜爬虫表uniqueMd5字段，改为使用title字段作为唯一索引
 6、修复dockerfile命令错误的问题
+7、修复前端没有捕获MethodArgumentTypeMismatchException异常的问题
 
 
 优化：
@@ -26,3 +27,4 @@ BUG修复：
 4、前端消息表加入操作用户字段
 5、各服务k8s容器设置限制内存
 6、Dockerfile加入时区设定和java堆栈大小设置
+7、改为使用gateway统一控制跨域设置

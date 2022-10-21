@@ -30,10 +30,10 @@ public class ArticleController {
      * @return 单个文章信息VO对象
      */
     @NonNull
-    @GetMapping("/{articleId}")
+    @GetMapping("/{articleId:\\d+}")
     public ResultVO<FrontendArticleVO> findArticleById(@PathVariable("articleId") @NonNull Long articleId) {
         log.info("==========获取单个文章信息，参数：{}", articleId);
-        return ResultVO.success(frontendArticleFeignClient.findArticleById(articleId));
+        return frontendArticleFeignClient.findArticleById(articleId);
     }
 
 }

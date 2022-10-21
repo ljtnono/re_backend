@@ -1,5 +1,6 @@
 package cn.lingjiatong.re.service.article.controller;
 
+import cn.lingjiatong.re.common.ResultVO;
 import cn.lingjiatong.re.service.article.api.client.FrontendArticleFeignClient;
 import cn.lingjiatong.re.service.article.api.vo.FrontendArticleVO;
 import cn.lingjiatong.re.service.article.service.FrontendArticleService;
@@ -24,7 +25,7 @@ public class FrontendArticleController implements FrontendArticleFeignClient {
     @Override
     @NonNull
     @GetMapping("/api/v1/article/{articleId}")
-    public FrontendArticleVO findArticleById(@PathVariable("articleId") @NonNull Long articleId) {
-        return frontendArticleService.findArticle(articleId);
+    public ResultVO<FrontendArticleVO> findArticleById(@PathVariable("articleId") @NonNull Long articleId) {
+        return ResultVO.success(frontendArticleService.findArticle(articleId));
     }
 }
