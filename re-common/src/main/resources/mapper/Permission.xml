@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="cn.lingjiatong.re.common.mapper.UserMapper">
+<mapper namespace="cn.lingjiatong.re.common.mapper.PermissionMapper">
     <!-- ********************************结果映射******************************** -->
 
 
@@ -12,4 +12,18 @@
     <!-- ********************************修改类接口******************************** -->
 
     <!-- ********************************查询类接口******************************** -->
+
+
+    <!-- 根据角色id获取角色的权限列表 -->
+    <select id="findPermissionByRoleId" resultType="cn.lingjiatong.re.common.entity.Permission">
+        SELECT
+            p.id,
+            p.name,
+            p.type,
+            p.expression
+        FROM permission p
+        <where>
+            p.id IN (SELECT permission_id FROM tr_role_permission trp WHERE trp.role_id = #{roleId,jdbcType=INTEGER})
+        </where>
+    </select>
 </mapper>

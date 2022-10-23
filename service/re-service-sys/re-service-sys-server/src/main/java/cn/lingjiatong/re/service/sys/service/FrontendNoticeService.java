@@ -56,11 +56,11 @@ public class FrontendNoticeService {
         String nowTimeStr = DateUtil.getNowString("yyyy-MM-dd HH:mm:ss");
         List<SysNotice> noticeByDateTime = sysNoticeMapper.findNoticeByDateTime(nowTimeStr);
 
-        // 当消息不存在时，返回默认消息 + 10 条今天的热榜消息
+        // 当消息不存在时，返回 10 条今天的热榜消息
+        FrontendNoticeListVO noNoticeMessageVO = new FrontendNoticeListVO();
+        noNoticeMessageVO.setTitle(SysNoticeConstant.NO_NOTICE_MESSAGE);
+        noNoticeMessageVO.setType(SysNoticeTypeEnum.NORMAL_NOTICE.getCode());
         if (CollectionUtils.isEmpty(noticeByDateTime)) {
-            FrontendNoticeListVO noNoticeMessageVO = new FrontendNoticeListVO();
-            noNoticeMessageVO.setTitle(SysNoticeConstant.NO_NOTICE_MESSAGE);
-            noNoticeMessageVO.setType(SysNoticeTypeEnum.NORMAL_NOTICE.getCode());
 
             List<SpToutiaoRb> spToutiaoRbList = spToutiaoRbMapper.selectList(new LambdaQueryWrapper<SpToutiaoRb>()
                     .select(SpToutiaoRb::getTitle, SpToutiaoRb::getLink, SpToutiaoRb::getState, SpToutiaoRb::getCreateTime)
@@ -117,6 +117,7 @@ public class FrontendNoticeService {
             result.add(frontendNoticeListVO);
         });
 
+        result.add(noNoticeMessageVO);
         return result;
     }
 

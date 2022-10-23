@@ -17,6 +17,19 @@ public enum ErrorEnum {
     // 请求对象不存在
     RESOURCE_NOT_EXIST_ERROR(400003, "请求资源不存在"),
 
+
+
+    /** 权限相关异常 **/
+    // 未认证的用户
+    USER_NOT_AUTHTICATE_ERROR(401, "未认证过的用户"),
+    // 没有访问权限
+    PERMISSION_DENIED_ERROR(403, "禁止访问"),
+    // token格式异常
+    TOKEN_ILLEGAL_FORMAT_ERROR(401401, "不支持的token格式"),
+    // token已过期
+    TOKEN_EXPIRED_ERROR(403403, "token已过期，请重新登录"),
+
+
     /** 500 Bad Request */
     // MINIO服务器出现异常
     MINIO_SERVER_ERROR(500001, "图片服务器异常，上传失败"),
@@ -24,7 +37,8 @@ public enum ErrorEnum {
 
 
     /** 600 业务类异常 */
-    SAVE_ARTICLE_ERROR(600001, "保存文章失败")
+    SAVE_ARTICLE_ERROR(600001, "保存文章失败"),
+    LOGIN_VERIFY_CODE_EXPIRED_ERROR(600002, "验证码已过期，请刷新验证码后再试"),
 
     ;
 

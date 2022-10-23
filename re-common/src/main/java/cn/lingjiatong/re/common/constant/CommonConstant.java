@@ -12,5 +12,13 @@ public interface CommonConstant {
     Byte ENTITY_DELETE = 1;
     // 正常
     Byte ENTITY_NORMAL = 0;
+    // token的http请求头
+    String TOKE_HTTP_HEADER = "Authorization";
+    // cookie中的token键名
+    String TOKEN_COKKIE_HEADER = TOKE_HTTP_HEADER;
+    // token内容前缀
+    String TOKEN_PREFIX = "Bearer ";
+    // token加密盐值
+    String TOKEN_SECRET_SALT = "||^^^-ROOTELEMENT-^^^||";
 
 }

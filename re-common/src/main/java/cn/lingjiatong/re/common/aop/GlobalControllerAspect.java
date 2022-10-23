@@ -1,11 +1,14 @@
 package cn.lingjiatong.re.common.aop;
 
 import cn.lingjiatong.re.common.ResultVO;
+import cn.lingjiatong.re.common.exception.ErrorEnum;
 import cn.lingjiatong.re.common.exception.ParamErrorException;
 import cn.lingjiatong.re.common.exception.ResourceAlreadyExistException;
 import cn.lingjiatong.re.common.exception.ResourceNotExistException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -63,8 +66,37 @@ public class GlobalControllerAspect {
         return ResultVO.error(e.getCode(), e.getMessage());
     }
 
+    /**
+     * 处理controller参数缺失异常
+     *
+     * @param e 资源不存在异常
+     * @return 通用消息返回对象
+     */
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    @ResponseStatus(value = HttpStatus.OK)
+    public ResultVO<?> handleMissingServletRequestParameterException(MissingServletRequestParameterException e) {
+        log.error("==========参数缺失");
+        log.error(e.toString(), e);
+        return ResultVO.error(ErrorEnum.REQUEST_PARAM_ERROR);
+    }
 
-
+    /**
+     * 禁止访问异常
+     *
+     * @param e 禁止访问异常
+     * @return 通用消息返回对象
+     * @author Ling, Jiatong
+     */
+    @ExceptionHandler(AccessDeniedException.class)
+    @ResponseStatus(HttpStatus.OK)
+    public ResultVO<?> handleAccessDeniedException(AccessDeniedException e) {
+        log.error("==========访问权限异常");
+        String message = "禁止访问";
+        if (e != null) {
+            log.error(e.toString(), e);
+        }
+        return ResultVO.error(403, message);
+    }
 
     /**
      * 未知系统异常

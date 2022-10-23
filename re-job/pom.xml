@@ -22,6 +22,12 @@
             <groupId>cn.lingjiatong</groupId>
             <artifactId>re-common</artifactId>
             <version>${project.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-security</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <!-- xxl-job -->
         <dependency>

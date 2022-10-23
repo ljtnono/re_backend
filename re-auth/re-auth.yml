@@ -1,0 +1,45 @@
+# Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: rootelement
+  name: re-auth
+spec:
+  selector:
+    matchLabels:
+      app: re-auth
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: re-auth
+    spec:
+      containers:
+        - name: re-auth
+          image: ljtnono/re-auth:<VERSION>
+          imagePullPolicy: Always
+          resources:
+            requests:
+              memory: "1024Mi"
+            limits:
+              memory: "2048Mi"
+          ports:
+            - containerPort: 8080
+              name: web
+
+---
+# re-auth service
+apiVersion: v1
+kind: Service
+metadata:
+  name: re-auth
+  namespace: rootelement
+spec:
+  type: NodePort
+  ports:
+    - port: 8080
+      name: web
+      nodePort: 30089
+      targetPort: 8080
+  selector:
+    app: re-auth
