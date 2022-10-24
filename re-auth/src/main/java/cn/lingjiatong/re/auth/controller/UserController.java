@@ -20,7 +20,7 @@ import java.io.IOException;
  */
 @Slf4j
 @RestController
-@RequestMapping("/auth")
+@RequestMapping
 public class UserController {
 
     @Autowired
