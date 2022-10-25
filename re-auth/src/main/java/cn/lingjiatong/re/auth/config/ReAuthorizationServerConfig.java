@@ -1,13 +1,15 @@
 package cn.lingjiatong.re.auth.config;
 
+import cn.lingjiatong.re.auth.component.CustomClientCredentialsTokenEndpointFilter;
+import cn.lingjiatong.re.auth.component.OAuth2WebResponseExceptionTranslator;
 import cn.lingjiatong.re.auth.component.VerifyCodeTokenGranter;
 import cn.lingjiatong.re.common.entity.User;
+import cn.lingjiatong.re.common.util.RedisUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -23,7 +25,9 @@ import org.springframework.security.oauth2.provider.client.JdbcClientDetailsServ
 import org.springframework.security.oauth2.provider.token.TokenEnhancer;
 import org.springframework.security.oauth2.provider.token.TokenEnhancerChain;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
+import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 import org.springframework.security.oauth2.provider.token.store.KeyStoreKeyFactory;
+import org.springframework.security.web.AuthenticationEntryPoint;
 
 import javax.sql.DataSource;
 import java.security.KeyPair;
@@ -47,7 +51,14 @@ public class ReAuthorizationServerConfig extends AuthorizationServerConfigurerAd
     @Autowired
     private DataSource dataSource;
     @Autowired
-    private RedisTemplate<String, Object> redisTemplate;
+    private RedisUtil redisUtil;
+    @Autowired
+    private OAuth2WebResponseExceptionTranslator oAuth2WebResponseExceptionTranslator;
+    @Autowired
+    private JwtAccessTokenConverter jwtAccessTokenConverter;
+    @Autowired
+    private AuthenticationEntryPoint authenticationEntryPoint;
+
 
     /**
      * 客户端信息配置
@@ -66,34 +77,51 @@ public class ReAuthorizationServerConfig extends AuthorizationServerConfigurerAd
         TokenEnhancerChain tokenEnhancerChain = new TokenEnhancerChain();
         List<TokenEnhancer> tokenEnhancers = new ArrayList<>();
         tokenEnhancers.add(tokenEnhancer());
-        tokenEnhancers.add(jwtAccessTokenConverter());
+        tokenEnhancers.add(jwtAccessTokenConverter);
         tokenEnhancerChain.setTokenEnhancers(tokenEnhancers);
 
+        // 获取内置的授权类型
         List<TokenGranter> granterList = new ArrayList<>(Collections.singletonList(endpoints.getTokenGranter()));
+        // 新增自定义的验证码授权类型
         granterList.add(new VerifyCodeTokenGranter(endpoints.getTokenServices(), endpoints.getClientDetailsService(),
-                endpoints.getOAuth2RequestFactory(), authenticationManager, redisTemplate));
+                endpoints.getOAuth2RequestFactory(), authenticationManager, redisUtil));
         CompositeTokenGranter compositeTokenGranter = new CompositeTokenGranter(granterList);
 
         endpoints.authenticationManager(authenticationManager)
-                .accessTokenConverter(jwtAccessTokenConverter())
+                .accessTokenConverter(jwtAccessTokenConverter)
                 .userDetailsService(userDetailsService)
                 .tokenEnhancer(tokenEnhancerChain)
+                .tokenStore(jwtTokenStore())
                 .allowedTokenEndpointRequestMethods(HttpMethod.GET, HttpMethod.POST)
                 .reuseRefreshTokens(false)
+                .exceptionTranslator(oAuth2WebResponseExceptionTranslator)
                 .tokenGranter(compositeTokenGranter);
     }
-
 
     /**
      * 认证服务器最终是以api接口的方式对外提供服务（校验合法性并生成令牌、校验令牌等）
      * 那么，以api接口方式对外的话，就涉及到接口的访问权限，我们需要在这里进行必要的配置
      */
     @Override
-    public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {
+    public void configure(AuthorizationServerSecurityConfigurer security) {
         // 相当于打开endpoints访问接口的开关，这样的话后期我们能够访问该接口
-        security.allowFormAuthenticationForClients()
+        CustomClientCredentialsTokenEndpointFilter endpointFilter = new CustomClientCredentialsTokenEndpointFilter(security);
+        endpointFilter.afterPropertiesSet();
+        endpointFilter.setAuthenticationEntryPoint(authenticationEntryPoint);
+        security.addTokenEndpointAuthenticationFilter(endpointFilter);
+        // 注意：security不需要在调用allowFormAuthenticationForClients方法
+        security.authenticationEntryPoint(authenticationEntryPoint)
                 .tokenKeyAccess("permitAll()")
-                .checkTokenAccess("permitAll()");
+                .checkTokenAccess("isAuthenticated()");
+
+    }
+
+    /**
+     * jwt token存储模式
+     */
+    @Bean
+    public JwtTokenStore jwtTokenStore(){
+        return new JwtTokenStore(jwtAccessTokenConverter);
     }
 
     /**
@@ -126,8 +154,11 @@ public class ReAuthorizationServerConfig extends AuthorizationServerConfigurerAd
             User user = (User) authentication.getUserAuthentication().getPrincipal();
             map.put("userId", user.getId());
             map.put("username", user.getUsername());
+            map.put("email", user.getEmail());
+            map.put("phone", user.getPhone());
             ((DefaultOAuth2AccessToken) accessToken).setAdditionalInformation(map);
             return accessToken;
         };
     }
+
 }

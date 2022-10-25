@@ -28,17 +28,26 @@ public enum ErrorEnum {
     TOKEN_ILLEGAL_FORMAT_ERROR(401401, "不支持的token格式"),
     // token已过期
     TOKEN_EXPIRED_ERROR(403403, "token已过期，请重新登录"),
-
+    // 用户名或密码错误
+    USERNAME_OR_PASSWORD_ERROR(400401, "用户名或密码错误"),
+    INVALID_SCOPE_ERROR(400402, "错误的scope值"),
+    MISSING_GRANT_TYPE_ERROR(400403, "请输入grant_type的值"),
+    UNSUPPORTED_GRANT_TYPE_ERROR(400404, "不支持的grant_type"),
+    CLIENT_ID_OR_CLIENT_SECRET_ERROR(400405, "client_id或client_secret错误"),
 
     /** 500 Bad Request */
     // MINIO服务器出现异常
     MINIO_SERVER_ERROR(500001, "图片服务器异常，上传失败"),
-
+    // 获取token失败
+    GET_TOKEN_FAILD_ERROR(500002, "获取token失败"),
 
 
     /** 600 业务类异常 */
     SAVE_ARTICLE_ERROR(600001, "保存文章失败"),
     LOGIN_VERIFY_CODE_EXPIRED_ERROR(600002, "验证码已过期，请刷新验证码后再试"),
+
+
+    UNKNOWN_ERROR(000000, "未知系统异常"),
 
     ;
 

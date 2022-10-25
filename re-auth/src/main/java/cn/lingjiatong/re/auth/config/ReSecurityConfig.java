@@ -1,5 +1,6 @@
 package cn.lingjiatong.re.auth.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -17,12 +18,15 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 @EnableGlobalMethodSecurity(securedEnabled = true, jsr250Enabled = true)
 public class ReSecurityConfig extends WebSecurityConfigurerAdapter {
 
+    @Autowired
+    private ReSecurityProperties reSecurityProperties;
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .authorizeRequests()
                 // 放行所有oauth2端点、公钥接口
-                .antMatchers("/getPublicKey", "/oauth/**", "/actuator/**", "/login")
+                .antMatchers(reSecurityProperties.getPassTokenUrl().toArray(new String[]{}))
                 .permitAll()
                 // 其他接口都需要认证
                 .anyRequest()

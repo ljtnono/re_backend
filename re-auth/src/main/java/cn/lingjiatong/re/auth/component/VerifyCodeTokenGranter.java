@@ -1,81 +1,90 @@
 package cn.lingjiatong.re.auth.component;
 
+import cn.lingjiatong.re.auth.constant.AuthErrorMessageConstant;
 import cn.lingjiatong.re.common.constant.RedisCacheKeyEnum;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.security.authentication.*;
+import cn.lingjiatong.re.common.entity.cache.LoginVerifyCodeCache;
+import cn.lingjiatong.re.common.exception.BusinessException;
+import cn.lingjiatong.re.common.exception.ErrorEnum;
+import cn.lingjiatong.re.common.exception.ParamErrorException;
+import cn.lingjiatong.re.common.util.RedisUtil;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.AbstractAuthenticationToken;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.oauth2.common.exceptions.InvalidGrantException;
 import org.springframework.security.oauth2.provider.*;
 import org.springframework.security.oauth2.provider.token.AbstractTokenGranter;
 import org.springframework.security.oauth2.provider.token.AuthorizationServerTokenServices;
-import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
- * 短信验证码token处理类
+ * 自定义验证码授权
  *
  * @author Ling, Jiatong
  * Date: 2022/10/25 01:00
  */
+@Slf4j
 public class VerifyCodeTokenGranter extends AbstractTokenGranter {
 
     private static final String GRANT_TYPE = "verify_code";
     private AuthenticationManager authenticationManager;
-    private RedisTemplate<String, Object> redisTemplate;
+    private RedisUtil redisUtil;
 
-    public VerifyCodeTokenGranter(AuthorizationServerTokenServices tokenServices, ClientDetailsService clientDetailsService, OAuth2RequestFactory requestFactory, AuthenticationManager authenticationManager, RedisTemplate<String, Object> redisTemplate) {
+    public VerifyCodeTokenGranter(AuthorizationServerTokenServices tokenServices, ClientDetailsService clientDetailsService, OAuth2RequestFactory requestFactory, AuthenticationManager authenticationManager, RedisUtil redisUtil) {
         super(tokenServices, clientDetailsService, requestFactory, GRANT_TYPE);
         this.authenticationManager = authenticationManager;
-        this.redisTemplate = redisTemplate;
+        this.redisUtil = redisUtil;
     }
 
     @Override
     protected OAuth2Authentication getOAuth2Authentication(ClientDetails client, TokenRequest tokenRequest) {
-        Map<String, String> parameters = new LinkedHashMap(tokenRequest.getRequestParameters());
+        Map<String, String> parameters = new LinkedHashMap<>(tokenRequest.getRequestParameters());
 
         // 验证码校验逻辑
-        String validateCode = parameters.get("code");
-        String uuid = parameters.get("uuid");
-
-        Assert.isTrue(!StringUtils.hasLength(validateCode), "验证码不能为空");
-        String validateCodeKey = RedisCacheKeyEnum.LOGIN_VERIFY_CODE.getValue() + uuid;
-
-        // 从缓存取出正确的验证码和用户输入的验证码比对
-        String correctValidateCode = (String) redisTemplate.opsForValue().get(validateCodeKey);
-        Assert.isTrue(!StringUtils.hasLength(correctValidateCode),"验证码已过期");
-        Assert.isTrue(validateCode.equals(correctValidateCode),"您输入的验证码不正确");
-
-        // 验证码验证通过，删除 Redis 的验证码
-        redisTemplate.delete(validateCodeKey);
-
+        String verifyCodeValue = parameters.get("verifyCode");
+        String verifyCodeKey = parameters.get("verifyCodeKey");
         String username = parameters.get("username");
         String password = parameters.get("password");
 
-        // 移除后续无用参数
-        parameters.remove("password");
-        parameters.remove("code");
-        parameters.remove("uuid");
+        // 这里不再校验用户名密码的严格格式，只校验是否为空，因为此处用户名和密码已经录入数据库
+        if (!StringUtils.hasLength(username)) {
+            throw new ParamErrorException(ErrorEnum.REQUEST_PARAM_ERROR.getCode(), AuthErrorMessageConstant.USERNAME_EMPTY_ERROR_MESSAGE);
+        }
+        if (!StringUtils.hasLength(password)) {
+            throw new ParamErrorException(ErrorEnum.REQUEST_PARAM_ERROR.getCode(), AuthErrorMessageConstant.PASSWORD_EMPTY_ERROR_MESSAGE);
+        }
+        if (!StringUtils.hasLength(verifyCodeValue)) {
+            throw new ParamErrorException(ErrorEnum.REQUEST_PARAM_ERROR.getCode(), AuthErrorMessageConstant.VERIFY_CODE_VALUE_EMPTY_ERROR_MESSAGE);
+        }
+        // 从redis查找验证码key
+        LoginVerifyCodeCache cache = (LoginVerifyCodeCache) redisUtil.getCacheObject(RedisCacheKeyEnum.LOGIN_VERIFY_CODE.getValue() + verifyCodeKey);
+        Optional.ofNullable(cache)
+                .orElseThrow(() -> new BusinessException(ErrorEnum.LOGIN_VERIFY_CODE_EXPIRED_ERROR));
+        // 验证码校验错误
+        if (!verifyCodeValue.equalsIgnoreCase(cache.getValue())) {
+            throw new ParamErrorException(ErrorEnum.REQUEST_PARAM_ERROR.getCode(), AuthErrorMessageConstant.VERIFY_CODE_ERROR_MESSAGE);
+        }
+
+        // 验证码验证通过，删除 Redis 的验证码
+//        redisTemplate.delete(key);
 
         // 和密码模式一样的逻辑
         Authentication userAuth = new UsernamePasswordAuthenticationToken(username, password);
         ((AbstractAuthenticationToken) userAuth).setDetails(parameters);
 
         try {
-            userAuth = this.authenticationManager.authenticate(userAuth);
-        } catch (AccountStatusException var8) {
-            throw new InvalidGrantException(var8.getMessage());
-        } catch (BadCredentialsException var9) {
-            throw new InvalidGrantException(var9.getMessage());
-        }
-
-        if (userAuth != null && userAuth.isAuthenticated()) {
+            // 此过程中会调用UserDetailService中的loadUserByUsername方法
+            userAuth = authenticationManager.authenticate(userAuth);
             OAuth2Request storedOAuth2Request = this.getRequestFactory().createOAuth2Request(client, tokenRequest);
             return new OAuth2Authentication(storedOAuth2Request, userAuth);
-        } else {
-            throw new InvalidGrantException("Could not authenticate user: " + username);
+        } catch (Exception e) {
+            log.error("==========认证失败");
+            log.error(e.getMessage(), e);
+            throw e;
         }
     }
 

@@ -16,5 +16,4 @@ public interface AuthErrorMessageConstant {
     String VERIFY_CODE_VALUE_EMPTY_ERROR_MESSAGE = "请输入验证码";
     // 验证码错误
     String VERIFY_CODE_ERROR_MESSAGE = "验证码错误";
-
 }
