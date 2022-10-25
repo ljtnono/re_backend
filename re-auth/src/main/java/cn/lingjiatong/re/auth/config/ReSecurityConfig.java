@@ -3,10 +3,10 @@ package cn.lingjiatong.re.auth.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 
 /**
  * spring security 配置
@@ -15,7 +15,6 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
  * Date: 2020/7/7 20:36 下午
  */
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(securedEnabled = true, jsr250Enabled = true)
 public class ReSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
@@ -23,6 +22,14 @@ public class ReSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+        // 配置不使用 session
+        http.csrf().disable();
+        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+        // 禁用缓存
+        http.headers().cacheControl();
+        // 设置安全策略
+        http.headers().contentSecurityPolicy("default-src 'self'");
+
         http
                 .authorizeRequests()
                 // 放行所有oauth2端点、公钥接口
@@ -30,10 +37,7 @@ public class ReSecurityConfig extends WebSecurityConfigurerAdapter {
                 .permitAll()
                 // 其他接口都需要认证
                 .anyRequest()
-                .authenticated()
-                .and()
-                .csrf()
-                .disable();
+                .authenticated();
     }
 
     @Bean

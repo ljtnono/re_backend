@@ -1,6 +1,7 @@
 package cn.lingjiatong.re.auth.component;
 
 import cn.lingjiatong.re.auth.constant.AuthErrorMessageConstant;
+import cn.lingjiatong.re.common.constant.ProfileEnum;
 import cn.lingjiatong.re.common.constant.RedisCacheKeyEnum;
 import cn.lingjiatong.re.common.entity.cache.LoginVerifyCodeCache;
 import cn.lingjiatong.re.common.exception.BusinessException;
@@ -33,11 +34,13 @@ public class VerifyCodeTokenGranter extends AbstractTokenGranter {
     private static final String GRANT_TYPE = "verify_code";
     private AuthenticationManager authenticationManager;
     private RedisUtil redisUtil;
+    private String profile;
 
-    public VerifyCodeTokenGranter(AuthorizationServerTokenServices tokenServices, ClientDetailsService clientDetailsService, OAuth2RequestFactory requestFactory, AuthenticationManager authenticationManager, RedisUtil redisUtil) {
+    public VerifyCodeTokenGranter(AuthorizationServerTokenServices tokenServices, ClientDetailsService clientDetailsService, OAuth2RequestFactory requestFactory, AuthenticationManager authenticationManager, RedisUtil redisUtil, String profile) {
         super(tokenServices, clientDetailsService, requestFactory, GRANT_TYPE);
         this.authenticationManager = authenticationManager;
         this.redisUtil = redisUtil;
+        this.profile = profile;
     }
 
     @Override
@@ -69,8 +72,10 @@ public class VerifyCodeTokenGranter extends AbstractTokenGranter {
             throw new ParamErrorException(ErrorEnum.REQUEST_PARAM_ERROR.getCode(), AuthErrorMessageConstant.VERIFY_CODE_ERROR_MESSAGE);
         }
 
-        // 验证码验证通过，删除 Redis 的验证码
-//        redisTemplate.delete(key);
+        // 生产环境删除
+        if (ProfileEnum.PRD.getName().equalsIgnoreCase(profile)) {
+            redisUtil.deleteObject(RedisCacheKeyEnum.LOGIN_VERIFY_CODE.getValue() + verifyCodeKey);
+        }
 
         // 和密码模式一样的逻辑
         Authentication userAuth = new UsernamePasswordAuthenticationToken(username, password);
@@ -82,7 +87,6 @@ public class VerifyCodeTokenGranter extends AbstractTokenGranter {
             OAuth2Request storedOAuth2Request = this.getRequestFactory().createOAuth2Request(client, tokenRequest);
             return new OAuth2Authentication(storedOAuth2Request, userAuth);
         } catch (Exception e) {
-            log.error("==========认证失败");
             log.error(e.getMessage(), e);
             throw e;
         }

@@ -7,6 +7,7 @@ import cn.lingjiatong.re.common.entity.User;
 import cn.lingjiatong.re.common.util.RedisUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
@@ -58,6 +59,8 @@ public class ReAuthorizationServerConfig extends AuthorizationServerConfigurerAd
     private JwtAccessTokenConverter jwtAccessTokenConverter;
     @Autowired
     private AuthenticationEntryPoint authenticationEntryPoint;
+    @Value("${spring.profiles.active}")
+    private String profile;
 
 
     /**
@@ -84,7 +87,7 @@ public class ReAuthorizationServerConfig extends AuthorizationServerConfigurerAd
         List<TokenGranter> granterList = new ArrayList<>(Collections.singletonList(endpoints.getTokenGranter()));
         // 新增自定义的验证码授权类型
         granterList.add(new VerifyCodeTokenGranter(endpoints.getTokenServices(), endpoints.getClientDetailsService(),
-                endpoints.getOAuth2RequestFactory(), authenticationManager, redisUtil));
+                endpoints.getOAuth2RequestFactory(), authenticationManager, redisUtil, profile));
         CompositeTokenGranter compositeTokenGranter = new CompositeTokenGranter(granterList);
 
         endpoints.authenticationManager(authenticationManager)
@@ -112,7 +115,7 @@ public class ReAuthorizationServerConfig extends AuthorizationServerConfigurerAd
         // 注意：security不需要在调用allowFormAuthenticationForClients方法
         security.authenticationEntryPoint(authenticationEntryPoint)
                 .tokenKeyAccess("permitAll()")
-                .checkTokenAccess("isAuthenticated()");
+                .checkTokenAccess("permitAll()");
 
     }
 
