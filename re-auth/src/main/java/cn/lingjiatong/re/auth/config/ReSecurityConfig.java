@@ -1,6 +1,8 @@
 package cn.lingjiatong.re.auth.config;
 
+import cn.lingjiatong.re.auth.component.AuthenticationHandler;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -19,6 +21,9 @@ public class ReSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private ReSecurityProperties reSecurityProperties;
+    @Autowired
+    @Qualifier("authenticationHandler")
+    private AuthenticationHandler authenticationHandler;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -35,9 +40,18 @@ public class ReSecurityConfig extends WebSecurityConfigurerAdapter {
                 // 放行所有oauth2端点、公钥接口
                 .antMatchers(reSecurityProperties.getPassTokenUrl().toArray(new String[]{}))
                 .permitAll()
-                // 其他接口都需要认证
+                .and()
+                .formLogin()
+                .permitAll()
+                .and()
+                .authorizeRequests()
                 .anyRequest()
-                .authenticated();
+                // 其他接口都需要认证
+                .authenticated()
+                .and()
+                .exceptionHandling()
+                .authenticationEntryPoint(authenticationHandler)
+                .accessDeniedHandler(authenticationHandler);
     }
 
     @Bean

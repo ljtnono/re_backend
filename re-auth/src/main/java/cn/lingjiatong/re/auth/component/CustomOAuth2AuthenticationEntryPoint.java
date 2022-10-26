@@ -21,9 +21,8 @@ import java.io.IOException;
  * Date: 2022/10/26 00:13
  */
 @Slf4j
-@Component
-public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint {
-
+@Component("customOAuth2AuthenticationEntryPoint")
+public class CustomOAuth2AuthenticationEntryPoint implements AuthenticationEntryPoint {
 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException e) throws IOException {

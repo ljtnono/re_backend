@@ -38,8 +38,8 @@ public enum ErrorEnum {
     /** 500 Bad Request */
     // MINIO服务器出现异常
     MINIO_SERVER_ERROR(500001, "图片服务器异常，上传失败"),
-    // 获取token失败
-    GET_TOKEN_FAILD_ERROR(500002, "获取token失败"),
+    // token格式异常
+    INVALID_TOKEN_ERROR(500002, "缺少token参数或token格式异常"),
 
 
     /** 600 业务类异常 */

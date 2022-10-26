@@ -1,5 +1,6 @@
 package cn.lingjiatong.re.auth.config;
 
+import cn.lingjiatong.re.auth.component.AuthenticationHandler;
 import cn.lingjiatong.re.auth.component.CustomClientCredentialsTokenEndpointFilter;
 import cn.lingjiatong.re.auth.component.OAuth2WebResponseExceptionTranslator;
 import cn.lingjiatong.re.auth.component.VerifyCodeTokenGranter;
@@ -58,7 +59,9 @@ public class ReAuthorizationServerConfig extends AuthorizationServerConfigurerAd
     @Autowired
     private JwtAccessTokenConverter jwtAccessTokenConverter;
     @Autowired
+    @Qualifier("customOAuth2AuthenticationEntryPoint")
     private AuthenticationEntryPoint authenticationEntryPoint;
+
     @Value("${spring.profiles.active}")
     private String profile;
 
@@ -109,14 +112,14 @@ public class ReAuthorizationServerConfig extends AuthorizationServerConfigurerAd
     public void configure(AuthorizationServerSecurityConfigurer security) {
         // 相当于打开endpoints访问接口的开关，这样的话后期我们能够访问该接口
         CustomClientCredentialsTokenEndpointFilter endpointFilter = new CustomClientCredentialsTokenEndpointFilter(security);
-        endpointFilter.afterPropertiesSet();
         endpointFilter.setAuthenticationEntryPoint(authenticationEntryPoint);
+        endpointFilter.setAuthenticationManager(authenticationManager);
+        endpointFilter.afterPropertiesSet();
+        security.allowFormAuthenticationForClients();
         security.addTokenEndpointAuthenticationFilter(endpointFilter);
         // 注意：security不需要在调用allowFormAuthenticationForClients方法
-        security.authenticationEntryPoint(authenticationEntryPoint)
-                .tokenKeyAccess("permitAll()")
+        security.tokenKeyAccess("permitAll()")
                 .checkTokenAccess("permitAll()");
-
     }
 
     /**

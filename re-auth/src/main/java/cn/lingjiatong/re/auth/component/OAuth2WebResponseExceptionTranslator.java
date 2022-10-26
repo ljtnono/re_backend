@@ -11,6 +11,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.oauth2.common.exceptions.InvalidRequestException;
 import org.springframework.security.oauth2.common.exceptions.InvalidScopeException;
+import org.springframework.security.oauth2.common.exceptions.InvalidTokenException;
 import org.springframework.security.oauth2.common.exceptions.UnsupportedGrantTypeException;
 import org.springframework.security.oauth2.provider.error.WebResponseExceptionTranslator;
 import org.springframework.stereotype.Component;
@@ -27,6 +28,7 @@ public class OAuth2WebResponseExceptionTranslator implements WebResponseExceptio
 
     @Override
     public ResponseEntity<?> translate(Exception e) {
+        log.error(e.toString(), e);
         if (e instanceof ParamErrorException) {
             ParamErrorException paramErrorException = (ParamErrorException) e;
             return new ResponseEntity<>(ResultVO.error(paramErrorException.getCode(), paramErrorException.getMessage()), HttpStatus.OK);
@@ -43,9 +45,10 @@ public class OAuth2WebResponseExceptionTranslator implements WebResponseExceptio
             return new ResponseEntity<>(ResultVO.error(ErrorEnum.MISSING_GRANT_TYPE_ERROR.getCode(), ErrorEnum.MISSING_GRANT_TYPE_ERROR.getMessage()), HttpStatus.OK);
         } else if (e instanceof UnsupportedGrantTypeException) {
             return new ResponseEntity<>(ResultVO.error(ErrorEnum.UNSUPPORTED_GRANT_TYPE_ERROR.getCode(), ErrorEnum.UNSUPPORTED_GRANT_TYPE_ERROR.getMessage()), HttpStatus.OK);
+        } else if (e instanceof InvalidTokenException) {
+            return new ResponseEntity<>(ResultVO.error(ErrorEnum.INVALID_TOKEN_ERROR.getCode(), ErrorEnum.INVALID_TOKEN_ERROR.getMessage()), HttpStatus.OK);
         } else {
-            log.error(e.toString(), e);
-            return new ResponseEntity<>(ResultVO.error(ErrorEnum.GET_TOKEN_FAILD_ERROR.getCode(), ErrorEnum.GET_TOKEN_FAILD_ERROR.getMessage()), HttpStatus.OK);
+            return new ResponseEntity<>(ResultVO.error(ErrorEnum.UNKNOWN_ERROR.getCode(), ErrorEnum.UNKNOWN_ERROR.getMessage()), HttpStatus.OK);
         }
     }
 }
