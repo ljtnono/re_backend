@@ -1,6 +1,5 @@
 package cn.lingjiatong.re.auth.config;
 
-import cn.lingjiatong.re.auth.component.AuthenticationHandler;
 import cn.lingjiatong.re.auth.component.CustomClientCredentialsTokenEndpointFilter;
 import cn.lingjiatong.re.auth.component.OAuth2WebResponseExceptionTranslator;
 import cn.lingjiatong.re.auth.component.VerifyCodeTokenGranter;
