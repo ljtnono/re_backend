@@ -1,4 +1,4 @@
-package cn.lingjiatong.re.common.mapper;
+package cn.lingjiatong.re.auth.mapper;
 
 import cn.lingjiatong.re.common.entity.Role;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;

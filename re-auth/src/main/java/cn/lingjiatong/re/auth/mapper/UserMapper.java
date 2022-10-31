@@ -1,4 +1,4 @@
-package cn.lingjiatong.re.common.mapper;
+package cn.lingjiatong.re.auth.mapper;
 
 import cn.lingjiatong.re.common.entity.User;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
@@ -10,5 +10,6 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * Date: 2022/10/15 22:58
  */
 public interface UserMapper extends BaseMapper<User> {
+
 
 }

@@ -1,5 +1,7 @@
 package cn.lingjiatong.re.common.constant;
 
+import java.util.List;
+
 /**
  * 通用设定常量池
  *
@@ -12,6 +14,11 @@ public interface CommonConstant {
     Byte ENTITY_DELETE = 1;
     // 正常
     Byte ENTITY_NORMAL = 0;
+
+    static List<Byte> getDeleteStatusCodeList() {
+        return List.of(ENTITY_DELETE, ENTITY_NORMAL);
+    }
+
     // token的http请求头
     String TOKE_HTTP_HEADER = "Authorization";
     // cookie中的token键名

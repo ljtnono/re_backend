@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.lingjiatong.re.service.sys.mapper.UserMapper">
+    <!-- ********************************结果映射******************************** -->
+
+    <!-- cn.lingjiatong.re.service.sys.api.vo.BackendUserListVO -->
+    <resultMap id="BackendUserListVO" type="cn.lingjiatong.re.service.sys.api.vo.BackendUserListVO">
+
+    </resultMap>
+
+
+    <!-- ********************************新增类接口******************************** -->
+
+    <!-- ********************************删除类接口******************************** -->
+
+    <!-- ********************************修改类接口******************************** -->
+
+    <!-- ********************************查询类接口******************************** -->
+
+    <!-- 分页获取用户列表 -->
+    <select id="findUserList" resultType="cn.lingjiatong.re.service.sys.api.vo.BackendUserListVO">
+        SELECT
+            u.id
+            u.username,
+            u.email,
+            u.phone,
+            u.avatar_url,
+            u.create_time,
+            u.modify_time
+            u.is_deleted
+        FROM user u
+        <where>
+            <if test="dto.searchCondition != null and dto.searchCondition != ''">
+                AND
+                (
+                    u.username LIKE CONCAT('%', #{dto.searchCondition,jdbcType=VARCHAR}, '%')
+                    OR
+                    u.email LIKE CONCAT('%', #{dto.searchCondition,jdbcType=VARCHAR}, '%')
+                    OR
+                    u.phone LIKE CONCAT('%', #{dto.searchCondition,jdbcType=VARCHAR}, '%')
+                )
+            </if>
+        </where>
+    </select>
+
+    <!-- 批量更新用户删除状态 -->
+    <update id="updateUserDeleteStatusBatch">
+        UPDATE
+        user u
+        SET is_deleted = #{dto.deleteStatus, jdbcType=TINYINT}
+        <where>
+            u.id IN
+            <foreach collection="dto.userIdList" item="userId" separator="," open="(" close=")">
+                #{userId, jdbcType=INTEGER}
+            </foreach>
+        </where>
+    </update>
+</mapper>

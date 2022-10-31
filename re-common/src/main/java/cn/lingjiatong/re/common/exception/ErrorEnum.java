@@ -34,12 +34,16 @@ public enum ErrorEnum {
     MISSING_GRANT_TYPE_ERROR(400403, "请输入grant_type的值"),
     UNSUPPORTED_GRANT_TYPE_ERROR(400404, "不支持的grant_type"),
     CLIENT_ID_OR_CLIENT_SECRET_ERROR(400405, "client_id或client_secret错误"),
+    // token格式异常
+    INVALID_TOKEN_ERROR(400406, "缺少token参数或token格式异常"),
+    CAN_NOT_UPATE_OTHER_USER_ERROR(400407, "无法修改其他用户信息"),
 
     /** 500 Bad Request */
     // MINIO服务器出现异常
     MINIO_SERVER_ERROR(500001, "图片服务器异常，上传失败"),
-    // token格式异常
-    INVALID_TOKEN_ERROR(500002, "缺少token参数或token格式异常"),
+    // 数据操作失败
+    DATABASE_OPERATION_ERROR(500002, "数据库操作失败"),
+
 
 
     /** 600 业务类异常 */

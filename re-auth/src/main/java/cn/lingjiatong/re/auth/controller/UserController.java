@@ -54,6 +54,7 @@ public class UserController {
     public ResultVO<?> getAccessToken(Principal principal, @RequestParam Map<String, String> parameters) throws HttpRequestMethodNotSupportedException {
         log.info("==========获取token，参数：{}, {}", principal, parameters);
         ResponseEntity<OAuth2AccessToken> accessToken = tokenEndpoint.postAccessToken(principal, parameters);
+        // TODO 获取用户信息、菜单列表、tokenInfo
         return ResultVO.success(accessToken.getBody());
     }
 
