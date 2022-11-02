@@ -12,3 +12,6 @@ spring:
       discovery:
         namespace: f2cc4448-831f-41da-9aa8-b89d4a81d90c
         server-addr: @nacos-server-addr@
+#logging:
+#  level:
+#    root: debug

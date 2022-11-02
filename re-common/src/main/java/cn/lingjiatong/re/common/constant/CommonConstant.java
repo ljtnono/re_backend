@@ -27,5 +27,10 @@ public interface CommonConstant {
     String TOKEN_PREFIX = "Bearer ";
     // token加密盐值
     String TOKEN_SECRET_SALT = "||^^^-ROOTELEMENT-^^^||";
-
+    // token密钥生成时的密码
+    String TOKEN_SECRET_KEY_PASSWORD = "ROOTELEMENT";
+    // token密钥名
+    String TOKEN_SECRET_KEY_NAME = "re.jks";
+    // token密钥别名
+    String TOKEN_SERET_KEY_ALIAS = "re";
 }

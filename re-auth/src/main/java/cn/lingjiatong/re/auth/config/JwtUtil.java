@@ -11,9 +11,12 @@ import cn.lingjiatong.re.common.util.RedisUtil;
 import io.jsonwebtoken.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.security.oauth2.provider.token.store.KeyStoreKeyFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import java.security.KeyPair;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -53,6 +56,12 @@ public class JwtUtil {
                 .signWith(SignatureAlgorithm.HS256, CommonConstant.TOKEN_SECRET_SALT).compact();
     }
 
+    public static KeyPair keyPair() {
+        KeyStoreKeyFactory factory = new KeyStoreKeyFactory(new ClassPathResource("re.jks"), "ROOTELEMENT".toCharArray());
+        KeyPair keyPair = factory.getKeyPair("re", "ROOTELEMENT".toCharArray());
+        return keyPair;
+    }
+
     /**
      * 生成过期时间
      * 默认为8小时过期（一般人的工作时间）
@@ -70,7 +79,7 @@ public class JwtUtil {
      * @return 过期返回false, 未过期返回true
      * @throws NullPointerException 当token为null或空串时抛出
      */
-    public boolean isTokenExpired(String token) {
+    public static boolean isTokenExpired(String token) {
         Claims claims = getClaimsFromToken(token);
         Date expiration = claims.getExpiration();
         return expiration.before(new Date());
@@ -83,13 +92,13 @@ public class JwtUtil {
      * @return token中的Claims键值对信息，当token不符合格式时返回null
      * @see JwtParser#parseClaimsJws(String)  在解析token时会抛出各种异常，具体见此方法
      */
-    public Claims getClaimsFromToken(String token) {
+    public static Claims getClaimsFromToken(String token) {
         if (!StringUtils.hasLength(token)) {
             throw new PermissionException(ErrorEnum.USER_NOT_AUTHTICATE_ERROR);
         }
         JwtParser parser = Jwts.parser();
         try {
-            return parser.setSigningKey(CommonConstant.TOKEN_SECRET_SALT)
+            return parser.setSigningKey(keyPair().getPrivate())
                     .parseClaimsJws(token)
                     .getBody();
         } catch (MalformedJwtException | UnsupportedJwtException | SignatureException e ) {
@@ -99,6 +108,10 @@ public class JwtUtil {
             log.error("==========token已过期，异常：{}", e.toString());
             throw new PermissionException(ErrorEnum.TOKEN_EXPIRED_ERROR);
         }
+    }
+
+    public static void main(String[] args) {
+        System.out.println(isTokenExpired("eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJwaG9uZSI6IjE2MzMzMzMzMzMzIiwidXNlcl9uYW1lIjoibGluZ2ppYXRvbmciLCJzY29wZSI6WyJhbGwiXSwiZXhwIjoxNjY3NDM1NjYxLCJ1c2VySWQiOjEsImF1dGhvcml0aWVzIjpbImJsb2ciXSwianRpIjoiMzZkZDVkOWQtYTQxMi00ZmZhLTliNjctMTA5YmY1NTE1MTUxIiwiZW1haWwiOiI5MzUxODg0MDBAcXEuY29tIiwiY2xpZW50X2lkIjoiY2xpZW50IiwidXNlcm5hbWUiOiJsaW5namlhdG9uZyJ9.X9Wor-0vFBPT5kC-RcYewWWREJ66QQrdZFEPvvS5ZS5rC-3R1ZueE_sd-ve6ke2s-MZlVXeH0xBMXhzru4HJq1vLxmzy5yUTcP6yTo-CbBZPX1HhJnuu4p_yAVK1htLgvAELGsb3XQ3cJETb_2UNeiqt6BiwUF1o5L_yeu7BFsmmwBfPB7gECslAZ7hJNTzEbm-W_rFfTQJuMNuAtHDBtl-jXYMmFEetIvycNPHNM-eBEa2p15dzoPQuoN-OX_tAitLZGPWxa03Mtq--MoNpW9R3hWMjXQaLfr9uddBwdL-kbRHvcypEtapxdB6xQYbEdGrXFVsVwSHlW6IRlg_jWA"));
     }
 
     /**
@@ -132,7 +145,7 @@ public class JwtUtil {
      * @param token 令牌
      * @return username, 如果解析失败那么返回null
      */
-    public String getUsernameFromToken(String token) {
+    public static String getUsernameFromToken(String token) {
         Claims claimsFromToken = getClaimsFromToken(token);
         return claimsFromToken.get("username").toString();
     }

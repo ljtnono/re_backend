@@ -4,7 +4,6 @@ import cn.lingjiatong.re.common.ResultVO;
 import cn.lingjiatong.re.common.exception.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -106,23 +105,23 @@ public class GlobalControllerAspect {
         return ResultVO.error(ErrorEnum.REQUEST_PARAM_ERROR);
     }
 
-    /**
-     * 禁止访问异常
-     *
-     * @param e 禁止访问异常
-     * @return 通用消息返回对象
-     * @author Ling, Jiatong
-     */
-    @ExceptionHandler(AccessDeniedException.class)
-    @ResponseStatus(HttpStatus.OK)
-    public ResultVO<?> handleAccessDeniedException(AccessDeniedException e) {
-        log.error("==========访问权限异常");
-        String message = "禁止访问";
-        if (e != null) {
-            log.error(e.toString(), e);
-        }
-        return ResultVO.error(403, message);
-    }
+//    /**
+//     * 禁止访问异常
+//     *
+//     * @param e 禁止访问异常
+//     * @return 通用消息返回对象
+//     * @author Ling, Jiatong
+//     */
+//    @ExceptionHandler(AccessDeniedException.class)
+//    @ResponseStatus(HttpStatus.OK)
+//    public ResultVO<?> handleAccessDeniedException(AccessDeniedException e) {
+//        log.error("==========访问权限异常");
+//        String message = "禁止访问";
+//        if (e != null) {
+//            log.error(e.toString(), e);
+//        }
+//        return ResultVO.error(403, message);
+//    }
 
     /**
      * 未知系统异常

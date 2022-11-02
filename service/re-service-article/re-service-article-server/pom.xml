@@ -25,18 +25,6 @@
             <artifactId>re-service-article-api</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <!-- re-common -->
-        <dependency>
-            <groupId>cn.lingjiatong</groupId>
-            <artifactId>re-common</artifactId>
-            <version>${project.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.springframework.boot</groupId>
-                    <artifactId>spring-boot-starter-security</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
         <!-- nacos服务发现 -->
         <dependency>
             <groupId>com.alibaba.cloud</groupId>

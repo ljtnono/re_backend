@@ -13,7 +13,7 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
  */
 @EnableDiscoveryClient
 @SpringBootApplication(scanBasePackages = {"cn.lingjiatong.re.auth", "cn.lingjiatong.re.common"})
-@MapperScan(basePackages = {"cn.lingjiatong.re.common.mapper"})
+@MapperScan(basePackages = {"cn.lingjiatong.re.auth.mapper"})
 public class ReAuthApplication {
 
     public static void main(String[] args) {

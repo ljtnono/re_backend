@@ -1,6 +1,5 @@
 package cn.lingjiatong.re.auth.component;
 
-
 import cn.lingjiatong.re.common.ResultVO;
 import cn.lingjiatong.re.common.util.JSONUtil;
 import org.springframework.http.HttpStatus;

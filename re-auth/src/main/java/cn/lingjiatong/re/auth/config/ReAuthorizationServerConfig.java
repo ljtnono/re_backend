@@ -3,6 +3,7 @@ package cn.lingjiatong.re.auth.config;
 import cn.lingjiatong.re.auth.component.CustomClientCredentialsTokenEndpointFilter;
 import cn.lingjiatong.re.auth.component.OAuth2WebResponseExceptionTranslator;
 import cn.lingjiatong.re.auth.component.VerifyCodeTokenGranter;
+import cn.lingjiatong.re.common.constant.CommonConstant;
 import cn.lingjiatong.re.common.entity.User;
 import cn.lingjiatong.re.common.util.RedisUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -144,8 +145,8 @@ public class ReAuthorizationServerConfig extends AuthorizationServerConfigurerAd
      */
     @Bean
     public KeyPair keyPair() {
-        KeyStoreKeyFactory factory = new KeyStoreKeyFactory(new ClassPathResource("re.jks"), "ROOTELEMENT".toCharArray());
-        KeyPair keyPair = factory.getKeyPair("re", "ROOTELEMENT".toCharArray());
+        KeyStoreKeyFactory factory = new KeyStoreKeyFactory(new ClassPathResource(CommonConstant.TOKEN_SECRET_KEY_NAME), CommonConstant.TOKEN_SECRET_KEY_PASSWORD.toCharArray());
+        KeyPair keyPair = factory.getKeyPair(CommonConstant.TOKEN_SERET_KEY_ALIAS, CommonConstant.TOKEN_SECRET_KEY_PASSWORD.toCharArray());
         return keyPair;
     }
 
