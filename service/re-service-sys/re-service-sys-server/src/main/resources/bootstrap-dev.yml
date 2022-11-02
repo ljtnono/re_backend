@@ -1,0 +1,10 @@
+spring:
+  cloud:
+    nacos:
+      config:
+        namespace: ee7675c4-d2cc-48ab-8c8f-bd4461099886
+        server-addr: @nacos-server-addr@
+        file-extension: yaml
+      discovery:
+        namespace: ee7675c4-d2cc-48ab-8c8f-bd4461099886
+        server-addr: @nacos-server-addr@
