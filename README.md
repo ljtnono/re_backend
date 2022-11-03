@@ -46,3 +46,15 @@ re_backend
 ├──         └── re-service-sys-server           // 系统模块应用层
 
 ```
+
+### 微服务端口设定
+
+| 微服务名称                | 微服务描述       | 开发环境端口号 |
+| ------------------------- | ---------------- | -------------- |
+| api-frontend              | 博客前端接口     | 8001           |
+| api-backend               | 博客后台管理接口 | 8002           |
+| re-auth                   | 认证微服务       | 8003           |
+| re-gateway                | 网关微服务       | 8080           |
+| re-job                    | 定时任务微服务   | 8081           |
+| re-service-article-server | 文章微服务       | 8004           |
+| re-service-sys-server     | 系统设置微服务   | 8005           |
