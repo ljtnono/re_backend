@@ -2,6 +2,7 @@ package cn.lingjiatong.re.service.sys.api.client;
 
 import cn.lingjiatong.re.common.ResultVO;
 import cn.lingjiatong.re.common.entity.User;
+import cn.lingjiatong.re.service.sys.api.config.FeignBasicAuthRequestInterceptor;
 import cn.lingjiatong.re.service.sys.api.dto.BackendUserListDTO;
 import cn.lingjiatong.re.service.sys.api.dto.BackendUserUpdateDTO;
 import cn.lingjiatong.re.service.sys.api.dto.BackendUserUpdateDeleteStatusBatchDTO;
@@ -20,7 +21,7 @@ import org.springframework.web.bind.annotation.RequestBody;
  * @author Ling, Jiatong
  * Date: 2022/10/31 20:27
  */
-@FeignClient(value = "re-service-sys-server", path = "/sys", contextId = "BackendUserFeignClient")
+@FeignClient(value = "re-service-sys-server", path = "/sys", contextId = "BackendUserFeignClient", configuration = {FeignBasicAuthRequestInterceptor.class})
 public interface BackendUserFeignClient {
 
     // ********************************新增类接口********************************

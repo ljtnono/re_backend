@@ -3,23 +3,56 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>re-service-article</artifactId>
+        <artifactId>re_backend</artifactId>
         <groupId>cn.lingjiatong</groupId>
         <version>${re-version}</version>
-        <relativePath>../pom.xml</relativePath>
+        <relativePath>../../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>re-service-article-server</artifactId>
+    <artifactId>api-backend</artifactId>
 
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
-
     <dependencies>
-        <!-- 引入系统设置相关接口 -->
+        <!-- re-common -->
+        <dependency>
+            <groupId>cn.lingjiatong</groupId>
+            <artifactId>re-common</artifactId>
+            <version>${project.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>mysql</groupId>
+                    <artifactId>mysql-connector-java</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.baomidou</groupId>
+                    <artifactId>mybatis-plus-boot-starter</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-data-redis</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-data-elasticsearch</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.springframework.cloud</groupId>
+                    <artifactId>spring-cloud-starter-oauth2</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <!-- re-service-sys-api -->
+        <dependency>
+            <groupId>cn.lingjiatong</groupId>
+            <artifactId>re-service-sys-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <!-- re-service-article-api -->
         <dependency>
             <groupId>cn.lingjiatong</groupId>
             <artifactId>re-service-article-api</artifactId>
@@ -34,21 +67,6 @@
         <dependency>
             <groupId>com.alibaba.cloud</groupId>
             <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
-        </dependency>
-        <!-- redis -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-redis</artifactId>
-        </dependency>
-        <!-- elasticsearch -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-elasticsearch</artifactId>
-        </dependency>
-        <!-- commons-pool2 -->
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-pool2</artifactId>
         </dependency>
     </dependencies>
 
@@ -69,22 +87,13 @@
             </properties>
         </profile>
     </profiles>
+
     <build>
-        <finalName>re-service-article-server</finalName>
+        <finalName>api-backend</finalName>
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
                 <filtering>true</filtering>
-                <excludes>
-                    <exclude>**/*.jks</exclude>
-                </excludes>
-            </resource>
-            <resource>
-                <directory>src/main/resources</directory>
-                <filtering>false</filtering>
-                <includes>
-                    <include>**/*.jks</include>
-                </includes>
             </resource>
         </resources>
         <plugins>
@@ -94,7 +103,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
                     <!-- 指定全局唯一入口 -->
-                    <mainClass>cn.lingjiatong.re.service.article.ReArticleServiceServerApplication</mainClass>
+                    <mainClass>cn.lingjiatong.re.api.frontend.ReApiFrontendApplication</mainClass>
                     <layout>ZIP</layout>
                     <fork>true</fork>
                 </configuration>
@@ -109,5 +118,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>

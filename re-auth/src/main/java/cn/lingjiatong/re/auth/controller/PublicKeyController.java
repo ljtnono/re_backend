@@ -2,7 +2,6 @@ package cn.lingjiatong.re.auth.controller;
 
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
-import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,7 +17,6 @@ import java.util.Map;
  * Date: 2022/10/24 21:08
  */
 @RestController
-@AllArgsConstructor
 public class PublicKeyController {
 
     @Autowired

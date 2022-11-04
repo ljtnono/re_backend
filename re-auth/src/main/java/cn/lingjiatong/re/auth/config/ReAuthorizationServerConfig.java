@@ -62,6 +62,9 @@ public class ReAuthorizationServerConfig extends AuthorizationServerConfigurerAd
     @Qualifier("customOAuth2AuthenticationEntryPoint")
     private AuthenticationEntryPoint authenticationEntryPoint;
 
+    @Autowired
+    private KeyPair keyPair;
+
     @Value("${spring.profiles.active}")
     private String profile;
 

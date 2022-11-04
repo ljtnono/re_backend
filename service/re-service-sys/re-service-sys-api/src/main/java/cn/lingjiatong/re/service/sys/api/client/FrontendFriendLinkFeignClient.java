@@ -1,6 +1,7 @@
 package cn.lingjiatong.re.service.sys.api.client;
 
 import cn.lingjiatong.re.common.ResultVO;
+import cn.lingjiatong.re.service.sys.api.config.FeignBasicAuthRequestInterceptor;
 import cn.lingjiatong.re.service.sys.api.vo.FrontendFriendLinkListVO;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -14,7 +15,7 @@ import java.util.List;
  * @author Ling, Jiatong
  * Date: 2022/10/11 00:23
  */
-@FeignClient(name = "re-service-sys-server", path = "/sys", contextId = "FrontendFriendLinkFeignClient")
+@FeignClient(name = "re-service-sys-server", path = "/sys", contextId = "FrontendFriendLinkFeignClient", configuration = {FeignBasicAuthRequestInterceptor.class})
 public interface FrontendFriendLinkFeignClient {
 
 

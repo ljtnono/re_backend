@@ -12,7 +12,8 @@
         <module>re-auth</module>
 		<module>re-gateway</module>
 		<module>api/api-frontend</module>
-        <module>service/re-service-sys</module>
+		<module>api/api-backend</module>
+		<module>service/re-service-sys</module>
 		<module>service/re-service-article</module>
     </modules>
 	<name>re_backend</name>

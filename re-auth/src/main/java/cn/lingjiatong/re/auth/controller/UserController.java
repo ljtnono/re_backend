@@ -69,9 +69,6 @@ public class UserController {
         return ResultVO.success(accessToken.getBody());
     }
 
-
-
-
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     public ResponseEntity<OAuth2Exception> handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException e) throws Exception {
         return tokenEndpoint.handleHttpRequestMethodNotSupportedException(e);

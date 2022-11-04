@@ -1,8 +1,8 @@
 package cn.lingjiatong.re.service.sys.api.client;
 
 import cn.lingjiatong.re.common.ResultVO;
+import cn.lingjiatong.re.service.sys.api.config.FeignBasicAuthRequestInterceptor;
 import cn.lingjiatong.re.service.sys.api.vo.FrontendNoticeListVO;
-import cn.lingjiatong.re.service.sys.api.vo.FrontendWebsiteConfigAddVO;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,7 +15,7 @@ import java.util.List;
  * @author Ling, Jiatong
  * Date: 2022/10/11 00:28
  */
-@FeignClient(name = "re-service-sys-server", path = "/sys", contextId = "FrontendNoticeFeignClient")
+@FeignClient(name = "re-service-sys-server", path = "/sys", contextId = "FrontendNoticeFeignClient", configuration = {FeignBasicAuthRequestInterceptor.class})
 public interface FrontendNoticeFeignClient {
 
     /**

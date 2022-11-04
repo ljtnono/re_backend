@@ -98,11 +98,3 @@ kubectl apply -f elasticsearch.yml
 kubectl apply -f minio.yml
 
 ```
-
-
-### k8s安装ingress博客
-
-https://github.com/anjia0532/gcr.io_mirror
-
-
-### 

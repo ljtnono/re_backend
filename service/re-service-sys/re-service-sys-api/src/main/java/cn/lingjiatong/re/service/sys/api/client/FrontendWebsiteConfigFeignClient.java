@@ -1,6 +1,7 @@
 package cn.lingjiatong.re.service.sys.api.client;
 
 import cn.lingjiatong.re.common.ResultVO;
+import cn.lingjiatong.re.service.sys.api.config.FeignBasicAuthRequestInterceptor;
 import cn.lingjiatong.re.service.sys.api.dto.FrontendWebsiteConfigAddDTO;
 import cn.lingjiatong.re.service.sys.api.dto.FrontendWebsiteConfigFindDTO;
 import cn.lingjiatong.re.service.sys.api.vo.FrontendWebsiteConfigAddVO;
@@ -18,7 +19,7 @@ import java.util.List;
  * @author Ling, Jiatong
  * Date: 2022/9/17 18:49
  */
-@FeignClient(name = "re-service-sys-server", path = "/sys")
+@FeignClient(name = "re-service-sys-server", path = "/sys", contextId = "FrontendWebsiteConfigFeignClient", configuration = {FeignBasicAuthRequestInterceptor.class})
 public interface FrontendWebsiteConfigFeignClient {
 
     /**
