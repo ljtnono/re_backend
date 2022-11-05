@@ -1,4 +1,4 @@
-package cn.lingjiatong.re.service.sys.security;
+package cn.lingjiatong.re.api.frontend.security;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

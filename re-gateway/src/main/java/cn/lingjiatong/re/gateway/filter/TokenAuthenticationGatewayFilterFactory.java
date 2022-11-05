@@ -88,8 +88,6 @@ public class TokenAuthenticationGatewayFilterFactory extends AbstractGatewayFilt
 
             if (StringUtils.hasLength(token) && StringUtils.hasLength(username)) {
                 // 说明解析成功，进入下一个过滤器
-                // 统一将token放入到请求头中去
-//                request.getHeaders().set(CommonConstant.TOKE_HTTP_HEADER, CommonConstant.TOKEN_PREFIX + token);
                 return chain.filter(exchange);
             } else {
                 // 解析失败，返回失败消息

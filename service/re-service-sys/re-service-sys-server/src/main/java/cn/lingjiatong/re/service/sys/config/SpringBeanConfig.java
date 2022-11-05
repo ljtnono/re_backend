@@ -34,9 +34,6 @@ import java.security.KeyPair;
 @EnableSwagger2
 public class SpringBeanConfig {
 
-    @Autowired
-    private JwtAccessTokenConverter jwtAccessTokenConverter;
-
     @Bean
     @Lazy
     public MybatisPlusInterceptor paginationInterceptor() {
@@ -79,36 +76,6 @@ public class SpringBeanConfig {
         redisTemplate.setHashValueSerializer(jackson2JsonRedisSerializer);
         redisTemplate.afterPropertiesSet();
         return redisTemplate;
-    }
-
-    /**
-     * 从classpath下的密钥库中获取密钥对(公钥+私钥)
-     */
-    @Bean
-    public KeyPair keyPair() {
-        KeyStoreKeyFactory factory = new KeyStoreKeyFactory(new ClassPathResource(CommonConstant.TOKEN_SECRET_KEY_NAME), CommonConstant.TOKEN_SECRET_KEY_PASSWORD.toCharArray());
-        KeyPair keyPair = factory.getKeyPair(CommonConstant.TOKEN_SERET_KEY_ALIAS, CommonConstant.TOKEN_SECRET_KEY_PASSWORD.toCharArray());
-        return keyPair;
-    }
-
-
-
-    /**
-     * 使用非对称加密算法对token签名
-     */
-    @Bean
-    public JwtAccessTokenConverter jwtAccessTokenConverter() {
-        JwtAccessTokenConverter converter = new JwtAccessTokenConverter();
-        converter.setKeyPair(keyPair());
-        return converter;
-    }
-
-    /**
-     * jwt token存储模式
-     */
-    @Bean
-    public JwtTokenStore jwtTokenStore(){
-        return new JwtTokenStore(jwtAccessTokenConverter);
     }
 
 }

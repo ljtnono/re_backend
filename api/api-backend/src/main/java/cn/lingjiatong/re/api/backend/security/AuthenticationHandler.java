@@ -1,4 +1,4 @@
-package cn.lingjiatong.re.service.sys.security;
+package cn.lingjiatong.re.api.backend.security;
 
 import cn.lingjiatong.re.common.ResultVO;
 import cn.lingjiatong.re.common.exception.ErrorEnum;

@@ -24,11 +24,6 @@
             <artifactId>re-common</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <!-- openfeign -->
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-openfeign</artifactId>
-        </dependency>
     </dependencies>
 
 </project>
