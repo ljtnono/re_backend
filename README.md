@@ -49,12 +49,14 @@ re_backend
 
 ### 微服务端口设定
 
-| 微服务名称                | 微服务描述       | 开发环境端口号 |
-| ------------------------- | ---------------- | -------------- |
-| api-frontend              | 博客前端接口     | 8001           |
-| api-backend               | 博客后台管理接口 | 8002           |
-| re-auth                   | 认证微服务       | 8003           |
-| re-gateway                | 网关微服务       | 8080           |
-| re-job                    | 定时任务微服务   | 8081           |
-| re-service-article-server | 文章微服务       | 8004           |
-| re-service-sys-server     | 系统设置微服务   | 8005           |
+| 防火墙共享名称 | 描述              | k8s服务名称               | k8s名称空间 | port（service端口号） | nodePort（节点端口） | targetPort（容器端口） | spring cloud微服务名称    | spring cloud微服务描述 | 开发环境端口号 | 防火墙暴露端口号 |
+| -------------- | ----------------- | ------------------------- | ----------- | --------------------- | -------------------- | ---------------------- | ------------------------- | ---------------------- | :------------- | ---------------- |
+| RE-GATEWAY     | RE博客API网关服务 | re-gateway                | rootelement | 8080                  | 30152                | 8080                   | re-gateway                | API网关                | 8152           | 30152            |
+| -              | -                 | api-frontend              | rootelement | 8080                  | 30153                | 8080                   | api-frontend              | 博客前端接口           | 8153           | -                |
+| -              | -                 | api-backend               | rootelement | 8080                  | 30154                | 8080                   | api-backend               | 博客后台管理接口       | 8154           | -                |
+| -              | -                 | re-auth                   | rootelement | 8080                  | 30155                | 8080                   | re-auth                   | 认证微服务             | 8155           | -                |
+| -              | -                 | re-job                    | rootelement | 8080                  | 30156                | 8080                   | re-job                    | 定时任务微服务         | 8156           | -                |
+| -              | -                 | re-service-article-server | rootelement | 8080                  | 30200                | 8080                   | re-service-article-server | 文章微服务             | 8200           | -                |
+| -              | -                 | re-service-sys-server     | rootelement | 8080                  | 30201                | 8080                   | re-service-sys-server     | 系统设置微服务         | 8201           | -                |
+
+
