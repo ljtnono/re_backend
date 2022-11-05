@@ -22,7 +22,7 @@ public interface FrontendTagFeignClient {
      *
      * @return 前端博客标签列表VO对象列表
      */
-    @GetMapping("/api/v1/hotTagList")
+    @GetMapping("/frontend/api/v1/tag/hotTagList")
     @ApiOperation(value = "获取前端热门标签列表", httpMethod = "GET")
     ResultVO<List<FrontendTagListVO>> findFrontendHotTagList();
 }

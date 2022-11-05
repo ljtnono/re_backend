@@ -35,7 +35,7 @@ public interface BackendUserFeignClient {
      * @param dto 后台批量更改用户删除状态DTO对象
      * @return 通用消息返回对象
      */
-    @PutMapping("/api/v1/user/updateDeleteStatusBatch")
+    @PutMapping("/backend/api/v1/user/updateDeleteStatusBatch")
     @ApiOperation(value = "批量更改用户删除状态", httpMethod = "PUT")
     ResultVO<?> updateUserDeleteStatusBatch(@RequestBody BackendUserUpdateDeleteStatusBatchDTO dto);
 
@@ -46,7 +46,7 @@ public interface BackendUserFeignClient {
      * @param dto 后台编辑用户信息DTO对象
      * @return 通用消息返回对象
      */
-    @PutMapping("/api/v1/user/updateUser")
+    @PutMapping("/backend/api/v1/user/updateUser")
     @ApiOperation(value = "更改用户信息-管理员", httpMethod = "PUT")
     ResultVO<?> adminUpdateUser(@RequestBody BackendUserUpdateDTO dto);
 
@@ -57,7 +57,7 @@ public interface BackendUserFeignClient {
      * @param currentUser 当前登录用户
      * @return 通用消息返回对象
      */
-    @PutMapping("/api/v1/user")
+    @PutMapping("/backend/api/v1/user")
     @ApiOperation(value = "更改用户信息-个人", httpMethod = "PUT")
     ResultVO<?> updateUser(@RequestBody BackendUserUpdateDTO dto, User currentUser);
 
@@ -69,7 +69,7 @@ public interface BackendUserFeignClient {
      * @param dto 后台获取用户列表DTO对象
      * @return 后台获取用户列表VO对象分页对象
      */
-    @GetMapping("/api/v1/user/list")
+    @GetMapping("/backend/api/v1/user/list")
     @ApiOperation(value = "获取用户列表", httpMethod = "GET")
     ResultVO<IPage<BackendUserListVO>> findUserList(@SpringQueryMap BackendUserListDTO dto);
 

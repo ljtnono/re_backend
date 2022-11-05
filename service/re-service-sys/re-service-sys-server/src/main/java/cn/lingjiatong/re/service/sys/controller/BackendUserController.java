@@ -34,21 +34,21 @@ public class BackendUserController implements BackendUserFeignClient {
     // ********************************修改类接口********************************
 
     @Override
-    @PutMapping("/api/v1/user/updateDeleteStatusBatch")
+    @PutMapping("/backend/api/v1/user/updateDeleteStatusBatch")
     public ResultVO<?> updateUserDeleteStatusBatch(@RequestBody BackendUserUpdateDeleteStatusBatchDTO dto) {
         backendUserService.updateUserDeleteStatusBatch(dto);
         return ResultVO.success();
     }
 
     @Override
-    @PutMapping("/api/v1/user/updateUser")
+    @PutMapping("/backend/api/v1/user/updateUser")
     public ResultVO<?> adminUpdateUser(BackendUserUpdateDTO dto) {
         backendUserService.adminUpdateUser(dto);
         return ResultVO.success();
     }
 
     @Override
-    @PutMapping("/api/v1/user")
+    @PutMapping("/backend/api/v1/user")
     public ResultVO<?> updateUser(@RequestBody BackendUserUpdateDTO dto, User currentUser) {
         backendUserService.updateUser(dto, currentUser);
         return ResultVO.success();
@@ -57,7 +57,7 @@ public class BackendUserController implements BackendUserFeignClient {
     // ********************************查询类接口********************************
 
     @Override
-    @GetMapping("/api/v1/user/list")
+    @GetMapping("/backend/api/v1/user/list")
     public ResultVO<IPage<BackendUserListVO>> findUserList(BackendUserListDTO dto) {
         return ResultVO.success(backendUserService.findUserList(dto));
     }

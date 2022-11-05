@@ -1,4 +1,4 @@
-package cn.lingjiatong.re.auth.component;
+package cn.lingjiatong.re.auth.security.authorizationserver;
 
 import cn.lingjiatong.re.auth.constant.AuthErrorMessageConstant;
 import cn.lingjiatong.re.common.constant.ProfileEnum;

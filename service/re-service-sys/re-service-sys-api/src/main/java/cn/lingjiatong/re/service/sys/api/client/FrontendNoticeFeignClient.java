@@ -23,7 +23,7 @@ public interface FrontendNoticeFeignClient {
      *
      * @return 前端通知列表VO对象列表
      */
-    @GetMapping("/api/v1/noticeList")
+    @GetMapping("/frontend/api/v1/notice/list")
     @ApiOperation(value = "获取前端通知信息列表", httpMethod = "GET")
     ResultVO<List<FrontendNoticeListVO>> findFrontendNoticeList();
 

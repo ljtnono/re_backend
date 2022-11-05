@@ -1,4 +1,4 @@
-package cn.lingjiatong.re.auth.component;
+package cn.lingjiatong.re.auth.security.authorizationserver;
 
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;

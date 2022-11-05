@@ -1,8 +1,5 @@
-package cn.lingjiatong.re.auth.config;
+package cn.lingjiatong.re.auth.security.authorizationserver;
 
-import cn.lingjiatong.re.auth.component.CustomClientCredentialsTokenEndpointFilter;
-import cn.lingjiatong.re.auth.component.OAuth2WebResponseExceptionTranslator;
-import cn.lingjiatong.re.auth.component.VerifyCodeTokenGranter;
 import cn.lingjiatong.re.common.constant.CommonConstant;
 import cn.lingjiatong.re.common.entity.User;
 import cn.lingjiatong.re.common.util.RedisUtil;
@@ -43,8 +40,7 @@ import java.util.*;
  */
 @Configuration
 @EnableAuthorizationServer
-public class ReAuthorizationServerConfig extends AuthorizationServerConfigurerAdapter {
-
+public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdapter {
     @Autowired
     private AuthenticationManager authenticationManager;
     @Autowired
@@ -61,9 +57,10 @@ public class ReAuthorizationServerConfig extends AuthorizationServerConfigurerAd
     @Autowired
     @Qualifier("customOAuth2AuthenticationEntryPoint")
     private AuthenticationEntryPoint authenticationEntryPoint;
-
     @Autowired
-    private KeyPair keyPair;
+    private JwtTokenStore jwtTokenStore;
+    @Autowired
+    private TokenEnhancer tokenEnhancer;
 
     @Value("${spring.profiles.active}")
     private String profile;
@@ -85,7 +82,7 @@ public class ReAuthorizationServerConfig extends AuthorizationServerConfigurerAd
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) {
         TokenEnhancerChain tokenEnhancerChain = new TokenEnhancerChain();
         List<TokenEnhancer> tokenEnhancers = new ArrayList<>();
-        tokenEnhancers.add(tokenEnhancer());
+        tokenEnhancers.add(tokenEnhancer);
         tokenEnhancers.add(jwtAccessTokenConverter);
         tokenEnhancerChain.setTokenEnhancers(tokenEnhancers);
 
@@ -100,7 +97,7 @@ public class ReAuthorizationServerConfig extends AuthorizationServerConfigurerAd
                 .accessTokenConverter(jwtAccessTokenConverter)
                 .userDetailsService(userDetailsService)
                 .tokenEnhancer(tokenEnhancerChain)
-                .tokenStore(jwtTokenStore())
+                .tokenStore(jwtTokenStore)
                 .allowedTokenEndpointRequestMethods(HttpMethod.GET, HttpMethod.POST)
                 .reuseRefreshTokens(false)
                 .exceptionTranslator(oAuth2WebResponseExceptionTranslator)
@@ -125,49 +122,6 @@ public class ReAuthorizationServerConfig extends AuthorizationServerConfigurerAd
                 .checkTokenAccess("permitAll()");
     }
 
-    /**
-     * jwt token存储模式
-     */
-    @Bean
-    public JwtTokenStore jwtTokenStore(){
-        return new JwtTokenStore(jwtAccessTokenConverter);
-    }
 
-    /**
-     * 使用非对称加密算法对token签名
-     */
-    @Bean
-    public JwtAccessTokenConverter jwtAccessTokenConverter() {
-        JwtAccessTokenConverter converter = new JwtAccessTokenConverter();
-        converter.setKeyPair(keyPair());
-        return converter;
-    }
-
-    /**
-     * 从classpath下的密钥库中获取密钥对(公钥+私钥)
-     */
-    @Bean
-    public KeyPair keyPair() {
-        KeyStoreKeyFactory factory = new KeyStoreKeyFactory(new ClassPathResource(CommonConstant.TOKEN_SECRET_KEY_NAME), CommonConstant.TOKEN_SECRET_KEY_PASSWORD.toCharArray());
-        KeyPair keyPair = factory.getKeyPair(CommonConstant.TOKEN_SERET_KEY_ALIAS, CommonConstant.TOKEN_SECRET_KEY_PASSWORD.toCharArray());
-        return keyPair;
-    }
-
-    /**
-     * JWT内容增强
-     */
-    @Bean
-    public TokenEnhancer tokenEnhancer() {
-        return (accessToken, authentication) -> {
-            Map<String, Object> map = new HashMap<>(2);
-            User user = (User) authentication.getUserAuthentication().getPrincipal();
-            map.put("userId", user.getId());
-            map.put("username", user.getUsername());
-            map.put("email", user.getEmail());
-            map.put("phone", user.getPhone());
-            ((DefaultOAuth2AccessToken) accessToken).setAdditionalInformation(map);
-            return accessToken;
-        };
-    }
 
 }

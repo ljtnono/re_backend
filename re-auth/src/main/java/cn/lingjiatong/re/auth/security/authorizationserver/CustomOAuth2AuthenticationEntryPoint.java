@@ -1,4 +1,4 @@
-package cn.lingjiatong.re.auth.component;
+package cn.lingjiatong.re.auth.security.authorizationserver;
 
 import cn.lingjiatong.re.common.ResultVO;
 import cn.lingjiatong.re.common.exception.ErrorEnum;

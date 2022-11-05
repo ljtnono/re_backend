@@ -1,4 +1,4 @@
-package cn.lingjiatong.re.auth.component;
+package cn.lingjiatong.re.auth.security;
 
 import cn.lingjiatong.re.common.util.EncryptUtil;
 import org.springframework.security.crypto.password.PasswordEncoder;

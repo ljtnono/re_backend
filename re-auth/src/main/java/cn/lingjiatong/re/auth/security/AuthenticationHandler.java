@@ -1,6 +1,7 @@
-package cn.lingjiatong.re.auth.component;
+package cn.lingjiatong.re.auth.security;
 
 import cn.lingjiatong.re.common.ResultVO;
+import cn.lingjiatong.re.common.exception.ErrorEnum;
 import cn.lingjiatong.re.common.util.JSONUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
@@ -30,7 +31,7 @@ public class AuthenticationHandler implements AccessDeniedHandler, Authenticatio
         response.setCharacterEncoding("utf-8");
         response.setContentType("application/json;charset=utf-8");
         response.setStatus(HttpStatus.OK.value());
-        response.getWriter().write(JSONUtil.objectToString(ResultVO.error(403, "没有访问权限")));
+        response.getWriter().write(JSONUtil.objectToString(ResultVO.error(ErrorEnum.PERMISSION_DENIED_ERROR)));
     }
 
     /**
@@ -41,6 +42,6 @@ public class AuthenticationHandler implements AccessDeniedHandler, Authenticatio
         response.setCharacterEncoding("utf-8");
         response.setContentType("application/json;charset=utf-8");
         response.setStatus(HttpStatus.OK.value());
-        response.getWriter().write(JSONUtil.objectToString(ResultVO.error(401, "未认证过的用户")));
+        response.getWriter().write(JSONUtil.objectToString(ResultVO.error(ErrorEnum.USER_NOT_AUTHTICATE_ERROR)));
     }
 }

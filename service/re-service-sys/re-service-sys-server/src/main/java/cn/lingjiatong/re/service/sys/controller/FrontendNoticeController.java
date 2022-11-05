@@ -25,7 +25,7 @@ public class FrontendNoticeController implements FrontendNoticeFeignClient {
     private FrontendNoticeService frontendNoticeService;
 
     @Override
-    @GetMapping("/api/v1/noticeList")
+    @GetMapping("/frontend/api/v1/notice/list")
     public ResultVO<List<FrontendNoticeListVO>> findFrontendNoticeList() {
         return ResultVO.success(frontendNoticeService.findFrontendNoticeList());
     }

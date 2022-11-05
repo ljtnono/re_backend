@@ -1,4 +1,4 @@
-package cn.lingjiatong.re.auth.config;
+package cn.lingjiatong.re.auth.security;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;

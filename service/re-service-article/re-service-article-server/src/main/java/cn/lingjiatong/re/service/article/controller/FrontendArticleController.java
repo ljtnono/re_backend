@@ -24,7 +24,7 @@ public class FrontendArticleController implements FrontendArticleFeignClient {
 
     @Override
     @NonNull
-    @GetMapping("/api/v1/article/{articleId}")
+    @GetMapping("/frontend/api/v1/article/{articleId}")
     public ResultVO<FrontendArticleVO> findArticleById(@PathVariable("articleId") @NonNull Long articleId) {
         return ResultVO.success(frontendArticleService.findArticle(articleId));
     }

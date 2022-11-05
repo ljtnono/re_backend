@@ -29,21 +29,20 @@ public class FrontendWebsiteConfigController implements FrontendWebsiteConfigFei
     private FrontendWebsiteConfigService frontendWebsiteConfigService;
 
     @Override
-    @GetMapping("/api/v1/frontendWebsiteConfig")
-    @PreAuthorize("hasAuthority('blog')")
+    @GetMapping("/frontend/api/v1/frontendWebsiteConfig")
     public ResultVO<FrontendWebsiteConfigAddVO> findFrontendWebsiteConfig(FrontendWebsiteConfigFindDTO dto) {
         return ResultVO.success(frontendWebsiteConfigService.findFrontendWebsiteConfig(dto));
     }
 
     @Override
-    @PostMapping("/api/v1/frontendWebsiteConfig")
+    @PostMapping("/frontend/api/v1/frontendWebsiteConfig")
     public ResultVO<?> addFrontendWebsiteConfig(List<FrontendWebsiteConfigAddDTO> list) {
         frontendWebsiteConfigService.addFrontendWebsiteConfig(list);
         return ResultVO.success();
     }
 
     @Override
-    @GetMapping("/api/v1/frontendSwiperImageList")
+    @GetMapping("/frontend/api/v1/frontendSwiperImageList")
     public ResultVO<List<String>> getFrontendSwiperImageList() {
         return ResultVO.success(frontendWebsiteConfigService.getFrontendSwiperImageList());
     }

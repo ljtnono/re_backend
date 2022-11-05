@@ -24,7 +24,7 @@ public interface FrontendFriendLinkFeignClient {
      *
      * @return 前端友情链接列表VO对象列表
      */
-    @GetMapping("/api/v1/friendLinkList")
+    @GetMapping("/frontend/api/v1/friendLink/list")
     @ApiOperation(value = "获取前端友情链接列表", httpMethod = "GET")
     ResultVO<List<FrontendFriendLinkListVO>> findFrontendNoticeList();
 

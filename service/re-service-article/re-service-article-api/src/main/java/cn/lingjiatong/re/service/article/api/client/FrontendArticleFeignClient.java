@@ -24,7 +24,7 @@ public interface FrontendArticleFeignClient {
      * @return 单个文章信息VO对象
      */
     @NonNull
-    @GetMapping("/api/v1/article/{articleId}")
+    @GetMapping("/frontend/api/v1/article/{articleId}")
     ResultVO<FrontendArticleVO> findArticleById(@PathVariable("articleId") @NonNull Long articleId);
 
 }

@@ -1,4 +1,4 @@
-package cn.lingjiatong.re.auth.component;
+package cn.lingjiatong.re.auth.service;
 
 import cn.lingjiatong.re.common.constant.CommonConstant;
 import cn.lingjiatong.re.common.constant.RedisCacheKeyEnum;

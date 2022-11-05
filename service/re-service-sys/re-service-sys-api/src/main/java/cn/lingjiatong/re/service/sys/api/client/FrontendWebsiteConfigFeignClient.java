@@ -28,7 +28,7 @@ public interface FrontendWebsiteConfigFeignClient {
      * @param dto 获取前端站点配置DTO对象
      * @return 获取前端站点配置VO对象
      */
-    @GetMapping("/api/v1/frontendWebsiteConfig")
+    @GetMapping("/frontend/api/v1/frontendWebsiteConfig")
     @ApiOperation(value = "获取前端站点设置接口", httpMethod = "GET")
     ResultVO<FrontendWebsiteConfigAddVO> findFrontendWebsiteConfig(@SpringQueryMap FrontendWebsiteConfigFindDTO dto);
 
@@ -38,7 +38,7 @@ public interface FrontendWebsiteConfigFeignClient {
      * @param list 新增前端站点配置DTO对象列表
      * @return 新增前端站点配置VO对象
      */
-    @PostMapping("/api/v1/frontendWebsiteConfig")
+    @PostMapping("/frontend/api/v1/frontendWebsiteConfig")
     @ApiOperation(value = "新增前端站点设置接口", httpMethod = "POST")
     ResultVO<?> addFrontendWebsiteConfig(@SpringQueryMap List<FrontendWebsiteConfigAddDTO> list);
 
@@ -47,7 +47,7 @@ public interface FrontendWebsiteConfigFeignClient {
      *
      * @return 图片url列表
      */
-    @GetMapping("/api/v1/frontendSwiperImageList")
+    @GetMapping("/frontend/api/v1/frontendSwiperImageList")
     @ApiOperation("获取前端swpier图片列表")
     ResultVO<List<String>> getFrontendSwiperImageList();
 }

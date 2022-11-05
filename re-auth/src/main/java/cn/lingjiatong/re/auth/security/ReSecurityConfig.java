@@ -1,6 +1,5 @@
-package cn.lingjiatong.re.auth.config;
+package cn.lingjiatong.re.auth.security;
 
-import cn.lingjiatong.re.auth.component.AuthenticationHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;

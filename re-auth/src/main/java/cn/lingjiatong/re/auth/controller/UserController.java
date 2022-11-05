@@ -1,6 +1,6 @@
 package cn.lingjiatong.re.auth.controller;
 
-import cn.lingjiatong.re.auth.component.UserService;
+import cn.lingjiatong.re.auth.service.UserService;
 import cn.lingjiatong.re.common.ResultVO;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;

@@ -25,7 +25,7 @@ public class FrontendFriendLinkController implements FrontendFriendLinkFeignClie
     private FrontendFriendLinkService frontendFriendLinkService;
 
     @Override
-    @GetMapping("/api/v1/friendLinkList")
+    @GetMapping("/frontend/api/v1/friendLink/list")
     public ResultVO<List<FrontendFriendLinkListVO>> findFrontendNoticeList() {
         return ResultVO.success(frontendFriendLinkService.findFrontendFriendLinkList());
     }

@@ -23,7 +23,7 @@ public class FrontendTagController implements FrontendTagFeignClient {
     private FrontendTagService frontendTagService;
 
     @Override
-    @GetMapping("/api/v1/hotTagList")
+    @GetMapping("/frontend/api/v1/tag/hotTagList")
     public ResultVO<List<FrontendTagListVO>> findFrontendHotTagList() {
         return ResultVO.success(frontendTagService.findFrontendHotTagList());
     }
