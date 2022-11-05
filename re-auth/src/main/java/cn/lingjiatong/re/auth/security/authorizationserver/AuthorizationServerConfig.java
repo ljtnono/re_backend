@@ -1,18 +1,13 @@
 package cn.lingjiatong.re.auth.security.authorizationserver;
 
-import cn.lingjiatong.re.common.constant.CommonConstant;
-import cn.lingjiatong.re.common.entity.User;
 import cn.lingjiatong.re.common.util.RedisUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.oauth2.common.DefaultOAuth2AccessToken;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
@@ -25,12 +20,13 @@ import org.springframework.security.oauth2.provider.token.TokenEnhancer;
 import org.springframework.security.oauth2.provider.token.TokenEnhancerChain;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
-import org.springframework.security.oauth2.provider.token.store.KeyStoreKeyFactory;
 import org.springframework.security.web.AuthenticationEntryPoint;
 
 import javax.sql.DataSource;
 import java.security.KeyPair;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * oauth2认证服务器配置
@@ -53,15 +49,12 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     @Autowired
     private OAuth2WebResponseExceptionTranslator oAuth2WebResponseExceptionTranslator;
     @Autowired
-    private JwtAccessTokenConverter jwtAccessTokenConverter;
-    @Autowired
     @Qualifier("customOAuth2AuthenticationEntryPoint")
     private AuthenticationEntryPoint authenticationEntryPoint;
     @Autowired
-    private JwtTokenStore jwtTokenStore;
-    @Autowired
     private TokenEnhancer tokenEnhancer;
-
+    @Autowired
+    private KeyPair keyPair;
     @Value("${spring.profiles.active}")
     private String profile;
 
@@ -75,6 +68,7 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
         clients.withClientDetails(jdbcClientDetailsService);
     }
 
+
     /**
      * 认证服务器是玩转token的，那么这里配置token令牌管理相关（token此时就是一个字符串，当下的token需要在服务器端存储，那么存储在哪里呢？都是在这里配置）
      */
@@ -82,8 +76,10 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) {
         TokenEnhancerChain tokenEnhancerChain = new TokenEnhancerChain();
         List<TokenEnhancer> tokenEnhancers = new ArrayList<>();
+        JwtAccessTokenConverter converter = new JwtAccessTokenConverter();
+        converter.setKeyPair(keyPair);
         tokenEnhancers.add(tokenEnhancer);
-        tokenEnhancers.add(jwtAccessTokenConverter);
+        tokenEnhancers.add(converter);
         tokenEnhancerChain.setTokenEnhancers(tokenEnhancers);
 
         // 获取内置的授权类型
@@ -94,10 +90,10 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
         CompositeTokenGranter compositeTokenGranter = new CompositeTokenGranter(granterList);
 
         endpoints.authenticationManager(authenticationManager)
-                .accessTokenConverter(jwtAccessTokenConverter)
+                .accessTokenConverter(converter)
                 .userDetailsService(userDetailsService)
                 .tokenEnhancer(tokenEnhancerChain)
-                .tokenStore(jwtTokenStore)
+                .tokenStore(new JwtTokenStore(converter))
                 .allowedTokenEndpointRequestMethods(HttpMethod.GET, HttpMethod.POST)
                 .reuseRefreshTokens(false)
                 .exceptionTranslator(oAuth2WebResponseExceptionTranslator)
@@ -121,7 +117,4 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
         security.tokenKeyAccess("permitAll()")
                 .checkTokenAccess("permitAll()");
     }
-
-
-
 }
