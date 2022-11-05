@@ -39,7 +39,7 @@ spec:
   ports:
     - port: 8080
       name: web
-      nodePort: 30081
+      nodePort: 30153
       targetPort: 8080
   selector:
     app: api-frontend

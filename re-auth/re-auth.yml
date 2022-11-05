@@ -39,7 +39,7 @@ spec:
   ports:
     - port: 8080
       name: web
-      nodePort: 30089
+      nodePort: 30155
       targetPort: 8080
   selector:
     app: re-auth

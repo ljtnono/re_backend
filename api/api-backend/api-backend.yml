@@ -39,7 +39,7 @@ spec:
   ports:
     - port: 8080
       name: web
-      nodePort: 30082
+      nodePort: 30154
       targetPort: 8080
   selector:
     app: api-backend

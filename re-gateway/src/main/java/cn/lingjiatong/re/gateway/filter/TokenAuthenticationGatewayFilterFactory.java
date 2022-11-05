@@ -44,6 +44,7 @@ public class TokenAuthenticationGatewayFilterFactory extends AbstractGatewayFilt
     private JwtUtil jwtUtil;
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
+
     @Override
     public GatewayFilter apply(Object config) {
         return (exchange, chain) -> {

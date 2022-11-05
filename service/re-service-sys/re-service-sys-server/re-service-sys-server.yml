@@ -39,7 +39,7 @@ spec:
   ports:
     - port: 8080
       name: web
-      nodePort: 30084
+      nodePort: 30201
       targetPort: 8080
   selector:
     app: re-service-sys-server

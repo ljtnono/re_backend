@@ -35,7 +35,7 @@ spec:
   ports:
     - port: 8080
       name: web
-      nodePort: 30085
+      nodePort: 30156
       targetPort: 8080
     - port: 30086
       name: netty
