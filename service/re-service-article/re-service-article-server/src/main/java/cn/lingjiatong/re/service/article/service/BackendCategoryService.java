@@ -35,7 +35,7 @@ public class BackendCategoryService {
      * @param categoryId 文章分类id
      * @return 存在返回true， 不存在返回false
      */
-    public boolean isExistById(Integer categoryId) {
+    public boolean isExistById(Long categoryId) {
         Category category = categoryMapper.selectById(categoryId);
         return category != null;
     }

@@ -1,6 +1,5 @@
 package cn.lingjiatong.re.service.sys.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
@@ -14,13 +13,13 @@ import java.time.LocalDateTime;
  * Date: 2022/10/14 00:53
  */
 @Data
-@TableName("sp_baidu_img")
+@TableName(value = "sp_baidu_img", schema = "re_spider")
 public class SpBaiduImg {
 
     /**
      * 主键id
      */
-    @TableId(type = IdType.AUTO)
+    @TableId
     private Long id;
 
     /**

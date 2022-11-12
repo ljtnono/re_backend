@@ -1,6 +1,5 @@
 package cn.lingjiatong.re.common.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -29,8 +28,8 @@ public class User implements UserDetails {
     /**
      * 主键id
      */
-    @TableId(type = IdType.AUTO)
-    private Integer id;
+    @TableId
+    private Long id;
 
     /**
      * 用户名

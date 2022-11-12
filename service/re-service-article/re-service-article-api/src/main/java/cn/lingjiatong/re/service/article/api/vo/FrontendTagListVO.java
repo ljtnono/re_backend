@@ -1,6 +1,7 @@
 package cn.lingjiatong.re.service.article.api.vo;
 
 import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 /**
@@ -16,10 +17,12 @@ public class FrontendTagListVO {
     /**
      * 标签id
      */
-    private Integer id;
+    @ApiModelProperty("id")
+    private String id;
 
     /**
      * 标签名
      */
+    @ApiModelProperty("标签名")
     private String name;
 }

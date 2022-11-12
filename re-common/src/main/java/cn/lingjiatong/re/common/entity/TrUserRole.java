@@ -1,6 +1,5 @@
 package cn.lingjiatong.re.common.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 
@@ -16,17 +15,17 @@ public class TrUserRole {
     /**
      * 主键id，自增
      */
-    @TableId(type = IdType.AUTO)
+    @TableId
     private Long id;
 
     /**
      * 用户id
      */
-    private Integer userId;
+    private Long userId;
 
     /**
      * 角色id
      */
-    private Integer roleId;
+    private Long roleId;
 
 }

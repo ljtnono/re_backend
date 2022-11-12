@@ -48,7 +48,7 @@ public class BackendUserService {
      */
     @Transactional(rollbackFor = Exception.class)
     public void updateUserDeleteStatusBatch(BackendUserUpdateDeleteStatusBatchDTO dto) {
-        List<Integer> userIdList = dto.getUserIdList();
+        List<Long> userIdList = dto.getUserIdList();
         Byte deleteStatus = dto.getDeleteStatus();
         if (CollectionUtils.isEmpty(userIdList)) {
             return;
@@ -128,7 +128,7 @@ public class BackendUserService {
      * @param adminUpdate 是否是管理员编辑 true 是 false 不是
      */
     private void checkBackendUserUpdateDTO(BackendUserUpdateDTO dto, boolean adminUpdate) {
-        Integer userId = dto.getUserId();
+        Long userId = dto.getUserId();
         String username = dto.getUsername();
         String email = dto.getEmail();
         String phone = dto.getPhone();

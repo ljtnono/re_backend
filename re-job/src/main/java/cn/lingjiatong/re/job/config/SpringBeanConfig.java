@@ -1,5 +1,6 @@
 package cn.lingjiatong.re.job.config;
 
+import cn.lingjiatong.re.common.util.SnowflakeIdWorkerUtil;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -61,5 +62,12 @@ public class SpringBeanConfig {
             webDriver = new ChromeDriver(options);
         }
         return webDriver;
+    }
+
+
+    // 雪花算法工具类
+    @Bean
+    public SnowflakeIdWorkerUtil snowflakeIdWorkerUtil() {
+        return new SnowflakeIdWorkerUtil();
     }
 }

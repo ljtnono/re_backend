@@ -18,13 +18,13 @@ public class TrArticleTag {
     /**
      * 主键
      */
-    @TableId(type = IdType.AUTO)
+    @TableId
     private Long id;
 
     /**
      * 标签id
      */
-    private Integer tagId;
+    private Long tagId;
 
     /**
      * 文章id

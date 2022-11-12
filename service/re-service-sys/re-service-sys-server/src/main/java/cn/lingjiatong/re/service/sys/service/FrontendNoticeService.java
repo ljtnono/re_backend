@@ -2,6 +2,7 @@ package cn.lingjiatong.re.service.sys.service;
 
 import cn.lingjiatong.re.common.constant.UserConstant;
 import cn.lingjiatong.re.common.util.DateUtil;
+import cn.lingjiatong.re.common.util.SnowflakeIdWorkerUtil;
 import cn.lingjiatong.re.service.sys.api.vo.FrontendNoticeListVO;
 import cn.lingjiatong.re.service.sys.constant.SysNoticeConstant;
 import cn.lingjiatong.re.service.sys.constant.SysNoticeTypeEnum;
@@ -12,6 +13,7 @@ import cn.lingjiatong.re.service.sys.mapper.SysNoticeMapper;
 import com.alibaba.nacos.shaded.com.google.common.collect.Lists;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -36,6 +38,8 @@ public class FrontendNoticeService {
     private SysNoticeMapper sysNoticeMapper;
     @Resource
     private SpToutiaoRbMapper spToutiaoRbMapper;
+    @Autowired
+    private SnowflakeIdWorkerUtil snowflakeIdWorkerUtil;
 
     // ********************************新增类接口********************************
 
@@ -79,6 +83,7 @@ public class FrontendNoticeService {
                 v.setNewsState(rb.getState());
                 resultVOList.add(v);
 
+                sysNotice.setId(snowflakeIdWorkerUtil.nextId());
                 sysNotice.setLink(rb.getLink());
                 sysNotice.setTitle(rb.getTitle());
                 sysNotice.setType(SysNoticeTypeEnum.NEWS_NOTICE.getCode());

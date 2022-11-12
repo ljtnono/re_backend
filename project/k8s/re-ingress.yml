@@ -1,0 +1,35 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: re-ingress
+  namespace: rootelement
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: "www.lingjiatong.cn"
+      http:
+        paths:
+          - pathType: Prefix
+            path: "/nacos"
+            backend:
+              service:
+                name: nacos-extern-service
+                port:
+                  number: 8848
+    - host: "www.lingjiatong.cn"
+      http:
+        paths:
+          - pathType: Prefix
+            path: "/minio"
+            backend:
+              service:
+                name: minio-extern-service
+                port:
+                  number: 9000
+          - pathType: Prefix
+            path: "/minio"
+            backend:
+              service:
+                name: minio-extern-service
+                port:
+                  number: 9001

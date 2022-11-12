@@ -1,6 +1,5 @@
 package cn.lingjiatong.re.service.article.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -21,7 +20,7 @@ public class Article {
     /**
      * 主键id
      */
-    @TableId(type = IdType.AUTO)
+    @TableId
     private Long id;
 
     /**
@@ -47,12 +46,12 @@ public class Article {
     /**
      * 文章所属类型id
      */
-    private Integer categoryId;
+    private Long categoryId;
 
     /**
      * 文章作者id
      */
-    private Integer userId;
+    private Long userId;
 
     /**
      * 文章封面图链接地址

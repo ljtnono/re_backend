@@ -53,6 +53,8 @@ public class BackendArticleServcie {
     private BackendCategoryService backendCategoryService;
     @Autowired
     private BackendTagService backendTagService;
+    @Autowired
+    private SnowflakeIdWorkerUtil snowflakeIdWorkerUtil;
 
     // ********************************新增类接口********************************
 
@@ -67,7 +69,7 @@ public class BackendArticleServcie {
         checkSaveArticleDTO(dto);
         String title = dto.getTitle();
         String summary = dto.getSummary();
-        Integer categoryId = dto.getCategoryId();
+        Long categoryId = Long.valueOf(dto.getCategoryId());
         String coverUrl = dto.getCoverUrl();
         Integer recommend = dto.getRecommend();
         Integer creationType = dto.getCreationType();
@@ -78,6 +80,7 @@ public class BackendArticleServcie {
         List<String> tagList = dto.getTagList();
 
         Article article = new Article();
+        article.setId(snowflakeIdWorkerUtil.nextId());
         article.setTitle(title);
         article.setSummary(summary);
         article.setCategoryId(categoryId);
@@ -187,7 +190,8 @@ public class BackendArticleServcie {
     private void checkSaveArticleDTO(BackendArticleSaveDTO dto) {
         String title = dto.getTitle();
         String summary = dto.getSummary();
-        Integer categoryId = dto.getCategoryId();
+        String categoryIdStr = dto.getCategoryId();
+        Long categoryId;
         String coverUrl = dto.getCoverUrl();
         Integer recommend = dto.getRecommend();
         Integer creationType = dto.getCreationType();
@@ -210,10 +214,17 @@ public class BackendArticleServcie {
             summary = getSummaryFromMarkdownContent(markdownContent);
             dto.setSummary(summary);
         }
-        if (categoryId == null || categoryId < 0) {
-            // 文章分类不能为null 或者小于0
+
+        if (!StringUtils.hasLength(categoryIdStr)) {
             throw new ParamErrorException(ErrorEnum.REQUEST_PARAM_ERROR.getCode(), BackendArticleErrorMessageConstant.ARTICLE_CATEGORY_NULL_ERROR_MESSAGE);
+        } else {
+            categoryId = Long.valueOf(categoryIdStr);
+            if (categoryId < 0) {
+                // 文章分类不能为null 或者小于0
+                throw new ParamErrorException(ErrorEnum.REQUEST_PARAM_ERROR.getCode(), BackendArticleErrorMessageConstant.ARTICLE_CATEGORY_NULL_ERROR_MESSAGE);
+            }
         }
+
         if (StringUtils.isEmpty(coverUrl)) {
             // 封面图片url如果为空，使用默认封面
             coverUrl = BackendArticleConstant.DEFAULT_COVER_URL;

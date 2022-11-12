@@ -1,6 +1,5 @@
 package cn.lingjiatong.re.service.sys.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.annotations.ApiModel;
@@ -23,9 +22,9 @@ public class SysConfig {
     /**
      * 主键id，自增
      */
-    @TableId(type = IdType.AUTO)
-    @ApiModelProperty("主键id，自增")
-    private Integer id;
+    @TableId
+    @ApiModelProperty("主键id")
+    private Long id;
 
     /**
      * 配置描述

@@ -51,7 +51,7 @@
         <where>
             u.id IN
             <foreach collection="dto.userIdList" item="userId" separator="," open="(" close=")">
-                #{userId, jdbcType=INTEGER}
+                #{userId, jdbcType=BIGINT}
             </foreach>
         </where>
     </update>

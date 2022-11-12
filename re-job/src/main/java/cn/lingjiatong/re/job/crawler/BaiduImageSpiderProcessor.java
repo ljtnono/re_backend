@@ -2,6 +2,7 @@ package cn.lingjiatong.re.job.crawler;
 
 import cn.lingjiatong.re.common.util.EncryptUtil;
 import cn.lingjiatong.re.common.util.JSONUtil;
+import cn.lingjiatong.re.common.util.SnowflakeIdWorkerUtil;
 import cn.lingjiatong.re.common.util.UrlUtil;
 import cn.lingjiatong.re.job.bo.BaiduImageSpiderSearchConditionBO;
 import cn.lingjiatong.re.job.entity.SpBaiduImg;
@@ -46,6 +47,8 @@ public class BaiduImageSpiderProcessor  {
     @Resource
     private SpBaiduImgMapper spBaiduImgMapper;
     private String spiderParam;
+    @Autowired
+    private SnowflakeIdWorkerUtil snowflakeIdWorkerUtil;
     public BaiduImageSpiderProcessor(String spiderParam) {
         this.spiderParam = spiderParam;
     }
@@ -81,6 +84,7 @@ public class BaiduImageSpiderProcessor  {
                 Map<String, String> paramter = UrlUtil.getUrlQueryParamter(src);
                 log.info("==========src地址的查询参数列表：{}", JSONUtil.objectToString(paramter));
                 SpBaiduImg spBaiduImg = new SpBaiduImg();
+                spBaiduImg.setId(snowflakeIdWorkerUtil.nextId());
                 Matcher matcher = IMG_FORMAT_REX_PATTERN.matcher(src);
                 if (matcher.find()) {
                     spBaiduImg.setFormat(matcher.group(3));

@@ -2,6 +2,7 @@ package cn.lingjiatong.re.job.crawler;
 
 import cn.lingjiatong.re.common.util.EncryptUtil;
 import cn.lingjiatong.re.common.util.JSONUtil;
+import cn.lingjiatong.re.common.util.SnowflakeIdWorkerUtil;
 import cn.lingjiatong.re.job.bo.ToutiaoHotBO;
 import cn.lingjiatong.re.job.entity.SpToutiaoRb;
 import cn.lingjiatong.re.job.enumeration.ToutiaoRbEnum;
@@ -43,6 +44,9 @@ public class ToutiaoHotProcessor implements PageProcessor {
     @Autowired
     private ElasticsearchRestTemplate elasticsearchRestTemplate;
 
+    @Autowired
+    private SnowflakeIdWorkerUtil snowflakeIdWorkerUtil;
+
     @Resource
     private SpToutiaoRbMapper spToutiaoRbMapper;
 
@@ -63,6 +67,7 @@ public class ToutiaoHotProcessor implements PageProcessor {
 
         boList.forEach(bo -> {
             SpToutiaoRb spToutiaoRb = new SpToutiaoRb();
+            spToutiaoRb.setId(snowflakeIdWorkerUtil.nextId());
             spToutiaoRb.setTitle(bo.getTitle());
             spToutiaoRb.setLink(bo.getUrl());
             spToutiaoRb.setHotValue(Long.valueOf(bo.getHotValue()));

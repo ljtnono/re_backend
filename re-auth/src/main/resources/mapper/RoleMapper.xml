@@ -21,7 +21,7 @@
             r.name
         FROM role r
         <where>
-            r.id IN (SELECT role_id FROM tr_user_role tur WHERE user_id = #{userId,jdbcType=INTEGER})
+            r.id IN (SELECT role_id FROM tr_user_role tur WHERE user_id = #{userId,jdbcType=BIGINT})
         </where>
     </select>
 </mapper>

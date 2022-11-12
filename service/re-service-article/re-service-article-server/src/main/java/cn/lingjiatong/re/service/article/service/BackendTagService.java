@@ -3,12 +3,14 @@ package cn.lingjiatong.re.service.article.service;
 import cn.lingjiatong.re.common.constant.CommonConstant;
 import cn.lingjiatong.re.common.constant.UserConstant;
 import cn.lingjiatong.re.common.util.DateUtil;
+import cn.lingjiatong.re.common.util.SnowflakeIdWorkerUtil;
 import cn.lingjiatong.re.service.article.entity.Tag;
 import cn.lingjiatong.re.service.article.entity.TrArticleTag;
 import cn.lingjiatong.re.service.article.mapper.TagMapper;
 import cn.lingjiatong.re.service.article.mapper.TrArticleTagMapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,6 +34,8 @@ public class BackendTagService {
     private TagMapper tagMapper;
     @Resource
     private TrArticleTagMapper trArticleTagMapper;
+    @Autowired
+    private SnowflakeIdWorkerUtil snowflakeIdWorkerUtil;
 
     // ********************************新增类接口********************************
 
@@ -63,6 +67,7 @@ public class BackendTagService {
         // 只插入不存在的
         tagList.forEach(tag -> {
             Tag t = new Tag();
+            t.setId(snowflakeIdWorkerUtil.nextId());
             t.setCreateTime(DateUtil.getLocalDateTimeNow());
             t.setModifyTime(DateUtil.getLocalDateTimeNow());
             t.setOptUser(UserConstant.SUPER_ADMIN_USER);
@@ -72,6 +77,7 @@ public class BackendTagService {
                 tagMapper.insert(t);
                 // 插入关联表
                 TrArticleTag trArticleTag = new TrArticleTag();
+                trArticleTag.setId(snowflakeIdWorkerUtil.nextId());
                 trArticleTag.setTagId(t.getId());
                 trArticleTag.setArticleId(articleId);
                 trArticleTagMapper.insert(trArticleTag);

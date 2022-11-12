@@ -18,7 +18,7 @@ public class SysFriendLink {
     /**
      * 主键id
      */
-    private Integer id;
+    private Long id;
 
     /**
      * 友情链接名

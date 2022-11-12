@@ -43,8 +43,8 @@ public class BackendArticleSaveDTO {
     /**
      * 文章所属类型id
      */
-    @ApiModelProperty("文章所属类型id")
-    private Integer categoryId;
+    @ApiModelProperty("文章所属类型id，前端传递字符串类型，后端需要转为Long类型")
+    private String categoryId;
 
     /**
      * 是否设置为推荐文章

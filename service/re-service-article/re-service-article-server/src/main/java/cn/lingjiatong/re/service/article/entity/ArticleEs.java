@@ -54,13 +54,13 @@ public class ArticleEs {
      * 文章所属类型id
      */
     @Field(type = FieldType.Long)
-    private Integer categoryId;
+    private Long categoryId;
 
     /**
      * 文章作者id
      */
     @Field(type = FieldType.Long)
-    private Integer userId;
+    private Long userId;
 
     /**
      * 文章封面图链接地址

@@ -1,6 +1,5 @@
 package cn.lingjiatong.re.common.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -21,8 +20,8 @@ public class Role {
     /**
      * 主键，自增
      */
-    @TableId(type = IdType.AUTO)
-    private Integer id;
+    @TableId
+    private Long id;
 
     /**
      * 系统角色名

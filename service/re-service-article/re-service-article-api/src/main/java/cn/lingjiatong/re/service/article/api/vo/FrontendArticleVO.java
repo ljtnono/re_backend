@@ -23,7 +23,7 @@ public class FrontendArticleVO {
      * 主键id
      */
     @ApiModelProperty("id")
-    private Long id;
+    private String id;
 
     /**
      * 文章标题

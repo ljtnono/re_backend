@@ -1,6 +1,5 @@
 package cn.lingjiatong.re.common.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 
@@ -16,7 +15,7 @@ public class TrRolePermission {
     /**
      * 主键id，自增
      */
-    @TableId(type = IdType.AUTO)
+    @TableId
     private Long id;
 
     /**

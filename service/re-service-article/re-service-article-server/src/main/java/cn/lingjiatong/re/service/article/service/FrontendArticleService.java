@@ -67,6 +67,7 @@ public class FrontendArticleService {
         // 获取其标签列表和分类名
         FrontendArticleVO result = new FrontendArticleVO();
         BeanUtils.copyProperties(article, result);
+        result.setId(String.valueOf(articleId));
         Category category = categoryMapper.selectOne(new LambdaQueryWrapper<Category>()
                 .select(Category::getName)
                 .eq(Category::getId, article.getCategoryId())

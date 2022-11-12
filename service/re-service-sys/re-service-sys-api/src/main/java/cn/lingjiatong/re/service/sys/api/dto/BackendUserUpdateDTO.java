@@ -20,7 +20,7 @@ public class BackendUserUpdateDTO {
      * 主键id
      */
     @ApiModelProperty(value = "用户id", required = true)
-    private Integer userId;
+    private Long userId;
 
     /**
      * 用户名
@@ -50,6 +50,6 @@ public class BackendUserUpdateDTO {
      * 用户角色列表
      */
     @ApiModelProperty("用户角色id列表")
-    private Set<Integer> roleIds;
+    private Set<Long> roleIds;
 
 }

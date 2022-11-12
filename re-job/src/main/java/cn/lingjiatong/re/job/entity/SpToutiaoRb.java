@@ -1,6 +1,5 @@
 package cn.lingjiatong.re.job.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
@@ -24,7 +23,7 @@ import java.time.LocalDateTime;
 public class SpToutiaoRb {
 
     @Id
-    @TableId(type = IdType.AUTO)
+    @TableId
     private Long id;
 
     /**

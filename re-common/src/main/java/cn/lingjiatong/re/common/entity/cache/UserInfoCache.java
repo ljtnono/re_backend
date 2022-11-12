@@ -21,7 +21,7 @@ public class UserInfoCache {
     /**
      * 用户id
      */
-    private Integer userId;
+    private Long userId;
 
     /**
      * 用户名

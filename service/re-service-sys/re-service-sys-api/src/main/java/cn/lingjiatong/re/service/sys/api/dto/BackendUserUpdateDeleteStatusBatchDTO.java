@@ -20,7 +20,7 @@ public class BackendUserUpdateDeleteStatusBatchDTO {
      * 用户id列表
      */
     @ApiModelProperty("用户id列表")
-    private List<Integer> userIdList;
+    private List<Long> userIdList;
 
     /**
      * 删除状态

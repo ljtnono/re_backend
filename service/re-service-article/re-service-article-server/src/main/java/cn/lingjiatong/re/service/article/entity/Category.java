@@ -21,8 +21,8 @@ public class Category {
     /**
      * 主键id
      */
-    @TableId(type = IdType.AUTO)
-    private Integer id;
+    @TableId
+    private Long id;
 
     /**
      * 类型名

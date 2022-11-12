@@ -1,11 +1,19 @@
 package cn.lingjiatong.re.common.util;
 
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.StringUtils;
+
+import java.lang.management.ManagementFactory;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+
 /**
  * 雪花算法id生成器
  *
  * @author Ling, Jiatong
  * Date: 2021/12/9 5:45 PM
  */
+@Slf4j
 public class SnowflakeIdWorkerUtil {
 
     /**
@@ -64,8 +72,10 @@ public class SnowflakeIdWorkerUtil {
      * 上次生成ID的时间截
      */
     private long lastTimestamp = -1L;
+
     /**
      * 构造函数
+     *
      * @param workerId     工作ID (0~31)
      * @param datacenterId 数据中心ID (0~31)
      */
@@ -79,8 +89,17 @@ public class SnowflakeIdWorkerUtil {
         this.workerId = workerId;
         this.datacenterId = datacenterId;
     }
+
+    public SnowflakeIdWorkerUtil() {
+        //通过当前物理网卡地址获取datacenterId
+        this.datacenterId = getDatacenterId(maxDatacenterId);
+        //物理网卡地址+jvm进程pi获取workerId
+        this.workerId = getMaxWorkerId(datacenterId, maxWorkerId);
+    }
+
     /**
      * 获得下一个ID (该方法是线程安全的)
+     *
      * @return SnowflakeId
      */
     public synchronized long nextId() {
@@ -111,8 +130,10 @@ public class SnowflakeIdWorkerUtil {
                 | (workerId << workerIdShift) //
                 | sequence;
     }
+
     /**
      * 阻塞到下一个毫秒，直到获得新的时间戳
+     *
      * @param lastTimestamp 上次生成ID的时间截
      * @return 当前时间戳
      */
@@ -123,8 +144,54 @@ public class SnowflakeIdWorkerUtil {
         }
         return timestamp;
     }
+
+    protected static long getDatacenterId(long maxDatacenterId) {
+        long id = 0L;
+        try {
+            //获取本机(或者服务器ip地址)
+            //DESKTOP-123SDAD/192.168.1.87
+            InetAddress ip = InetAddress.getLocalHost();
+            NetworkInterface network = NetworkInterface.getByInetAddress(ip);
+            //一般不是null会进入else
+            if (network == null) {
+                id = 1L;
+            } else {
+                //获取物理网卡地址
+                byte[] mac = network.getHardwareAddress();
+                if (null != mac) {
+                    id = ((0x000000FF & (long) mac[mac.length - 2]) | (0x0000FF00 & (((long) mac[mac.length - 1]) << 8))) >> 6;
+                    id = id % (maxDatacenterId + 1);
+                }
+            }
+        } catch (Exception e) {
+            log.warn(" getDatacenterId: " + e.getMessage());
+        }
+        return id;
+    }
+
+    /**
+     * 获取 maxWorkerId
+     */
+    protected static long getMaxWorkerId(long datacenterId, long maxWorkerId) {
+        StringBuilder mpid = new StringBuilder();
+        mpid.append(datacenterId);
+        //获取jvm进程信息
+        String name = ManagementFactory.getRuntimeMXBean().getName();
+        if (StringUtils.hasLength(name)) {
+            /*
+             * 获取进程PID
+             */
+            mpid.append(name.split("@")[0]);
+        }
+        /*
+         * MAC + PID 的 hashcode 获取16个低位
+         */
+        return (mpid.toString().hashCode() & 0xffff) % (maxWorkerId + 1);
+    }
+
     /**
      * 返回以毫秒为单位的当前时间
+     *
      * @return 当前时间(毫秒)
      */
     protected long timeGen() {

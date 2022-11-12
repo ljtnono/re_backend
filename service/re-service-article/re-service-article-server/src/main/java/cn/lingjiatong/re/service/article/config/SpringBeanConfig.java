@@ -1,6 +1,7 @@
 package cn.lingjiatong.re.service.article.config;
 
 import cn.lingjiatong.re.common.util.RedisUtil;
+import cn.lingjiatong.re.common.util.SnowflakeIdWorkerUtil;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
@@ -77,6 +78,9 @@ public class SpringBeanConfig {
         return redisUtil;
     }
 
-
+    @Bean
+    public SnowflakeIdWorkerUtil snowflakeIdWorkerUtil() {
+        return new SnowflakeIdWorkerUtil();
+    }
 
 }

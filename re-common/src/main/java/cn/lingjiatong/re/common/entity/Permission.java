@@ -1,6 +1,5 @@
 package cn.lingjiatong.re.common.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
@@ -20,8 +19,8 @@ public class Permission {
     /**
      * 主键id，自增
      */
-    @TableId(type = IdType.AUTO)
-    private Integer id;
+    @TableId
+    private Long id;
 
     /**
      * 权限名
@@ -36,7 +35,7 @@ public class Permission {
     /**
      * 父权限id
      */
-    private Integer parentId;
+    private Long parentId;
 
     /**
      * 权限表达式

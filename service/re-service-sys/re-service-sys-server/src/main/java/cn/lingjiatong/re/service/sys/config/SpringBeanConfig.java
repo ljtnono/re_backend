@@ -1,6 +1,7 @@
 package cn.lingjiatong.re.service.sys.config;
 
 import cn.lingjiatong.re.common.constant.CommonConstant;
+import cn.lingjiatong.re.common.util.SnowflakeIdWorkerUtil;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
@@ -76,6 +77,11 @@ public class SpringBeanConfig {
         redisTemplate.setHashValueSerializer(jackson2JsonRedisSerializer);
         redisTemplate.afterPropertiesSet();
         return redisTemplate;
+    }
+
+    @Bean
+    public SnowflakeIdWorkerUtil snowflakeIdWorkerUtil() {
+        return new SnowflakeIdWorkerUtil();
     }
 
 }
