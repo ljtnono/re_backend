@@ -17,7 +17,7 @@
     <!-- 获取前端swpier轮播图列表 -->
     <select id="getFrontendSwiperImageList" resultType="java.lang.String">
         SELECT src
-        FROM sp_baidu_img
+        FROM re_spider.sp_baidu_img
         WHERE width IS NOT NULL
           AND height IS NOT NULL
           AND (width / height) <![CDATA[>=]]> 1.8
