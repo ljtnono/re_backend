@@ -22,6 +22,7 @@ import us.codecraft.webmagic.selector.Json;
 
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
 
@@ -72,8 +73,8 @@ public class ToutiaoHotProcessor implements PageProcessor {
             spToutiaoRb.setLink(bo.getUrl());
             spToutiaoRb.setHotValue(Long.valueOf(bo.getHotValue()));
             spToutiaoRb.setQueryWord(bo.getQueryWord());
-            spToutiaoRb.setCreateTime(LocalDateTime.now());
-            spToutiaoRb.setModifyTime(LocalDateTime.now());
+            spToutiaoRb.setCreateTime(LocalDateTime.now(ZoneId.of("Asia/Shanghai")));
+            spToutiaoRb.setModifyTime(LocalDateTime.now(ZoneId.of("Asia/Shanghai")));
             if (ToutiaoRbEnum.NEW.name().equalsIgnoreCase(bo.getLabel())) {
                 spToutiaoRb.setState(ToutiaoRbEnum.NEW.getCode());
             } else if (ToutiaoRbEnum.HOT.name().equalsIgnoreCase(bo.getLabel())) {
