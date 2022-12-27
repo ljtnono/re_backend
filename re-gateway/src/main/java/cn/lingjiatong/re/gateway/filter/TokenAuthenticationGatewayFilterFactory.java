@@ -44,7 +44,6 @@ public class TokenAuthenticationGatewayFilterFactory extends AbstractGatewayFilt
     private JwtUtil jwtUtil;
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
-
     @Override
     public GatewayFilter apply(Object config) {
         return (exchange, chain) -> {
@@ -87,12 +86,13 @@ public class TokenAuthenticationGatewayFilterFactory extends AbstractGatewayFilt
                 }
             }
 
+            // TODO 如何放行passTokenUrl中匹配的路径
             if (StringUtils.hasLength(token) && StringUtils.hasLength(username)) {
                 // 说明解析成功，进入下一个过滤器
                 return chain.filter(exchange);
             } else {
                 // 解析失败，返回失败消息
-                return responseInfo(exchange, ErrorEnum.USER_NOT_AUTHTICATE_ERROR.getCode(), ErrorEnum.USER_NOT_AUTHTICATE_ERROR.getMessage());
+                return responseInfo(exchange, ErrorEnum.USER_NOT_AUTHENTICATE_ERROR.getCode(), ErrorEnum.USER_NOT_AUTHENTICATE_ERROR.getMessage());
             }
         };
     }

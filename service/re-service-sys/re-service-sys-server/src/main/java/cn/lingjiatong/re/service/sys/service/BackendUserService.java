@@ -80,7 +80,7 @@ public class BackendUserService {
         checkBackendUserUpdateDTO(dto, Boolean.FALSE);
         // 校验需要更新信息的用户是否是当前用户，如果不是，那么报错
         if (!currentUser.getId().equals(dto.getUserId())) {
-            throw new PermissionException(ErrorEnum.CAN_NOT_UPATE_OTHER_USER_ERROR);
+            throw new PermissionException(ErrorEnum.CAN_NOT_UPDATE_OTHER_USER_ERROR);
         }
         // 更新用户信息
         try {

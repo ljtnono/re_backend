@@ -14,10 +14,10 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 @EnableDiscoveryClient
 @EnableFeignClients(basePackages = {"cn.lingjiatong.re.service.sys.api", "cn.lingjiatong.re.service.article.api"})
 @SpringBootApplication(scanBasePackages = {"cn.lingjiatong.re.api.backend", "cn.lingjiatong.re.common"})
-public class ReApiBackendAppliaction {
+public class ReApiBackendApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(ReApiBackendAppliaction.class, args);
+        SpringApplication.run(ReApiBackendApplication.class, args);
     }
 
 }

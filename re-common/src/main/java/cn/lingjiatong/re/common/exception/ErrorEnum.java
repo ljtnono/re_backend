@@ -21,7 +21,7 @@ public enum ErrorEnum {
 
     /** 权限相关异常 **/
     // 未认证的用户
-    USER_NOT_AUTHTICATE_ERROR(401, "未认证过的用户"),
+    USER_NOT_AUTHENTICATE_ERROR(401, "未认证过的用户"),
     // 没有访问权限
     PERMISSION_DENIED_ERROR(403, "禁止访问"),
     // token格式异常
@@ -36,7 +36,7 @@ public enum ErrorEnum {
     CLIENT_ID_OR_CLIENT_SECRET_ERROR(400405, "client_id或client_secret错误"),
     // token格式异常
     INVALID_TOKEN_ERROR(400406, "缺少token参数或token格式异常"),
-    CAN_NOT_UPATE_OTHER_USER_ERROR(400407, "无法修改其他用户信息"),
+    CAN_NOT_UPDATE_OTHER_USER_ERROR(400407, "无法修改其他用户信息"),
 
     /** 500 Bad Request */
     // MINIO服务器出现异常

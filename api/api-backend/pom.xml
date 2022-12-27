@@ -121,7 +121,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
                     <!-- 指定全局唯一入口 -->
-                    <mainClass>cn.lingjiatong.re.api.backend.ReApiBackendAppliaction</mainClass>
+                    <mainClass>cn.lingjiatong.re.api.backend.ReApiBackendApplication</mainClass>
                     <layout>ZIP</layout>
                     <fork>true</fork>
                 </configuration>

@@ -25,4 +25,5 @@ public interface FrontendTagFeignClient {
     @GetMapping("/frontend/api/v1/tag/hotTagList")
     @ApiOperation(value = "获取前端热门标签列表", httpMethod = "GET")
     ResultVO<List<FrontendTagListVO>> findFrontendHotTagList();
+
 }

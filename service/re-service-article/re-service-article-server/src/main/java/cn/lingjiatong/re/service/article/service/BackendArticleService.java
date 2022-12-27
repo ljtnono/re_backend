@@ -4,17 +4,19 @@ import cn.lingjiatong.re.common.constant.CommonConstant;
 import cn.lingjiatong.re.common.constant.MinioConstant;
 import cn.lingjiatong.re.common.constant.RedisCacheKeyEnum;
 import cn.lingjiatong.re.common.constant.UserConstant;
-import cn.lingjiatong.re.common.exception.BusinessException;
-import cn.lingjiatong.re.common.exception.ErrorEnum;
-import cn.lingjiatong.re.common.exception.ParamErrorException;
-import cn.lingjiatong.re.common.exception.ServerException;
+import cn.lingjiatong.re.common.entity.User;
+import cn.lingjiatong.re.common.entity.cache.DraftCache;
+import cn.lingjiatong.re.common.exception.*;
 import cn.lingjiatong.re.common.util.*;
 import cn.lingjiatong.re.service.article.api.dto.BackendArticleSaveDTO;
+import cn.lingjiatong.re.service.article.api.dto.BackendDraftSaveDTO;
+import cn.lingjiatong.re.service.article.api.vo.BackendDraftListVO;
 import cn.lingjiatong.re.service.article.constant.BackendArticleConstant;
 import cn.lingjiatong.re.service.article.constant.BackendArticleErrorMessageConstant;
 import cn.lingjiatong.re.service.article.entity.Article;
 import cn.lingjiatong.re.service.article.entity.ArticleEs;
 import cn.lingjiatong.re.service.article.mapper.ArticleMapper;
+import com.google.common.collect.Lists;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -27,6 +29,8 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -39,7 +43,7 @@ import java.util.Set;
  */
 @Slf4j
 @Service
-public class BackendArticleServcie {
+public class BackendArticleService {
 
     @Resource
     private ArticleMapper articleMapper;
@@ -149,38 +153,94 @@ public class BackendArticleServcie {
      * 后端保存文章草稿
      * 默认保存到redis中
      *
-     * @param markdownContent 文章草稿markdown内容
+     * @param dto 草稿保存DTO对象
+     * @param currentUser 当前用户
      */
-    public void saveDraftArticle(String draftTitle, String markdownContent) {
-        if (StringUtils.isEmpty(draftTitle)) {
+    public void saveDraft(BackendDraftSaveDTO dto, User currentUser) {
+        String title = dto.getTitle();
+        String markdownContent = dto.getMarkdownContent();
+        if (StringUtils.isEmpty(title)) {
             throw new ParamErrorException(ErrorEnum.REQUEST_PARAM_ERROR.getCode(), BackendArticleErrorMessageConstant.DRAFT_TITLE_EMPTY_ERROR_MESSAGE);
         }
         Optional.ofNullable(markdownContent)
                 .orElseThrow(() -> new ParamErrorException(ErrorEnum.REQUEST_PARAM_ERROR));
 
-        // 先获取上次已保存的值，如果不存在则设置，存在则删除再设置
-        Set<String> keys = redisUtil.keys("daft:" + draftTitle + "*");
-        if (!CollectionUtils.isEmpty(keys)) {
-            keys.forEach(key -> {
-                redisUtil.deleteObject(key);
-            });
-        }
-
+        String draftId = RandomUtil.getInstance().generateUUID();
+        // TODO 目前先写死为超级管理员账号，后面再改
         String redisKey = RedisCacheKeyEnum.ARTICLE_DRAFT.getValue()
-                .replace("draftTitle", draftTitle)
-                .replace("timestamp", String.valueOf(System.currentTimeMillis()))
-                .replace("uuid", RandomUtil.getInstance().generateUUID());
+                .replace("username", "lingjiatong")
+                .replace("title", title)
+                .replace("draftId", draftId);
+        DraftCache draftCache = new DraftCache();
+        draftCache.setTitle(title);
+        draftCache.setMarkdownContent(markdownContent);
+        draftCache.setDraftId(draftId);
+        draftCache.setSaveTime(LocalDateTime.now(ZoneId.of("Asia/Shanghai")));
 
         // 不设置过期时间
-        redisUtil.setCacheObject(redisKey, markdownContent);
+        redisUtil.setCacheObject(redisKey, draftCache);
     }
 
+
     // ********************************删除类接口********************************
+
+    /**
+     * 删除用户的草稿
+     *
+     * @param draftId 草稿id
+     * @param currentUser 当前用户
+     */
+    public void deleteDraft(String draftId, User currentUser) {
+        if (!StringUtils.hasLength(draftId)) {
+            throw new ParamErrorException(ErrorEnum.REQUEST_PARAM_ERROR.getCode(), BackendArticleErrorMessageConstant.DRAFT_ID_EMPTY_ERROR_MESSAGE);
+        }
+
+        // TODO 目前先写死为超级管理员账号，后面再改
+        String redisKey = RedisCacheKeyEnum.ARTICLE_DRAFT.getValue()
+                .replace("username", "lingjiatong")
+                .replace("title", "*")
+                .replace("draftId", draftId);
+        Set<String> keys = redisUtil.keys(redisKey);
+        if (CollectionUtils.isEmpty(keys)) {
+            throw new ResourceNotExistException(ErrorEnum.RESOURCE_NOT_EXIST_ERROR);
+        }
+        for (String key : keys) {
+            redisUtil.deleteObject(key);
+        }
+    }
 
     // ********************************修改类接口********************************
 
     // ********************************查询类接口********************************
 
+    /**
+     * 获取当前用户的所有草稿列表
+     *
+     * @param currentUser 当前用户实体
+     * @return 该用户的所有草稿列表
+     */
+    public List<BackendDraftListVO> getDraftList(User currentUser) {
+        // TODO 目前先写死为超级管理员账号，后面再改
+        String keyPattern = RedisCacheKeyEnum.ARTICLE_DRAFT.getValue()
+                .replace("username", "lingjiatong")
+                .replace("title", "*")
+                .replace("draftId", "*");
+        Set<String> keys = redisUtil.keys(keyPattern);
+        if (CollectionUtils.isEmpty(keys)) {
+            return Lists.newArrayList();
+        }
+
+        List<BackendDraftListVO> result = Lists.newArrayList();
+        for (String key : keys) {
+            DraftCache draftCache = (DraftCache) redisUtil.getCacheObject(key);
+            BackendDraftListVO backendDraftListVO = new BackendDraftListVO();
+            BeanUtils.copyProperties(draftCache, backendDraftListVO);
+            result.add(backendDraftListVO);
+        }
+        return result;
+    }
+
+    // ********************************私有函数********************************
 
     /**
      * 校验BackendArticleSaveDTO的参数
@@ -285,8 +345,6 @@ public class BackendArticleServcie {
         }
     }
 
-    // ********************************私有函数********************************
-
     /**
      * 从文章内容中获取简介内容
      *
@@ -315,6 +373,5 @@ public class BackendArticleServcie {
             return result.toString();
         }
     }
-
 
 }

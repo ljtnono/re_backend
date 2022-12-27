@@ -42,6 +42,6 @@ public class AuthenticationHandler implements AccessDeniedHandler, Authenticatio
         response.setCharacterEncoding("utf-8");
         response.setContentType("application/json;charset=utf-8");
         response.setStatus(HttpStatus.OK.value());
-        response.getWriter().write(JSONUtil.objectToString(ResultVO.error(ErrorEnum.USER_NOT_AUTHTICATE_ERROR)));
+        response.getWriter().write(JSONUtil.objectToString(ResultVO.error(ErrorEnum.USER_NOT_AUTHENTICATE_ERROR)));
     }
 }

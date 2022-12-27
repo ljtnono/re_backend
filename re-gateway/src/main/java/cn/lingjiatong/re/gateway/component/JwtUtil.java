@@ -32,7 +32,7 @@ public class JwtUtil {
      */
     public Claims getClaimsFromToken(String token) {
         if (!StringUtils.hasLength(token)) {
-            throw new PermissionException(ErrorEnum.USER_NOT_AUTHTICATE_ERROR);
+            throw new PermissionException(ErrorEnum.USER_NOT_AUTHENTICATE_ERROR);
         }
         JwtParser parser = Jwts.parser();
         try {
