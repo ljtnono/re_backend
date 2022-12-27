@@ -5,14 +5,20 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 /**
- * 草稿保存DTO对象
+ * 草稿保存或更新DTO对象
  *
  * @author Ling, Jiatong
  * Date: 2022/12/27 15:44
  */
 @Data
-@ApiModel(description = "草稿保存DTO对象")
-public class BackendDraftSaveDTO {
+@ApiModel(description = "草稿保存或更新DTO对象")
+public class BackendDraftSaveOrUpdateDTO {
+
+    /**
+     * 草稿id
+     */
+    @ApiModelProperty("草稿id")
+    private String draftId;
 
     /**
      * 草稿标题

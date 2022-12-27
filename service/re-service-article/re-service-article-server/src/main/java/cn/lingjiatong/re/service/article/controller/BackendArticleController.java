@@ -3,13 +3,11 @@ package cn.lingjiatong.re.service.article.controller;
 import cn.lingjiatong.re.common.ResultVO;
 import cn.lingjiatong.re.common.entity.User;
 import cn.lingjiatong.re.service.article.api.client.BackendArticleFeignClient;
-import cn.lingjiatong.re.service.article.api.dto.BackendArticleSaveDTO;
-import cn.lingjiatong.re.service.article.api.dto.BackendDraftSaveDTO;
+import cn.lingjiatong.re.service.article.api.dto.BackendDraftSaveOrUpdateDTO;
 import cn.lingjiatong.re.service.article.api.vo.BackendDraftListVO;
 import cn.lingjiatong.re.service.article.service.BackendArticleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -54,9 +52,9 @@ public class BackendArticleController implements BackendArticleFeignClient {
     }
 
     @Override
-    @PostMapping("/backend/api/v1/article/saveDraft")
-    public ResultVO<?> saveDraft(@RequestBody BackendDraftSaveDTO dto, @RequestParam(value = "currentUser", required = false) User currentUser) {
-        backendArticleService.saveDraft(dto, currentUser);
+    @PostMapping("/backend/api/v1/article/saveOrUpdateDraft")
+    public ResultVO<?> saveOrUpdateDraft(@RequestBody BackendDraftSaveOrUpdateDTO dto, @RequestParam(value = "currentUser", required = false) User currentUser) {
+        backendArticleService.saveOrUpdateDraft(dto, currentUser);
         return ResultVO.success();
     }
 

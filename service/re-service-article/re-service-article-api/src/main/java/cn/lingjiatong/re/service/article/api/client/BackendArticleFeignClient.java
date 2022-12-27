@@ -2,7 +2,7 @@ package cn.lingjiatong.re.service.article.api.client;
 
 import cn.lingjiatong.re.common.ResultVO;
 import cn.lingjiatong.re.common.entity.User;
-import cn.lingjiatong.re.service.article.api.dto.BackendDraftSaveDTO;
+import cn.lingjiatong.re.service.article.api.dto.BackendDraftSaveOrUpdateDTO;
 import cn.lingjiatong.re.service.article.api.vo.BackendDraftListVO;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
@@ -28,14 +28,14 @@ public interface BackendArticleFeignClient {
     ResultVO<List<BackendDraftListVO>> getDraftList(@RequestParam(value = "currentUser", required = false) User currentUser);
 
     /**
-     * 保存草稿
+     * 保存或者更新草稿
      *
-     * @param dto 草稿保存DTO对象
+     * @param dto 草稿保存或更新DTO对象
      * @param currentUser 当前用户
      * @return 通用消息返回对象
      */
-    @PostMapping("/backend/api/v1/article/saveDraft")
-    ResultVO<?> saveDraft(@RequestBody BackendDraftSaveDTO dto, @RequestParam(value = "currentUser", required = false) User currentUser);
+    @PostMapping("/backend/api/v1/article/saveOrUpdateDraft")
+    ResultVO<?> saveOrUpdateDraft(@RequestBody BackendDraftSaveOrUpdateDTO dto, @RequestParam(value = "currentUser", required = false) User currentUser);
 
     /**
      * 删除草稿

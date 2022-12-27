@@ -9,7 +9,7 @@ import cn.lingjiatong.re.common.entity.cache.DraftCache;
 import cn.lingjiatong.re.common.exception.*;
 import cn.lingjiatong.re.common.util.*;
 import cn.lingjiatong.re.service.article.api.dto.BackendArticleSaveDTO;
-import cn.lingjiatong.re.service.article.api.dto.BackendDraftSaveDTO;
+import cn.lingjiatong.re.service.article.api.dto.BackendDraftSaveOrUpdateDTO;
 import cn.lingjiatong.re.service.article.api.vo.BackendDraftListVO;
 import cn.lingjiatong.re.service.article.constant.BackendArticleConstant;
 import cn.lingjiatong.re.service.article.constant.BackendArticleErrorMessageConstant;
@@ -31,9 +31,11 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * 后台文章模块service层
@@ -150,26 +152,29 @@ public class BackendArticleService {
 
 
     /**
-     * 后端保存文章草稿
+     * 后端保存或更新文章草稿
      * 默认保存到redis中
      *
-     * @param dto 草稿保存DTO对象
+     * @param dto 草稿保存或更新DTO对象
      * @param currentUser 当前用户
      */
-    public void saveDraft(BackendDraftSaveDTO dto, User currentUser) {
+    public void saveOrUpdateDraft(BackendDraftSaveOrUpdateDTO dto, User currentUser) {
         String title = dto.getTitle();
         String markdownContent = dto.getMarkdownContent();
+        String draftId = dto.getDraftId();
         if (StringUtils.isEmpty(title)) {
             throw new ParamErrorException(ErrorEnum.REQUEST_PARAM_ERROR.getCode(), BackendArticleErrorMessageConstant.DRAFT_TITLE_EMPTY_ERROR_MESSAGE);
         }
         Optional.ofNullable(markdownContent)
                 .orElseThrow(() -> new ParamErrorException(ErrorEnum.REQUEST_PARAM_ERROR));
 
-        String draftId = RandomUtil.getInstance().generateUUID();
+
+        if (!StringUtils.hasLength(draftId)) {
+            draftId = RandomUtil.getInstance().generateUUID();
+        }
         // TODO 目前先写死为超级管理员账号，后面再改
         String redisKey = RedisCacheKeyEnum.ARTICLE_DRAFT.getValue()
                 .replace("username", "lingjiatong")
-                .replace("title", title)
                 .replace("draftId", draftId);
         DraftCache draftCache = new DraftCache();
         draftCache.setTitle(title);
@@ -198,15 +203,12 @@ public class BackendArticleService {
         // TODO 目前先写死为超级管理员账号，后面再改
         String redisKey = RedisCacheKeyEnum.ARTICLE_DRAFT.getValue()
                 .replace("username", "lingjiatong")
-                .replace("title", "*")
                 .replace("draftId", draftId);
         Set<String> keys = redisUtil.keys(redisKey);
         if (CollectionUtils.isEmpty(keys)) {
             throw new ResourceNotExistException(ErrorEnum.RESOURCE_NOT_EXIST_ERROR);
         }
-        for (String key : keys) {
-            redisUtil.deleteObject(key);
-        }
+        redisUtil.deleteObjects(keys);
     }
 
     // ********************************修改类接口********************************
@@ -223,7 +225,6 @@ public class BackendArticleService {
         // TODO 目前先写死为超级管理员账号，后面再改
         String keyPattern = RedisCacheKeyEnum.ARTICLE_DRAFT.getValue()
                 .replace("username", "lingjiatong")
-                .replace("title", "*")
                 .replace("draftId", "*");
         Set<String> keys = redisUtil.keys(keyPattern);
         if (CollectionUtils.isEmpty(keys)) {
@@ -231,13 +232,15 @@ public class BackendArticleService {
         }
 
         List<BackendDraftListVO> result = Lists.newArrayList();
-        for (String key : keys) {
-            DraftCache draftCache = (DraftCache) redisUtil.getCacheObject(key);
+        //  如果使用获取单个会非常耗时间，当超过30条时会导致失败，因此使用redis获取多个
+        List<Object> multiValues = redisUtil.getMultiValues(keys);
+        for (Object value : multiValues) {
+            DraftCache draftCache = (DraftCache) value;
             BackendDraftListVO backendDraftListVO = new BackendDraftListVO();
             BeanUtils.copyProperties(draftCache, backendDraftListVO);
             result.add(backendDraftListVO);
         }
-        return result;
+        return result.stream().sorted(Comparator.comparing(BackendDraftListVO::getSaveTime).reversed()).collect(Collectors.toList());
     }
 
     // ********************************私有函数********************************

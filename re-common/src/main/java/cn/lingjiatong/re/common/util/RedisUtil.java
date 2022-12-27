@@ -2,6 +2,8 @@ package cn.lingjiatong.re.common.util;
 
 import org.springframework.data.redis.core.RedisTemplate;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -73,6 +75,16 @@ public class RedisUtil {
     }
 
     /**
+     * 批量获取缓存对象
+     *
+     * @param keys 缓存的key集合
+     * @return 缓存对象列表
+     */
+    public List<Object> getMultiValues(final Collection<String> keys) {
+        return redisTemplate.opsForValue().multiGet(keys);
+    }
+
+    /**
      * 根据正则表达式获取key
      *
      * @param pattern 正则表达式
@@ -89,6 +101,15 @@ public class RedisUtil {
      */
     public Boolean deleteObject(final String key) {
         return redisTemplate.delete(key);
+    }
+
+    /**
+     * 删除多个对象
+     *
+     * @param keys 缓存键值列表
+     */
+    public Long deleteObjects(final Collection<String> keys) {
+        return redisTemplate.delete(keys);
     }
 
     /**

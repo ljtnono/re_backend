@@ -3,7 +3,7 @@ package cn.lingjiatong.re.api.backend.controller;
 import cn.lingjiatong.re.common.ResultVO;
 import cn.lingjiatong.re.common.entity.User;
 import cn.lingjiatong.re.service.article.api.client.BackendArticleFeignClient;
-import cn.lingjiatong.re.service.article.api.dto.BackendDraftSaveDTO;
+import cn.lingjiatong.re.service.article.api.dto.BackendDraftSaveOrUpdateDTO;
 import cn.lingjiatong.re.service.article.api.vo.BackendDraftListVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,16 +43,16 @@ public class ArticleController {
     }
 
     /**
-     * 保存草稿
+     * 保存或更新草稿
      *
-     * @param dto 草稿保存DTO对象
+     * @param dto 草稿保存或更新DTO对象
      * @param currentUser 当前用户
      * @return 通用消息返回对象
      */
-    @PostMapping("/saveDraft")
-    public ResultVO<?> saveDraft(@RequestBody BackendDraftSaveDTO dto, @RequestParam(required = false) User currentUser) {
-        log.info("==========保存草稿，参数：{}", dto);
-        return backendArticleFeignClient.saveDraft(dto, currentUser);
+    @PostMapping("/saveOrUpdateDraft")
+    public ResultVO<?> saveOrUpdateDraft(@RequestBody BackendDraftSaveOrUpdateDTO dto, @RequestParam(required = false) User currentUser) {
+        log.info("==========保存或更新草稿，参数：{}", dto);
+        return backendArticleFeignClient.saveOrUpdateDraft(dto, currentUser);
     }
 
     /**
