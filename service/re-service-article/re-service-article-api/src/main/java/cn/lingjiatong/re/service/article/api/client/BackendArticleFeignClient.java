@@ -29,7 +29,6 @@ public interface BackendArticleFeignClient {
     @GetMapping("/backend/api/v1/article/draft/{draftId}")
     ResultVO<BackendDraftDetailVO> getDraftDetail(@PathVariable("draftId") String draftId, @RequestParam(value = "currentUser", required = false) User currentUser);
 
-
     /**
      * 后端获取当前用户的草稿列表
      *

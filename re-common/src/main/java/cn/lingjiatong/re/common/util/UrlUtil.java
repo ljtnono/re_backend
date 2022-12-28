@@ -56,7 +56,7 @@ public class UrlUtil {
      * @param url 原url
      * @return 移除了参数部分的url
      */
-    public static String removeUrlParamter(String url) {
+    public static String removeUrlParameter(String url) {
         if (StringUtils.isEmpty(url)) {
             return "";
         }

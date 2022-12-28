@@ -12,5 +12,7 @@ public interface MinioConstant {
     String MINIO_BUCKET_NAME = "rootelement";
     // 博客封面图使用的文件夹
     String ARTICLE_COVER_FOLDER = "articleCover";
+    // 文中引用图片使用的文件夹
+    String ARTICLE_QUOTE_FOLDER = "articleQuote";
 
 }
