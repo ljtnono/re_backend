@@ -4,6 +4,7 @@ import cn.lingjiatong.re.common.ResultVO;
 import cn.lingjiatong.re.common.entity.User;
 import cn.lingjiatong.re.service.article.api.client.BackendArticleFeignClient;
 import cn.lingjiatong.re.service.article.api.dto.BackendDraftSaveOrUpdateDTO;
+import cn.lingjiatong.re.service.article.api.vo.BackendDraftDetailVO;
 import cn.lingjiatong.re.service.article.api.vo.BackendDraftListVO;
 import cn.lingjiatong.re.service.article.service.BackendArticleService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +45,12 @@ public class BackendArticleController implements BackendArticleFeignClient {
 //    public ResultVO<String> saveArticleCoverImage(String title, @RequestParam("file") MultipartFile multipartFile) {
 //        return ResultVO.success(backendArticleService.saveArticleCoverImage(title, multipartFile));
 //    }
+
+    @Override
+    @GetMapping("/backend/api/v1/article/draft/{draftId}")
+    public ResultVO<BackendDraftDetailVO> getDraftDetail(@PathVariable("draftId") String draftId, @RequestParam(value = "currentUser", required = false) User currentUser) {
+        return ResultVO.success(backendArticleService.getDraftDetail(draftId, currentUser));
+    }
 
     @Override
     @GetMapping("/backend/api/v1/article/draftList")

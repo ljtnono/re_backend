@@ -8,14 +8,14 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 /**
- * 文章草稿列表VO对象
+ * 文章草稿详情VO对象
  *
  * @author Ling, Jiatong
- * Date: 2022/12/27 09:34
+ * Date: 2022/12/28 19:24
  */
 @Data
-@ApiModel(description = "文章草稿列表VO对象")
-public class BackendDraftListVO {
+@ApiModel(description = "文章草稿详情VO对象")
+public class BackendDraftDetailVO {
 
     /**
      * 草稿id
@@ -30,10 +30,15 @@ public class BackendDraftListVO {
     private String title;
 
     /**
+     * 草稿的内容
+     */
+    @ApiModelProperty("草稿的markdown内容")
+    private String markdownContent;
+
+    /**
      * 草稿保存时间
      */
     @ApiModelProperty("草稿保存时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private LocalDateTime saveTime;
-
 }

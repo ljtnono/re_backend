@@ -22,7 +22,7 @@ public interface CommonConstant {
     // token的http请求头
     String TOKE_HTTP_HEADER = "Authorization";
     // cookie中的token键名
-    String TOKEN_COKKIE_HEADER = TOKE_HTTP_HEADER;
+    String TOKEN_COOKIE_HEADER = TOKE_HTTP_HEADER;
     // token内容前缀
     String TOKEN_PREFIX = "Bearer ";
     // token加密盐值

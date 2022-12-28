@@ -10,6 +10,7 @@ import cn.lingjiatong.re.common.exception.*;
 import cn.lingjiatong.re.common.util.*;
 import cn.lingjiatong.re.service.article.api.dto.BackendArticleSaveDTO;
 import cn.lingjiatong.re.service.article.api.dto.BackendDraftSaveOrUpdateDTO;
+import cn.lingjiatong.re.service.article.api.vo.BackendDraftDetailVO;
 import cn.lingjiatong.re.service.article.api.vo.BackendDraftListVO;
 import cn.lingjiatong.re.service.article.constant.BackendArticleConstant;
 import cn.lingjiatong.re.service.article.constant.BackendArticleErrorMessageConstant;
@@ -216,6 +217,29 @@ public class BackendArticleService {
     // ********************************查询类接口********************************
 
     /**
+     * 后端获取草稿详情
+     *
+     * @param currentUser 当前用户
+     * @param draftId 草稿id
+     * @return 文章草稿详情VO对象
+     */
+    public BackendDraftDetailVO getDraftDetail(String draftId, User currentUser) {
+        if (!StringUtils.hasLength(draftId)) {
+            throw new ParamErrorException(ErrorEnum.REQUEST_PARAM_ERROR);
+        }
+        // TODO 目前先写死为超级管理员账号，后面再改
+        String key = RedisCacheKeyEnum.ARTICLE_DRAFT.getValue()
+                .replace("username", "lingjiatong")
+                .replace("draftId", draftId);
+        DraftCache draftCache = (DraftCache) redisUtil.getCacheObject(key);
+        Optional.ofNullable(draftCache)
+                .orElseThrow(() -> new ResourceNotExistException(ErrorEnum.RESOURCE_NOT_EXIST_ERROR));
+        BackendDraftDetailVO result = new BackendDraftDetailVO();
+        BeanUtils.copyProperties(draftCache, result);
+        return result;
+    }
+
+    /**
      * 获取当前用户的所有草稿列表
      *
      * @param currentUser 当前用户实体
@@ -376,5 +400,6 @@ public class BackendArticleService {
             return result.toString();
         }
     }
+
 
 }

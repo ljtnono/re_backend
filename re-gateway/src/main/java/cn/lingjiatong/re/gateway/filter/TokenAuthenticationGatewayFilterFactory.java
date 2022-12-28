@@ -74,8 +74,8 @@ public class TokenAuthenticationGatewayFilterFactory extends AbstractGatewayFilt
                 }
             }
             // 如果url中也没有，那么从cookie中取
-            if (!CollectionUtils.isEmpty(cookies) && !CollectionUtils.isEmpty(cookies.get(CommonConstant.TOKEN_COKKIE_HEADER))) {
-                String value = cookies.getFirst(CommonConstant.TOKEN_COKKIE_HEADER).getValue();
+            if (!CollectionUtils.isEmpty(cookies) && !CollectionUtils.isEmpty(cookies.get(CommonConstant.TOKEN_COOKIE_HEADER))) {
+                String value = cookies.getFirst(CommonConstant.TOKEN_COOKIE_HEADER).getValue();
                 token = URLDecoder.decode(value.substring(CommonConstant.TOKEN_PREFIX.length()), StandardCharsets.UTF_8);
                 // 从token中解析出来用户名
                 try {

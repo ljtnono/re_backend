@@ -4,6 +4,7 @@ import cn.lingjiatong.re.common.ResultVO;
 import cn.lingjiatong.re.common.entity.User;
 import cn.lingjiatong.re.service.article.api.client.BackendArticleFeignClient;
 import cn.lingjiatong.re.service.article.api.dto.BackendDraftSaveOrUpdateDTO;
+import cn.lingjiatong.re.service.article.api.vo.BackendDraftDetailVO;
 import cn.lingjiatong.re.service.article.api.vo.BackendDraftListVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +30,19 @@ public class ArticleController {
     // ********************************删除类接口********************************
     // ********************************修改类接口********************************
     // ********************************查询类接口********************************
+
+    /**
+     * 后端获取草稿详情
+     *
+     * @param currentUser 当前用户
+     * @param draftId 草稿id
+     * @return 文章草稿详情VO对象
+     */
+    @GetMapping("/draft/{draftId}")
+    public ResultVO<BackendDraftDetailVO> getDraftDetail(@PathVariable("draftId") String draftId, @RequestParam(value = "currentUser", required = false) User currentUser) {
+        log.info("==========后端获取草稿详情，参数：{}", draftId);
+        return backendArticleFeignClient.getDraftDetail(draftId, currentUser);
+    }
 
     /**
      * 获取当前用户的草稿列表
