@@ -5,14 +5,14 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 /**
- * 用户角色关联表
+ * 角色菜单表
  *
  * @author Ling, Jiatong
- * Date: 2022/10/22 19:24
+ * Date: 2022/12/29 22:22
  */
 @Data
-@TableName("tr_user_role")
-public class TrUserRole {
+@TableName("tr_role_menu")
+public class TrRoleMenu {
 
     /**
      * 主键id
@@ -21,13 +21,13 @@ public class TrUserRole {
     private Long id;
 
     /**
-     * 用户id
-     */
-    private Long userId;
-
-    /**
      * 角色id
      */
     private Long roleId;
+
+    /**
+     * 菜单id
+     */
+    private Long menuId;
 
 }

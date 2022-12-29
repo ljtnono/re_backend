@@ -52,6 +52,11 @@ public class User implements UserDetails {
     private String email;
 
     /**
+     * 用户头像
+     */
+    private String avatarUrl;
+
+    /**
      * 创建时间
      */
     private LocalDateTime createTime;

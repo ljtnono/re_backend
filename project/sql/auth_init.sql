@@ -3,8 +3,8 @@ USE re_sys;
 -- 权限、菜单、路由相关表初始化sql脚本
 
 -- 路由表
-DROP TABLE IF EXISTS routes;
-CREATE TABLE page_routes (
+DROP TABLE IF EXISTS page_route;
+CREATE TABLE page_route (
     id BIGINT NOT NULL PRIMARY KEY COMMENT '主键id',
     project_name VARCHAR(100) NOT NULL COMMENT '路由所属项目名称',
     parent_id BIGINT NOT NULL COMMENT '父路由信息，不存在则为-1',
@@ -17,7 +17,7 @@ CREATE TABLE page_routes (
     props LONGTEXT NULL COMMENT '路由参数'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='页面路由表';
 
-INSERT INTO page_routes(id, project_name, parent_id, name, description, path, meta, redirect, alias, props) VALUES
+INSERT INTO page_route(id, project_name, parent_id, name, description, path, meta, redirect, alias, props) VALUES
 -- re_admin
 (10000, 're_admin', -1, 'Root', 're_admin根路径重定向到登录页面', '/', '{"title":"主页","hideInMenu":true}', '{"name":"Login"}', NULL, NULL),
 (10001, 're_admin', -1, 'Login', 're_admin登录页面', '/login', '{"title":"Login - 登录","hideInMenu":true}', NULL, NULL, NULL),

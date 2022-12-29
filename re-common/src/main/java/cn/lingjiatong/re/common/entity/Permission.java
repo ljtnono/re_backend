@@ -1,5 +1,6 @@
 package cn.lingjiatong.re.common.entity;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
@@ -17,20 +18,10 @@ import java.time.LocalDateTime;
 public class Permission {
 
     /**
-     * 主键id，自增
+     * 主键id
      */
     @TableId
     private Long id;
-
-    /**
-     * 权限名
-     */
-    private String name;
-
-    /**
-     * 权限类型
-     */
-    private Byte type;
 
     /**
      * 父权限id
@@ -38,8 +29,28 @@ public class Permission {
     private Long parentId;
 
     /**
+     * 权限所属项目名称
+     */
+    private String projectName;
+
+    /**
+     * 权限所属菜单id
+     */
+    private Long menuId;
+
+    /**
+     * 权限名
+     */
+    private String name;
+
+    /**
+     * 权限类型 0 菜单项 1 具体某个权限
+     */
+    private Byte type;
+
+    /**
      * 权限表达式
-     * 格式: xxx父权限名:xxx子权限:查看(view)|新增(add)|修改(update)|删除(delete)
+     * 格式: xxx父权限名:xxx子权限
      */
     private String expression;
 
@@ -57,7 +68,7 @@ public class Permission {
      * 是否删除
      * 0 正常 1 已删除
      */
+    @TableField("is_deleted")
     private Byte delete;
-
 
 }

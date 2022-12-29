@@ -23,7 +23,7 @@
             p.expression
         FROM permission p
         <where>
-            p.id IN (SELECT permission_id FROM tr_role_permission trp WHERE trp.role_id = #{roleId,jdbcType=BIGINT})
+            p.id IN (SELECT permission_id FROM tr_role_permission trp WHERE trp.role_id = #{roleId, jdbcType=BIGINT})
         </where>
     </select>
 </mapper>

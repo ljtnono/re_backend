@@ -1,7 +1,9 @@
 package cn.lingjiatong.re.auth.controller;
 
 import cn.lingjiatong.re.auth.service.UserService;
+import cn.lingjiatong.re.auth.vo.UserLoginVO;
 import cn.lingjiatong.re.common.ResultVO;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +29,7 @@ import java.util.Map;
 @Slf4j
 @RestController
 @RequestMapping
+@Api(tags = "用户模块接口")
 public class UserController {
 
     @Autowired
@@ -34,10 +37,31 @@ public class UserController {
     @Autowired
     private TokenEndpoint tokenEndpoint;
 
+    // ********************************新增类接口********************************
+    // ********************************删除类接口********************************
+    // ********************************修改类接口********************************
+    // ********************************查询类接口********************************
+
+    /**
+     * 用户登录
+     *
+     * @param principal principal
+     * @param parameters 参数列表
+     * @return 通用消息返回对象
+     */
+    @PostMapping("/login")
+    @ApiOperation(value = "用户登录", httpMethod = "POST")
+    public ResultVO<UserLoginVO> login(Principal principal, @RequestParam Map<String, String> parameters) throws HttpRequestMethodNotSupportedException {
+        log.info("==========用户登录，参数：{}，{}", principal, parameters);
+        return ResultVO.success(userService.login(principal, parameters));
+    }
+
+
     /**
      * 刷新登录验证码
      *
      * @param verifyCodeKey 前端传递过来的验证码随机值
+     * @param httpServletResponse http响应对象
      */
     @GetMapping("/refreshVerifyCode")
     @ApiOperation(value = "刷新登录验证码", httpMethod = "POST")
@@ -47,7 +71,11 @@ public class UserController {
     }
 
     /**
-     * 获取token
+     * 复写oauth2获取token的GET请求
+     *
+     * @param principal principal
+     * @param parameters 参数列表
+     * @return 通用消息返回对象
      */
     @PostMapping("/oauth/token")
     @ApiOperation(value = "获取token", httpMethod = "POST")
@@ -59,7 +87,11 @@ public class UserController {
     }
 
     /**
-     * 获取token
+     * 复写oauth2获取token的POST请求
+     *
+     * @param principal principal
+     * @param parameters 参数列表
+     * @return 通用消息返回对象
      */
     @GetMapping("/oauth/token")
     @ApiOperation(value = "获取token", httpMethod = "GET")
@@ -68,6 +100,9 @@ public class UserController {
         ResponseEntity<OAuth2AccessToken> accessToken = tokenEndpoint.getAccessToken(principal, parameters);
         return ResultVO.success(accessToken.getBody());
     }
+
+
+    // ********************************复写oauth2异常处理器********************************
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     public ResponseEntity<OAuth2Exception> handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException e) throws Exception {

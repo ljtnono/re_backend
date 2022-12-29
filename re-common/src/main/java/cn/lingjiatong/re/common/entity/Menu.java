@@ -1,0 +1,52 @@
+package cn.lingjiatong.re.common.entity;
+
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.Data;
+
+/**
+ * 菜单表实体
+ *
+ * @author Ling, Jiatong
+ * Date: 2022/12/29 22:02
+ */
+@Data
+@TableName("menu")
+public class Menu {
+
+    /**
+     * 主键id
+     */
+    @TableId
+    private Long id;
+
+    /**
+     * 菜单所属项目名称
+     */
+    private String projectName;
+
+    /**
+     * 父菜单id，没有则为-1
+     */
+    private Long parentId;
+
+    /**
+     * 菜单名称
+     */
+    private String name;
+
+    /**
+     * 菜单标题
+     */
+    private String title;
+
+    /**
+     * 菜单用的icon的class值
+     */
+    private String icon;
+
+    /**
+     * 菜单的路径
+     */
+    private String path;
+}

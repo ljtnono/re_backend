@@ -1,6 +1,7 @@
 package cn.lingjiatong.re.common.entity;
 
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 /**
@@ -10,10 +11,11 @@ import lombok.Data;
  * Date: 2022/10/22 19:25
  */
 @Data
+@TableName("tr_role_permission")
 public class TrRolePermission {
 
     /**
-     * 主键id，自增
+     * 主键id
      */
     @TableId
     private Long id;
@@ -21,11 +23,11 @@ public class TrRolePermission {
     /**
      * 角色id
      */
-    private Integer roleId;
+    private Long roleId;
 
     /**
      * 用户id
      */
-    private Integer userId;
+    private Long userId;
 
 }

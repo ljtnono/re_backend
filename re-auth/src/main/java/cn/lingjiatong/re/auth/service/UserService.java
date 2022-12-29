@@ -1,5 +1,6 @@
 package cn.lingjiatong.re.auth.service;
 
+import cn.lingjiatong.re.auth.vo.UserLoginVO;
 import cn.lingjiatong.re.common.constant.CommonConstant;
 import cn.lingjiatong.re.common.constant.RedisCacheKeyEnum;
 import cn.lingjiatong.re.common.entity.Permission;
@@ -12,13 +13,19 @@ import cn.lingjiatong.re.auth.mapper.UserMapper;
 import cn.lingjiatong.re.common.util.RedisUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.google.code.kaptcha.impl.DefaultKaptcha;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.oauth2.common.OAuth2AccessToken;
+import org.springframework.security.oauth2.provider.endpoint.TokenEndpoint;
 import org.springframework.stereotype.Service;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.annotation.Resource;
 import javax.imageio.ImageIO;
@@ -27,10 +34,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.security.Principal;
+import java.util.*;
 
 /**
  * 用户模块service层
@@ -52,14 +57,39 @@ public class UserService implements UserDetailsService {
     private RedisUtil redisUtil;
     @Autowired
     private DefaultKaptcha defaultKaptcha;
+    @Autowired
+    private TokenEndpoint tokenEndpoint;
 
     // ********************************新增类接口********************************
-
     // ********************************删除类接口********************************
-
     // ********************************修改类接口********************************
-
     // ********************************查询类接口********************************
+
+
+
+    /**
+     * 用户登录
+     *
+     * @param principal principal
+     * @param parameters 参数列表
+     * @return 用户登录VO对象
+     */
+    public UserLoginVO login(Principal principal, @RequestParam Map<String, String> parameters) throws HttpRequestMethodNotSupportedException {
+        UserLoginVO result = new UserLoginVO();
+        UserLoginVO.UserInfo userInfo = new UserLoginVO.UserInfo();
+        UserLoginVO.TokenInfo tokenInfo = new UserLoginVO.TokenInfo();
+        List<UserLoginVO.MenuInfo> menus = Lists.newArrayList();
+
+        // 获取token信息
+        ResponseEntity<OAuth2AccessToken> tokenResponseEntity = tokenEndpoint.postAccessToken(principal, parameters);
+        // 获取用户信息
+        // 获取菜单信息
+
+        result.setUserInfo(userInfo);
+        result.setMenus(menus);
+        result.setTokenInfo(tokenInfo);
+        return result;
+    }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -112,4 +142,22 @@ public class UserService implements UserDetailsService {
         responseOutputStream.flush();
         responseOutputStream.close();
     }
+
+    // ********************************私有函数********************************
+
+    /**
+     * 根据用户名获取用户信息
+     *
+     * @param username 用户名
+     * @return 用户信息对象
+     */
+    private UserLoginVO.UserInfo getUserInfoByUsernameAndPassword(String username) {
+
+//        userMapper.selectOne(new LambdaQueryWrapper<User>()
+//                .select(User::getUsername, User::get)
+//                .eq());
+        return null;
+    }
+
+    // ********************************公用函数********************************
 }
