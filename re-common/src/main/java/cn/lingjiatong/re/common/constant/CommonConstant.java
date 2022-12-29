@@ -32,5 +32,5 @@ public interface CommonConstant {
     // token密钥名
     String TOKEN_SECRET_KEY_NAME = "re.jks";
     // token密钥别名
-    String TOKEN_SERET_KEY_ALIAS = "re";
+    String TOKEN_SECRET_KEY_ALIAS = "re";
 }
