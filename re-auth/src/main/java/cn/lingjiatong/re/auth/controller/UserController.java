@@ -8,7 +8,6 @@ import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.common.exceptions.OAuth2Exception;
 import org.springframework.security.oauth2.provider.ClientRegistrationException;
 import org.springframework.security.oauth2.provider.endpoint.TokenEndpoint;
@@ -56,7 +55,6 @@ public class UserController {
         return ResultVO.success(userService.login(principal, parameters));
     }
 
-
     /**
      * 刷新登录验证码
      *
@@ -70,48 +68,12 @@ public class UserController {
         userService.refreshVerifyCode(verifyCodeKey, httpServletResponse);
     }
 
-    /**
-     * 复写oauth2获取token的GET请求
-     *
-     * @param principal principal
-     * @param parameters 参数列表
-     * @return 通用消息返回对象
-     */
-    @PostMapping("/oauth/token")
-    @ApiOperation(value = "获取token", httpMethod = "POST")
-    public ResultVO<?> getAccessToken(Principal principal, @RequestParam Map<String, String> parameters) throws HttpRequestMethodNotSupportedException {
-        log.info("==========获取token，参数：{}, {}", principal, parameters);
-        ResponseEntity<OAuth2AccessToken> accessToken = tokenEndpoint.postAccessToken(principal, parameters);
-        // TODO 获取用户信息、菜单列表、tokenInfo
-        return ResultVO.success(accessToken.getBody());
-    }
-
-    /**
-     * 复写oauth2获取token的POST请求
-     *
-     * @param principal principal
-     * @param parameters 参数列表
-     * @return 通用消息返回对象
-     */
-    @GetMapping("/oauth/token")
-    @ApiOperation(value = "获取token", httpMethod = "GET")
-    public ResultVO<?> postAccessToken(Principal principal, @RequestParam Map<String, String> parameters) throws HttpRequestMethodNotSupportedException {
-        log.info("==========获取token，参数：{}, {}", principal, parameters);
-        ResponseEntity<OAuth2AccessToken> accessToken = tokenEndpoint.getAccessToken(principal, parameters);
-        return ResultVO.success(accessToken.getBody());
-    }
-
 
     // ********************************复写oauth2异常处理器********************************
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     public ResponseEntity<OAuth2Exception> handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException e) throws Exception {
         return tokenEndpoint.handleHttpRequestMethodNotSupportedException(e);
-    }
-
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<OAuth2Exception> handleException(Exception e) throws Exception {
-        return tokenEndpoint.handleException(e);
     }
 
     @ExceptionHandler(ClientRegistrationException.class)

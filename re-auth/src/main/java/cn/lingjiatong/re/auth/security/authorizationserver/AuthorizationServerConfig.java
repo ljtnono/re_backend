@@ -74,6 +74,7 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
      */
     @Override
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) {
+
         TokenEnhancerChain tokenEnhancerChain = new TokenEnhancerChain();
         List<TokenEnhancer> tokenEnhancers = new ArrayList<>();
         JwtAccessTokenConverter converter = new JwtAccessTokenConverter();
@@ -94,6 +95,7 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
                 .userDetailsService(userDetailsService)
                 .tokenEnhancer(tokenEnhancerChain)
                 .tokenStore(new JwtTokenStore(converter))
+                .pathMapping("/oauth/token", "/login")
                 .allowedTokenEndpointRequestMethods(HttpMethod.GET, HttpMethod.POST)
                 .reuseRefreshTokens(false)
                 .exceptionTranslator(oAuth2WebResponseExceptionTranslator)
@@ -117,4 +119,5 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
         security.tokenKeyAccess("permitAll()")
                 .checkTokenAccess("permitAll()");
     }
+
 }

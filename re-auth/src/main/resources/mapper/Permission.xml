@@ -14,16 +14,29 @@
     <!-- ********************************查询类接口******************************** -->
 
 
-    <!-- 根据角色id获取角色的权限列表 -->
-    <select id="findPermissionByRoleId" resultType="cn.lingjiatong.re.common.entity.Permission">
+    <!-- 根据角色id列表获取角色的权限列表 -->
+    <select id="findPermissionListByRoleIdListAndProjectName" resultType="cn.lingjiatong.re.common.entity.Permission">
         SELECT
             p.id,
             p.name,
             p.type,
-            p.expression
+            p.expression,
+            p.menu_id
         FROM permission p
         <where>
-            p.id IN (SELECT permission_id FROM tr_role_permission trp WHERE trp.role_id = #{roleId, jdbcType=BIGINT})
+            p.id IN (
+                SELECT
+                    permission_id
+                FROM tr_role_permission trp
+                <where>
+                    trp.role_id IN
+                    <foreach collection="roleIdList" item="roleId" open="(" close=")" separator=",">
+                        #{roleId, jdbcType=BIGINT}
+                    </foreach>
+                </where>
+            )
+            AND p.is_deleted = ${@cn.lingjiatong.re.common.constant.CommonConstant@ENTITY_NORMAL}
+            AND p.project_name = #{projectName, jdbcType=VARCHAR}
         </where>
     </select>
 </mapper>

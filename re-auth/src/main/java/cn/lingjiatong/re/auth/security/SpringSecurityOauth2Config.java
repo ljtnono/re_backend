@@ -2,6 +2,7 @@ package cn.lingjiatong.re.auth.security;
 
 import cn.lingjiatong.re.common.constant.CommonConstant;
 import cn.lingjiatong.re.common.entity.User;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
@@ -10,6 +11,7 @@ import org.springframework.security.oauth2.provider.token.TokenEnhancer;
 import org.springframework.security.oauth2.provider.token.store.KeyStoreKeyFactory;
 
 import java.security.KeyPair;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,6 +23,9 @@ import java.util.Map;
  */
 @Configuration
 public class SpringSecurityOauth2Config {
+
+    @Autowired
+    private ReSecurityProperties reSecurityProperties;
 
     /**
      * 从classpath下的密钥库中获取密钥对(公钥+私钥)
@@ -45,8 +50,10 @@ public class SpringSecurityOauth2Config {
             map.put("email", user.getEmail());
             map.put("phone", user.getPhone());
             ((DefaultOAuth2AccessToken) accessToken).setAdditionalInformation(map);
-            // TODO 根据配置文件设置过期时间
-//            ((DefaultOAuth2AccessToken) accessToken).setExpiration();
+            // 根据配置文件设置过期时间
+            Integer expirationHour = reSecurityProperties.getTokenExpireTime();
+            long l = System.currentTimeMillis() + 3600 * 1000 * expirationHour;
+            ((DefaultOAuth2AccessToken) accessToken).setExpiration(new Date(l));
             return accessToken;
         };
     }

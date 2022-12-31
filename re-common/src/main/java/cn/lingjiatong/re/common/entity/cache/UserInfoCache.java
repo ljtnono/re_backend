@@ -1,13 +1,12 @@
 package cn.lingjiatong.re.common.entity.cache;
 
-import cn.lingjiatong.re.common.entity.Permission;
-import cn.lingjiatong.re.common.entity.Role;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
 import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.Date;
+import java.util.List;
+import java.util.Set;
 
 /**
  * 用户信息缓存
@@ -16,12 +15,13 @@ import java.util.Date;
  * Date: 2022/10/23 00:46
  */
 @Data
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserInfoCache {
 
     /**
      * 用户id
      */
-    private Long userId;
+    private Long id;
 
     /**
      * 用户名
@@ -41,17 +41,42 @@ public class UserInfoCache {
     /**
      * 角色列表
      */
-    private Collection<Role> roles;
+    private List<Long> roleIdList;
 
     /**
-     * token
+     * access_token
      */
-    private String token;
+    private String accessToken;
+
+    /**
+     * token_type
+     */
+    private String tokenType;
+
+    /**
+     * refresh_token
+     */
+    private String refreshToken;
+
+    /**
+     * expires_in
+     */
+    private Integer expiresIn;
+
+    /**
+     * scope
+     */
+    private Set<String> scope;
+
+    /**
+     * jti
+     */
+    private String jti;
 
     /**
      * 权限列表
      */
-    private Collection<Permission> permissions;
+    private List<Long> permissionIdList;
 
     /**
      * 登陆时间

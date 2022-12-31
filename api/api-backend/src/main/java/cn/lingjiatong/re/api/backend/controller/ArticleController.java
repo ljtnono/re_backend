@@ -65,7 +65,7 @@ public class ArticleController {
      */
     @PostMapping("/saveOrUpdateDraft")
     public ResultVO<?> saveOrUpdateDraft(@RequestBody BackendDraftSaveOrUpdateDTO dto, @RequestParam(required = false) User currentUser) {
-        log.info("==========保存或更新草稿，参数：{}", dto);
+        log.info("==========保存或更新草稿，参数：{}，{}", dto.getDraftId(), dto.getTitle());
         return backendArticleFeignClient.saveOrUpdateDraft(dto, currentUser);
     }
 

@@ -16,11 +16,12 @@ public interface PermissionMapper extends BaseMapper<Permission> {
 
 
     /**
-     * 根据角色id获取角色的权限列表
+     * 根据角色id列表获取角色的权限列表
      *
-     * @param roleId 角色id
+     * @param roleIdList 角色id列表
+     * @param projectName 项目名
      * @return 权限列表
      */
-    List<Permission> findPermissionByRoleId(@Param("roleId") Long roleId);
+    List<Permission> findPermissionListByRoleIdListAndProjectName(@Param("roleIdList") List<Long> roleIdList, @Param("projectName") String projectName);
 
 }

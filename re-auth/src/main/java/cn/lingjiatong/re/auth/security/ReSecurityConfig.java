@@ -3,6 +3,7 @@ package cn.lingjiatong.re.auth.security;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -15,6 +16,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
  * @author Ling, Jiatong
  * Date: 2020/7/7 20:36 下午
  */
+@Configuration
 @EnableWebSecurity
 public class ReSecurityConfig extends WebSecurityConfigurerAdapter {
 

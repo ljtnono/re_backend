@@ -1,11 +1,14 @@
 package cn.lingjiatong.re.auth.vo;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * 用户登录VO对象
@@ -15,6 +18,7 @@ import java.util.List;
  */
 @Data
 @ApiModel(description = "用户登录VO对象")
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserLoginVO {
 
     /**
@@ -40,6 +44,12 @@ public class UserLoginVO {
     public final static class UserInfo {
 
         /**
+         * 用户id
+         */
+        @JsonIgnore
+        private Long id;
+
+        /**
          * 用户名
          */
         @ApiModelProperty("用户名")
@@ -62,11 +72,29 @@ public class UserLoginVO {
          */
         @ApiModelProperty("用户头像url")
         private String avatarUrl;
+
+        /**
+         * 权限id列表
+         */
+        @ApiModelProperty("权限id列表")
+        private List<Long> permissionIdList;
     }
 
 
     @Data
     public final static class MenuInfo {
+
+        /**
+         * 菜单id
+         */
+        @JsonIgnore
+        private Long id;
+
+        /**
+         * 父菜单id
+         */
+        @JsonIgnore
+        private Long parentId;
 
         /**
          * 菜单标题
@@ -85,6 +113,12 @@ public class UserLoginVO {
          */
         @ApiModelProperty("菜单名称")
         private String name;
+
+        /**
+         * 菜单路路径
+         */
+        @ApiModelProperty("菜单路径")
+        private String path;
 
         /**
          * 子菜单列表
@@ -122,14 +156,14 @@ public class UserLoginVO {
          */
         @JsonProperty("expires_in")
         @ApiModelProperty("expires_in")
-        private Long expiresIn;
+        private Integer expiresIn;
 
         /**
          * scope
          */
         @JsonProperty("scope")
         @ApiModelProperty("scope")
-        private String scope;
+        private Set<String> scope;
 
         /**
          * jti

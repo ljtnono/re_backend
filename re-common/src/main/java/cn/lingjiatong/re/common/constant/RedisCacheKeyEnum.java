@@ -10,14 +10,14 @@ public enum RedisCacheKeyEnum {
 
 
     // 用户信息
-    USER_INFO("re:auth:user_info:"),
+    USER_INFO("re:userInfo:"),
     // 验证码key
-    LOGIN_VERIFY_CODE("re:auth:login:verifyCode:"),
+    LOGIN_VERIFY_CODE("re:verifyCode:"),
 
     // ********************************文章相关********************************
 
     // 文章草稿redis缓存key，这里timestap为时间戳
-    ARTICLE_DRAFT("draft:username:draftId"),
+    ARTICLE_DRAFT("re:draft:username:draftId"),
 
     ;
     private final String value;
