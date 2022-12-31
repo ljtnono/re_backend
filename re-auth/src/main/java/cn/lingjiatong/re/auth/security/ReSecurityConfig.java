@@ -38,7 +38,7 @@ public class ReSecurityConfig extends WebSecurityConfigurerAdapter {
 
     public Set<String> getPassTokenUrl() {
         Set<String> passTokenSet = new TreeSet<>();
-        RequestMappingHandlerMapping handlerMapping = SpringBeanUtil.getBean(RequestMappingHandlerMapping.class);
+        RequestMappingHandlerMapping handlerMapping = SpringBeanUtil.getBean("requestMappingHandlerMapping", RequestMappingHandlerMapping.class);
         Map<RequestMappingInfo, HandlerMethod> handlerMethods = handlerMapping.getHandlerMethods();
         for (Map.Entry<RequestMappingInfo, HandlerMethod> entry : handlerMethods.entrySet()) {
             HandlerMethod value = entry.getValue();

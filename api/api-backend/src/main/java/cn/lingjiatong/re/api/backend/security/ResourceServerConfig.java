@@ -4,7 +4,6 @@ import cn.lingjiatong.re.common.annotation.PassToken;
 import cn.lingjiatong.re.common.util.SpringBeanUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -27,7 +26,6 @@ import java.util.TreeSet;
  * Date: 2022/11/4 01:34
  */
 @Slf4j
-@Configuration
 @EnableResourceServer
 @EnableGlobalMethodSecurity(prePostEnabled = true, jsr250Enabled = true)
 public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
@@ -41,7 +39,7 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
 
     public Set<String> getPassTokenUrl() {
         Set<String> passTokenSet = new TreeSet<>();
-        RequestMappingHandlerMapping handlerMapping = SpringBeanUtil.getBean(RequestMappingHandlerMapping.class);
+        RequestMappingHandlerMapping handlerMapping = SpringBeanUtil.getBean("requestMappingHandlerMapping", RequestMappingHandlerMapping.class);
         Map<RequestMappingInfo, HandlerMethod> handlerMethods = handlerMapping.getHandlerMethods();
         for (Map.Entry<RequestMappingInfo, HandlerMethod> entry : handlerMethods.entrySet()) {
             HandlerMethod value = entry.getValue();
