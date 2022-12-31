@@ -69,6 +69,7 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     }
 
 
+
     /**
      * 认证服务器是玩转token的，那么这里配置token令牌管理相关（token此时就是一个字符串，当下的token需要在服务器端存储，那么存储在哪里呢？都是在这里配置）
      */
@@ -95,8 +96,8 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
                 .userDetailsService(userDetailsService)
                 .tokenEnhancer(tokenEnhancerChain)
                 .tokenStore(new JwtTokenStore(converter))
-                .pathMapping("/oauth/token", "/login")
-                .allowedTokenEndpointRequestMethods(HttpMethod.GET, HttpMethod.POST)
+                .pathMapping("/oauth/token", "/user/login")
+                .allowedTokenEndpointRequestMethods(HttpMethod.POST)
                 .reuseRefreshTokens(false)
                 .exceptionTranslator(oAuth2WebResponseExceptionTranslator)
                 .tokenGranter(compositeTokenGranter);
@@ -117,7 +118,7 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
         security.addTokenEndpointAuthenticationFilter(endpointFilter);
         // 注意：security不需要在调用allowFormAuthenticationForClients方法
         security.tokenKeyAccess("permitAll()")
-                .checkTokenAccess("permitAll()");
+                .checkTokenAccess("isAuthenticated()");
     }
 
 }

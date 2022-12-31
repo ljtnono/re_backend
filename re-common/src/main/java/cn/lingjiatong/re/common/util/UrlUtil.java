@@ -24,7 +24,7 @@ public class UrlUtil {
      *
      * @return 请求参数参数健值对
      */
-    public static Map<String, String> getUrlQueryParamter(String url) {
+    public static Map<String, String> getUrlQueryParameter(String url) {
         if (StringUtils.isEmpty(url)) {
             return Collections.emptyMap();
         }
@@ -71,7 +71,6 @@ public class UrlUtil {
 
     public static void main(String[] args) throws MalformedURLException {
         URL u = new URL("http://www.lingjiatong.cn:30090/rootelement/articleCover/Snipaste_2022-10-18_20-51-42.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=lingjiatong%2F20221018%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20221018T130423Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=ef5746e2bf41848f9b0f649b4f6303df156311dd6b796cbce9ecea0f7fc42d74");
-
-        System.out.println(getUrlQueryParamter("https://img0.baidu.com/it/u=2674201749,821380200&fm=253&fmt=auto&app=138&f=JPEG?w=667&h=500"));
+        System.out.println(getUrlQueryParameter("https://img0.baidu.com/it/u=2674201749,821380200&fm=253&fmt=auto&app=138&f=JPEG?w=667&h=500"));
     }
 }

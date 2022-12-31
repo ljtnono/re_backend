@@ -81,7 +81,7 @@ public class BaiduImageSpiderProcessor  {
                     title = "暂无";
                 }
                 String src = imgElement.getAttribute("src");
-                Map<String, String> paramter = UrlUtil.getUrlQueryParamter(src);
+                Map<String, String> paramter = UrlUtil.getUrlQueryParameter(src);
                 log.info("==========src地址的查询参数列表：{}", JSONUtil.objectToString(paramter));
                 SpBaiduImg spBaiduImg = new SpBaiduImg();
                 spBaiduImg.setId(snowflakeIdWorkerUtil.nextId());

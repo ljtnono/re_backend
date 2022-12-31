@@ -191,7 +191,7 @@ public class UserService implements UserDetailsService {
         String createText = defaultKaptcha.createText();
         LoginVerifyCodeCache cache = new LoginVerifyCodeCache();
         cache.setValue(createText);
-        redisUtil.setCacheObject(RedisCacheKeyEnum.LOGIN_VERIFY_CODE.getValue() + verifyCodeKey, cache);
+        redisUtil.setCacheObject(RedisCacheKeyEnum.LOGIN_VERIFY_CODE.getValue() + verifyCodeKey, cache, 5, TimeUnit.MINUTES);
         // 使用生成的验证码字符串返回一个BufferedImage对象并转为byte写入到byte数组中
         BufferedImage challenge = defaultKaptcha.createImage(createText);
         ImageIO.write(challenge, "jpg", jpegOutputStream);

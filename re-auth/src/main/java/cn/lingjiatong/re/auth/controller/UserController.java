@@ -27,7 +27,7 @@ import java.util.Map;
  */
 @Slf4j
 @RestController
-@RequestMapping
+@RequestMapping("/user")
 @Api(tags = "用户模块接口")
 public class UserController {
 
@@ -79,6 +79,11 @@ public class UserController {
     @ExceptionHandler(ClientRegistrationException.class)
     public ResponseEntity<OAuth2Exception> handleClientRegistrationException(Exception e) throws Exception {
         return tokenEndpoint.handleClientRegistrationException(e);
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<OAuth2Exception> handleException(Exception e) throws Exception {
+        return tokenEndpoint.handleException(e);
     }
 
     @ExceptionHandler(OAuth2Exception.class)
