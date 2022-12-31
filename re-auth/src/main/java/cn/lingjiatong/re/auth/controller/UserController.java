@@ -52,7 +52,7 @@ public class UserController {
     @ApiOperation(value = "用户登录", httpMethod = "POST")
     public ResultVO<UserLoginVO> login(Principal principal, @RequestParam Map<String, String> parameters) throws HttpRequestMethodNotSupportedException {
         log.info("==========用户登录，参数：{}，{}", principal, parameters);
-        return ResultVO.success(userService.login(principal, parameters));
+        return ResultVO.success(userService.login(principal, parameters, tokenEndpoint));
     }
 
 

@@ -72,8 +72,6 @@ public class UserService implements UserDetailsService {
     @Autowired
     private DefaultKaptcha defaultKaptcha;
     @Autowired
-    private TokenEndpoint tokenEndpoint;
-    @Autowired
     private JwtUtil jwtUtil;
     // ********************************新增类接口********************************
     // ********************************删除类接口********************************
@@ -107,7 +105,7 @@ public class UserService implements UserDetailsService {
      * @return 用户登录VO对象
      */
     @Transactional(readOnly = true)
-    public UserLoginVO login(Principal principal, Map<String, String> parameters) throws HttpRequestMethodNotSupportedException {
+    public UserLoginVO login(Principal principal, Map<String, String> parameters, TokenEndpoint tokenEndpoint) throws HttpRequestMethodNotSupportedException {
         UserLoginVO result = new UserLoginVO();
         UserLoginVO.UserInfo userInfo;
         UserLoginVO.TokenInfo tokenInfo = new UserLoginVO.TokenInfo();
