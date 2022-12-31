@@ -55,6 +55,20 @@ public class UserController {
         return ResultVO.success(userService.login(principal, parameters));
     }
 
+
+    /**
+     * 用户注销
+     *
+     * @return 通用消息返回对象
+     */
+    @PostMapping("/logout")
+    @ApiOperation(value = "用户注销", httpMethod = "POST")
+    public ResultVO<?> logout() {
+        log.info("==========用户注销");
+        userService.logout();
+        return ResultVO.success();
+    }
+
     /**
      * 刷新登录验证码
      *
@@ -67,6 +81,7 @@ public class UserController {
         log.info("==========刷新登录验证码，参数：{}", verifyCodeKey);
         userService.refreshVerifyCode(verifyCodeKey, httpServletResponse);
     }
+
 
 
     // ********************************复写oauth2异常处理器********************************

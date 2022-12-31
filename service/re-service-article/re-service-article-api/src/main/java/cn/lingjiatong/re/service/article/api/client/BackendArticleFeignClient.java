@@ -6,6 +6,7 @@ import cn.lingjiatong.re.service.article.api.dto.BackendDraftSaveOrUpdateDTO;
 import cn.lingjiatong.re.service.article.api.vo.BackendDraftDetailVO;
 import cn.lingjiatong.re.service.article.api.vo.BackendDraftListVO;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.cloud.openfeign.SpringQueryMap;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,7 +28,7 @@ public interface BackendArticleFeignClient {
      * @return 文章草稿详情VO对象
      */
     @GetMapping("/backend/api/v1/article/draft/{draftId}")
-    ResultVO<BackendDraftDetailVO> getDraftDetail(@PathVariable("draftId") String draftId, @RequestParam(value = "currentUser", required = false) User currentUser);
+    ResultVO<BackendDraftDetailVO> getDraftDetail(@PathVariable("draftId") String draftId, @SpringQueryMap User currentUser);
 
     /**
      * 后端获取当前用户的草稿列表
@@ -36,7 +37,7 @@ public interface BackendArticleFeignClient {
      * @return 文章草稿列表VO对象列表
      */
     @GetMapping("/backend/api/v1/article/draftList")
-    ResultVO<List<BackendDraftListVO>> getDraftList(@RequestParam(value = "currentUser", required = false) User currentUser);
+    ResultVO<List<BackendDraftListVO>> getDraftList(@SpringQueryMap User currentUser);
 
     /**
      * 保存或者更新草稿
@@ -46,7 +47,7 @@ public interface BackendArticleFeignClient {
      * @return 通用消息返回对象
      */
     @PostMapping("/backend/api/v1/article/saveOrUpdateDraft")
-    ResultVO<?> saveOrUpdateDraft(@RequestBody BackendDraftSaveOrUpdateDTO dto, @RequestParam(value = "currentUser", required = false) User currentUser);
+    ResultVO<?> saveOrUpdateDraft(@RequestBody BackendDraftSaveOrUpdateDTO dto, @SpringQueryMap User currentUser);
 
     /**
      * 删除草稿
@@ -56,5 +57,5 @@ public interface BackendArticleFeignClient {
      * @return 通用消息返回对象
      */
     @DeleteMapping("/backend/api/v1/article/deleteDraft/{draftId}")
-    ResultVO<?> deleteDraft(@PathVariable("draftId") String draftId, @RequestParam(value = "currentUser", required = false) User currentUser);
+    ResultVO<?> deleteDraft(@PathVariable("draftId") String draftId, @SpringQueryMap User currentUser);
 }

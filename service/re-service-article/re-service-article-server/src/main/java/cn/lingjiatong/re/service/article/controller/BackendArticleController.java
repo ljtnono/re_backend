@@ -49,26 +49,26 @@ public class BackendArticleController implements BackendArticleFeignClient {
 
     @Override
     @GetMapping("/backend/api/v1/article/draft/{draftId}")
-    public ResultVO<BackendDraftDetailVO> getDraftDetail(@PathVariable("draftId") String draftId, @RequestParam(value = "currentUser", required = false) User currentUser) {
+    public ResultVO<BackendDraftDetailVO> getDraftDetail(@PathVariable("draftId") String draftId, User currentUser) {
         return ResultVO.success(backendArticleService.getDraftDetail(draftId, currentUser));
     }
 
     @Override
     @GetMapping("/backend/api/v1/article/draftList")
-    public ResultVO<List<BackendDraftListVO>> getDraftList(@RequestParam(value = "currentUser", required = false) User currentUser) {
+    public ResultVO<List<BackendDraftListVO>> getDraftList(User currentUser) {
         return ResultVO.success(backendArticleService.getDraftList(currentUser));
     }
 
     @Override
     @PostMapping("/backend/api/v1/article/saveOrUpdateDraft")
-    public ResultVO<?> saveOrUpdateDraft(@RequestBody BackendDraftSaveOrUpdateDTO dto, @RequestParam(value = "currentUser", required = false) User currentUser) {
+    public ResultVO<?> saveOrUpdateDraft(@RequestBody BackendDraftSaveOrUpdateDTO dto, User currentUser) {
         backendArticleService.saveOrUpdateDraft(dto, currentUser);
         return ResultVO.success();
     }
 
     @Override
     @DeleteMapping("/backend/api/v1/article/deleteDraft/{draftId}")
-    public ResultVO<?> deleteDraft(@PathVariable("draftId") String draftId, @RequestParam(value = "currentUser", required = false) User currentUser) {
+    public ResultVO<?> deleteDraft(@PathVariable("draftId") String draftId, User currentUser) {
         backendArticleService.deleteDraft(draftId, currentUser);
         return ResultVO.success();
     }

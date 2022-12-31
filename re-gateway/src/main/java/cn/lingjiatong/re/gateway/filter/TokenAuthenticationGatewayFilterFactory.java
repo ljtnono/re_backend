@@ -85,7 +85,6 @@ public class TokenAuthenticationGatewayFilterFactory extends AbstractGatewayFilt
                     return responseInfo(exchange, e.getCode(), e.getMessage());
                 }
             }
-
             // TODO 如何放行passTokenUrl中匹配的路径
             if (StringUtils.hasLength(token) && StringUtils.hasLength(username)) {
                 // 说明解析成功，进入下一个过滤器

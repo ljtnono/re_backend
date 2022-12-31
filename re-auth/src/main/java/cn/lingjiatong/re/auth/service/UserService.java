@@ -1,6 +1,7 @@
 package cn.lingjiatong.re.auth.service;
 
 import cn.lingjiatong.re.auth.mapper.UserMapper;
+import cn.lingjiatong.re.auth.security.JwtUtil;
 import cn.lingjiatong.re.auth.vo.UserLoginVO;
 import cn.lingjiatong.re.common.constant.CommonConstant;
 import cn.lingjiatong.re.common.constant.RedisCacheKeyEnum;
@@ -17,14 +18,18 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.google.code.kaptcha.impl.DefaultKaptcha;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import io.jsonwebtoken.Claims;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
+import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
 import org.springframework.security.oauth2.provider.endpoint.TokenEndpoint;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -68,10 +73,30 @@ public class UserService implements UserDetailsService {
     private DefaultKaptcha defaultKaptcha;
     @Autowired
     private TokenEndpoint tokenEndpoint;
-
+    @Autowired
+    private JwtUtil jwtUtil;
     // ********************************新增类接口********************************
     // ********************************删除类接口********************************
     // ********************************修改类接口********************************
+
+    /**
+     * 用户注销
+     *
+     * @return 通用消息返回对象
+     */
+    public void logout() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Object details = authentication.getDetails();
+        if (details instanceof OAuth2AuthenticationDetails) {
+            OAuth2AuthenticationDetails oAuth2AuthenticationDetails = (OAuth2AuthenticationDetails) details;
+            String token = oAuth2AuthenticationDetails.getTokenValue();
+            Claims claims = jwtUtil.getClaimsFromToken(token);
+            String username = (String) claims.get("username");
+            // 删除redis缓存
+            redisUtil.deleteObject(RedisCacheKeyEnum.USER_INFO.getValue() + username);
+        }
+    }
+
     // ********************************查询类接口********************************
 
     /**
@@ -147,6 +172,10 @@ public class UserService implements UserDetailsService {
         userInfoCache.setPermissionIdList(permissionIdList);
         String userInfoCacheKey = RedisCacheKeyEnum.USER_INFO.getValue() + username;
         redisUtil.setCacheObject(userInfoCacheKey, userInfoCache, tokenBody.getExpiresIn(), TimeUnit.SECONDS);
+
+        // 删除验证码缓存
+        String verifyCodeKey = parameters.get("verifyCodeKey");
+        redisUtil.deleteObject(RedisCacheKeyEnum.LOGIN_VERIFY_CODE.getValue() + verifyCodeKey);
 
         result.setUserInfo(userInfo);
         result.setMenus(menus);
@@ -226,6 +255,7 @@ public class UserService implements UserDetailsService {
         BeanUtils.copyProperties(user, userInfo);
         return userInfo;
     }
+
 
 
 

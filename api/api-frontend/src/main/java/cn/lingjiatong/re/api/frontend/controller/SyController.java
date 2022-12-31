@@ -8,6 +8,7 @@ import cn.lingjiatong.re.service.sys.api.dto.FrontendWebsiteConfigFindDTO;
 import cn.lingjiatong.re.service.sys.api.vo.FrontendFriendLinkListVO;
 import cn.lingjiatong.re.service.sys.api.vo.FrontendNoticeListVO;
 import cn.lingjiatong.re.service.sys.api.vo.FrontendWebsiteConfigAddVO;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/sy")
+@Api(tags = "前端博客首页接口")
 public class SyController {
 
     @Autowired
@@ -34,6 +36,11 @@ public class SyController {
     private FrontendNoticeFeignClient frontendNoticeFeignClient;
     @Autowired
     private FrontendFriendLinkFeignClient frontendFriendLinkFeignClient;
+
+    // ********************************新增类接口********************************
+    // ********************************删除类接口********************************
+    // ********************************修改类接口********************************
+    // ********************************查询类接口********************************
 
     /**
      * 获取前端站点设置
