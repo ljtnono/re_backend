@@ -75,10 +75,9 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
         http
                 .authorizeRequests()
                 .antMatchers(reSecurityProperties.getPassTokenUrl().toArray(new String[]{}))
-                .permitAll();
-
-        // 其他请求均需要token才能访问
-        http
+                .permitAll()
+                // 其他请求均需要token才能访问
+                .and()
                 .authorizeRequests()
                 .anyRequest()
                 .authenticated()

@@ -1,7 +1,7 @@
 package cn.lingjiatong.re.service.sys.api.client;
 
 import cn.lingjiatong.re.common.ResultVO;
-import cn.lingjiatong.re.service.sys.api.config.FeignBasicAuthRequestInterceptor;
+import cn.lingjiatong.re.common.config.FeignBasicAuthRequestInterceptor;
 import cn.lingjiatong.re.service.sys.api.vo.FrontendNoticeListVO;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;

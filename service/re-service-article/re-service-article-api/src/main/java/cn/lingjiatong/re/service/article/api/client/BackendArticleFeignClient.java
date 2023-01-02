@@ -1,6 +1,7 @@
 package cn.lingjiatong.re.service.article.api.client;
 
 import cn.lingjiatong.re.common.ResultVO;
+import cn.lingjiatong.re.common.config.FeignBasicAuthRequestInterceptor;
 import cn.lingjiatong.re.common.entity.User;
 import cn.lingjiatong.re.service.article.api.dto.BackendDraftSaveOrUpdateDTO;
 import cn.lingjiatong.re.service.article.api.vo.BackendDraftDetailVO;
@@ -17,7 +18,7 @@ import java.util.List;
  * @author Ling, Jiatong
  * Date: 2022/10/17 21:56
  */
-@FeignClient(name = "re-service-article-server", path = "/article", contextId = "BackendArticleFeignClient")
+@FeignClient(name = "re-service-article-server", path = "/article", contextId = "BackendArticleFeignClient", configuration = {FeignBasicAuthRequestInterceptor.class})
 public interface BackendArticleFeignClient {
 
     // ********************************新增类接口********************************

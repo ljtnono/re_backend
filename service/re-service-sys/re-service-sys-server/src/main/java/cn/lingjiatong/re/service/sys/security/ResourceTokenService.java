@@ -34,6 +34,7 @@ public class ResourceTokenService implements ResourceServerTokenServices {
     @Override
     public OAuth2Authentication loadAuthentication(String accessToken) throws AuthenticationException, InvalidTokenException {
         // 配置如何从token生成OAuth2Authentication
+        System.out.println(accessToken);
         return jwtTokenStore.readAuthentication(accessToken);
     }
 

@@ -1,8 +1,8 @@
 package cn.lingjiatong.re.service.sys.api.client;
 
 import cn.lingjiatong.re.common.ResultVO;
+import cn.lingjiatong.re.common.config.FeignBasicAuthRequestInterceptor;
 import cn.lingjiatong.re.common.entity.User;
-import cn.lingjiatong.re.service.sys.api.config.FeignBasicAuthRequestInterceptor;
 import cn.lingjiatong.re.service.sys.api.dto.BackendUserListDTO;
 import cn.lingjiatong.re.service.sys.api.dto.BackendUserUpdateDTO;
 import cn.lingjiatong.re.service.sys.api.dto.BackendUserUpdateDeleteStatusBatchDTO;

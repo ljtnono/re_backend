@@ -1,7 +1,7 @@
 package cn.lingjiatong.re.service.sys.api.client;
 
 import cn.lingjiatong.re.common.ResultVO;
-import cn.lingjiatong.re.service.sys.api.config.FeignBasicAuthRequestInterceptor;
+import cn.lingjiatong.re.common.config.FeignBasicAuthRequestInterceptor;
 import cn.lingjiatong.re.service.sys.api.dto.FrontendWebsiteConfigAddDTO;
 import cn.lingjiatong.re.service.sys.api.dto.FrontendWebsiteConfigFindDTO;
 import cn.lingjiatong.re.service.sys.api.vo.FrontendWebsiteConfigAddVO;
