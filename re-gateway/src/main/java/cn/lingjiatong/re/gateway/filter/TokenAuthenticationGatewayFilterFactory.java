@@ -1,9 +1,12 @@
 package cn.lingjiatong.re.gateway.filter;
 
 import cn.lingjiatong.re.common.constant.CommonConstant;
+import cn.lingjiatong.re.common.constant.RedisCacheKeyEnum;
+import cn.lingjiatong.re.common.entity.cache.UserInfoCache;
 import cn.lingjiatong.re.common.exception.ErrorEnum;
 import cn.lingjiatong.re.common.exception.PermissionException;
 import cn.lingjiatong.re.common.exception.ServerException;
+import cn.lingjiatong.re.common.util.RedisUtil;
 import cn.lingjiatong.re.gateway.component.JwtUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,7 +45,8 @@ public class TokenAuthenticationGatewayFilterFactory extends AbstractGatewayFilt
 
     @Autowired
     private JwtUtil jwtUtil;
-    private static final ObjectMapper objectMapper = new ObjectMapper();
+    @Autowired
+    private RedisUtil redisUtil;
 
     @Override
     public GatewayFilter apply(Object config) {
@@ -52,6 +56,7 @@ public class TokenAuthenticationGatewayFilterFactory extends AbstractGatewayFilt
             MultiValueMap<String, HttpCookie> cookies = request.getCookies();
             String username = null;
             String token = request.getHeaders().getFirst(CommonConstant.TOKE_HTTP_HEADER);
+            // TODO 如何放行passTokenUrl中匹配的路径
             if (StringUtils.hasLength(token) && token.startsWith(CommonConstant.TOKEN_PREFIX)) {
                 token = token.substring(CommonConstant.TOKEN_PREFIX.length());
                 // 从token中解析出来用户名
@@ -85,8 +90,13 @@ public class TokenAuthenticationGatewayFilterFactory extends AbstractGatewayFilt
                     return responseInfo(exchange, e.getCode(), e.getMessage());
                 }
             }
-            // TODO 如何放行passTokenUrl中匹配的路径
             if (StringUtils.hasLength(token) && StringUtils.hasLength(username)) {
+                // 查询redis，如果redis中不存在则返回错误
+                UserInfoCache userInfoCache = (UserInfoCache) redisUtil.getCacheObject(RedisCacheKeyEnum.USER_INFO + username);
+                if (null == userInfoCache) {
+                    // 用户已注销，返回失败消息
+                    return responseInfo(exchange, ErrorEnum.USER_ALREADY_LOGOUT_ERROR.getCode(), ErrorEnum.USER_ALREADY_LOGOUT_ERROR.getMessage());
+                }
                 // 说明解析成功，进入下一个过滤器
                 return chain.filter(exchange);
             } else {
@@ -109,6 +119,7 @@ public class TokenAuthenticationGatewayFilterFactory extends AbstractGatewayFilt
         Map<String, Object> resultMap = new HashMap<>(2);
         resultMap.put("code", code);
         resultMap.put("message", message);
+        ObjectMapper objectMapper = new ObjectMapper();
         return Mono.defer(() -> {
             byte[] bytes;
             try {

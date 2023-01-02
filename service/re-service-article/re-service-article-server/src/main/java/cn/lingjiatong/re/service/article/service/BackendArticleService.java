@@ -148,9 +148,8 @@ public class BackendArticleService {
         if (!StringUtils.hasLength(draftId)) {
             draftId = RandomUtil.getInstance().generateUUID();
         }
-        // TODO 目前先写死为超级管理员账号，后面再改
         String redisKey = RedisCacheKeyEnum.ARTICLE_DRAFT.getValue()
-                .replace("username", "lingjiatong")
+                .replace("username", currentUser.getUsername())
                 .replace("draftId", draftId);
         DraftCache draftCache = new DraftCache();
         draftCache.setTitle(title);
@@ -176,9 +175,8 @@ public class BackendArticleService {
             throw new ParamErrorException(ErrorEnum.REQUEST_PARAM_ERROR.getCode(), BackendArticleErrorMessageConstant.DRAFT_ID_EMPTY_ERROR_MESSAGE);
         }
 
-        // TODO 目前先写死为超级管理员账号，后面再改
         String redisKey = RedisCacheKeyEnum.ARTICLE_DRAFT.getValue()
-                .replace("username", "lingjiatong")
+                .replace("username", currentUser.getUsername())
                 .replace("draftId", draftId);
         Set<String> keys = redisUtil.keys(redisKey);
         if (CollectionUtils.isEmpty(keys)) {
@@ -202,9 +200,8 @@ public class BackendArticleService {
         if (!StringUtils.hasLength(draftId)) {
             throw new ParamErrorException(ErrorEnum.REQUEST_PARAM_ERROR);
         }
-        // TODO 目前先写死为超级管理员账号，后面再改
         String key = RedisCacheKeyEnum.ARTICLE_DRAFT.getValue()
-                .replace("username", "lingjiatong")
+                .replace("username", currentUser.getUsername())
                 .replace("draftId", draftId);
         DraftCache draftCache = (DraftCache) redisUtil.getCacheObject(key);
         Optional.ofNullable(draftCache)
@@ -221,9 +218,8 @@ public class BackendArticleService {
      * @return 该用户的所有草稿列表
      */
     public List<BackendDraftListVO> getDraftList(User currentUser) {
-        // TODO 目前先写死为超级管理员账号，后面再改
         String keyPattern = RedisCacheKeyEnum.ARTICLE_DRAFT.getValue()
-                .replace("username", "lingjiatong")
+                .replace("username", currentUser.getUsername())
                 .replace("draftId", "*");
         Set<String> keys = redisUtil.keys(keyPattern);
         if (CollectionUtils.isEmpty(keys)) {

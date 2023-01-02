@@ -33,7 +33,39 @@ public class ArticleController {
 
     // ********************************新增类接口********************************
     // ********************************删除类接口********************************
+
+    /**
+     * 删除草稿
+     *
+     * @param currentUser 当前用户
+     * @param draftId 草稿id
+     * @return 通用消息返回对象
+     */
+    @DeleteMapping("/deleteDraft/{draftId}")
+    @ApiOperation(value = "删除草稿", httpMethod = "DELETE")
+    @PreAuthorize("hasAuthority('blog:article') && hasAuthority('blog:article:write')")
+    public ResultVO<?> deleteDraft(@PathVariable("draftId") String draftId, @CurrentUser User currentUser) {
+        log.info("==========删除草稿，参数：{}", draftId);
+        return backendArticleFeignClient.deleteDraft(draftId, currentUser);
+    }
+
     // ********************************修改类接口********************************
+
+    /**
+     * 保存或更新草稿
+     *
+     * @param dto 草稿保存或更新DTO对象
+     * @param currentUser 当前用户
+     * @return 通用消息返回对象
+     */
+    @PostMapping("/saveOrUpdateDraft")
+    @ApiOperation(value = "保存或更新草稿", httpMethod = "POST")
+    @PreAuthorize("hasAuthority('blog:article') && hasAuthority('blog:article:write')")
+    public ResultVO<?> saveOrUpdateDraft(@RequestBody BackendDraftSaveOrUpdateDTO dto, @CurrentUser User currentUser) {
+        log.info("==========保存或更新草稿，参数：{}，{}", dto.getDraftId(), dto.getTitle());
+        return backendArticleFeignClient.saveOrUpdateDraft(dto, currentUser);
+    }
+
     // ********************************查询类接口********************************
 
     /**
@@ -63,35 +95,5 @@ public class ArticleController {
     public ResultVO<List<BackendDraftListVO>> getDraftList(@CurrentUser User currentUser) {
         log.info("==========获取当前用户的草稿列表");
         return backendArticleFeignClient.getDraftList(currentUser);
-    }
-
-    /**
-     * 保存或更新草稿
-     *
-     * @param dto 草稿保存或更新DTO对象
-     * @param currentUser 当前用户
-     * @return 通用消息返回对象
-     */
-    @PostMapping("/saveOrUpdateDraft")
-    @ApiOperation(value = "保存或更新草稿", httpMethod = "POST")
-    @PreAuthorize("hasAuthority('blog:article') && hasAuthority('blog:article:write')")
-    public ResultVO<?> saveOrUpdateDraft(@RequestBody BackendDraftSaveOrUpdateDTO dto, @CurrentUser User currentUser) {
-        log.info("==========保存或更新草稿，参数：{}，{}", dto.getDraftId(), dto.getTitle());
-        return backendArticleFeignClient.saveOrUpdateDraft(dto, currentUser);
-    }
-
-    /**
-     * 删除草稿
-     *
-     * @param currentUser 当前用户
-     * @param draftId 草稿id
-     * @return 通用消息返回对象
-     */
-    @DeleteMapping("/deleteDraft/{draftId}")
-    @ApiOperation(value = "删除草稿", httpMethod = "DELETE")
-    @PreAuthorize("hasAuthority('blog:article') && hasAuthority('blog:article:write')")
-    public ResultVO<?> deleteDraft(@PathVariable("draftId") String draftId, @CurrentUser User currentUser) {
-        log.info("==========删除草稿，参数：{}", draftId);
-        return backendArticleFeignClient.deleteDraft(draftId, currentUser);
     }
 }

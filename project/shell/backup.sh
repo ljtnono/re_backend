@@ -10,7 +10,7 @@ PORT=30006
 USER=root
 PASSWORD=re#mysql2022
 # 需要导出的数据库名称列表
-DATABASES=('nacos' 're_article' 're_sys' 'xxl_job')
+DATABASES=('nacos' 're_article' 're_sys' 'xxl_job' 're_spider')
 
 backup() {
   # 获取当前日期
