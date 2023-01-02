@@ -44,11 +44,6 @@
                     <groupId>javax.servlet</groupId>
                     <artifactId>javax.servlet-api</artifactId>
                 </exclusion>
-                <!-- commons-pool2 -->
-                <exclusion>
-                    <groupId>org.apache.commons</groupId>
-                    <artifactId>commons-pool2</artifactId>
-                </exclusion>
                 <!-- jwt -->
                 <exclusion>
                     <groupId>io.jsonwebtoken</groupId>
@@ -68,11 +63,6 @@
                 <exclusion>
                     <groupId>org.springframework.boot</groupId>
                     <artifactId>spring-boot-starter-aop</artifactId>
-                </exclusion>
-                <!-- redis -->
-                <exclusion>
-                    <groupId>org.springframework.boot</groupId>
-                    <artifactId>spring-boot-starter-data-redis</artifactId>
                 </exclusion>
                 <!-- minio -->
                 <exclusion>
@@ -125,11 +115,6 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-configuration-processor</artifactId>
-        </dependency>
-        <!-- redis -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-redis</artifactId>
         </dependency>
     </dependencies>
 

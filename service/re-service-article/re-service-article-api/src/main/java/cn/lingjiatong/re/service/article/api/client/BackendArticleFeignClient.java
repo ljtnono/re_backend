@@ -20,6 +20,34 @@ import java.util.List;
 @FeignClient(name = "re-service-article-server", path = "/article", contextId = "BackendArticleFeignClient")
 public interface BackendArticleFeignClient {
 
+    // ********************************新增类接口********************************
+    // ********************************删除类接口********************************
+
+    /**
+     * 删除草稿
+     *
+     * @param currentUser 当前用户
+     * @param draftId 草稿id
+     * @return 通用消息返回对象
+     */
+    @DeleteMapping("/backend/api/v1/article/deleteDraft/{draftId}")
+    ResultVO<?> deleteDraft(@PathVariable("draftId") String draftId, @SpringQueryMap User currentUser);
+
+    // ********************************修改类接口********************************
+
+    /**
+     * 保存或者更新草稿
+     *
+     * @param dto 草稿保存或更新DTO对象
+     * @param currentUser 当前用户
+     * @return 通用消息返回对象
+     */
+    @PostMapping("/backend/api/v1/article/saveOrUpdateDraft")
+    ResultVO<?> saveOrUpdateDraft(@RequestBody BackendDraftSaveOrUpdateDTO dto, @SpringQueryMap User currentUser);
+
+
+    // ********************************查询类接口********************************
+
     /**
      * 后端获取草稿详情
      *
@@ -39,23 +67,4 @@ public interface BackendArticleFeignClient {
     @GetMapping("/backend/api/v1/article/draftList")
     ResultVO<List<BackendDraftListVO>> getDraftList(@SpringQueryMap User currentUser);
 
-    /**
-     * 保存或者更新草稿
-     *
-     * @param dto 草稿保存或更新DTO对象
-     * @param currentUser 当前用户
-     * @return 通用消息返回对象
-     */
-    @PostMapping("/backend/api/v1/article/saveOrUpdateDraft")
-    ResultVO<?> saveOrUpdateDraft(@RequestBody BackendDraftSaveOrUpdateDTO dto, @SpringQueryMap User currentUser);
-
-    /**
-     * 删除草稿
-     *
-     * @param currentUser 当前用户
-     * @param draftId 草稿id
-     * @return 通用消息返回对象
-     */
-    @DeleteMapping("/backend/api/v1/article/deleteDraft/{draftId}")
-    ResultVO<?> deleteDraft(@PathVariable("draftId") String draftId, @SpringQueryMap User currentUser);
 }

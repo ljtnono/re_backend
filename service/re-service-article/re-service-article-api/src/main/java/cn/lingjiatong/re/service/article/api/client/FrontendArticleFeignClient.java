@@ -16,6 +16,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 @FeignClient(name = "re-service-article-server", path = "/article", contextId = "FrontendArticleFeignClient")
 public interface FrontendArticleFeignClient {
 
+    // ********************************新增类接口********************************
+    // ********************************删除类接口********************************
+    // ********************************修改类接口********************************
+    // ********************************查询类接口********************************
 
     /**
      * 获取单个文章信息

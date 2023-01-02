@@ -25,6 +25,8 @@ public class BackendArticleController implements BackendArticleFeignClient {
     @Autowired
     private BackendArticleService backendArticleService;
 
+    // ********************************新增类接口********************************
+
     /**
      * 后端保存文章接口
      *
@@ -36,6 +38,25 @@ public class BackendArticleController implements BackendArticleFeignClient {
         return ResultVO.success();
     }
 
+    // ********************************删除类接口********************************
+
+    @Override
+    @DeleteMapping("/backend/api/v1/article/deleteDraft/{draftId}")
+    public ResultVO<?> deleteDraft(@PathVariable("draftId") String draftId, User currentUser) {
+        backendArticleService.deleteDraft(draftId, currentUser);
+        return ResultVO.success();
+    }
+
+    // ********************************修改类接口********************************
+
+    @Override
+    @PostMapping("/backend/api/v1/article/saveOrUpdateDraft")
+    public ResultVO<?> saveOrUpdateDraft(@RequestBody BackendDraftSaveOrUpdateDTO dto, User currentUser) {
+        backendArticleService.saveOrUpdateDraft(dto, currentUser);
+        return ResultVO.success();
+    }
+
+    // ********************************查询类接口********************************
 
     @Override
     @GetMapping("/backend/api/v1/article/draft/{draftId}")
@@ -49,17 +70,4 @@ public class BackendArticleController implements BackendArticleFeignClient {
         return ResultVO.success(backendArticleService.getDraftList(currentUser));
     }
 
-    @Override
-    @PostMapping("/backend/api/v1/article/saveOrUpdateDraft")
-    public ResultVO<?> saveOrUpdateDraft(@RequestBody BackendDraftSaveOrUpdateDTO dto, User currentUser) {
-        backendArticleService.saveOrUpdateDraft(dto, currentUser);
-        return ResultVO.success();
-    }
-
-    @Override
-    @DeleteMapping("/backend/api/v1/article/deleteDraft/{draftId}")
-    public ResultVO<?> deleteDraft(@PathVariable("draftId") String draftId, User currentUser) {
-        backendArticleService.deleteDraft(draftId, currentUser);
-        return ResultVO.success();
-    }
 }
