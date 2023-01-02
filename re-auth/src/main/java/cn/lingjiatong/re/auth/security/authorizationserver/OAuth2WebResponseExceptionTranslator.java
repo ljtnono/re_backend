@@ -7,6 +7,7 @@ import cn.lingjiatong.re.common.exception.ParamErrorException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.oauth2.common.exceptions.InvalidRequestException;
@@ -47,6 +48,8 @@ public class OAuth2WebResponseExceptionTranslator implements WebResponseExceptio
             return new ResponseEntity<>(ResultVO.error(ErrorEnum.UNSUPPORTED_GRANT_TYPE_ERROR.getCode(), ErrorEnum.UNSUPPORTED_GRANT_TYPE_ERROR.getMessage()), HttpStatus.OK);
         } else if (e instanceof InvalidTokenException) {
             return new ResponseEntity<>(ResultVO.error(ErrorEnum.INVALID_TOKEN_ERROR.getCode(), ErrorEnum.INVALID_TOKEN_ERROR.getMessage()), HttpStatus.OK);
+        } else if (e instanceof AccessDeniedException) {
+            return new ResponseEntity<>(ResultVO.error(ErrorEnum.PERMISSION_DENIED_ERROR.getCode(), ErrorEnum.PERMISSION_DENIED_ERROR.getMessage()), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(ResultVO.error(ErrorEnum.UNKNOWN_ERROR.getCode(), ErrorEnum.UNKNOWN_ERROR.getMessage()), HttpStatus.OK);
         }

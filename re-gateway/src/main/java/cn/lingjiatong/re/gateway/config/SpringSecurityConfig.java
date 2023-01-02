@@ -1,5 +1,6 @@
 package cn.lingjiatong.re.gateway.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
@@ -14,6 +15,9 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
 @EnableWebFluxSecurity
 public class SpringSecurityConfig  {
 
+    @Autowired
+    private AuthenticationHandler authenticationHandler;
+
     @Bean
     public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity httpSecurity) {
         httpSecurity.csrf().disable();
@@ -24,7 +28,11 @@ public class SpringSecurityConfig  {
         httpSecurity
                 .authorizeExchange()
                 .pathMatchers("/**")
-                .permitAll();
+                .permitAll()
+                .and()
+                .exceptionHandling()
+                .accessDeniedHandler(authenticationHandler)
+                .authenticationEntryPoint(authenticationHandler);
         return httpSecurity.build();
     }
 }

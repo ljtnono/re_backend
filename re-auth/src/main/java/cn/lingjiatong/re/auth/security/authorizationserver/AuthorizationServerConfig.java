@@ -1,5 +1,6 @@
 package cn.lingjiatong.re.auth.security.authorizationserver;
 
+import cn.lingjiatong.re.auth.security.AuthenticationHandler;
 import cn.lingjiatong.re.common.util.RedisUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -57,6 +58,8 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     private KeyPair keyPair;
     @Value("${spring.profiles.active}")
     private String profile;
+    @Autowired
+    private AuthenticationHandler authenticationHandler;
 
 
     /**
@@ -68,14 +71,11 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
         clients.withClientDetails(jdbcClientDetailsService);
     }
 
-
-
     /**
      * 认证服务器是玩转token的，那么这里配置token令牌管理相关（token此时就是一个字符串，当下的token需要在服务器端存储，那么存储在哪里呢？都是在这里配置）
      */
     @Override
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) {
-
         TokenEnhancerChain tokenEnhancerChain = new TokenEnhancerChain();
         List<TokenEnhancer> tokenEnhancers = new ArrayList<>();
         JwtAccessTokenConverter converter = new JwtAccessTokenConverter();
@@ -118,7 +118,9 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
         security.addTokenEndpointAuthenticationFilter(endpointFilter);
         // 注意：security不需要在调用allowFormAuthenticationForClients方法
         security.tokenKeyAccess("permitAll()")
-                .checkTokenAccess("isAuthenticated()");
+                .checkTokenAccess("isAuthenticated()")
+                .accessDeniedHandler(authenticationHandler)
+                .authenticationEntryPoint(authenticationHandler);
     }
 
 }

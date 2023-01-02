@@ -1,14 +1,18 @@
 package cn.lingjiatong.re.auth.security.resourceserver;
 
+import cn.lingjiatong.re.auth.security.AuthenticationHandler;
 import cn.lingjiatong.re.auth.security.ReSecurityProperties;
 import cn.lingjiatong.re.common.annotation.PassToken;
 import cn.lingjiatong.re.common.util.SpringBeanUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
+import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
@@ -26,10 +30,16 @@ import java.util.TreeSet;
  */
 @Configuration
 @EnableResourceServer
+@EnableGlobalMethodSecurity(prePostEnabled = true, jsr250Enabled = true)
 public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
 
     @Autowired
     private ReSecurityProperties reSecurityProperties;
+    @Autowired
+    @Qualifier("authenticationHandler")
+    private AuthenticationHandler authenticationHandler;
+    @Autowired
+    private ResourceTokenService resourceTokenService;
 
     public Set<String> getPassTokenUrl() {
         Set<String> passTokenSet = new TreeSet<>();
@@ -71,7 +81,21 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
         http
                 .authorizeRequests()
                 .anyRequest()
-                .authenticated();
+                .authenticated()
+                .and()
+                .exceptionHandling()
+                .authenticationEntryPoint(authenticationHandler)
+                .accessDeniedHandler(authenticationHandler);
+
+    }
+
+    @Override
+    public void configure(ResourceServerSecurityConfigurer resources) throws Exception {
+        // 配置如何解析token
+        resources
+                .authenticationEntryPoint(authenticationHandler)
+                .accessDeniedHandler(authenticationHandler)
+                .tokenServices(resourceTokenService);
     }
 
 }

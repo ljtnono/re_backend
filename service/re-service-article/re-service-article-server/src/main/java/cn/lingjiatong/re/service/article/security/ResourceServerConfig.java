@@ -81,7 +81,11 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
         http
                 .authorizeRequests()
                 .anyRequest()
-                .authenticated();
+                .authenticated()
+                .and()
+                .exceptionHandling()
+                .accessDeniedHandler(authenticationHandler)
+                .authenticationEntryPoint(authenticationHandler);
     }
 
     @Override
