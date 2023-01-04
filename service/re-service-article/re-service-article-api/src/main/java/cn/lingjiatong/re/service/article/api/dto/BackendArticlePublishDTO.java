@@ -7,14 +7,20 @@ import lombok.Data;
 import java.util.List;
 
 /**
- * 后台保存文章接口DTO对象
+ * 后台文章发布接口DTO对象
  *
  * @author Ling, Jiatong
  * Date: 2022/10/17 22:00
  */
 @Data
-@ApiModel(description = "后台保存文章接口DTO对象")
-public class BackendArticleSaveDTO {
+@ApiModel(description = "后台文章发布接口DTO对象")
+public class BackendArticlePublishDTO {
+
+    /**
+     * 草稿id
+     */
+    @ApiModelProperty("草稿id")
+    private String draftId;
 
     /**
      * 文章标题
@@ -44,7 +50,7 @@ public class BackendArticleSaveDTO {
      * 文章所属类型id
      */
     @ApiModelProperty("文章所属类型id，前端传递字符串类型，后端需要转为Long类型")
-    private String categoryId;
+    private Long categoryId;
 
     /**
      * 是否设置为推荐文章

@@ -83,7 +83,6 @@ public class UserController {
     }
 
 
-
     // ********************************复写oauth2异常处理器********************************
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)

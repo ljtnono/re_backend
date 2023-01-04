@@ -14,8 +14,8 @@ import cn.lingjiatong.re.common.entity.cache.UserInfoCache;
 import cn.lingjiatong.re.common.exception.ErrorEnum;
 import cn.lingjiatong.re.common.exception.ResourceNotExistException;
 import cn.lingjiatong.re.common.util.RedisUtil;
+import cn.lingjiatong.re.common.util.VerifyCodeUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.google.code.kaptcha.impl.DefaultKaptcha;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import io.jsonwebtoken.Claims;
@@ -69,8 +69,6 @@ public class UserService implements UserDetailsService {
     private MenuService menuService;
     @Autowired
     private RedisUtil redisUtil;
-    @Autowired
-    private DefaultKaptcha defaultKaptcha;
     @Autowired
     private JwtUtil jwtUtil;
     // ********************************新增类接口********************************
@@ -214,14 +212,14 @@ public class UserService implements UserDetailsService {
     public void refreshVerifyCode(String verifyCodeKey, HttpServletResponse httpServletResponse) throws IOException {
         byte[] captchaChallengeAsJpeg;
         ByteArrayOutputStream jpegOutputStream = new ByteArrayOutputStream();
+        BufferedImage bufferedImage = new BufferedImage(300, 75, BufferedImage.TYPE_INT_RGB);
+        String text = VerifyCodeUtil.getInstance().drawRandomText(bufferedImage);
         // 生产验证码字符串并保存到redis中
-        String createText = defaultKaptcha.createText();
         LoginVerifyCodeCache cache = new LoginVerifyCodeCache();
-        cache.setValue(createText);
+        cache.setValue(text);
         redisUtil.setCacheObject(RedisCacheKeyEnum.LOGIN_VERIFY_CODE.getValue() + verifyCodeKey, cache, 5, TimeUnit.MINUTES);
         // 使用生成的验证码字符串返回一个BufferedImage对象并转为byte写入到byte数组中
-        BufferedImage challenge = defaultKaptcha.createImage(createText);
-        ImageIO.write(challenge, "jpg", jpegOutputStream);
+        ImageIO.write(bufferedImage, "jpg", jpegOutputStream);
         // 定义response输出类型为image/jpeg类型，使用response输出流输出图片的byte数组
         captchaChallengeAsJpeg = jpegOutputStream.toByteArray();
         httpServletResponse.setHeader("Cache-Control", "no-store");

@@ -49,5 +49,5 @@ public class Role {
      * 0 正常 1 已删除
      */
     @TableField("is_deleted")
-    private Byte delete;
+    private Byte deleted;
 }

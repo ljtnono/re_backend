@@ -47,6 +47,6 @@ public class Tag {
      * 是否删除 0 正常 1 删除
      */
     @TableField("is_deleted")
-    private Byte delete;
+    private Byte deleted;
 
 }

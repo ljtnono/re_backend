@@ -16,7 +16,7 @@ public enum RedisCacheKeyEnum {
 
     // ********************************文章相关********************************
 
-    // 文章草稿redis缓存key，这里timestap为时间戳
+    // 文章草稿redis缓存key
     ARTICLE_DRAFT("re:draft:username:draftId"),
 
     ;

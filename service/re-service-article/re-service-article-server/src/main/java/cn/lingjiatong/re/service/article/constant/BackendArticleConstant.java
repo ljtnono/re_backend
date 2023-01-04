@@ -14,7 +14,7 @@ public interface BackendArticleConstant {
     // 默认封面图片
     String DEFAULT_COVER_URL = "http://f.lingjiatong.cn:30090/rootelement/sys/default_article_cover.gif";
     // 校验标题的正则表达式
-    Pattern TITLE_REGEX = Pattern.compile("^[\\u4e00-\\u9fa5\\S\\s,.，。‘’“”'()（）]{10,100}$");
+    Pattern TITLE_REGEX = Pattern.compile("^[\\u4e00-\\u9fa5\\S\\s,.，。‘’“”'()（）]{4,100}$");
     // 校验简介的正则表达式
     Pattern SUMMARY_REGEX = Pattern.compile("^[\\u4e00-\\u9fa5\\S\\s,.，。‘’“”'()（）]{0,200}$");
     // 校验标签名的正则表达式
@@ -31,7 +31,7 @@ public interface BackendArticleConstant {
     // 原创
     Byte ARTICLE_CREATION_YC = 1;
     // 转载
-    Byte ARTICLE_CREATION_ZZ = 0;
+    Byte ARTICLE_CREATION_ZZ = 2;
 
     /**
      * 获取推荐所有值集合

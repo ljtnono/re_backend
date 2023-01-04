@@ -2,10 +2,10 @@ package cn.lingjiatong.re.service.article.controller;
 
 import cn.lingjiatong.re.common.ResultVO;
 import cn.lingjiatong.re.common.entity.User;
-import cn.lingjiatong.re.service.article.api.client.BackendCategoryFeignClient;
-import cn.lingjiatong.re.service.article.api.vo.BackendCategoryListVO;
-import cn.lingjiatong.re.service.article.entity.Category;
-import cn.lingjiatong.re.service.article.service.BackendCategoryService;
+import cn.lingjiatong.re.service.article.api.client.BackendTagFeignClient;
+import cn.lingjiatong.re.service.article.api.vo.BackendTagListVO;
+import cn.lingjiatong.re.service.article.entity.Tag;
+import cn.lingjiatong.re.service.article.service.BackendTagService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -13,16 +13,16 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 /**
- * 后端文章分类模块controller层
+ * 后端文章标签模块controller层
  *
  * @author Ling, Jiatong
  * Date: 2023/1/2 20:10
  */
 @RestController
-public class BackendCategoryController implements BackendCategoryFeignClient {
+public class BackendTagController implements BackendTagFeignClient {
 
     @Autowired
-    private BackendCategoryService backendCategoryService;
+    private BackendTagService backendTagService;
 
     // ********************************新增类接口********************************
     // ********************************删除类接口********************************
@@ -30,8 +30,9 @@ public class BackendCategoryController implements BackendCategoryFeignClient {
     // ********************************查询类接口********************************
 
     @Override
-    @GetMapping("/backend/api/v1/category/list")
-    public ResultVO<List<BackendCategoryListVO>> findCategoryList(User currentUser) {
-        return ResultVO.success(backendCategoryService.findCategoryList(Category::getId, Category::getName));
+    @GetMapping("/backend/api/v1/tag/list")
+    public ResultVO<List<BackendTagListVO>> findTagList(User currentUser) {
+        return ResultVO.success(backendTagService.findTagList(Tag::getId, Tag::getName));
     }
+
 }

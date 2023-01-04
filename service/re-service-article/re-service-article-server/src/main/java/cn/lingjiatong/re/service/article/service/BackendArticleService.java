@@ -13,7 +13,7 @@ import cn.lingjiatong.re.common.util.DateUtil;
 import cn.lingjiatong.re.common.util.RandomUtil;
 import cn.lingjiatong.re.common.util.RedisUtil;
 import cn.lingjiatong.re.common.util.SnowflakeIdWorkerUtil;
-import cn.lingjiatong.re.service.article.api.dto.BackendArticleSaveDTO;
+import cn.lingjiatong.re.service.article.api.dto.BackendArticlePublishDTO;
 import cn.lingjiatong.re.service.article.api.dto.BackendDraftSaveOrUpdateDTO;
 import cn.lingjiatong.re.service.article.api.vo.BackendDraftDetailVO;
 import cn.lingjiatong.re.service.article.api.vo.BackendDraftListVO;
@@ -68,17 +68,19 @@ public class BackendArticleService {
     // ********************************新增类接口********************************
 
     /**
-     * 后端保存文章接口
+     * 后端文章发布接口
      *
-     * @param dto 后台保存文章接口DTO对象
+     * @param dto 后台文章发布接口DTO对象
+     * @param currentUser 当前用户
      */
     @Transactional(rollbackFor = Exception.class)
-    public void saveArticle(BackendArticleSaveDTO dto) {
+    public void publishArticle(BackendArticlePublishDTO dto, User currentUser) {
         // 校验文章参数
-        checkSaveArticleDTO(dto);
+        checkArticlePublishDTO(dto);
         String title = dto.getTitle();
+        String draftId = dto.getDraftId();
         String summary = dto.getSummary();
-        Long categoryId = Long.valueOf(dto.getCategoryId());
+        Long categoryId = dto.getCategoryId();
         String coverUrl = dto.getCoverUrl();
         Integer recommend = dto.getRecommend();
         Integer creationType = dto.getCreationType();
@@ -102,9 +104,8 @@ public class BackendArticleService {
         article.setHtmlContent(htmlContent);
         article.setTop(top.byteValue());
         article.setRecommend(recommend.byteValue());
-        // TODO 这里先写死，后期加入权限系统之后改为获取当前登录用户
-        article.setOptUser(UserConstant.SUPER_ADMIN_USER);
-        article.setUserId(UserConstant.SUPER_ADMIN_USER_ID);
+        article.setOptUser(currentUser.getUsername());
+        article.setUserId(currentUser.getId());
         article.setCreateTime(DateUtil.getLocalDateTimeNow());
         article.setModifyTime(DateUtil.getLocalDateTimeNow());
         article.setQuoteInfo(quoteInfo);
@@ -120,6 +121,8 @@ public class BackendArticleService {
             BeanUtils.copyProperties(article, articleEs);
             articleEs.setTagList(tagList);
             elasticsearchRestTemplate.save(articleEs);
+            // 删除草稿
+            redisUtil.deleteObject(RedisCacheKeyEnum.ARTICLE_DRAFT.getValue().replaceAll("username", currentUser.getUsername()).replaceAll("draftId", draftId));
         } catch (Exception e) {
             log.error("==========保存文章失败，异常：{}", e.getMessage());
             throw new BusinessException(ErrorEnum.SAVE_ARTICLE_ERROR);
@@ -241,15 +244,14 @@ public class BackendArticleService {
     // ********************************私有函数********************************
 
     /**
-     * 校验BackendArticleSaveDTO的参数
+     * 校验BackendArticlePublishDTO的参数
      *
-     * @param dto 后台保存文章接口DTO对象
+     * @param dto 后台文章发布接口DTO对象
      */
-    private void checkSaveArticleDTO(BackendArticleSaveDTO dto) {
+    private void checkArticlePublishDTO(BackendArticlePublishDTO dto) {
         String title = dto.getTitle();
         String summary = dto.getSummary();
-        String categoryIdStr = dto.getCategoryId();
-        Long categoryId;
+        Long categoryId = dto.getCategoryId();
         String coverUrl = dto.getCoverUrl();
         Integer recommend = dto.getRecommend();
         Integer creationType = dto.getCreationType();
@@ -259,31 +261,30 @@ public class BackendArticleService {
         List<String> tagList = dto.getTagList();
 
         // 空值校验
-        if (StringUtils.isEmpty(title)) {
+        if (!StringUtils.hasLength(title)) {
             // 标题不能为空
             throw new ParamErrorException(ErrorEnum.REQUEST_PARAM_ERROR.getCode(), BackendArticleErrorMessageConstant.ARTICLE_TITLE_EMPTY_ERROR_MESSAGE);
         }
-        if (StringUtils.isEmpty(markdownContent)) {
+        if (!StringUtils.hasLength(markdownContent)) {
             // 文章内容不能为空
             throw new ParamErrorException(ErrorEnum.REQUEST_PARAM_ERROR.getCode(), BackendArticleErrorMessageConstant.ARTICLE_MARKDOWN_CONTENT_EMPTY_ERROR_MESSAGE);
         }
-        if (StringUtils.isEmpty(summary)) {
+        if (!StringUtils.hasLength(summary)) {
             // 如果简介为空，默认获取文章的前200个字符作为文章简介
             summary = getSummaryFromMarkdownContent(markdownContent);
             dto.setSummary(summary);
         }
 
-        if (!StringUtils.hasLength(categoryIdStr)) {
+        if (categoryId == null) {
             throw new ParamErrorException(ErrorEnum.REQUEST_PARAM_ERROR.getCode(), BackendArticleErrorMessageConstant.ARTICLE_CATEGORY_NULL_ERROR_MESSAGE);
         } else {
-            categoryId = Long.valueOf(categoryIdStr);
             if (categoryId < 0) {
                 // 文章分类不能为null 或者小于0
                 throw new ParamErrorException(ErrorEnum.REQUEST_PARAM_ERROR.getCode(), BackendArticleErrorMessageConstant.ARTICLE_CATEGORY_NULL_ERROR_MESSAGE);
             }
         }
 
-        if (StringUtils.isEmpty(coverUrl)) {
+        if (!StringUtils.hasLength(coverUrl)) {
             // 封面图片url如果为空，使用默认封面
             coverUrl = BackendArticleConstant.DEFAULT_COVER_URL;
             dto.setCoverUrl(coverUrl);
@@ -371,6 +372,4 @@ public class BackendArticleService {
             return result.toString();
         }
     }
-
-
 }

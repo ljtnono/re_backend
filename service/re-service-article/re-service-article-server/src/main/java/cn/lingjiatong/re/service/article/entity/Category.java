@@ -1,6 +1,5 @@
 package cn.lingjiatong.re.service.article.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -59,6 +58,6 @@ public class Category {
      * 0 正常 1 已删除
      */
     @TableField("is_deleted")
-    private Byte delete;
+    private Byte deleted;
 
 }

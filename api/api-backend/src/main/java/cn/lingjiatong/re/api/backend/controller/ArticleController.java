@@ -4,6 +4,7 @@ import cn.lingjiatong.re.common.ResultVO;
 import cn.lingjiatong.re.common.annotation.CurrentUser;
 import cn.lingjiatong.re.common.entity.User;
 import cn.lingjiatong.re.service.article.api.client.BackendArticleFeignClient;
+import cn.lingjiatong.re.service.article.api.dto.BackendArticlePublishDTO;
 import cn.lingjiatong.re.service.article.api.dto.BackendDraftSaveOrUpdateDTO;
 import cn.lingjiatong.re.service.article.api.vo.BackendDraftDetailVO;
 import cn.lingjiatong.re.service.article.api.vo.BackendDraftListVO;
@@ -14,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
@@ -33,6 +33,22 @@ public class ArticleController {
     private BackendArticleFeignClient backendArticleFeignClient;
 
     // ********************************新增类接口********************************
+
+    /**
+     * 发布文章
+     *
+     * @param dto 后台文章发布接口DTO对象
+     * @param currentUser 当前用户
+     * @return 通用消息返回对象
+     */
+    @PostMapping("/publishArticle")
+    @ApiOperation(value = "发布文章", httpMethod = "POST")
+    @PreAuthorize("hasAuthority('blog:article') && hasAuthority('blog:article:write')")
+    public ResultVO<?> publishArticle(@RequestBody BackendArticlePublishDTO dto, @CurrentUser User currentUser) {
+        log.info("==========发布文章，草稿id：{}", dto.getDraftId());
+        return backendArticleFeignClient.publishArticle(dto, currentUser);
+    }
+
     // ********************************删除类接口********************************
 
     /**

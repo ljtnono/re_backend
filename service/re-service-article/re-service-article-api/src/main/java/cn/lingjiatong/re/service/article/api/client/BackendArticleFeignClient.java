@@ -3,6 +3,7 @@ package cn.lingjiatong.re.service.article.api.client;
 import cn.lingjiatong.re.common.ResultVO;
 import cn.lingjiatong.re.common.config.FeignBasicAuthRequestInterceptor;
 import cn.lingjiatong.re.common.entity.User;
+import cn.lingjiatong.re.service.article.api.dto.BackendArticlePublishDTO;
 import cn.lingjiatong.re.service.article.api.dto.BackendDraftSaveOrUpdateDTO;
 import cn.lingjiatong.re.service.article.api.vo.BackendDraftDetailVO;
 import cn.lingjiatong.re.service.article.api.vo.BackendDraftListVO;
@@ -22,6 +23,17 @@ import java.util.List;
 public interface BackendArticleFeignClient {
 
     // ********************************新增类接口********************************
+
+    /**
+     * 发布文章
+     *
+     * @param dto 后台文章发布接口DTO对象
+     * @param currentUser 当前用户
+     * @return 通用消息返回对象
+     */
+    @PostMapping("/backend/api/v1/article/publishArticle")
+    ResultVO<?> publishArticle(@RequestBody BackendArticlePublishDTO dto, @SpringQueryMap User currentUser);
+
     // ********************************删除类接口********************************
 
     /**

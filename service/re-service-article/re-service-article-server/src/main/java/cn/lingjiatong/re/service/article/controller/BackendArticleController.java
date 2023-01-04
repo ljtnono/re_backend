@@ -3,7 +3,7 @@ package cn.lingjiatong.re.service.article.controller;
 import cn.lingjiatong.re.common.ResultVO;
 import cn.lingjiatong.re.common.entity.User;
 import cn.lingjiatong.re.service.article.api.client.BackendArticleFeignClient;
-import cn.lingjiatong.re.service.article.api.dto.BackendArticleSaveDTO;
+import cn.lingjiatong.re.service.article.api.dto.BackendArticlePublishDTO;
 import cn.lingjiatong.re.service.article.api.dto.BackendDraftSaveOrUpdateDTO;
 import cn.lingjiatong.re.service.article.api.vo.BackendDraftDetailVO;
 import cn.lingjiatong.re.service.article.api.vo.BackendDraftListVO;
@@ -27,14 +27,10 @@ public class BackendArticleController implements BackendArticleFeignClient {
 
     // ********************************新增类接口********************************
 
-    /**
-     * 后端保存文章接口
-     *
-     * @param dto 后台保存文章接口DTO对象
-     */
-    @PostMapping("/api/v1/saveArticle")
-    public ResultVO<?> saveArticle(@RequestBody BackendArticleSaveDTO dto) {
-        backendArticleService.saveArticle(dto);
+    @Override
+    @PostMapping("/backend/api/v1/article/publishArticle")
+    public ResultVO<?> publishArticle(@RequestBody BackendArticlePublishDTO dto, User currentUser) {
+        backendArticleService.publishArticle(dto, currentUser);
         return ResultVO.success();
     }
 

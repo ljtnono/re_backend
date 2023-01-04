@@ -27,6 +27,10 @@ public class FeignBasicAuthRequestInterceptor implements RequestInterceptor {
         if (headerNames != null) {
             while (headerNames.hasMoreElements()) {
                 String name = headerNames.nextElement();
+                // 跳过 content-length，解决too many bites written的问题
+                if (name.equalsIgnoreCase("content-length")){
+                    continue;
+                }
                 String values = request.getHeader(name);
                 requestTemplate.header(name, values);
             }

@@ -71,7 +71,7 @@ public class FrontendArticleService {
         Category category = categoryMapper.selectOne(new LambdaQueryWrapper<Category>()
                 .select(Category::getName)
                 .eq(Category::getId, article.getCategoryId())
-                .eq(Category::getDelete, CommonConstant.ENTITY_NORMAL));
+                .eq(Category::getDeleted, CommonConstant.ENTITY_NORMAL));
         result.setCategory(category.getName());
         // TODO 这里先写死，后面修改为作者名
         result.setAuthor(UserConstant.SUPER_ADMIN_USER);
