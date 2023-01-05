@@ -115,3 +115,7 @@ data:
     cluster.initial_master_nodes: [ "node-1" ]
     http.cors.enabled: true
     http.cors.allow-origin: "*"
+    http.cors.allow-headers: Authorization,X-Requested-With,Content-Length,Content-Type
+    # 关闭安全
+    xpack.security.enabled: false
+    xpack.security.audit.enabled: false

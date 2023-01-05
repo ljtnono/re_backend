@@ -1,0 +1,56 @@
+# 创建一个ServiceAccount资源
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: java-client-service-account
+  namespace: rootelement
+
+---
+# 创建相应的角色
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: java-client-cluster-role
+  namespace: rootelement
+rules:
+  - apiGroups:
+      - ""
+      - apps
+      - autoscaling
+      - batch
+      - extensions
+      - policy
+      - rbac.authorization.k8s.io
+    resources:
+      - nodes
+      - endpoints
+      - namespaces
+      - deployments
+      - replicasets
+      - statefulsets
+      - ingress
+      - ingresses
+      - services
+      - pods
+      - configmaps
+      - persistentvolumeclaims
+      - persistentvolumes
+      - storageclasses
+      - serviceaccounts
+      - jobs
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+
+---
+# 将service account绑定到角色
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: java-client-cluster-role-binding
+subjects:
+  - namespace: rootelement
+    kind: ServiceAccount
+    name: java-client-service-account
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: java-client-cluster-role
