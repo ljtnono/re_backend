@@ -3,3 +3,9 @@ spring:
     name: re-auth
   profiles:
     active: @profiles.active@
+feign:
+  client:
+    config:
+      default:
+        connectTimeout: 60000
+        readTimeout: 600000

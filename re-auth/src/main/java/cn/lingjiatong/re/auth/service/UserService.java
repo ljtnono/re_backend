@@ -171,7 +171,9 @@ public class UserService implements UserDetailsService {
 
         // 删除验证码缓存
         String verifyCodeKey = parameters.get("verifyCodeKey");
-        redisUtil.deleteObject(RedisCacheKeyEnum.LOGIN_VERIFY_CODE.getValue() + verifyCodeKey);
+        if (!verifyCodeKey.equalsIgnoreCase("DEV-TEST")) {
+            redisUtil.deleteObject(RedisCacheKeyEnum.LOGIN_VERIFY_CODE.getValue() + verifyCodeKey);
+        }
 
         result.setUserInfo(userInfo);
         result.setMenus(menus);

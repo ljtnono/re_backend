@@ -5,7 +5,10 @@ import cn.lingjiatong.re.auth.vo.UserLoginVO;
 import cn.lingjiatong.re.common.ResultVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.SchemaProperty;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,22 +50,22 @@ public class UserController {
     /**
      * 用户登录
      *
-     * @param principal principal
+     * @param principal  principal
      * @param parameters 参数列表
      * @return 通用消息返回对象
      */
-    @Operation(summary = "用户登录", method = "POST")
+    @Operation(
+            summary = "用户登录", method = "POST", requestBody = @RequestBody(content = {@Content(mediaType = MediaType.APPLICATION_FORM_URLENCODED_VALUE, schema = @Schema(type = "object"), schemaProperties = {
+            @SchemaProperty(name = "grant_type", schema = @Schema(type = "string", description = "oauth2定义的验证类型", example = "verify_code")),
+            @SchemaProperty(name = "client_id", schema = @Schema(type = "string", description = "oauth2定义的客户端id", example = "re_admin")),
+            @SchemaProperty(name = "client_secret", schema = @Schema(type = "string", description = "oauth2定义的客户端密钥", example = "re_admin")),
+            @SchemaProperty(name = "scope", schema = @Schema(type = "string", description = "oauth2定义的访问范围", example = "all")),
+            @SchemaProperty(name = "verifyCodeKey", schema = @Schema(type = "string", description = "验证码key", example = "DEV-TEST")),
+            @SchemaProperty(name = "verifyCode", schema = @Schema(type = "string", description = "验证码值", example = "Tonb")),
+            @SchemaProperty(name = "username", schema = @Schema(type = "string", description = "用户名", example = "lingjiatong")),
+            @SchemaProperty(name = "password", schema = @Schema(type = "string", description = "密码", example = "ljtLJT715336"))}
+    )}))
     @PostMapping(value = "/login", consumes = {MediaType.APPLICATION_FORM_URLENCODED_VALUE})
-    @Parameters({
-            @Parameter(name = "grant_type", description = "oauth2定义的验证类型"),
-            @Parameter(name = "client_id", description = "oauth2定义的客户端id"),
-            @Parameter(name = "client_secret", description = "oauth2定义的客户端密钥"),
-            @Parameter(name = "scope", description = "oauth2定义的访问范围"),
-            @Parameter(name = "verifyCodeKey", description = "验证码key"),
-            @Parameter(name = "verifyCode", description = "验证码value"),
-            @Parameter(name = "username", description = "用户名"),
-            @Parameter(name = "password", description = "密码")
-    })
     public ResultVO<UserLoginVO> login(@Parameter(hidden = true) Principal principal, @Parameter(hidden = true) @RequestParam Map<String, String> parameters) throws HttpRequestMethodNotSupportedException {
         log.info("==========用户登录，参数：{}，{}", principal, parameters);
         return ResultVO.success(userService.login(principal, parameters, tokenEndpoint));
@@ -85,7 +88,7 @@ public class UserController {
     /**
      * 刷新登录验证码
      *
-     * @param verifyCodeKey 前端传递过来的验证码随机值
+     * @param verifyCodeKey       前端传递过来的验证码随机值
      * @param httpServletResponse http响应对象
      */
     @GetMapping("/refreshVerifyCode")
