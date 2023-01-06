@@ -1,7 +1,6 @@
 package cn.lingjiatong.re.service.article.api.vo;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 /**
@@ -11,18 +10,18 @@ import lombok.Data;
  * Date: 2022/10/16 12:15
  */
 @Data
-@ApiModel(description = "前端博客标签列表VO对象")
+@Schema(name = "FrontendTagListVO", description = "前端博客标签列表VO对象")
 public class FrontendTagListVO {
 
     /**
      * 标签id
      */
-    @ApiModelProperty("id")
+    @Schema(description = "id")
     private String id;
 
     /**
      * 标签名
      */
-    @ApiModelProperty("标签名")
+    @Schema(description = "标签名")
     private String name;
 }

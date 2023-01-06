@@ -8,8 +8,8 @@ import cn.lingjiatong.re.service.sys.api.dto.FrontendWebsiteConfigFindDTO;
 import cn.lingjiatong.re.service.sys.api.vo.FrontendFriendLinkListVO;
 import cn.lingjiatong.re.service.sys.api.vo.FrontendNoticeListVO;
 import cn.lingjiatong.re.service.sys.api.vo.FrontendWebsiteConfigAddVO;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,7 +27,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/sy")
-@Api(tags = "前端博客首页接口")
+@Tag(name = "前端博客首页接口")
 public class SyController {
 
     @Autowired
@@ -49,7 +49,7 @@ public class SyController {
      * @return 获取前端站点配置VO对象
      */
     @GetMapping("/frontendWebsiteConfig")
-    @ApiOperation(value = "获取前端站点设置", httpMethod = "GET")
+    @Operation(summary = "获取前端站点设置", method = "GET")
     public ResultVO<FrontendWebsiteConfigAddVO> findWebsiteConfig(FrontendWebsiteConfigFindDTO dto) {
         log.info("==========获取前端站点设置接口，参数：{}", dto);
         return frontendWebsiteConfigFeignClient.findFrontendWebsiteConfig(dto);
@@ -61,7 +61,7 @@ public class SyController {
      * @return 前端通知列表VO对象列表
      */
     @GetMapping("/noticeList")
-    @ApiOperation(value = "获取前端消息通知列表", httpMethod = "GET")
+    @Operation(summary = "获取前端消息通知列表", method = "GET")
     public ResultVO<List<FrontendNoticeListVO>> findNoticeList() {
         log.info("==========获取前端通知消息列表");
         return frontendNoticeFeignClient.findFrontendNoticeList();
@@ -73,7 +73,7 @@ public class SyController {
      * @return 前端友情链接列表VO对象列表
      */
     @GetMapping("/friendLinkList")
-    @ApiOperation(value = "获取前端友情链接列表", httpMethod = "GET")
+    @Operation(summary = "获取前端友情链接列表", method = "GET")
     public ResultVO<List<FrontendFriendLinkListVO>> findFriendLinkList() {
         log.info("==========获取前端友情链接列表");
         return frontendFriendLinkFeignClient.findFrontendNoticeList();
@@ -85,7 +85,7 @@ public class SyController {
      * @return 前端友情链接列表VO对象列表
      */
     @GetMapping("/swiperImageList")
-    @ApiOperation(value = "获取前端swiper图片列表", httpMethod = "GET")
+    @Operation(summary = "获取前端swiper图片列表", method = "GET")
     public ResultVO<List<String>> swiperImageList() {
         log.info("==========获取前端swiper图片列表");
         return frontendWebsiteConfigFeignClient.getFrontendSwiperImageList();

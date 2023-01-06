@@ -2,8 +2,8 @@ package cn.lingjiatong.re.auth.controller;
 
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,14 +21,14 @@ import java.util.Map;
  */
 @Slf4j
 @RestController
-@Api(tags = "公钥模块接口")
+@Tag(name = "公钥模块接口")
 public class PublicKeyController {
 
     @Autowired
     private KeyPair keyPair;
 
     @GetMapping("/getPublicKey")
-    @ApiOperation(value = "获取公钥", httpMethod = "GET")
+    @Operation(summary = "获取公钥", method = "GET")
     public Map<String, Object> getPublicKey() {
         log.info("==========获取公钥");
         RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic();

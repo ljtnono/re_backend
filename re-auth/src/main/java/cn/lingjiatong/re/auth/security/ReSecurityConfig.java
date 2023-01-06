@@ -32,7 +32,7 @@ public class ReSecurityConfig extends WebSecurityConfigurerAdapter {
         // 禁用缓存
         http.headers().cacheControl();
         // 设置安全策略
-        http.headers().contentSecurityPolicy("default-src 'self';img-src 'self' data:;style-src 'self' 'unsafe-inline';");
+//        http.headers().contentSecurityPolicy("default-src 'self';img-src 'self' data:;style-src 'self' 'unsafe-inline';");
 
         // 全部放行，使用ResourceServer的安全过滤器链进行处理
         http.authorizeRequests()

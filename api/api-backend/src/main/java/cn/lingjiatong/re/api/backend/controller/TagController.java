@@ -5,8 +5,9 @@ import cn.lingjiatong.re.common.annotation.CurrentUser;
 import cn.lingjiatong.re.common.entity.User;
 import cn.lingjiatong.re.service.article.api.client.BackendTagFeignClient;
 import cn.lingjiatong.re.service.article.api.vo.BackendTagListVO;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -25,7 +26,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/tag")
-@Api(tags = "后端管理系统Tag模块接口")
+@Tag(name = "后端管理系统Tag模块接口")
 public class TagController {
 
     @Autowired
@@ -43,9 +44,9 @@ public class TagController {
      * @return 后端获取文章标签列表VO对象列表
      */
     @GetMapping("/list")
-    @ApiOperation(value = "后端获取文章标签列表", httpMethod = "GET")
+    @Operation(summary = "后端获取文章标签列表", method = "GET")
     @PreAuthorize("hasAuthority('blog:article') || hasAuthority('blog:article:read')")
-    public ResultVO<List<BackendTagListVO>> findTagList(@CurrentUser User currentUser) {
+    public ResultVO<List<BackendTagListVO>> findTagList(@Parameter(hidden = true) @CurrentUser User currentUser) {
         log.info("==========后端获取文章标签列表");
         return backendTagFeignClient.findTagList(currentUser);
     }

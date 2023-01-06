@@ -16,11 +16,6 @@ import org.springframework.stereotype.Component;
 public class SwaggerProperties {
 
     /**
-     * 是否开启swagger，生产环境一般关闭，所以这里定义一个变量
-     */
-    private Boolean enable;
-
-    /**
      * 项目应用名
      */
     private String applicationName;
@@ -34,15 +29,5 @@ public class SwaggerProperties {
      * 项目描述信息
      */
     private String applicationDescription;
-
-    /**
-     * 接口调试地址
-     */
-    private String tryHost;
-
-    /**
-     * 扫描包路径
-     */
-    private String scanBasePackage;
 
 }

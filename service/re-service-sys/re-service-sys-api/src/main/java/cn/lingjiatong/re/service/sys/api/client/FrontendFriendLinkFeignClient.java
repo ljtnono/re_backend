@@ -3,7 +3,6 @@ package cn.lingjiatong.re.service.sys.api.client;
 import cn.lingjiatong.re.common.ResultVO;
 import cn.lingjiatong.re.common.config.FeignBasicAuthRequestInterceptor;
 import cn.lingjiatong.re.service.sys.api.vo.FrontendFriendLinkListVO;
-import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 
@@ -25,7 +24,6 @@ public interface FrontendFriendLinkFeignClient {
      * @return 前端友情链接列表VO对象列表
      */
     @GetMapping("/frontend/api/v1/friendLink/list")
-    @ApiOperation(value = "获取前端友情链接列表", httpMethod = "GET")
     ResultVO<List<FrontendFriendLinkListVO>> findFrontendNoticeList();
 
 }

@@ -2,7 +2,7 @@ package cn.lingjiatong.re.common;
 
 import cn.lingjiatong.re.common.exception.ErrorEnum;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import io.swagger.annotations.ApiModel;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 /**
@@ -12,34 +12,39 @@ import lombok.Data;
  * Date: 2021/8/10 12:25 上午
  */
 @Data
-@ApiModel(description = "通用返回VO对象")
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@Schema(name = "ResultVO", description = "通用返回VO对象")
 public class ResultVO <T> {
 
     /**
      * 操作成功返回码
      */
+    @Schema(hidden = true)
     public static final Integer CODE_SUCCESS = 0;
 
     /**
      * 操作成功返回消息
      */
+    @Schema(hidden = true)
     public static final String MESSAGE_SUCCESS = "success";
 
     /**
      * 返回码
      */
+    @Schema(description = "返回码")
     private Integer code;
 
     /**
      * 消息
      */
+    @Schema(description = "消息")
     private String message;
 
     /**
      * 数据
      */
     @JsonInclude(JsonInclude.Include.NON_NULL)
+    @Schema(description = "数据")
     private T data;
 
     private ResultVO() {}

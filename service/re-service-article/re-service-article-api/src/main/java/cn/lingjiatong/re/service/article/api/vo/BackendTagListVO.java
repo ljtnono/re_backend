@@ -1,7 +1,6 @@
 package cn.lingjiatong.re.service.article.api.vo;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 /**
@@ -11,19 +10,19 @@ import lombok.Data;
  * Date: 2023/1/4 17:30
  */
 @Data
-@ApiModel(description = "后端获取文章标签列表VO对象")
+@Schema(name = "BackendTagListVO", description = "后端获取文章标签列表VO对象")
 public class BackendTagListVO {
 
     /**
      * 标签id
      */
-    @ApiModelProperty("标签id")
+    @Schema(description = "标签id")
     private Long id;
 
     /**
      * 标签名称
      */
-    @ApiModelProperty("标签名称")
+    @Schema(description = "标签名称")
     private String name;
 
 }

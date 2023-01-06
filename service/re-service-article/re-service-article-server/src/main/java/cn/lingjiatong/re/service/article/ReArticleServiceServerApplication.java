@@ -5,7 +5,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
-import springfox.documentation.oas.annotations.EnableOpenApi;
 
 /**
  * 博客文章相关模块微服务启动类
@@ -13,7 +12,6 @@ import springfox.documentation.oas.annotations.EnableOpenApi;
  * @author Ling, Jiatong
  * Date: 2022/10/16 11:17
  */
-@EnableOpenApi
 @EnableDiscoveryClient
 @SpringBootApplication(scanBasePackages = {"cn.lingjiatong.re.service.article", "cn.lingjiatong.re.common"})
 @EnableFeignClients(basePackages = {"cn.lingjiatong.re.service.article.api"})

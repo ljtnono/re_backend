@@ -4,7 +4,6 @@ import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
-import springfox.documentation.oas.annotations.EnableOpenApi;
 
 /**
  * re-auth启动器
@@ -12,7 +11,6 @@ import springfox.documentation.oas.annotations.EnableOpenApi;
  * @author Ling, Jiatong
  * Date: 2022/10/22 18:09
  */
-@EnableOpenApi
 @EnableDiscoveryClient
 @SpringBootApplication(scanBasePackages = {"cn.lingjiatong.re.auth", "cn.lingjiatong.re.common"})
 @MapperScan(basePackages = {"cn.lingjiatong.re.auth.mapper"})

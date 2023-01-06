@@ -8,8 +8,9 @@ import cn.lingjiatong.re.service.article.api.dto.BackendArticlePublishDTO;
 import cn.lingjiatong.re.service.article.api.dto.BackendDraftSaveOrUpdateDTO;
 import cn.lingjiatong.re.service.article.api.vo.BackendDraftDetailVO;
 import cn.lingjiatong.re.service.article.api.vo.BackendDraftListVO;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -26,7 +27,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/article")
-@Api(tags = "后端管理系统Article模块接口")
+@Tag(name = "后端管理系统Article模块接口")
 public class ArticleController {
 
     @Autowired
@@ -42,9 +43,9 @@ public class ArticleController {
      * @return 通用消息返回对象
      */
     @PostMapping("/publishArticle")
-    @ApiOperation(value = "发布文章", httpMethod = "POST")
+    @Operation(summary = "发布文章", method = "POST")
     @PreAuthorize("hasAuthority('blog:article') && hasAuthority('blog:article:write')")
-    public ResultVO<?> publishArticle(@RequestBody BackendArticlePublishDTO dto, @CurrentUser User currentUser) {
+    public ResultVO<?> publishArticle(@RequestBody BackendArticlePublishDTO dto, @Parameter(hidden = true) @CurrentUser User currentUser) {
         log.info("==========发布文章，草稿id：{}", dto.getDraftId());
         return backendArticleFeignClient.publishArticle(dto, currentUser);
     }
@@ -59,9 +60,9 @@ public class ArticleController {
      * @return 通用消息返回对象
      */
     @DeleteMapping("/deleteDraft/{draftId}")
-    @ApiOperation(value = "删除草稿", httpMethod = "DELETE")
+    @Operation(summary = "删除草稿", method = "DELETE")
     @PreAuthorize("hasAuthority('blog:article') && hasAuthority('blog:article:write')")
-    public ResultVO<?> deleteDraft(@PathVariable("draftId") String draftId, @CurrentUser User currentUser) {
+    public ResultVO<?> deleteDraft(@PathVariable("draftId") String draftId, @Parameter(hidden = true) @CurrentUser User currentUser) {
         log.info("==========删除草稿，参数：{}", draftId);
         return backendArticleFeignClient.deleteDraft(draftId, currentUser);
     }
@@ -76,9 +77,9 @@ public class ArticleController {
      * @return 通用消息返回对象
      */
     @PostMapping("/saveOrUpdateDraft")
-    @ApiOperation(value = "保存或更新草稿", httpMethod = "POST")
+    @Operation(summary = "保存或更新草稿", method = "POST")
     @PreAuthorize("hasAuthority('blog:article') && hasAuthority('blog:article:write')")
-    public ResultVO<?> saveOrUpdateDraft(@RequestBody BackendDraftSaveOrUpdateDTO dto, @CurrentUser User currentUser) {
+    public ResultVO<?> saveOrUpdateDraft(@RequestBody BackendDraftSaveOrUpdateDTO dto, @Parameter(hidden = true) @CurrentUser User currentUser) {
         log.info("==========保存或更新草稿，参数：{}，{}", dto.getDraftId(), dto.getTitle());
         return backendArticleFeignClient.saveOrUpdateDraft(dto, currentUser);
     }
@@ -93,9 +94,9 @@ public class ArticleController {
      * @return 文章草稿详情VO对象
      */
     @GetMapping("/draft/{draftId}")
-    @ApiOperation(value = "后端获取草稿详情", httpMethod = "GET")
+    @Operation(summary = "后端获取草稿详情", method = "GET")
     @PreAuthorize("hasAuthority('blog:article') || hasAuthority('blog:article:read')")
-    public ResultVO<BackendDraftDetailVO> getDraftDetail(@PathVariable("draftId") String draftId, @CurrentUser User currentUser) {
+    public ResultVO<BackendDraftDetailVO> getDraftDetail(@PathVariable("draftId") String draftId, @Parameter(hidden = true) @CurrentUser User currentUser) {
         log.info("==========后端获取草稿详情，参数：{}", draftId);
         return backendArticleFeignClient.getDraftDetail(draftId, currentUser);
     }
@@ -107,9 +108,9 @@ public class ArticleController {
      * @return 文章草稿列表VO对象列表
      */
     @GetMapping("/draftList")
-    @ApiOperation(value = "获取当前用户的草稿列表", httpMethod = "GET")
+    @Operation(summary = "获取当前用户的草稿列表", method = "GET")
     @PreAuthorize("hasAuthority('blog:article') || hasAuthority('blog:article:read')")
-    public ResultVO<List<BackendDraftListVO>> getDraftList(@CurrentUser User currentUser) {
+    public ResultVO<List<BackendDraftListVO>> getDraftList(@CurrentUser @Parameter(hidden = true) User currentUser) {
         log.info("==========获取当前用户的草稿列表");
         return backendArticleFeignClient.getDraftList(currentUser);
     }

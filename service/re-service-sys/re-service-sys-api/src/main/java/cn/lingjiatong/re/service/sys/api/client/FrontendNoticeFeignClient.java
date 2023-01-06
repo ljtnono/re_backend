@@ -3,7 +3,6 @@ package cn.lingjiatong.re.service.sys.api.client;
 import cn.lingjiatong.re.common.ResultVO;
 import cn.lingjiatong.re.common.config.FeignBasicAuthRequestInterceptor;
 import cn.lingjiatong.re.service.sys.api.vo.FrontendNoticeListVO;
-import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 
@@ -24,7 +23,6 @@ public interface FrontendNoticeFeignClient {
      * @return 前端通知列表VO对象列表
      */
     @GetMapping("/frontend/api/v1/notice/list")
-    @ApiOperation(value = "获取前端通知信息列表", httpMethod = "GET")
     ResultVO<List<FrontendNoticeListVO>> findFrontendNoticeList();
 
 }

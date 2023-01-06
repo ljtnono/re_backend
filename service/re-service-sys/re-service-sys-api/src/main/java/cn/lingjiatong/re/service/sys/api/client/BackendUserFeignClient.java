@@ -8,7 +8,6 @@ import cn.lingjiatong.re.service.sys.api.dto.BackendUserUpdateDTO;
 import cn.lingjiatong.re.service.sys.api.dto.BackendUserUpdateDeleteStatusBatchDTO;
 import cn.lingjiatong.re.service.sys.api.vo.BackendUserListVO;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.cloud.openfeign.SpringQueryMap;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,7 +35,6 @@ public interface BackendUserFeignClient {
      * @return 通用消息返回对象
      */
     @PutMapping("/backend/api/v1/user/updateDeleteStatusBatch")
-    @ApiOperation(value = "批量更改用户删除状态", httpMethod = "PUT")
     ResultVO<?> updateUserDeleteStatusBatch(@RequestBody BackendUserUpdateDeleteStatusBatchDTO dto);
 
     /**
@@ -47,7 +45,6 @@ public interface BackendUserFeignClient {
      * @return 通用消息返回对象
      */
     @PutMapping("/backend/api/v1/user/updateUser")
-    @ApiOperation(value = "更改用户信息-管理员", httpMethod = "PUT")
     ResultVO<?> adminUpdateUser(@RequestBody BackendUserUpdateDTO dto);
 
     /**
@@ -58,7 +55,6 @@ public interface BackendUserFeignClient {
      * @return 通用消息返回对象
      */
     @PutMapping("/backend/api/v1/user")
-    @ApiOperation(value = "更改用户信息-个人", httpMethod = "PUT")
     ResultVO<?> updateUser(@RequestBody BackendUserUpdateDTO dto, User currentUser);
 
     // ********************************查询类接口********************************
@@ -70,7 +66,6 @@ public interface BackendUserFeignClient {
      * @return 后台获取用户列表VO对象分页对象
      */
     @GetMapping("/backend/api/v1/user/list")
-    @ApiOperation(value = "获取用户列表", httpMethod = "GET")
     ResultVO<IPage<BackendUserListVO>> findUserList(@SpringQueryMap BackendUserListDTO dto);
 
 }

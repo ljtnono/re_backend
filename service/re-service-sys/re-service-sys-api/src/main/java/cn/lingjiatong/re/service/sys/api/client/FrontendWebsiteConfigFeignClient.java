@@ -5,7 +5,6 @@ import cn.lingjiatong.re.common.config.FeignBasicAuthRequestInterceptor;
 import cn.lingjiatong.re.service.sys.api.dto.FrontendWebsiteConfigAddDTO;
 import cn.lingjiatong.re.service.sys.api.dto.FrontendWebsiteConfigFindDTO;
 import cn.lingjiatong.re.service.sys.api.vo.FrontendWebsiteConfigAddVO;
-import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.cloud.openfeign.SpringQueryMap;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,7 +28,6 @@ public interface FrontendWebsiteConfigFeignClient {
      * @return 获取前端站点配置VO对象
      */
     @GetMapping("/frontend/api/v1/frontendWebsiteConfig")
-    @ApiOperation(value = "获取前端站点设置接口", httpMethod = "GET")
     ResultVO<FrontendWebsiteConfigAddVO> findFrontendWebsiteConfig(@SpringQueryMap FrontendWebsiteConfigFindDTO dto);
 
     /**
@@ -39,7 +37,6 @@ public interface FrontendWebsiteConfigFeignClient {
      * @return 新增前端站点配置VO对象
      */
     @PostMapping("/frontend/api/v1/frontendWebsiteConfig")
-    @ApiOperation(value = "新增前端站点设置接口", httpMethod = "POST")
     ResultVO<?> addFrontendWebsiteConfig(@SpringQueryMap List<FrontendWebsiteConfigAddDTO> list);
 
     /**
@@ -48,6 +45,5 @@ public interface FrontendWebsiteConfigFeignClient {
      * @return 图片url列表
      */
     @GetMapping("/frontend/api/v1/frontendSwiperImageList")
-    @ApiOperation("获取前端swpier图片列表")
     ResultVO<List<String>> getFrontendSwiperImageList();
 }

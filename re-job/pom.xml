@@ -116,6 +116,7 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>${spring-boot-maven-plugin.version}</version>
                 <configuration>
                     <!-- 指定全局唯一入口 -->
                     <mainClass>cn.lingjiatong.re.job.ReJobApplication</mainClass>

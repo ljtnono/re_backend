@@ -29,10 +29,11 @@
 		<spring-cloud.version>Hoxton.SR12</spring-cloud.version>
 		<spring-cloud-alibaba.version>2.2.9.RELEASE</spring-cloud-alibaba.version>
 		<spring-cloud-gateway.version>2.2.9.RELEASE</spring-cloud-gateway.version>
+		<spring-boot-maven-plugin.version>3.0.1</spring-boot-maven-plugin.version>
 		<springboot.version>2.3.12.RELEASE</springboot.version>
 		<lombok.version>1.18.12</lombok.version>
 		<guava.version>30.1.1-jre</guava.version>
-		<swagger.version>3.0.0</swagger.version>
+		<springdoc.version>1.6.14</springdoc.version>
 		<mybatis-plus.version>3.4.3</mybatis-plus.version>
 		<mysql-connector.version>8.0.26</mysql-connector.version>
 		<xxl-job.version>2.3.0</xxl-job.version>
@@ -103,11 +104,11 @@
 				<artifactId>mybatis-plus-boot-starter</artifactId>
 				<version>${mybatis-plus.version}</version>
 			</dependency>
-			<!-- swagger -->
+			<!-- springdoc -->
 			<dependency>
-				<groupId>io.springfox</groupId>
-				<artifactId>springfox-boot-starter</artifactId>
-				<version>${swagger.version}</version>
+				<groupId>org.springdoc</groupId>
+				<artifactId>springdoc-openapi-ui</artifactId>
+				<version>${springdoc.version}</version>
 			</dependency>
 			<!-- nacos服务发现 -->
 			<dependency>

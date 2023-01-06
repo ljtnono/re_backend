@@ -3,10 +3,13 @@ package cn.lingjiatong.re.auth.controller;
 import cn.lingjiatong.re.auth.service.UserService;
 import cn.lingjiatong.re.auth.vo.UserLoginVO;
 import cn.lingjiatong.re.common.ResultVO;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.common.exceptions.OAuth2Exception;
 import org.springframework.security.oauth2.provider.ClientRegistrationException;
@@ -28,7 +31,7 @@ import java.util.Map;
 @Slf4j
 @RestController
 @RequestMapping("/user")
-@Api(tags = "用户模块接口")
+@Tag(name = "用户模块接口")
 public class UserController {
 
     @Autowired
@@ -48,9 +51,19 @@ public class UserController {
      * @param parameters 参数列表
      * @return 通用消息返回对象
      */
-    @PostMapping("/login")
-    @ApiOperation(value = "用户登录", httpMethod = "POST")
-    public ResultVO<UserLoginVO> login(Principal principal, @RequestParam Map<String, String> parameters) throws HttpRequestMethodNotSupportedException {
+    @Operation(summary = "用户登录", method = "POST")
+    @PostMapping(value = "/login", consumes = {MediaType.APPLICATION_FORM_URLENCODED_VALUE})
+    @Parameters({
+            @Parameter(name = "grant_type", description = "oauth2定义的验证类型"),
+            @Parameter(name = "client_id", description = "oauth2定义的客户端id"),
+            @Parameter(name = "client_secret", description = "oauth2定义的客户端密钥"),
+            @Parameter(name = "scope", description = "oauth2定义的访问范围"),
+            @Parameter(name = "verifyCodeKey", description = "验证码key"),
+            @Parameter(name = "verifyCode", description = "验证码value"),
+            @Parameter(name = "username", description = "用户名"),
+            @Parameter(name = "password", description = "密码")
+    })
+    public ResultVO<UserLoginVO> login(@Parameter(hidden = true) Principal principal, @Parameter(hidden = true) @RequestParam Map<String, String> parameters) throws HttpRequestMethodNotSupportedException {
         log.info("==========用户登录，参数：{}，{}", principal, parameters);
         return ResultVO.success(userService.login(principal, parameters, tokenEndpoint));
     }
@@ -62,7 +75,7 @@ public class UserController {
      * @return 通用消息返回对象
      */
     @PostMapping("/logout")
-    @ApiOperation(value = "用户注销", httpMethod = "POST")
+    @Operation(summary = "用户注销", method = "POST")
     public ResultVO<?> logout() {
         log.info("==========用户注销");
         userService.logout();
@@ -76,8 +89,8 @@ public class UserController {
      * @param httpServletResponse http响应对象
      */
     @GetMapping("/refreshVerifyCode")
-    @ApiOperation(value = "刷新登录验证码", httpMethod = "POST")
-    public void refreshVerifyCode(@RequestParam("verifyCodeKey") String verifyCodeKey, HttpServletResponse httpServletResponse) throws IOException {
+    @Operation(summary = "刷新登录验证码", method = "POST")
+    public void refreshVerifyCode(@Parameter(name = "verifyCodeKey", description = "验证码key") String verifyCodeKey, @Parameter(hidden = true) HttpServletResponse httpServletResponse) throws IOException {
         log.info("==========刷新登录验证码，参数：{}", verifyCodeKey);
         userService.refreshVerifyCode(verifyCodeKey, httpServletResponse);
     }

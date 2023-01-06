@@ -2,7 +2,6 @@ package cn.lingjiatong.re.service.article.api.client;
 
 import cn.lingjiatong.re.common.ResultVO;
 import cn.lingjiatong.re.service.article.api.vo.FrontendTagListVO;
-import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 
@@ -28,7 +27,6 @@ public interface FrontendTagFeignClient {
      * @return 前端博客标签列表VO对象列表
      */
     @GetMapping("/frontend/api/v1/tag/hotTagList")
-    @ApiOperation(value = "获取前端热门标签列表", httpMethod = "GET")
     ResultVO<List<FrontendTagListVO>> findFrontendHotTagList();
 
 }
