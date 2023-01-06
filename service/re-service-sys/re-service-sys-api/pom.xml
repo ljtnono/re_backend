@@ -24,12 +24,6 @@
             <artifactId>re-common</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <!-- swagger -->
-        <dependency>
-            <groupId>io.springfox</groupId>
-            <artifactId>springfox-boot-starter</artifactId>
-        </dependency>
-
     </dependencies>
 
 </project>

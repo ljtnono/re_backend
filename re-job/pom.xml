@@ -29,11 +29,6 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        <!-- swagger -->
-        <dependency>
-            <groupId>io.springfox</groupId>
-            <artifactId>springfox-boot-starter</artifactId>
-        </dependency>
         <!-- mysql-connect -->
         <dependency>
             <groupId>mysql</groupId>

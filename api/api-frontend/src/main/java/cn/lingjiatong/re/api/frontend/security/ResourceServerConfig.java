@@ -62,7 +62,7 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
         // 禁用缓存
         http.headers().cacheControl();
         // 设置安全策略
-        http.headers().contentSecurityPolicy("default-src 'self'");
+        http.headers().contentSecurityPolicy("default-src 'self';img-src 'self' data:;style-src 'self' 'unsafe-inline';");
         // 放行 swagger ui (有整合swagger就放行这些请求吧)
         // 配置拦截规则
         if (!CollectionUtils.isEmpty(passTokenUrl)) {
