@@ -1,9 +1,8 @@
-FROM bitnami/java:11
+FROM ljtnono/java:11
 MAINTAINER lingjiatong 935188400@qq.com
 ENV LANG C.UTF-8
 COPY target/re-service-article-server.jar /
 # 采用上海时区
-RUN chmod 755 /re-service-article-server.jar && \
-    ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && echo 'Asia/Shanghai' >/etc/timezone
+RUN chmod 755 /re-service-article-server.jar
 EXPOSE 8080
 CMD ["java","-Xms512m", "-Xmx512m", "-jar", "/re-service-article-server.jar"]
