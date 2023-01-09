@@ -29,6 +29,11 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        <!-- mybatis-plus -->
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-boot-starter</artifactId>
+        </dependency>
         <!-- mysql-connect -->
         <dependency>
             <groupId>mysql</groupId>

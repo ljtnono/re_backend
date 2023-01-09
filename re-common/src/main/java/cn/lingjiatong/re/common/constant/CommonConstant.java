@@ -14,6 +14,10 @@ public interface CommonConstant {
     Byte ENTITY_DELETE = 1;
     // 正常
     Byte ENTITY_NORMAL = 0;
+    // 升序
+    Byte ORDER_BY_ASC = 1;
+    // 降序
+    Byte ORDER_BY_DESC = 2;
 
     static List<Byte> getDeleteStatusCodeList() {
         return List.of(ENTITY_DELETE, ENTITY_NORMAL);
@@ -37,6 +41,4 @@ public interface CommonConstant {
     String PROJECT_NAME_BACKEND_PAGE = "re_admin";
     // re_frontend项目名
     String PROJECT_NAME_FRONTEND_PAGE = "re_frontend";
-
-
 }

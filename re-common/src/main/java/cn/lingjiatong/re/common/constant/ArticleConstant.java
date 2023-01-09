@@ -1,15 +1,15 @@
-package cn.lingjiatong.re.service.article.constant;
+package cn.lingjiatong.re.common.constant;
 
 import java.util.List;
 import java.util.regex.Pattern;
 
 /**
- * 后台文章模块常量池
+ * 文章模块常量池
  *
  * @author Ling, Jiatong
  * Date: 2022/10/18 21:44
  */
-public interface BackendArticleConstant {
+public interface ArticleConstant {
 
     // 默认封面图片
     String DEFAULT_COVER_URL = "http://f.lingjiatong.cn:30090/rootelement/sys/default_article_cover.gif";

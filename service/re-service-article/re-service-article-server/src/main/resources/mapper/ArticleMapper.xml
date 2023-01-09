@@ -14,5 +14,47 @@
     <!-- ********************************查询类接口******************************** -->
 
 
-
+    <!-- 分页获取文章列表 -->
+    <select id="findArticleList" resultType="cn.lingjiatong.re.service.article.api.vo.BackendArticleListVO">
+        SELECT
+            a.id,
+            a.title,
+            a.summary,
+            c.name,
+            u.username AS author,
+            a.view,
+            a.favorite,
+            a.is_recommend AS recommend,
+            a.is_top AS top,
+            a.is_deleted AS deleted
+        FROM re_article.article a
+        LEFT JOIN re_article.category c ON c.id = a.category_id
+        LEFT JOIN re_sys.user u ON u.id = a.user_id
+        <where>
+            <!-- 模糊查询条件 -->
+            <if test="dto.searchCondition != null and dto.searchCondition != ''">
+                AND (
+                    a.title LIKE CONCAT('%', #{dto.searchCondition, jdbcType=VARCHAR}, '%')
+                    OR
+                    a.summary LIKE CONCAT('%', #{dto.searchCondition, jdbcType=VARCHAR}, '%')
+                )
+            </if>
+            <!-- 分类筛选条件 -->
+            <if test="dto.category != null and dto.category != ''">
+                AND c.name = #{param2.category,jdbcType=VARCHAR}
+            </if>
+            <!-- 推荐筛选条件 -->
+            <if test="dto.recommend != null">
+                AND a.is_recommend = #{dto.recommend,jdbcType=TINYINT}
+            </if>
+            <!-- 置顶筛选条件 -->
+            <if test="dto.top != null">
+                AND a.is_top = #{dto.top,jdbcType=TINYINT}
+            </if>
+        </where>
+        GROUP BY a.id
+        <if test="dto.order != null and dto.order != ''">
+            ORDER BY ${dto.order}
+        </if>
+    </select>
 </mapper>

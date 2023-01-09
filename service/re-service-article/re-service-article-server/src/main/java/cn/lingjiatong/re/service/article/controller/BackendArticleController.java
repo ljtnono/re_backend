@@ -3,11 +3,15 @@ package cn.lingjiatong.re.service.article.controller;
 import cn.lingjiatong.re.common.ResultVO;
 import cn.lingjiatong.re.common.entity.User;
 import cn.lingjiatong.re.service.article.api.client.BackendArticleFeignClient;
+import cn.lingjiatong.re.service.article.api.dto.BackendArticleListDTO;
 import cn.lingjiatong.re.service.article.api.dto.BackendArticlePublishDTO;
 import cn.lingjiatong.re.service.article.api.dto.BackendDraftSaveOrUpdateDTO;
+import cn.lingjiatong.re.service.article.api.vo.BackendArticleListVO;
 import cn.lingjiatong.re.service.article.api.vo.BackendDraftDetailVO;
 import cn.lingjiatong.re.service.article.api.vo.BackendDraftListVO;
 import cn.lingjiatong.re.service.article.service.BackendArticleService;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -64,6 +68,13 @@ public class BackendArticleController implements BackendArticleFeignClient {
     @GetMapping("/backend/api/v1/article/draftList")
     public ResultVO<List<BackendDraftListVO>> getDraftList(User currentUser) {
         return ResultVO.success(backendArticleService.getDraftList(currentUser));
+    }
+
+
+    @Override
+    @GetMapping("/backend/api/v1/article/list")
+    public ResultVO<Page<BackendArticleListVO>> findArticleList(BackendArticleListDTO dto, User currentUser) {
+        return ResultVO.success(backendArticleService.findArticleList(dto));
     }
 
 }

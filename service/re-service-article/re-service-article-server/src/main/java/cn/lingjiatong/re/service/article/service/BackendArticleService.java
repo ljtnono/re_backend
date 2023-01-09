@@ -1,8 +1,8 @@
 package cn.lingjiatong.re.service.article.service;
 
+import cn.lingjiatong.re.common.constant.ArticleConstant;
 import cn.lingjiatong.re.common.constant.CommonConstant;
 import cn.lingjiatong.re.common.constant.RedisCacheKeyEnum;
-import cn.lingjiatong.re.common.constant.UserConstant;
 import cn.lingjiatong.re.common.entity.User;
 import cn.lingjiatong.re.common.entity.cache.DraftCache;
 import cn.lingjiatong.re.common.exception.BusinessException;
@@ -13,21 +13,28 @@ import cn.lingjiatong.re.common.util.DateUtil;
 import cn.lingjiatong.re.common.util.RandomUtil;
 import cn.lingjiatong.re.common.util.RedisUtil;
 import cn.lingjiatong.re.common.util.SnowflakeIdWorkerUtil;
+import cn.lingjiatong.re.service.article.api.dto.BackendArticleListDTO;
 import cn.lingjiatong.re.service.article.api.dto.BackendArticlePublishDTO;
 import cn.lingjiatong.re.service.article.api.dto.BackendDraftSaveOrUpdateDTO;
+import cn.lingjiatong.re.service.article.api.vo.BackendArticleListVO;
 import cn.lingjiatong.re.service.article.api.vo.BackendDraftDetailVO;
 import cn.lingjiatong.re.service.article.api.vo.BackendDraftListVO;
-import cn.lingjiatong.re.service.article.constant.BackendArticleConstant;
 import cn.lingjiatong.re.service.article.constant.BackendArticleErrorMessageConstant;
 import cn.lingjiatong.re.service.article.entity.Article;
 import cn.lingjiatong.re.service.article.entity.ArticleEs;
 import cn.lingjiatong.re.service.article.mapper.ArticleMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Lists;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import org.elasticsearch.index.query.TermsQueryBuilder;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
+import org.springframework.data.elasticsearch.core.SearchHits;
+import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
+import org.springframework.data.elasticsearch.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -193,6 +200,21 @@ public class BackendArticleService {
     // ********************************查询类接口********************************
 
     /**
+     * 分页获取文章列表
+     *
+     * @param dto 后端获取文章列表DTO对象
+     * @return 后端获取文章列表VO对象分页对象
+     */
+    public Page<BackendArticleListVO> findArticleList(BackendArticleListDTO dto) {
+        Optional.ofNullable(dto)
+                .orElseThrow(() -> new ParamErrorException(ErrorEnum.REQUEST_PARAM_ERROR));
+        // 生成排序条件
+        dto.generateOrderCondition();
+
+        return articleMapper.findArticleList(new Page<>(dto.getPageNum(), dto.getPageSize()), dto);
+    }
+
+    /**
      * 后端获取草稿详情
      *
      * @param currentUser 当前用户
@@ -286,32 +308,32 @@ public class BackendArticleService {
 
         if (!StringUtils.hasLength(coverUrl)) {
             // 封面图片url如果为空，使用默认封面
-            coverUrl = BackendArticleConstant.DEFAULT_COVER_URL;
+            coverUrl = ArticleConstant.DEFAULT_COVER_URL;
             dto.setCoverUrl(coverUrl);
         }
         if (recommend == null) {
             // 如果没有设置推荐，默认设置为不推荐
-            recommend = BackendArticleConstant.ARTICLE_NOT_RECOMMEND.intValue();
+            recommend = ArticleConstant.ARTICLE_NOT_RECOMMEND.intValue();
             dto.setRecommend(recommend);
         }
         if (creationType == null) {
             // 如果没有设置是原创还是转载，那么默认是原创
-            creationType = BackendArticleConstant.ARTICLE_CREATION_YC.intValue();
+            creationType = ArticleConstant.ARTICLE_CREATION_YC.intValue();
             dto.setCreationType(creationType);
         }
         if (top == null) {
             // 如果没有设置是否置顶，那么不置顶
-            top = BackendArticleConstant.ARTICLE_NOT_TOP.intValue();
+            top = ArticleConstant.ARTICLE_NOT_TOP.intValue();
             dto.setTop(top);
         }
 
         // 校验规则校验
         // 标题不能超过100个字符
-        if (!BackendArticleConstant.TITLE_REGEX.matcher(title).matches()) {
+        if (!ArticleConstant.TITLE_REGEX.matcher(title).matches()) {
             throw new ParamErrorException(ErrorEnum.REQUEST_PARAM_ERROR.getCode(), BackendArticleErrorMessageConstant.ARTICLE_TITLE_FORMAT_ERROR_MESSAGE);
         }
         // 简介不能超过200个字符
-        if (!BackendArticleConstant.SUMMARY_REGEX.matcher(summary).matches()) {
+        if (!ArticleConstant.SUMMARY_REGEX.matcher(summary).matches()) {
             throw new ParamErrorException(ErrorEnum.REQUEST_PARAM_ERROR.getCode(), BackendArticleErrorMessageConstant.ARTICLE_SUMMARY_FORMAT_ERROR_MESSAGE);
         }
         // 校验文章分类是否存在
@@ -319,25 +341,25 @@ public class BackendArticleService {
             throw new ParamErrorException(ErrorEnum.REQUEST_PARAM_ERROR.getCode(), BackendArticleErrorMessageConstant.ARTICLE_CATEGORY_NOT_EXIST_ERROR_MESSAGE);
         }
         // 校验推荐值是否存在
-        if (!BackendArticleConstant.recommendValues().contains(recommend.byteValue())) {
+        if (!ArticleConstant.recommendValues().contains(recommend.byteValue())) {
             throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR);
         }
         // 校验创作类型值是否存在
-        if (!BackendArticleConstant.creationTypeValues().contains(creationType.byteValue())) {
+        if (!ArticleConstant.creationTypeValues().contains(creationType.byteValue())) {
             throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR);
         }
         // 校验置顶值是否存在
-        if (!BackendArticleConstant.topValues().contains(top.byteValue())) {
+        if (!ArticleConstant.topValues().contains(top.byteValue())) {
             throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR);
         }
         // 当文章是转载类型时，必须有转载说明
-        if (BackendArticleConstant.ARTICLE_CREATION_ZZ.intValue() == creationType && StringUtils.isEmpty(transportInfo)) {
+        if (ArticleConstant.ARTICLE_CREATION_ZZ.intValue() == creationType && StringUtils.isEmpty(transportInfo)) {
             throw new ParamErrorException(ErrorEnum.REQUEST_PARAM_ERROR.getCode(), BackendArticleErrorMessageConstant.NO_TRANSPORT_INFO_ERROR_MESSAGE);
         }
         // 标签格式校验
         if (!CollectionUtils.isEmpty(tagList)) {
             tagList.forEach(tag -> {
-                if (!BackendArticleConstant.TAG_NAME_REGEX.matcher(tag).matches()) {
+                if (!ArticleConstant.TAG_NAME_REGEX.matcher(tag).matches()) {
                     throw new ParamErrorException(ErrorEnum.REQUEST_PARAM_ERROR.getCode(), BackendArticleErrorMessageConstant.TAG_NAME_FORMAT_ERROR_MESSAGE);
                 }
             });
@@ -372,4 +394,6 @@ public class BackendArticleService {
             return result.toString();
         }
     }
+
+
 }

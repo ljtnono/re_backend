@@ -25,6 +25,11 @@
             <artifactId>re-common</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <!-- mybatis-plus -->
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-boot-starter</artifactId>
+        </dependency>
         <!-- nacos服务发现 -->
         <dependency>
             <groupId>com.alibaba.cloud</groupId>

@@ -4,10 +4,14 @@ import cn.lingjiatong.re.common.ResultVO;
 import cn.lingjiatong.re.common.annotation.CurrentUser;
 import cn.lingjiatong.re.common.entity.User;
 import cn.lingjiatong.re.service.article.api.client.BackendArticleFeignClient;
+import cn.lingjiatong.re.service.article.api.dto.BackendArticleListDTO;
 import cn.lingjiatong.re.service.article.api.dto.BackendArticlePublishDTO;
 import cn.lingjiatong.re.service.article.api.dto.BackendDraftSaveOrUpdateDTO;
+import cn.lingjiatong.re.service.article.api.vo.BackendArticleListVO;
 import cn.lingjiatong.re.service.article.api.vo.BackendDraftDetailVO;
 import cn.lingjiatong.re.service.article.api.vo.BackendDraftListVO;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -85,6 +89,23 @@ public class ArticleController {
     }
 
     // ********************************查询类接口********************************
+
+    /**
+     * 分页获取文章列表
+     *
+     * @param dto 后端获取文章列表DTO对象
+     * @param currentUser 当前用户
+     * @return 后端获取文章列表VO对象分页对象
+     */
+    @GetMapping("/list")
+    @Operation(summary = "分页获取文章列表", method = "GET")
+    @PreAuthorize("hasAuthority('blog:article') || hasAuthority('blog:article:read')")
+    public ResultVO<Page<BackendArticleListVO>> findArticleList(BackendArticleListDTO dto, @Parameter(hidden = true) @CurrentUser User currentUser) {
+        log.info("==========分页获取文章列表，参数：{}", dto);
+        ResultVO<Page<BackendArticleListVO>> articleList = backendArticleFeignClient.findArticleList(dto, currentUser);
+        return articleList;
+    }
+
 
     /**
      * 后端获取草稿详情

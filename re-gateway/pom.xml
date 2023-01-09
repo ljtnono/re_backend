@@ -50,11 +50,6 @@
                     <groupId>io.jsonwebtoken</groupId>
                     <artifactId>jjwt</artifactId>
                 </exclusion>
-                <!-- mybatis-plus -->
-                <exclusion>
-                    <groupId>com.baomidou</groupId>
-                    <artifactId>mybatis-plus-boot-starter</artifactId>
-                </exclusion>
                 <!-- aop -->
                 <exclusion>
                     <groupId>org.springframework.boot</groupId>

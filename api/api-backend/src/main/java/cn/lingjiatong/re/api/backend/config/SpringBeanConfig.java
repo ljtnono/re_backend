@@ -50,4 +50,5 @@ public class SpringBeanConfig {
                 .contact(contact)
                 .version("Application Version: " + swaggerProperties.getApplicationVersion() + ", Spring Boot Version: " + SpringBootVersion.getVersion());
     }
+
 }

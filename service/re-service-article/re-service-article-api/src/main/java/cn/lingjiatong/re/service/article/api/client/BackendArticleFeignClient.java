@@ -3,10 +3,14 @@ package cn.lingjiatong.re.service.article.api.client;
 import cn.lingjiatong.re.common.ResultVO;
 import cn.lingjiatong.re.common.config.FeignBasicAuthRequestInterceptor;
 import cn.lingjiatong.re.common.entity.User;
+import cn.lingjiatong.re.service.article.api.dto.BackendArticleListDTO;
 import cn.lingjiatong.re.service.article.api.dto.BackendArticlePublishDTO;
 import cn.lingjiatong.re.service.article.api.dto.BackendDraftSaveOrUpdateDTO;
+import cn.lingjiatong.re.service.article.api.vo.BackendArticleListVO;
 import cn.lingjiatong.re.service.article.api.vo.BackendDraftDetailVO;
 import cn.lingjiatong.re.service.article.api.vo.BackendDraftListVO;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.cloud.openfeign.SpringQueryMap;
 import org.springframework.web.bind.annotation.*;
@@ -79,5 +83,15 @@ public interface BackendArticleFeignClient {
      */
     @GetMapping("/backend/api/v1/article/draftList")
     ResultVO<List<BackendDraftListVO>> getDraftList(@SpringQueryMap User currentUser);
+
+    /**
+     * 分页获取文章列表
+     *
+     * @param dto 后端获取文章列表DTO对象
+     * @param currentUser 当前用户
+     * @return 后端获取文章列表VO对象分页对象
+     */
+    @GetMapping("/backend/api/v1/article/list")
+    ResultVO<Page<BackendArticleListVO>> findArticleList(@SpringQueryMap BackendArticleListDTO dto, @SpringQueryMap User currentUser);
 
 }

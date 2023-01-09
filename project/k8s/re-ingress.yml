@@ -9,27 +9,21 @@ spec:
     - host: "www.lingjiatong.cn"
       http:
         paths:
-          - pathType: Prefix
-            path: "/nacos"
+          - path: "/"
+            pathType: Prefix
             backend:
               service:
-                name: nacos-extern-service
+                name: xxl-job-admin-service
                 port:
-                  number: 8848
-    - host: "www.lingjiatong.cn"
+                  number: 8080
+
+    - host: "re.lingjiatong.cn"
       http:
         paths:
           - pathType: Prefix
-            path: "/minio"
+            path: "/"
             backend:
               service:
-                name: minio-extern-service
+                name: re-admin-service
                 port:
-                  number: 9000
-          - pathType: Prefix
-            path: "/minio"
-            backend:
-              service:
-                name: minio-extern-service
-                port:
-                  number: 9001
+                  number: 80
