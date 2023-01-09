@@ -20,7 +20,7 @@
             a.id,
             a.title,
             a.summary,
-            c.name,
+            c.name AS category,
             u.username AS author,
             a.view,
             a.favorite,
