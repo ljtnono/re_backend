@@ -23,18 +23,17 @@ import cn.lingjiatong.re.service.article.constant.BackendArticleErrorMessageCons
 import cn.lingjiatong.re.service.article.entity.Article;
 import cn.lingjiatong.re.service.article.entity.ArticleEs;
 import cn.lingjiatong.re.service.article.mapper.ArticleMapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
+import cn.lingjiatong.re.service.sys.api.client.BackendUserFeignClient;
+import cn.lingjiatong.re.service.sys.api.vo.BackendUserListVO;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import org.elasticsearch.index.query.TermsQueryBuilder;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
-import org.springframework.data.elasticsearch.core.SearchHits;
-import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
-import org.springframework.data.elasticsearch.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -43,10 +42,9 @@ import org.springframework.util.StringUtils;
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
 /**
@@ -71,6 +69,11 @@ public class BackendArticleService {
     private BackendTagService backendTagService;
     @Autowired
     private SnowflakeIdWorkerUtil snowflakeIdWorkerUtil;
+    @Autowired
+    @Qualifier("commonThreadPool")
+    private ExecutorService commonThreadPool;
+    @Autowired
+    private BackendUserFeignClient backendUserFeignClient;
 
     // ********************************新增类接口********************************
 
@@ -206,12 +209,56 @@ public class BackendArticleService {
      * @return 后端获取文章列表VO对象分页对象
      */
     public Page<BackendArticleListVO> findArticleList(BackendArticleListDTO dto) {
-        Optional.ofNullable(dto)
-                .orElseThrow(() -> new ParamErrorException(ErrorEnum.REQUEST_PARAM_ERROR));
         // 生成排序条件
         dto.generateOrderCondition();
+        Page page = new Page<>(dto.getPageNum(), dto.getPageSize());
+        // 不查询总数
+        page.setSearchCount(false);
+        Page<BackendArticleListVO> articleList = articleMapper.findArticleList(page, dto);
+        long total = articleMapper.findArticleListTotal(dto);
+        page.setTotal(total);
+        // 查询文章作者，查询文章标签
+        List<BackendArticleListVO> records = articleList.getRecords();
+        if (!CollectionUtils.isEmpty(records)) {
+            List<Long> articleIdList = records
+                    .stream()
+                    .map(BackendArticleListVO::getId)
+                    .collect(Collectors.toList());
+            List<Long> userIdList = records.stream()
+                    .map(BackendArticleListVO::getUserId)
+                    .collect(Collectors.toList());
+            Future<Map<Long, List<String>>> articleTagListFuture = commonThreadPool.submit(() -> backendTagService.findTagListByArticleIdList(articleIdList));
+            Map<Long, String> articleAuthorMap = Maps.newHashMap();
+            Map<Long, String> userMap = Maps.newHashMap();
+            List<BackendUserListVO> voList = backendUserFeignClient.findUserListByUserIdList(userIdList).getData();
+            voList.forEach(vo -> {
+                userMap.put(Long.valueOf(vo.getId()), vo.getUsername());
+            });
+            records.forEach(record -> {
+                articleAuthorMap.put(record.getId(), userMap.get(record.getUserId()));
+            });
 
-        return articleMapper.findArticleList(new Page<>(dto.getPageNum(), dto.getPageSize()), dto);
+            //防止fegin获取不到当前请求
+//            RequestAttributes attributes = RequestContextHolder.getRequestAttributes();
+//            Future<Map<Long, String>> articleAuthorFuture = commonThreadPool.submit(() -> {
+//                RequestContextHolder.setRequestAttributes(attributes);
+//            });
+            try {
+                Map<Long, List<String>> articleTagListMap = articleTagListFuture.get();
+//                Map<Long, String> articleAuthorMap = articleAuthorFuture.get();
+                records.forEach(record -> {
+                    Long id = record.getId();
+                    List<String> tagList = articleTagListMap.get(id);
+                    String author = articleAuthorMap.get(id);
+                    record.setTagList(tagList);
+                    record.setAuthor(author);
+                });
+            } catch (Exception e) {
+                log.error(e.toString(), e);
+                throw new BusinessException(ErrorEnum.COMMON_SERVER_ERROR);
+            }
+        }
+        return articleList;
     }
 
     /**
@@ -394,6 +441,4 @@ public class BackendArticleService {
             return result.toString();
         }
     }
-
-
 }

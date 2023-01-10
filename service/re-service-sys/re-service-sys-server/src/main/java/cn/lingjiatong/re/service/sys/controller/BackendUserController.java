@@ -1,7 +1,6 @@
 package cn.lingjiatong.re.service.sys.controller;
 
 import cn.lingjiatong.re.common.ResultVO;
-
 import cn.lingjiatong.re.common.entity.User;
 import cn.lingjiatong.re.service.sys.api.client.BackendUserFeignClient;
 import cn.lingjiatong.re.service.sys.api.dto.BackendUserListDTO;
@@ -11,10 +10,9 @@ import cn.lingjiatong.re.service.sys.api.vo.BackendUserListVO;
 import cn.lingjiatong.re.service.sys.service.BackendUserService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * 后台管理系统User模块接口
@@ -60,6 +58,14 @@ public class BackendUserController implements BackendUserFeignClient {
     @GetMapping("/backend/api/v1/user/list")
     public ResultVO<IPage<BackendUserListVO>> findUserList(BackendUserListDTO dto) {
         return ResultVO.success(backendUserService.findUserList(dto));
+    }
+
+    // ********************************其他微服务调用********************************
+
+    @Override
+    @GetMapping("/backend/api/v1/user/findUserByUserIdList")
+    public ResultVO<List<BackendUserListVO>> findUserListByUserIdList(@RequestParam("userIdList") List<Long> userIdList) {
+        return ResultVO.success(backendUserService.findUserListByUserIdList(userIdList));
     }
 
 }

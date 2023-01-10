@@ -14,7 +14,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
  */
 @EnableDiscoveryClient
 @SpringBootApplication(scanBasePackages = {"cn.lingjiatong.re.service.article", "cn.lingjiatong.re.common"})
-@EnableFeignClients(basePackages = {"cn.lingjiatong.re.service.article.api"})
+@EnableFeignClients(basePackages = {"cn.lingjiatong.re.service.article.api", "cn.lingjiatong.re.service.sys.api"})
 @MapperScan(basePackages = {"cn.lingjiatong.re.service.article.mapper"})
 public class ReArticleServiceServerApplication {
 

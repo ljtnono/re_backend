@@ -72,41 +72,39 @@ public class BasePageDTO {
         StringBuilder orderCondition = new StringBuilder();
         List<String> orderFieldList = getOrderFieldList();
         List<Byte> orderFlagList = getOrderFlagList();
-        if (!CollectionUtils.isEmpty(orderFieldList)) {
-            // 检查排序值取值范围是否正确
-            for (String field : orderFieldList) {
-                // 如果不是取值返回内的数，抛出请求参数异常
-                if (!getOrderFieldLimitList().contains(field)) {
-                    throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR.getCode(), "排序参数异常");
-                }
-            }
-            // 如果没有传排序方式，那么全部按照降序排
-            if (CollectionUtils.isEmpty(orderFlagList)) {
-                orderFlagList = new ArrayList<>();
-                for (int i = 0; i < orderFieldList.size(); i++) {
-                    orderFlagList.add(CommonConstant.ORDER_BY_ASC);
-                }
-            }
-            // 如果有传排序方式
-            if (!CollectionUtils.isEmpty(orderFlagList)) {
-                for (int i = 0; i < orderFieldList.size(); i++) {
-                    orderCondition.append(orderFieldList.get(i)).append(" ");
-                    if (orderFlagList.get(i) != null) {
-                        // 排序方式只有这两种
-                        if (orderFlagList.get(i) == 1) {
-                            orderCondition.append("DESC");
-                        } else {
-                            // 传其他的默认为升序
-                            orderCondition.append("ASC");
-                        }
-                    }
-                    if (i < orderFieldList.size() - 1) {
-                        orderCondition.append(",");
-                    }
-                }
-                // 拼接排序参数
-                setOrder(orderCondition.toString());
+        if (CollectionUtils.isEmpty(orderFieldList)) {
+            return;
+        }
+        // 检查排序值取值范围是否正确
+        for (String field : orderFieldList) {
+            // 如果不是取值返回内的数，抛出请求参数异常
+            if (!getOrderFieldLimitList().contains(field)) {
+                throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR.getCode(), "排序参数异常");
             }
         }
+        // 如果没有传排序方式，那么全部按照降序排
+        if (CollectionUtils.isEmpty(orderFlagList)) {
+            orderFlagList = new ArrayList<>();
+            for (int i = 0; i < orderFieldList.size(); i++) {
+                orderFlagList.add(CommonConstant.ORDER_BY_ASC);
+            }
+        }
+        for (int i = 0; i < orderFieldList.size(); i++) {
+            orderCondition.append(orderFieldList.get(i)).append(" ");
+            if (orderFlagList.get(i) != null) {
+                // 排序方式只有这两种
+                if (orderFlagList.get(i).equals(CommonConstant.ORDER_BY_DESC)) {
+                    orderCondition.append("DESC");
+                } else {
+                    // 传其他的默认为升序
+                    orderCondition.append("ASC");
+                }
+            }
+            if (i < orderFieldList.size() - 1) {
+                orderCondition.append(",");
+            }
+        }
+        // 拼接排序参数
+        setOrder(orderCondition.toString());
     }
 }

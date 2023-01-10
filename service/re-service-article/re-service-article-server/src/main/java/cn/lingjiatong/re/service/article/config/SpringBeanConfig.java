@@ -30,12 +30,14 @@ import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactor
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.TimeZone;
+import java.util.concurrent.*;
 
 /**
  * bean对象注入配置
@@ -80,6 +82,8 @@ public class SpringBeanConfig {
     public MybatisPlusInterceptor paginationInterceptor() {
         MybatisPlusInterceptor mybatisPlusInterceptor = new MybatisPlusInterceptor();
         PaginationInnerInterceptor paginationInnerInterceptor = new PaginationInnerInterceptor();
+        paginationInnerInterceptor.setOptimizeJoin(true);
+        paginationInnerInterceptor.setOverflow(true);
         mybatisPlusInterceptor.addInnerInterceptor(paginationInnerInterceptor);
         return mybatisPlusInterceptor;
     }
@@ -140,6 +144,26 @@ public class SpringBeanConfig {
     @Bean
     public SnowflakeIdWorkerUtil snowflakeIdWorkerUtil() {
         return new SnowflakeIdWorkerUtil();
+    }
+
+    @Bean(name="commonThreadPool")
+    public ExecutorService commonThreadPool(){
+        // 返回可用处理器的Java虚拟机的数量
+        int processNum = Runtime.getRuntime().availableProcessors();
+        // 核心池大小
+        int corePoolSize = (int) (processNum / (1 - 0.2));
+        // 最大线程数
+        int maxPoolSize = (int) (processNum / (1 - 0.5));
+        ThreadFactory threadFactory = Executors.defaultThreadFactory();
+        ThreadPoolExecutor executorService = new ThreadPoolExecutor(
+                corePoolSize,
+                maxPoolSize,
+                300,
+                TimeUnit.SECONDS,
+                new ArrayBlockingQueue<>(maxPoolSize * 1000),
+                threadFactory,
+                new ThreadPoolExecutor.CallerRunsPolicy());
+        return executorService;
     }
 
 }

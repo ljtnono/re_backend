@@ -8,11 +8,15 @@ import cn.lingjiatong.re.service.sys.api.dto.BackendUserUpdateDTO;
 import cn.lingjiatong.re.service.sys.api.dto.BackendUserUpdateDeleteStatusBatchDTO;
 import cn.lingjiatong.re.service.sys.api.vo.BackendUserListVO;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.cloud.openfeign.SpringQueryMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import java.util.List;
 
 /**
  * 后端admin项目用户模块Feign客户端层
@@ -55,7 +59,7 @@ public interface BackendUserFeignClient {
      * @return 通用消息返回对象
      */
     @PutMapping("/backend/api/v1/user")
-    ResultVO<?> updateUser(@RequestBody BackendUserUpdateDTO dto, User currentUser);
+    ResultVO<?> updateUser(@RequestBody BackendUserUpdateDTO dto, @SpringQueryMap User currentUser);
 
     // ********************************查询类接口********************************
 
@@ -68,4 +72,14 @@ public interface BackendUserFeignClient {
     @GetMapping("/backend/api/v1/user/list")
     ResultVO<IPage<BackendUserListVO>> findUserList(@SpringQueryMap BackendUserListDTO dto);
 
+    // ********************************其他微服务调用********************************
+
+    /**
+     * 根据用户id列表获取用户列表
+     *
+     * @param userIdList 用户id列表
+     * @return 后台获取用户列表VO对象列表
+     */
+    @GetMapping("/backend/api/v1/user/findUserByUserIdList")
+    ResultVO<List<BackendUserListVO>> findUserListByUserIdList(@RequestParam("userIdList") List<Long> userIdList);
 }

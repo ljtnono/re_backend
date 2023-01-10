@@ -12,10 +12,14 @@ import cn.lingjiatong.re.service.sys.api.dto.BackendUserUpdateDeleteStatusBatchD
 import cn.lingjiatong.re.service.sys.api.vo.BackendUserListVO;
 import cn.lingjiatong.re.service.sys.constant.BackendUserErrorMessageConstant;
 import cn.lingjiatong.re.service.sys.mapper.UserMapper;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -23,6 +27,7 @@ import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 后台用户模块service层
@@ -137,6 +142,35 @@ public class BackendUserService {
     }
 
 
-
     // ********************************公用函数********************************
+
+    /**
+     * 根据用户id列表获取用户列表
+     *
+     * @param userIdList 用户id列表
+     * @param fields 要获取的字段列表
+     * @return 后台获取用户列表VO对象列表
+     */
+    public List<BackendUserListVO> findUserListByUserIdList(List<Long> userIdList, SFunction<User, ?>... fields) {
+        if (CollectionUtils.isEmpty(userIdList)) {
+            return List.of();
+        }
+        List<User> users = Lists.newArrayList();
+        if (fields == null || fields.length == 0) {
+            users = userMapper.selectList(new LambdaQueryWrapper<User>()
+                    .in(User::getId, userIdList));
+        } else {
+            users = userMapper.selectList(new LambdaQueryWrapper<User>()
+                    .select(fields)
+                    .in(User::getId, userIdList));
+        }
+        return users.stream()
+                .map(user -> {
+                    BackendUserListVO vo = new BackendUserListVO();
+                    BeanUtils.copyProperties(user, vo);
+                    vo.setId(String.valueOf(user.getId()));
+                    return vo;
+                }).collect(Collectors.toList());
+    }
+
 }

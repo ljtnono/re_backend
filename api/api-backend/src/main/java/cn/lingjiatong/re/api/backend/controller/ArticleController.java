@@ -102,8 +102,7 @@ public class ArticleController {
     @PreAuthorize("hasAuthority('blog:article') || hasAuthority('blog:article:read')")
     public ResultVO<Page<BackendArticleListVO>> findArticleList(BackendArticleListDTO dto, @Parameter(hidden = true) @CurrentUser User currentUser) {
         log.info("==========分页获取文章列表，参数：{}", dto);
-        ResultVO<Page<BackendArticleListVO>> articleList = backendArticleFeignClient.findArticleList(dto, currentUser);
-        return articleList;
+        return backendArticleFeignClient.findArticleList(dto, currentUser);
     }
 
 

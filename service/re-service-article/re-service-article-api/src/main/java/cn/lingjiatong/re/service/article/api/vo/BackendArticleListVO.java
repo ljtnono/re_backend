@@ -1,7 +1,11 @@
 package cn.lingjiatong.re.service.article.api.vo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * 后端获取文章列表VO对象
@@ -18,6 +22,12 @@ public class BackendArticleListVO {
      */
     @Schema(description = "文章id")
     private Long id;
+
+    /**
+     * 用户id
+     */
+    @Schema(description = "用户id", hidden = true)
+    private Long userId;
 
     /**
      * 文章标题
@@ -66,6 +76,26 @@ public class BackendArticleListVO {
      */
     @Schema(description = "是否置顶 0 不置顶 1 置顶")
     private Byte top;
+
+    /**
+     * 标签列表
+     */
+    @Schema(description = "标签列表")
+    private List<String> tagList;
+
+    /**
+     * 创建时间
+     */
+    @Schema(description = "创建时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private LocalDateTime createTime;
+
+    /**
+     * 最后修改时间
+     */
+    @Schema(description = "最后修改时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private LocalDateTime modifyTime;
 
     /**
      * 是否删除 0 正常 1 已删除

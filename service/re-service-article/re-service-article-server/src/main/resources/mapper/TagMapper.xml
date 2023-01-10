@@ -26,4 +26,22 @@
             </if>
         </where>
     </select>
+
+    <!-- 根据文章id列表查询文章的标签名列表 -->
+    <select id="findTagNameListByArticleIdList" resultType="cn.lingjiatong.re.service.article.bo.ArticleTagListBO">
+        SELECT
+            GROUP_CONCAT(t.name) AS tagNameStr,
+            tat.article_id
+        FROM
+            re_article.tr_article_tag tat
+        LEFT JOIN re_article.tag t ON tat.tag_id = t.id
+        <if test="articleIdList != null and articleIdList.size() != 0">
+            WHERE
+            tat.article_id IN
+            <foreach collection="articleIdList" item="articleId" open="(" close=")" separator=",">
+                #{articleId, jdbcType=BIGINT}
+            </foreach>
+        </if>
+        GROUP BY tat.article_id
+    </select>
 </mapper>

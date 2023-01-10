@@ -5,12 +5,15 @@ import cn.lingjiatong.re.common.constant.UserConstant;
 import cn.lingjiatong.re.common.util.DateUtil;
 import cn.lingjiatong.re.common.util.SnowflakeIdWorkerUtil;
 import cn.lingjiatong.re.service.article.api.vo.BackendTagListVO;
+import cn.lingjiatong.re.service.article.bo.ArticleTagListBO;
 import cn.lingjiatong.re.service.article.entity.Tag;
 import cn.lingjiatong.re.service.article.entity.TrArticleTag;
 import cn.lingjiatong.re.service.article.mapper.TagMapper;
 import cn.lingjiatong.re.service.article.mapper.TrArticleTagMapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,9 +21,12 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -44,6 +50,30 @@ public class BackendTagService {
     // ********************************删除类接口********************************
     // ********************************修改类接口********************************
     // ********************************查询类接口********************************
+
+    /**
+     * 根据文章id列表获取文章标签列表
+     *
+     * @param articleIdList 文章id列表
+     * @return 文章对应的标签列表
+     */
+    public Map<Long, List<String>> findTagListByArticleIdList(List<Long> articleIdList) {
+        Map<Long, List<String>> resultMap = Maps.newHashMap();
+        List<ArticleTagListBO> boList = tagMapper.findTagNameListByArticleIdList(articleIdList);
+        if (CollectionUtils.isEmpty(boList)) {
+            return resultMap;
+        }
+        boList.forEach(bo -> {
+            Long articleId = bo.getArticleId();
+            String tagNameStr = bo.getTagNameStr();
+            if (!StringUtils.hasLength(tagNameStr)) {
+                resultMap.put(articleId, List.of());
+            } else {
+                resultMap.put(articleId, Arrays.stream(tagNameStr.split(",")).collect(Collectors.toList()));
+            }
+        });
+        return resultMap;
+    }
 
     /**
      * 批量保存标签

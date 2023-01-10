@@ -45,6 +45,6 @@ public class BackendArticleListDTO extends BasePageDTO {
      * 排序字段限定列表
      */
     @Schema(description = "排序字段限定列表", hidden = true)
-    protected List<String> orderFieldLimitList = List.of("view", "favorite");
+    protected List<String> orderFieldLimitList = List.of("view", "favorite", "create_time", "modify_time");
 
 }
