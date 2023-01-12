@@ -3,13 +3,10 @@ package cn.lingjiatong.re.service.article.api.client;
 import cn.lingjiatong.re.common.ResultVO;
 import cn.lingjiatong.re.common.config.FeignBasicAuthRequestInterceptor;
 import cn.lingjiatong.re.common.entity.User;
-import cn.lingjiatong.re.service.article.api.dto.BackendArticleListDTO;
-import cn.lingjiatong.re.service.article.api.dto.BackendArticlePublishDTO;
-import cn.lingjiatong.re.service.article.api.dto.BackendDraftSaveOrUpdateDTO;
+import cn.lingjiatong.re.service.article.api.dto.*;
 import cn.lingjiatong.re.service.article.api.vo.BackendArticleListVO;
 import cn.lingjiatong.re.service.article.api.vo.BackendDraftDetailVO;
 import cn.lingjiatong.re.service.article.api.vo.BackendDraftListVO;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.cloud.openfeign.SpringQueryMap;
@@ -50,6 +47,16 @@ public interface BackendArticleFeignClient {
     @DeleteMapping("/backend/api/v1/article/deleteDraft/{draftId}")
     ResultVO<?> deleteDraft(@PathVariable("draftId") String draftId, @SpringQueryMap User currentUser);
 
+    /**
+     * 后端批量删除文章
+     *
+     * @param dto 后端批量删除文章DTO对象
+     * @param currentUser 当前用户
+     * @return 通用消息返回对象
+     */
+    @DeleteMapping("/backend/api/v1/article/deleteBatch")
+    ResultVO<?> deleteArticleBatch(@RequestBody BackendArticleDeleteBatchDTO dto, @SpringQueryMap User currentUser);
+
     // ********************************修改类接口********************************
 
     /**
@@ -62,6 +69,25 @@ public interface BackendArticleFeignClient {
     @PostMapping("/backend/api/v1/article/saveOrUpdateDraft")
     ResultVO<?> saveOrUpdateDraft(@RequestBody BackendDraftSaveOrUpdateDTO dto, @SpringQueryMap User currentUser);
 
+    /**
+     * 后端批量更新文章推荐状态
+     *
+     * @param dto 后端批量更新文章推荐状态DTO对象
+     * @param currentUser 当前用户
+     * @return 通用消息返回对象
+     */
+    @PutMapping("/backend/api/v1/article/updateRecommendBatch")
+    ResultVO<?> updateArticleRecommendBatch(@RequestBody BackendArticleUpdateRecommendBatchDTO dto, @SpringQueryMap User currentUser);
+
+    /**
+     * 后端批量更新文章置顶状态
+     *
+     * @param dto 后端批量更新文章置顶状态DTO对象
+     * @param currentUser 当前用户
+     * @return 通用消息返回对象
+     */
+    @PutMapping("/backend/api/v1/article/updateTopBatch")
+    ResultVO<?> updateArticleTopBatch(@RequestBody BackendArticleUpdateTopBatchDTO dto, @SpringQueryMap User currentUser);
 
     // ********************************查询类接口********************************
 

@@ -3,14 +3,11 @@ package cn.lingjiatong.re.service.article.controller;
 import cn.lingjiatong.re.common.ResultVO;
 import cn.lingjiatong.re.common.entity.User;
 import cn.lingjiatong.re.service.article.api.client.BackendArticleFeignClient;
-import cn.lingjiatong.re.service.article.api.dto.BackendArticleListDTO;
-import cn.lingjiatong.re.service.article.api.dto.BackendArticlePublishDTO;
-import cn.lingjiatong.re.service.article.api.dto.BackendDraftSaveOrUpdateDTO;
+import cn.lingjiatong.re.service.article.api.dto.*;
 import cn.lingjiatong.re.service.article.api.vo.BackendArticleListVO;
 import cn.lingjiatong.re.service.article.api.vo.BackendDraftDetailVO;
 import cn.lingjiatong.re.service.article.api.vo.BackendDraftListVO;
 import cn.lingjiatong.re.service.article.service.BackendArticleService;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -47,12 +44,33 @@ public class BackendArticleController implements BackendArticleFeignClient {
         return ResultVO.success();
     }
 
+    @Override
+    @DeleteMapping("/backend/api/v1/article/deleteBatch")
+    public ResultVO<?> deleteArticleBatch(@RequestBody BackendArticleDeleteBatchDTO dto, User currentUser) {
+        backendArticleService.deleteArticleBatch(dto, currentUser);
+        return ResultVO.success();
+    }
+
     // ********************************修改类接口********************************
 
     @Override
     @PostMapping("/backend/api/v1/article/saveOrUpdateDraft")
     public ResultVO<?> saveOrUpdateDraft(@RequestBody BackendDraftSaveOrUpdateDTO dto, User currentUser) {
         backendArticleService.saveOrUpdateDraft(dto, currentUser);
+        return ResultVO.success();
+    }
+
+    @Override
+    @PutMapping("/backend/api/v1/article/updateRecommendBatch")
+    public ResultVO<?> updateArticleRecommendBatch(@RequestBody BackendArticleUpdateRecommendBatchDTO dto, User currentUser) {
+        backendArticleService.updateArticleRecommendBatch(dto, currentUser);
+        return ResultVO.success();
+    }
+
+    @Override
+    @PutMapping("/backend/api/v1/article/updateTopBatch")
+    public ResultVO<?> updateArticleTopBatch(@RequestBody BackendArticleUpdateTopBatchDTO dto, User currentUser) {
+        backendArticleService.updateArticleTopBatch(dto, currentUser);
         return ResultVO.success();
     }
 

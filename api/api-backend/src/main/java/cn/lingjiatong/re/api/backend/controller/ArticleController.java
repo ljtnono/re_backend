@@ -4,13 +4,10 @@ import cn.lingjiatong.re.common.ResultVO;
 import cn.lingjiatong.re.common.annotation.CurrentUser;
 import cn.lingjiatong.re.common.entity.User;
 import cn.lingjiatong.re.service.article.api.client.BackendArticleFeignClient;
-import cn.lingjiatong.re.service.article.api.dto.BackendArticleListDTO;
-import cn.lingjiatong.re.service.article.api.dto.BackendArticlePublishDTO;
-import cn.lingjiatong.re.service.article.api.dto.BackendDraftSaveOrUpdateDTO;
+import cn.lingjiatong.re.service.article.api.dto.*;
 import cn.lingjiatong.re.service.article.api.vo.BackendArticleListVO;
 import cn.lingjiatong.re.service.article.api.vo.BackendDraftDetailVO;
 import cn.lingjiatong.re.service.article.api.vo.BackendDraftListVO;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -71,6 +68,21 @@ public class ArticleController {
         return backendArticleFeignClient.deleteDraft(draftId, currentUser);
     }
 
+    /**
+     * 批量删除文章
+     *
+     * @param dto 后端批量删除文章DTO对象
+     * @param currentUser 当前用户
+     * @return 通用消息返回对象
+     */
+    @DeleteMapping("/deleteBatch")
+    @Operation(summary = "批量删除文章", method = "DELETE")
+    @PreAuthorize("hasAuthority('blog:article') && hasAuthority('blog:article:write')")
+    public ResultVO<?> deleteArticleBatch(@RequestBody BackendArticleDeleteBatchDTO dto, @Parameter(hidden = true) @CurrentUser User currentUser) {
+        log.info("==========批量删除文章，参数：{}", dto);
+        return backendArticleFeignClient.deleteArticleBatch(dto, currentUser);
+    }
+
     // ********************************修改类接口********************************
 
     /**
@@ -86,6 +98,36 @@ public class ArticleController {
     public ResultVO<?> saveOrUpdateDraft(@RequestBody BackendDraftSaveOrUpdateDTO dto, @Parameter(hidden = true) @CurrentUser User currentUser) {
         log.info("==========保存或更新草稿，参数：{}，{}", dto.getDraftId(), dto.getTitle());
         return backendArticleFeignClient.saveOrUpdateDraft(dto, currentUser);
+    }
+
+    /**
+     * 批量更新文章推荐状态
+     *
+     * @param dto 后端批量更新文章推荐状态DTO对象
+     * @param currentUser 当前用户
+     * @return 通用消息返回对象
+     */
+    @PutMapping("/updateArticleRecommendBatch")
+    @Operation(summary = "批量更新文章推荐状态", method = "PUT")
+    @PreAuthorize("hasAuthority('blog:article') && hasAuthority('blog:article:write')")
+    public ResultVO<?> updateArticleRecommendBatch(@RequestBody BackendArticleUpdateRecommendBatchDTO dto, @Parameter(hidden = true) @CurrentUser User currentUser) {
+        log.info("==========批量更新文章推荐状态，参数：{}", dto);
+        return backendArticleFeignClient.updateArticleRecommendBatch(dto, currentUser);
+    }
+
+    /**
+     * 批量更新文章置顶状态
+     *
+     * @param dto 后端批量更新文章置顶状态DTO对象
+     * @param currentUser 当前用户
+     * @return 通用消息返回对象
+     */
+    @PutMapping("/updateArticleTopBatch")
+    @Operation(summary = "批量更新文章置顶状态", method = "PUT")
+    @PreAuthorize("hasAuthority('blog:article') && hasAuthority('blog:article:write')")
+    public ResultVO<?> updateArticleTopBatch(@RequestBody BackendArticleUpdateTopBatchDTO dto, @Parameter(hidden = true) @CurrentUser User currentUser) {
+        log.info("==========批量更新文章置顶状态，参数：{}", dto);
+        return backendArticleFeignClient.updateArticleTopBatch(dto, currentUser);
     }
 
     // ********************************查询类接口********************************

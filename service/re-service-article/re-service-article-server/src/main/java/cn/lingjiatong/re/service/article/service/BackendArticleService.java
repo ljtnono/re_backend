@@ -13,9 +13,7 @@ import cn.lingjiatong.re.common.util.DateUtil;
 import cn.lingjiatong.re.common.util.RandomUtil;
 import cn.lingjiatong.re.common.util.RedisUtil;
 import cn.lingjiatong.re.common.util.SnowflakeIdWorkerUtil;
-import cn.lingjiatong.re.service.article.api.dto.BackendArticleListDTO;
-import cn.lingjiatong.re.service.article.api.dto.BackendArticlePublishDTO;
-import cn.lingjiatong.re.service.article.api.dto.BackendDraftSaveOrUpdateDTO;
+import cn.lingjiatong.re.service.article.api.dto.*;
 import cn.lingjiatong.re.service.article.api.vo.BackendArticleListVO;
 import cn.lingjiatong.re.service.article.api.vo.BackendDraftDetailVO;
 import cn.lingjiatong.re.service.article.api.vo.BackendDraftListVO;
@@ -25,15 +23,25 @@ import cn.lingjiatong.re.service.article.entity.ArticleEs;
 import cn.lingjiatong.re.service.article.mapper.ArticleMapper;
 import cn.lingjiatong.re.service.sys.api.client.BackendUserFeignClient;
 import cn.lingjiatong.re.service.sys.api.vo.BackendUserListVO;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.google.common.collect.FluentIterable;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
+import org.springframework.data.elasticsearch.core.document.Document;
+import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
+import org.springframework.data.elasticsearch.core.query.DeleteQuery;
+import org.springframework.data.elasticsearch.core.query.NativeSearchQuery;
+import org.springframework.data.elasticsearch.core.query.Query;
+import org.springframework.data.elasticsearch.core.query.UpdateQuery;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -132,7 +140,9 @@ public class BackendArticleService {
             articleEs.setTagList(tagList);
             elasticsearchRestTemplate.save(articleEs);
             // 删除草稿
-            redisUtil.deleteObject(RedisCacheKeyEnum.ARTICLE_DRAFT.getValue().replaceAll("username", currentUser.getUsername()).replaceAll("draftId", draftId));
+            redisUtil.deleteObject(RedisCacheKeyEnum.ARTICLE_DRAFT.getValue()
+                    .replaceAll("username", currentUser.getUsername())
+                    .replaceAll("draftId", draftId));
         } catch (Exception e) {
             log.error("==========保存文章失败，异常：{}", e.getMessage());
             throw new BusinessException(ErrorEnum.SAVE_ARTICLE_ERROR);
@@ -198,7 +208,126 @@ public class BackendArticleService {
         redisUtil.deleteObjects(keys);
     }
 
+    /**
+     * 后端批量删除文章
+     *
+     * @param dto 后端批量删除文章DTO对象
+     * @param currentUser 当前用户
+     * @return 通用消息返回对象
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public void deleteArticleBatch(BackendArticleDeleteBatchDTO dto, User currentUser) {
+        List<Long> articleIdList = dto.getArticleIdList();
+        // TODO 这里参数可能为null，需要测试
+        Boolean physics = dto.getPhysics();
+        if (CollectionUtils.isEmpty(articleIdList)) {
+            return;
+        }
+        if (!physics) {
+            // 逻辑删除，只将文章 is_delete设置为1
+            try {
+                articleMapper.update(null, new LambdaUpdateWrapper<Article>()
+                        .set(Article::getDeleted, CommonConstant.ENTITY_DELETE)
+                        .set(Article::getOptUser, currentUser.getUsername())
+                        .set(Article::getModifyTime, LocalDateTime.now(ZoneId.of("Asia/Shanghai")))
+                        .in(Article::getId, articleIdList));
+                List<UpdateQuery> updateQueryList = Lists.newArrayList();
+                articleIdList.forEach(articleId -> {
+                    Document document = Document.create();
+                    document.put("deleted", CommonConstant.ENTITY_DELETE);
+                    UpdateQuery updateQuery = UpdateQuery
+                            .builder(String.valueOf(articleId))
+                            .withDocument(document)
+                            .build();
+                    updateQueryList.add(updateQuery);
+                });
+                //  更新es
+                elasticsearchRestTemplate.bulkUpdate(updateQueryList, IndexCoordinates.of("article"));
+            } catch (Exception e) {
+                log.error(e.toString(), e);
+                throw new BusinessException(ErrorEnum.COMMON_SERVER_ERROR);
+            }
+        } else {
+            // 物理删除，删除文章所有相关信息
+            try {
+                // 删除文章
+                articleMapper.deleteBatchIds(articleIdList);
+                // 删除文章标签
+                backendTagService.deleteTrArticleTagBatch(articleIdList);
+                // 删除es数据
+                List<String> articleIdStrList = articleIdList
+                        .stream()
+                        .map(String::valueOf)
+                        .collect(Collectors.toList());
+                String[] articleIds = FluentIterable.from(articleIdStrList).toArray(String.class);
+                elasticsearchRestTemplate.delete(QueryBuilders.idsQuery().addIds(articleIds));
+            } catch (Exception e) {
+                log.error(e.toString(), e);
+                throw new BusinessException(ErrorEnum.COMMON_SERVER_ERROR);
+            }
+            // TODO 重新计算分类的总浏览量和总喜欢数，这个可以异步执行（消息队列方式）
+        }
+    }
+
+
     // ********************************修改类接口********************************
+
+    /**
+     * 后端批量更新文章推荐状态
+     *
+     * @param dto 后端批量更新文章推荐状态DTO对象
+     * @param currentUser 当前用户
+     * @return 通用消息返回对象
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public void updateArticleRecommendBatch(BackendArticleUpdateRecommendBatchDTO dto, User currentUser) {
+        List<Long> articleIdList = dto.getArticleIdList();
+        if (CollectionUtils.isEmpty(articleIdList)) {
+            return;
+        }
+        if (!ArticleConstant.recommendValues().contains(dto.getRecommend())) {
+            throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR);
+        }
+        try {
+            articleMapper.update(null, new LambdaUpdateWrapper<Article>()
+                    .set(Article::getRecommend, dto.getRecommend())
+                    .set(Article::getOptUser, currentUser.getUsername())
+                    .set(Article::getModifyTime, LocalDateTime.now(ZoneId.of("Asia/Shanghai")))
+                    .in(Article::getId, articleIdList));
+        } catch (Exception e) {
+            log.error(e.toString(), e);
+            throw new BusinessException(ErrorEnum.COMMON_SERVER_ERROR);
+        }
+    }
+
+    /**
+     * 后端批量更新文章置顶状态
+     *
+     * @param dto 后端批量更新文章置顶状态DTO对象
+     * @param currentUser 当前用户
+     * @return 通用消息返回对象
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public void updateArticleTopBatch(BackendArticleUpdateTopBatchDTO dto, User currentUser) {
+        List<Long> articleIdList = dto.getArticleIdList();
+        if (CollectionUtils.isEmpty(articleIdList)) {
+            return;
+        }
+        if (!ArticleConstant.topValues().contains(dto.getTop())) {
+            throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR);
+        }
+        try {
+            articleMapper.update(null, new LambdaUpdateWrapper<Article>()
+                    .set(Article::getTop, dto.getTop())
+                    .set(Article::getOptUser, currentUser.getUsername())
+                    .set(Article::getModifyTime, LocalDateTime.now(ZoneId.of("Asia/Shanghai")))
+                    .in(Article::getId, articleIdList));
+        } catch (Exception e) {
+            log.error(e.toString(), e);
+            throw new BusinessException(ErrorEnum.COMMON_SERVER_ERROR);
+        }
+    }
+
 
     // ********************************查询类接口********************************
 
@@ -441,4 +570,6 @@ public class BackendArticleService {
             return result.toString();
         }
     }
+
+
 }

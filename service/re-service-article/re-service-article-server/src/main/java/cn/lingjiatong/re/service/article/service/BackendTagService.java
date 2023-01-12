@@ -12,7 +12,6 @@ import cn.lingjiatong.re.service.article.mapper.TagMapper;
 import cn.lingjiatong.re.service.article.mapper.TrArticleTagMapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -50,6 +49,23 @@ public class BackendTagService {
     // ********************************删除类接口********************************
     // ********************************修改类接口********************************
     // ********************************查询类接口********************************
+
+    // ********************************私有函数********************************
+    // ********************************公共函数********************************
+
+    /**
+     * 批量删除文章标签对应关系
+     *
+     * @param articleIdList 文章id列表
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public void deleteTrArticleTagBatch(List<Long> articleIdList) {
+        if (CollectionUtils.isEmpty(articleIdList)) {
+            return;
+        }
+        trArticleTagMapper.delete(new LambdaQueryWrapper<TrArticleTag>()
+                .in(TrArticleTag::getArticleId, articleIdList));
+    }
 
     /**
      * 根据文章id列表获取文章标签列表
