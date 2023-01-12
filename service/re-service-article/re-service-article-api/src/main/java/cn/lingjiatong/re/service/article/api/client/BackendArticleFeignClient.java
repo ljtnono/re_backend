@@ -89,6 +89,16 @@ public interface BackendArticleFeignClient {
     @PutMapping("/backend/api/v1/article/updateTopBatch")
     ResultVO<?> updateArticleTopBatch(@RequestBody BackendArticleUpdateTopBatchDTO dto, @SpringQueryMap User currentUser);
 
+    /**
+     * 后端批量更新文章删除状态
+     *
+     * @param dto 后端批量更新文章删除状态DTO对象
+     * @param currentUser 当前用户
+     * @return 通用消息返回对象
+     */
+    @PutMapping("/backend/api/v1/article/updateDeleteBatch")
+    ResultVO<?> updateArticleDeleteBatch(@RequestBody BackendArticleUpdateDeleteBatchDTO dto, @SpringQueryMap User currentUser);
+
     // ********************************查询类接口********************************
 
     /**

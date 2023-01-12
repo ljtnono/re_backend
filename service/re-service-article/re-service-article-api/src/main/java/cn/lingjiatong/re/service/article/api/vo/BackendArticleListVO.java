@@ -21,7 +21,7 @@ public class BackendArticleListVO {
      * 文章id
      */
     @Schema(description = "文章id")
-    private Long id;
+    private String id;
 
     /**
      * 用户id

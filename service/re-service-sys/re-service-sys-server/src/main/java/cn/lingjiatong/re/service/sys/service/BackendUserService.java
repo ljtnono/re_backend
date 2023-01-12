@@ -58,7 +58,7 @@ public class BackendUserService {
         if (CollectionUtils.isEmpty(userIdList)) {
             return;
         }
-        if (CommonConstant.getDeleteStatusCodeList().contains(deleteStatus)) {
+        if (CommonConstant.deleteValues().contains(deleteStatus)) {
             throw new ParamErrorException(ErrorEnum.REQUEST_PARAM_ERROR.getCode(), BackendUserErrorMessageConstant.DELETE_STATUS_NOT_SUPPORT_ERROR_MESSAGE);
         }
         // 更新用户删除状态

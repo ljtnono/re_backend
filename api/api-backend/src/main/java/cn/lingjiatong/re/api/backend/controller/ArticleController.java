@@ -130,6 +130,22 @@ public class ArticleController {
         return backendArticleFeignClient.updateArticleTopBatch(dto, currentUser);
     }
 
+    /**
+     * 批量更新文章删除状态
+     *
+     * @param dto 后端批量更新文章删除状态DTO对象
+     * @param currentUser 当前用户
+     * @return 通用消息返回对象
+     */
+    @PutMapping("/")
+    @Operation(summary = "批量更新文章删除状态", method = "PUT")
+    @PreAuthorize("hasAuthority('blog:article') && hasAuthority('blog:article:write')")
+    public ResultVO<?> updateArticleTopBatch(@RequestBody BackendArticleUpdateDeleteBatchDTO dto, @Parameter(hidden = true) @CurrentUser User currentUser) {
+        log.info("==========批量更新文章删除状态，参数：{}", dto);
+        return backendArticleFeignClient.updateArticleDeleteBatch(dto, currentUser);
+    }
+
+
     // ********************************查询类接口********************************
 
     /**

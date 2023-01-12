@@ -53,7 +53,7 @@
             ORDER BY ${dto.order}
         </if>
         <if test="dto.order == null or dto.order == ''">
-            ORDER BY modify_time DESC
+            ORDER BY id DESC
         </if>
     </select>
 

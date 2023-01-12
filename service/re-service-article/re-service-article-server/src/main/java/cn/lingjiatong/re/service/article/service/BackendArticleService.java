@@ -30,7 +30,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,9 +37,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
 import org.springframework.data.elasticsearch.core.document.Document;
 import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
-import org.springframework.data.elasticsearch.core.query.DeleteQuery;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQuery;
-import org.springframework.data.elasticsearch.core.query.Query;
 import org.springframework.data.elasticsearch.core.query.UpdateQuery;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -218,55 +215,28 @@ public class BackendArticleService {
     @Transactional(rollbackFor = Exception.class)
     public void deleteArticleBatch(BackendArticleDeleteBatchDTO dto, User currentUser) {
         List<Long> articleIdList = dto.getArticleIdList();
-        // TODO 这里参数可能为null，需要测试
-        Boolean physics = dto.getPhysics();
         if (CollectionUtils.isEmpty(articleIdList)) {
             return;
         }
-        if (!physics) {
-            // 逻辑删除，只将文章 is_delete设置为1
-            try {
-                articleMapper.update(null, new LambdaUpdateWrapper<Article>()
-                        .set(Article::getDeleted, CommonConstant.ENTITY_DELETE)
-                        .set(Article::getOptUser, currentUser.getUsername())
-                        .set(Article::getModifyTime, LocalDateTime.now(ZoneId.of("Asia/Shanghai")))
-                        .in(Article::getId, articleIdList));
-                List<UpdateQuery> updateQueryList = Lists.newArrayList();
-                articleIdList.forEach(articleId -> {
-                    Document document = Document.create();
-                    document.put("deleted", CommonConstant.ENTITY_DELETE);
-                    UpdateQuery updateQuery = UpdateQuery
-                            .builder(String.valueOf(articleId))
-                            .withDocument(document)
-                            .build();
-                    updateQueryList.add(updateQuery);
-                });
-                //  更新es
-                elasticsearchRestTemplate.bulkUpdate(updateQueryList, IndexCoordinates.of("article"));
-            } catch (Exception e) {
-                log.error(e.toString(), e);
-                throw new BusinessException(ErrorEnum.COMMON_SERVER_ERROR);
-            }
-        } else {
-            // 物理删除，删除文章所有相关信息
-            try {
-                // 删除文章
-                articleMapper.deleteBatchIds(articleIdList);
-                // 删除文章标签
-                backendTagService.deleteTrArticleTagBatch(articleIdList);
-                // 删除es数据
-                List<String> articleIdStrList = articleIdList
-                        .stream()
-                        .map(String::valueOf)
-                        .collect(Collectors.toList());
-                String[] articleIds = FluentIterable.from(articleIdStrList).toArray(String.class);
-                elasticsearchRestTemplate.delete(QueryBuilders.idsQuery().addIds(articleIds));
-            } catch (Exception e) {
-                log.error(e.toString(), e);
-                throw new BusinessException(ErrorEnum.COMMON_SERVER_ERROR);
-            }
-            // TODO 重新计算分类的总浏览量和总喜欢数，这个可以异步执行（消息队列方式）
+        // 物理删除，删除文章所有相关信息
+        try {
+            // 删除文章
+            articleMapper.deleteBatchIds(articleIdList);
+            // 删除文章标签
+            backendTagService.deleteTrArticleTagBatch(articleIdList);
+            // 删除es数据
+            List<String> articleIdStrList = articleIdList
+                    .stream()
+                    .map(String::valueOf)
+                    .collect(Collectors.toList());
+            String[] articleIds = FluentIterable.from(articleIdStrList).toArray(String.class);
+            NativeSearchQuery nativeSearchQuery = new NativeSearchQuery(QueryBuilders.idsQuery().addIds(articleIds));
+            elasticsearchRestTemplate.delete(nativeSearchQuery, ArticleEs.class, IndexCoordinates.of("article"));
+        } catch (Exception e) {
+            log.error(e.toString(), e);
+            throw new BusinessException(ErrorEnum.COMMON_SERVER_ERROR);
         }
+        // TODO 重新计算分类的总浏览量和总喜欢数，这个可以异步执行（消息队列方式）
     }
 
 
@@ -328,6 +298,47 @@ public class BackendArticleService {
         }
     }
 
+    /**
+     * 后端批量更新文章删除状态
+     *
+     * @param dto 后端批量更新文章删除状态DTO对象
+     * @param currentUser 当前用户
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public void updateArticleDeleteBatch(BackendArticleUpdateDeleteBatchDTO dto, User currentUser) {
+        List<Long> articleIdList = dto.getArticleIdList();
+        Byte delete = dto.getDelete();
+        if (CollectionUtils.isEmpty(articleIdList)) {
+            return;
+        }
+        if (!CommonConstant.deleteValues().contains(delete)) {
+            throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR);
+        }
+
+        try {
+            articleMapper.update(null, new LambdaUpdateWrapper<Article>()
+                    .set(Article::getDeleted, delete)
+                    .set(Article::getOptUser, currentUser.getUsername())
+                    .set(Article::getModifyTime, LocalDateTime.now(ZoneId.of("Asia/Shanghai")))
+                    .in(Article::getId, articleIdList));
+            List<UpdateQuery> updateQueryList = Lists.newArrayList();
+            articleIdList.forEach(articleId -> {
+                Document document = Document.create();
+                document.put("deleted", delete);
+                UpdateQuery updateQuery = UpdateQuery
+                        .builder(String.valueOf(articleId))
+                        .withDocument(document)
+                        .build();
+                updateQueryList.add(updateQuery);
+            });
+            //  更新es
+            elasticsearchRestTemplate.bulkUpdate(updateQueryList, IndexCoordinates.of("article"));
+        } catch (Exception e) {
+            log.error(e.toString(), e);
+            throw new BusinessException(ErrorEnum.COMMON_SERVER_ERROR);
+        }
+    }
+
 
     // ********************************查询类接口********************************
 
@@ -351,7 +362,7 @@ public class BackendArticleService {
         if (!CollectionUtils.isEmpty(records)) {
             List<Long> articleIdList = records
                     .stream()
-                    .map(BackendArticleListVO::getId)
+                    .map(vo -> Long.valueOf(vo.getId()))
                     .collect(Collectors.toList());
             List<Long> userIdList = records.stream()
                     .map(BackendArticleListVO::getUserId)
@@ -364,7 +375,7 @@ public class BackendArticleService {
                 userMap.put(Long.valueOf(vo.getId()), vo.getUsername());
             });
             records.forEach(record -> {
-                articleAuthorMap.put(record.getId(), userMap.get(record.getUserId()));
+                articleAuthorMap.put(Long.valueOf(record.getId()), userMap.get(record.getUserId()));
             });
 
             //防止fegin获取不到当前请求
@@ -376,7 +387,7 @@ public class BackendArticleService {
                 Map<Long, List<String>> articleTagListMap = articleTagListFuture.get();
 //                Map<Long, String> articleAuthorMap = articleAuthorFuture.get();
                 records.forEach(record -> {
-                    Long id = record.getId();
+                    Long id = Long.valueOf(record.getId());
                     List<String> tagList = articleTagListMap.get(id);
                     String author = articleAuthorMap.get(id);
                     record.setTagList(tagList);
@@ -570,6 +581,5 @@ public class BackendArticleService {
             return result.toString();
         }
     }
-
 
 }

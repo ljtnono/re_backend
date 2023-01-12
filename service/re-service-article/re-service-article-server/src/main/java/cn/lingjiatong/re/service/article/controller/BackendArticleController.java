@@ -74,6 +74,13 @@ public class BackendArticleController implements BackendArticleFeignClient {
         return ResultVO.success();
     }
 
+    @Override
+    @PutMapping("/backend/api/v1/article/updateDeleteBatch")
+    public ResultVO<?> updateArticleDeleteBatch(BackendArticleUpdateDeleteBatchDTO dto, User currentUser) {
+        backendArticleService.updateArticleDeleteBatch(dto, currentUser);
+        return ResultVO.success();
+    }
+
     // ********************************查询类接口********************************
 
     @Override

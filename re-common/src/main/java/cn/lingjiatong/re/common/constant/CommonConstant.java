@@ -19,7 +19,7 @@ public interface CommonConstant {
     // 降序
     Byte ORDER_BY_DESC = 2;
 
-    static List<Byte> getDeleteStatusCodeList() {
+    static List<Byte> deleteValues() {
         return List.of(ENTITY_DELETE, ENTITY_NORMAL);
     }
 
