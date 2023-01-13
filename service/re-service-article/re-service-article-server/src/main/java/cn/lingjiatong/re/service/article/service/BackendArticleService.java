@@ -28,7 +28,6 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.FluentIterable;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.springframework.beans.BeanUtils;
@@ -333,6 +332,8 @@ public class BackendArticleService {
             });
             //  更新es
             elasticsearchRestTemplate.bulkUpdate(updateQueryList, IndexCoordinates.of("article"));
+
+            // TODO 重新计算分类的总浏览量和总喜欢数，这个可以异步执行（消息队列方式）
         } catch (Exception e) {
             log.error(e.toString(), e);
             throw new BusinessException(ErrorEnum.COMMON_SERVER_ERROR);
@@ -559,8 +560,7 @@ public class BackendArticleService {
      * @param markdownContent markdown内容
      * @return 文章简介
      */
-    @NonNull
-    private String getSummaryFromMarkdownContent(@NonNull String markdownContent) {
+    private String getSummaryFromMarkdownContent(String markdownContent) {
         StringBuilder result = new StringBuilder();
         String[] lines = markdownContent.split("\\r?\\n");
         if (lines.length > 0) {

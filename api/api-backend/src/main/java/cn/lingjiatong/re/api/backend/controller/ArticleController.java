@@ -3,6 +3,7 @@ package cn.lingjiatong.re.api.backend.controller;
 import cn.lingjiatong.re.common.ResultVO;
 import cn.lingjiatong.re.common.annotation.CurrentUser;
 import cn.lingjiatong.re.common.entity.User;
+import cn.lingjiatong.re.common.exception.ErrorEnum;
 import cn.lingjiatong.re.service.article.api.client.BackendArticleFeignClient;
 import cn.lingjiatong.re.service.article.api.dto.*;
 import cn.lingjiatong.re.service.article.api.vo.BackendArticleListVO;
@@ -137,7 +138,7 @@ public class ArticleController {
      * @param currentUser 当前用户
      * @return 通用消息返回对象
      */
-    @PutMapping("/")
+    @PutMapping("/updateArticleDeleteBatch")
     @Operation(summary = "批量更新文章删除状态", method = "PUT")
     @PreAuthorize("hasAuthority('blog:article') && hasAuthority('blog:article:write')")
     public ResultVO<?> updateArticleTopBatch(@RequestBody BackendArticleUpdateDeleteBatchDTO dto, @Parameter(hidden = true) @CurrentUser User currentUser) {
