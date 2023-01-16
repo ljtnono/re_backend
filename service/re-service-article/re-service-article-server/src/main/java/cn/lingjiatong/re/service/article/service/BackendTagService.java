@@ -120,6 +120,7 @@ public class BackendTagService {
             t.setName(tag);
             t.setDeleted(CommonConstant.ENTITY_NORMAL);
             try {
+                // TODO 此处进行优化SQL，改为只执行一个SQL
                 tagMapper.insert(t);
                 // 插入关联表
                 TrArticleTag trArticleTag = new TrArticleTag();

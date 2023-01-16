@@ -1,15 +1,23 @@
 package cn.lingjiatong.re.job.config;
 
 import cn.lingjiatong.re.common.util.SnowflakeIdWorkerUtil;
+import org.apache.http.HttpHost;
+import org.elasticsearch.client.RestClient;
+import org.elasticsearch.client.RestClientBuilder;
+import org.elasticsearch.client.RestHighLevelClient;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.logging.LogType;
 import org.openqa.selenium.logging.LoggingPreferences;
 import org.openqa.selenium.remote.CapabilityType;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 
 /**
@@ -21,7 +29,24 @@ import java.util.logging.Level;
 @Configuration
 public class SpringBeanConfig {
 
-    
+    @Value("${spring.elasticsearch.rest.uris}")
+    private String elasticsearchUri;
+    @Value("${spring.elasticsearch.rest.port}")
+    private Integer elasticsearchPort;
+
+    @Bean
+    public RestHighLevelClient elasticsearchClient() {
+        // 设置elasticsearch
+        List<HttpHost> httpHostsList = new ArrayList<>();
+        httpHostsList.add(new HttpHost(elasticsearchUri, elasticsearchPort));
+        HttpHost[] httpHostsArray = new HttpHost[httpHostsList.size()];
+        httpHostsArray = httpHostsList.toArray(httpHostsArray);
+        RestClientBuilder builder = RestClient.builder(httpHostsArray);
+        // 设置5分钟保持活跃
+        builder.setHttpClientConfigCallback(httpClientBuilder -> httpClientBuilder.setKeepAliveStrategy((response, context) -> Duration.ofMinutes(5).toMillis()));
+        return new RestHighLevelClient(builder);
+    }
+
     // 浏览器
     @Bean(name = "chromeWebDriver")
     public WebDriver webDriver() {

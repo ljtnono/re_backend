@@ -21,7 +21,12 @@ import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
+import org.apache.http.HttpHost;
+import org.elasticsearch.client.RestClient;
+import org.elasticsearch.client.RestClientBuilder;
+import org.elasticsearch.client.RestHighLevelClient;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringBootVersion;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -30,12 +35,14 @@ import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactor
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.TimeZone;
 import java.util.concurrent.*;
 
@@ -50,6 +57,23 @@ public class SpringBeanConfig {
 
     @Autowired
     private SwaggerProperties swaggerProperties;
+    @Value("${spring.elasticsearch.rest.uris}")
+    private String elasticsearchUri;
+    @Value("${spring.elasticsearch.rest.port}")
+    private Integer elasticsearchPort;
+
+    @Bean
+    public RestHighLevelClient elasticsearchClient() {
+        // 设置elasticsearch
+        List<HttpHost> httpHostsList = new ArrayList<>();
+        httpHostsList.add(new HttpHost(elasticsearchUri, elasticsearchPort));
+        HttpHost[] httpHostsArray = new HttpHost[httpHostsList.size()];
+        httpHostsArray = httpHostsList.toArray(httpHostsArray);
+        RestClientBuilder builder = RestClient.builder(httpHostsArray);
+        // 设置5分钟保持活跃
+        builder.setHttpClientConfigCallback(httpClientBuilder -> httpClientBuilder.setKeepAliveStrategy((response, context) -> Duration.ofMinutes(5).toMillis()));
+        return new RestHighLevelClient(builder);
+    }
 
     @Bean
     public OpenAPI docket() {

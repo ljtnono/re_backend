@@ -25,7 +25,6 @@ import cn.lingjiatong.re.service.sys.api.client.BackendUserFeignClient;
 import cn.lingjiatong.re.service.sys.api.vo.BackendUserListVO;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.google.common.collect.FluentIterable;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
@@ -140,7 +139,7 @@ public class BackendArticleService {
                     .replaceAll("username", currentUser.getUsername())
                     .replaceAll("draftId", draftId));
         } catch (Exception e) {
-            log.error("==========保存文章失败，异常：{}", e.getMessage());
+            log.error(e.toString(), e);
             throw new BusinessException(ErrorEnum.SAVE_ARTICLE_ERROR);
         }
     }
@@ -228,7 +227,7 @@ public class BackendArticleService {
                     .stream()
                     .map(String::valueOf)
                     .collect(Collectors.toList());
-            String[] articleIds = FluentIterable.from(articleIdStrList).toArray(String.class);
+            String[] articleIds = articleIdStrList.toArray(String[]::new);
             NativeSearchQuery nativeSearchQuery = new NativeSearchQuery(QueryBuilders.idsQuery().addIds(articleIds));
             elasticsearchRestTemplate.delete(nativeSearchQuery, ArticleEs.class, IndexCoordinates.of("article"));
         } catch (Exception e) {
