@@ -2,8 +2,10 @@ package cn.lingjiatong.re.service.article.api.client;
 
 import cn.lingjiatong.re.common.ResultVO;
 import cn.lingjiatong.re.common.config.FeignBasicAuthRequestInterceptor;
+import cn.lingjiatong.re.service.article.api.dto.FrontendArticleRecommendListDTO;
 import cn.lingjiatong.re.service.article.api.dto.FrontendArticleScrollDTO;
 import cn.lingjiatong.re.service.article.api.dto.FrontendArticleTopListDTO;
+import cn.lingjiatong.re.service.article.api.vo.FrontendArticleRecommendListVO;
 import cn.lingjiatong.re.service.article.api.vo.FrontendArticleScrollVO;
 import cn.lingjiatong.re.service.article.api.vo.FrontendArticleTopListVO;
 import cn.lingjiatong.re.service.article.api.vo.FrontendArticleVO;
@@ -54,5 +56,14 @@ public interface FrontendArticleFeignClient {
     @GetMapping("/frontend/api/v1/article/topList")
     ResultVO<Page<FrontendArticleTopListVO>> findArticleTopList(@SpringQueryMap FrontendArticleTopListDTO dto);
 
+
+    /**
+     * 前端分页获取推荐文章列表
+     *
+     * @param dto 前端推荐文章列表DTO对象
+     * @return 前端推荐文章列表VO对象分页对象
+     */
+    @GetMapping("/frontend/api/v1/article/recommendList")
+    ResultVO<Page<FrontendArticleRecommendListVO>> findArticleRecommendList(@SpringQueryMap FrontendArticleRecommendListDTO dto);
 
 }

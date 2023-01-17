@@ -6,8 +6,10 @@ import cn.lingjiatong.re.common.constant.UserConstant;
 import cn.lingjiatong.re.common.exception.BusinessException;
 import cn.lingjiatong.re.common.exception.ErrorEnum;
 import cn.lingjiatong.re.common.exception.ResourceNotExistException;
+import cn.lingjiatong.re.service.article.api.dto.FrontendArticleRecommendListDTO;
 import cn.lingjiatong.re.service.article.api.dto.FrontendArticleScrollDTO;
 import cn.lingjiatong.re.service.article.api.dto.FrontendArticleTopListDTO;
+import cn.lingjiatong.re.service.article.api.vo.FrontendArticleRecommendListVO;
 import cn.lingjiatong.re.service.article.api.vo.FrontendArticleScrollVO;
 import cn.lingjiatong.re.service.article.api.vo.FrontendArticleTopListVO;
 import cn.lingjiatong.re.service.article.api.vo.FrontendArticleVO;
@@ -119,7 +121,7 @@ public class FrontendArticleService {
         // 按照创建时间 DESC、浏览量 DESC排序
         List<String> orderFieldList = dto.getOrderFieldList();
         List<Byte> orderFlagList = dto.getOrderFlagList();
-        orderFieldList.add("create_time");
+        orderFieldList.add("modify_time");
         orderFieldList.add("view");
         orderFlagList.add(CommonConstant.ORDER_BY_DESC);
         orderFlagList.add(CommonConstant.ORDER_BY_DESC);
@@ -178,7 +180,7 @@ public class FrontendArticleService {
     public Page<FrontendArticleTopListVO> findArticleTopList(FrontendArticleTopListDTO dto) {
         List<String> orderFieldList = dto.getOrderFieldList();
         List<Byte> orderFlagList = dto.getOrderFlagList();
-        orderFieldList.add("create_time");
+        orderFieldList.add("modify_time");
         orderFlagList.add(CommonConstant.ORDER_BY_DESC);
 
         dto.generateOrderCondition();
@@ -190,5 +192,31 @@ public class FrontendArticleService {
         long total = articleMapper.findFrontendArticleTopListTotal();
         page.setTotal(total);
         return articleTopList;
+    }
+
+    /**
+     * 前端分页获取推荐文章列表
+     *
+     * @param dto 前端推荐文章列表DTO对象
+     * @return 前端推荐文章列表VO对象分页对象
+     */
+    @Transactional(readOnly = true)
+    public Page<FrontendArticleRecommendListVO> findArticleRecommendList(FrontendArticleRecommendListDTO dto) {
+        List<String> orderFieldList = dto.getOrderFieldList();
+        List<Byte> orderFlagList = dto.getOrderFlagList();
+        orderFieldList.add("modify_time");
+        orderFieldList.add("favorite");
+        orderFlagList.add(CommonConstant.ORDER_BY_DESC);
+        orderFlagList.add(CommonConstant.ORDER_BY_DESC);
+
+        dto.generateOrderCondition();
+        Page<?> page = new Page<>(dto.getPageNum(), dto.getPageSize());
+        // 不查询总数
+        page.setSearchCount(false);
+
+        Page<FrontendArticleRecommendListVO> frontendArticleRecommendList = articleMapper.findFrontendArticleRecommendList(page, dto);
+        long total = articleMapper.findFrontendArticleRecommendListTotal();
+        page.setTotal(total);
+        return frontendArticleRecommendList;
     }
 }

@@ -2,8 +2,10 @@ package cn.lingjiatong.re.service.article.controller;
 
 import cn.lingjiatong.re.common.ResultVO;
 import cn.lingjiatong.re.service.article.api.client.FrontendArticleFeignClient;
+import cn.lingjiatong.re.service.article.api.dto.FrontendArticleRecommendListDTO;
 import cn.lingjiatong.re.service.article.api.dto.FrontendArticleScrollDTO;
 import cn.lingjiatong.re.service.article.api.dto.FrontendArticleTopListDTO;
+import cn.lingjiatong.re.service.article.api.vo.FrontendArticleRecommendListVO;
 import cn.lingjiatong.re.service.article.api.vo.FrontendArticleScrollVO;
 import cn.lingjiatong.re.service.article.api.vo.FrontendArticleTopListVO;
 import cn.lingjiatong.re.service.article.api.vo.FrontendArticleVO;
@@ -47,6 +49,12 @@ public class FrontendArticleController implements FrontendArticleFeignClient {
     @GetMapping("/frontend/api/v1/article/topList")
     public ResultVO<Page<FrontendArticleTopListVO>> findArticleTopList(FrontendArticleTopListDTO dto) {
         return ResultVO.success(frontendArticleService.findArticleTopList(dto));
+    }
+
+    @Override
+    @GetMapping("/frontend/api/v1/article/recommendList")
+    public ResultVO<Page<FrontendArticleRecommendListVO>> findArticleRecommendList(FrontendArticleRecommendListDTO dto) {
+        return ResultVO.success(frontendArticleService.findArticleRecommendList(dto));
     }
 
 }

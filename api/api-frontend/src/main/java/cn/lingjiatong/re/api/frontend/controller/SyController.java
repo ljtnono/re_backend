@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 /**
- * 首页接口controller层
+ * 前端博客首页接口
  *
  * @author Ling, Jiatong
  * Date: 2022/9/17 21:31

@@ -199,7 +199,7 @@ public class SpringBeanConfig {
     }
 
 
-    @Bean
+    @Bean(destroyMethod = "shutdown")
     public RedissonClient redisson() throws IOException {
         ClassPathResource resource;
         // 本例子使用的是yaml格式的配置文件，读取使用Config.fromYAML，如果是Json文件，则使用Config.fromJSON

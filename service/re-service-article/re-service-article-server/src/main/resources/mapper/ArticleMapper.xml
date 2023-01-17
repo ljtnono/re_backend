@@ -117,6 +117,7 @@
             a.favorite
         FROM re_article.article a
         WHERE a.is_deleted = ${@cn.lingjiatong.re.common.constant.CommonConstant@ENTITY_NORMAL}
+        AND a.is_top = ${@cn.lingjiatong.re.common.constant.ArticleConstant@ARTICLE_TOP}
         ORDER BY ${dto.order}
     </select>
 
@@ -126,5 +127,29 @@
             COUNT(DISTINCT a.id)
         FROM re_article.article a
         WHERE a.is_deleted = ${@cn.lingjiatong.re.common.constant.CommonConstant@ENTITY_NORMAL}
+        AND a.is_top = ${@cn.lingjiatong.re.common.constant.ArticleConstant@ARTICLE_TOP}
+    </select>
+
+    <!-- 前端分页获取推荐文章列表 -->
+    <select id="findFrontendArticleRecommendList" resultType="cn.lingjiatong.re.service.article.api.vo.FrontendArticleRecommendListVO">
+        SELECT
+            a.id,
+            a.title,
+            a.cover_url,
+            a.favorite,
+            a.modify_time
+        FROM re_article.article a
+        WHERE a.is_deleted = ${@cn.lingjiatong.re.common.constant.CommonConstant@ENTITY_NORMAL}
+        AND a.is_recommend = ${@cn.lingjiatong.re.common.constant.ArticleConstant@ARTICLE_RECOMMEND}
+        ORDER BY ${dto.order}
+    </select>
+
+    <!-- 前端分页获取推荐文章列表-总数 -->
+    <select id="findFrontendArticleRecommendListTotal" resultType="long">
+        SELECT
+            COUNT(DISTINCT a.id)
+        FROM re_article.article a
+        WHERE a.is_deleted = ${@cn.lingjiatong.re.common.constant.CommonConstant@ENTITY_NORMAL}
+        AND a.is_recommend = ${@cn.lingjiatong.re.common.constant.ArticleConstant@ARTICLE_RECOMMEND}
     </select>
 </mapper>

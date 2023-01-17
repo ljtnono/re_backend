@@ -7,18 +7,18 @@ import lombok.Data;
 import java.util.List;
 
 /**
- * 前端分页获取文章置顶列表DTO对象
+ * 前端推荐文章列表DTO对象
  *
  * @author Ling, Jiatong
- * Date: 2023/1/17 15:02
+ * Date: 2023/1/18 01:25
  */
 @Data
-@Schema(name = "FrontendArticleTopListDTO", description = "前端分页获取文章置顶列表DTO对象")
-public class FrontendArticleTopListDTO extends BasePageDTO {
+@Schema(name = "FrontendArticleRecommendListDTO", description = "前端推荐文章列表DTO对象")
+public class FrontendArticleRecommendListDTO extends BasePageDTO {
 
     /**
      * 排序字段限定列表
      */
     @Schema(description = "排序字段限定列表", hidden = true)
-    protected List<String> orderFieldLimitList = List.of("modify_time");
+    private List<String> orderFieldLimitList = List.of("modify_time", "favorite");
 }

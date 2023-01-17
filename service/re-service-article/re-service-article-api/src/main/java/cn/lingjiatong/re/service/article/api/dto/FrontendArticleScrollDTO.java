@@ -21,5 +21,5 @@ public class FrontendArticleScrollDTO extends BasePageDTO {
      * 排序字段限定列表
      */
     @Schema(description = "排序字段限定列表", hidden = true)
-    private List<String> orderFieldLimitList = List.of("create_time", "view");
+    private List<String> orderFieldLimitList = List.of("modify_time", "view");
 }

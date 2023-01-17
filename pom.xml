@@ -25,7 +25,7 @@
 		<java.version>11</java.version>
 		<maven.compiler.source>11</maven.compiler.source>
 		<maven.compiler.target>11</maven.compiler.target>
-		<re-version>v0.3.2-RC1</re-version>
+		<re-version>v0.3.3</re-version>
 		<spring-cloud.version>Hoxton.SR12</spring-cloud.version>
 		<spring-cloud-alibaba.version>2.2.9.RELEASE</spring-cloud-alibaba.version>
 		<spring-cloud-gateway.version>2.2.9.RELEASE</spring-cloud-gateway.version>
@@ -44,7 +44,7 @@
 		<kaptcha.version>2.3.2</kaptcha.version>
 		<k8s-client.version>16.0.2</k8s-client.version>
 		<dynamic-datasource.version>3.6.1</dynamic-datasource.version>
-		<redission.version>3.16.6</redission.version>
+		<redission.version>3.16.8</redission.version>
 		<!-- nacos配置 -->
 		<nacos-server-addr>www.lingjiatong.cn:30048</nacos-server-addr>
 		<!-- 各模块端口配置 -->
@@ -222,7 +222,7 @@
 			<!-- redission分布式锁 -->
 			<dependency>
 				<groupId>org.redisson</groupId>
-				<artifactId>redisson-spring-boot-starter</artifactId>
+				<artifactId>redisson</artifactId>
 				<version>${redission.version}</version>
 			</dependency>
 		</dependencies>

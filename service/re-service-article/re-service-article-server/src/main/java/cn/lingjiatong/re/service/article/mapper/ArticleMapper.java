@@ -1,9 +1,11 @@
 package cn.lingjiatong.re.service.article.mapper;
 
 import cn.lingjiatong.re.service.article.api.dto.BackendArticleListDTO;
+import cn.lingjiatong.re.service.article.api.dto.FrontendArticleRecommendListDTO;
 import cn.lingjiatong.re.service.article.api.dto.FrontendArticleScrollDTO;
 import cn.lingjiatong.re.service.article.api.dto.FrontendArticleTopListDTO;
 import cn.lingjiatong.re.service.article.api.vo.BackendArticleListVO;
+import cn.lingjiatong.re.service.article.api.vo.FrontendArticleRecommendListVO;
 import cn.lingjiatong.re.service.article.api.vo.FrontendArticleScrollVO;
 import cn.lingjiatong.re.service.article.api.vo.FrontendArticleTopListVO;
 import cn.lingjiatong.re.service.article.entity.Article;
@@ -75,5 +77,21 @@ public interface ArticleMapper extends BaseMapper<Article> {
      * @return 前端分页获取文章置顶列表-总数
      */
     long findFrontendArticleTopListTotal();
+
+    /**
+     * 前端分页获取推荐文章列表
+     *
+     * @param dto 前端推荐文章列表DTO对象
+     * @param page 分页对象
+     * @return 前端推荐文章列表VO对象分页对象
+     */
+    Page<FrontendArticleRecommendListVO> findFrontendArticleRecommendList(Page<?> page, @Param("dto") FrontendArticleRecommendListDTO dto);
+
+    /**
+     * 前端分页获取推荐文章列表-查询总数
+     *
+     * @return 前端分页获取推荐文章列表-总数
+     */
+    long findFrontendArticleRecommendListTotal();
 
 }
