@@ -40,7 +40,7 @@ public interface TagMapper extends BaseMapper<Tag> {
      * @param articleIdList 文章id列表
      * @return 获取文章标签列表BO对象列表
      */
-    List<ArticleTagListBO> findBackendTagNameListByArticleIdList(@Param("articleIdList") List<Long> articleIdList);
+    List<ArticleTagListBO> findTagNameListByArticleIdList(@Param("articleIdList") List<Long> articleIdList);
 
     /**
      * 获取前端热门标签列表数据

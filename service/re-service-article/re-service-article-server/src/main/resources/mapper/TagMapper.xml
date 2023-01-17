@@ -30,7 +30,7 @@
     </select>
 
     <!-- 根据文章id列表查询文章的标签名列表 -->
-    <select id="findBackendTagNameListByArticleIdList" resultType="cn.lingjiatong.re.service.article.bo.ArticleTagListBO">
+    <select id="findTagNameListByArticleIdList" resultType="cn.lingjiatong.re.service.article.bo.ArticleTagListBO">
         SELECT
             GROUP_CONCAT(t.name) AS tagNameStr,
             tat.article_id

@@ -17,10 +17,10 @@
     </properties>
 
     <dependencies>
-        <!-- re-common -->
+        <!-- re-service-article-api -->
         <dependency>
             <groupId>cn.lingjiatong</groupId>
-            <artifactId>re-common</artifactId>
+            <artifactId>re-service-article-api</artifactId>
             <version>${project.version}</version>
             <exclusions>
                 <exclusion>

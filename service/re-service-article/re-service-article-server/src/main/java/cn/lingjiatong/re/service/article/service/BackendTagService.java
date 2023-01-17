@@ -113,7 +113,7 @@ public class BackendTagService {
      */
     public Map<Long, List<String>> findTagListByArticleIdList(List<Long> articleIdList) {
         Map<Long, List<String>> resultMap = Maps.newHashMap();
-        List<ArticleTagListBO> boList = tagMapper.findBackendTagNameListByArticleIdList(articleIdList);
+        List<ArticleTagListBO> boList = tagMapper.findTagNameListByArticleIdList(articleIdList);
         if (CollectionUtils.isEmpty(boList)) {
             return resultMap;
         }

@@ -9,6 +9,8 @@ package cn.lingjiatong.re.common.constant;
 public enum RedisCacheKeyEnum {
 
 
+    // ********************************用户相关********************************
+
     // 用户信息
     USER_INFO("re:userInfo:"),
     // 验证码key

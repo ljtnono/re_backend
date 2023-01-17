@@ -14,6 +14,7 @@ import org.openqa.selenium.remote.CapabilityType;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 
 import java.time.Duration;
 import java.util.ArrayList;
@@ -48,6 +49,7 @@ public class SpringBeanConfig {
     }
 
     // 浏览器
+    @Lazy
     @Bean(name = "chromeWebDriver")
     public WebDriver webDriver() {
         // TODO 后期改为使用池化技术
@@ -73,7 +75,6 @@ public class SpringBeanConfig {
             // 生产环境 linux
             String webDirverHome = "/usr/bin/chromedriver";
             System.setProperty("webdriver.chrome.driver", webDirverHome);
-            /* linux */
             ChromeOptions options = new ChromeOptions();
             options.addArguments("--window-size=1920,1050");
             // 禁用沙盒

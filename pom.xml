@@ -44,6 +44,7 @@
 		<kaptcha.version>2.3.2</kaptcha.version>
 		<k8s-client.version>16.0.2</k8s-client.version>
 		<dynamic-datasource.version>3.6.1</dynamic-datasource.version>
+		<redission.version>3.16.6</redission.version>
 		<!-- nacos配置 -->
 		<nacos-server-addr>www.lingjiatong.cn:30048</nacos-server-addr>
 		<!-- 各模块端口配置 -->
@@ -217,6 +218,12 @@
 				<groupId>com.baomidou</groupId>
 				<artifactId>dynamic-datasource-spring-boot-starter</artifactId>
 				<version>${dynamic-datasource.version}</version>
+			</dependency>
+			<!-- redission分布式锁 -->
+			<dependency>
+				<groupId>org.redisson</groupId>
+				<artifactId>redisson-spring-boot-starter</artifactId>
+				<version>${redission.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

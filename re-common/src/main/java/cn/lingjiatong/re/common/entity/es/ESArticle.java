@@ -1,4 +1,4 @@
-package cn.lingjiatong.re.service.article.entity;
+package cn.lingjiatong.re.common.entity.es;
 
 import lombok.Data;
 import org.springframework.data.annotation.Id;
@@ -17,8 +17,8 @@ import java.util.List;
  * Date: 2022/10/20 20:55
  */
 @Data
-@Document(indexName = "article")
-public class ArticleEs {
+@Document(indexName = "article", shards = 1, replicas = 1)
+public class ESArticle {
 
     /**
      * 主键id
@@ -130,12 +130,6 @@ public class ArticleEs {
      */
     @Field(type = FieldType.Byte)
     private Byte deleted;
-
-    /**
-     * 操作用户
-     */
-    @Field(type = FieldType.Text, analyzer = "ik_smart")
-    private String optUser;
 
     /**
      * 博客的标签列表

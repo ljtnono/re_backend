@@ -20,7 +20,7 @@ import cn.lingjiatong.re.service.article.api.vo.BackendDraftDetailVO;
 import cn.lingjiatong.re.service.article.api.vo.BackendDraftListVO;
 import cn.lingjiatong.re.service.article.constant.BackendArticleErrorMessageConstant;
 import cn.lingjiatong.re.service.article.entity.Article;
-import cn.lingjiatong.re.service.article.entity.ArticleEs;
+import cn.lingjiatong.re.common.entity.es.ESArticle;
 import cn.lingjiatong.re.service.article.mapper.ArticleMapper;
 import cn.lingjiatong.re.service.sys.api.client.BackendUserFeignClient;
 import cn.lingjiatong.re.service.sys.api.vo.BackendUserListVO;
@@ -139,10 +139,10 @@ public class BackendArticleService {
 
         try {
             // 插入es
-            ArticleEs articleEs = new ArticleEs();
-            BeanUtils.copyProperties(article, articleEs);
-            articleEs.setTagList(tagList);
-            elasticsearchRestTemplate.save(articleEs);
+            ESArticle esArticle = new ESArticle();
+            BeanUtils.copyProperties(article, esArticle);
+            esArticle.setTagList(tagList);
+            elasticsearchRestTemplate.save(esArticle);
             // 删除草稿
             redisUtil.deleteObject(RedisCacheKeyEnum.ARTICLE_DRAFT.getValue()
                     .replaceAll("username", currentUser.getUsername())
@@ -243,7 +243,7 @@ public class BackendArticleService {
             // 删除es数据
             String[] articleIds = articleIdStrList.toArray(String[]::new);
             NativeSearchQuery nativeSearchQuery = new NativeSearchQuery(QueryBuilders.idsQuery().addIds(articleIds));
-            elasticsearchRestTemplate.delete(nativeSearchQuery, ArticleEs.class, IndexCoordinates.of("article"));
+            elasticsearchRestTemplate.delete(nativeSearchQuery, ESArticle.class, IndexCoordinates.of("article"));
         } catch (Exception e) {
             log.error(e.toString(), e);
             throw new BusinessException(ErrorEnum.COMMON_SERVER_ERROR);

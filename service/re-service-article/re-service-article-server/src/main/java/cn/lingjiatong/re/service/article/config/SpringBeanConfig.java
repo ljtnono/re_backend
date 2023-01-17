@@ -1,6 +1,7 @@
 package cn.lingjiatong.re.service.article.config;
 
 import cn.lingjiatong.re.common.constant.CommonConstant;
+import cn.lingjiatong.re.common.constant.ProfileEnum;
 import cn.lingjiatong.re.common.util.RedisUtil;
 import cn.lingjiatong.re.common.util.SnowflakeIdWorkerUtil;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
@@ -25,17 +26,22 @@ import org.apache.http.HttpHost;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestClientBuilder;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.redisson.Redisson;
+import org.redisson.api.RedissonClient;
+import org.redisson.config.Config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringBootVersion;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
+import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -61,6 +67,8 @@ public class SpringBeanConfig {
     private String elasticsearchUri;
     @Value("${spring.elasticsearch.rest.port}")
     private Integer elasticsearchPort;
+    @Value("${spring.profiles.active}")
+    private String profile;
 
     @Bean
     public RestHighLevelClient elasticsearchClient() {
@@ -188,6 +196,20 @@ public class SpringBeanConfig {
                 threadFactory,
                 new ThreadPoolExecutor.CallerRunsPolicy());
         return executorService;
+    }
+
+
+    @Bean
+    public RedissonClient redisson() throws IOException {
+        ClassPathResource resource;
+        // 本例子使用的是yaml格式的配置文件，读取使用Config.fromYAML，如果是Json文件，则使用Config.fromJSON
+        if (ProfileEnum.PRD.getName().equalsIgnoreCase(profile)) {
+            resource = new ClassPathResource("redission/redission-prd.yml");
+        } else {
+            resource = new ClassPathResource("redission/redission-dev.yml");
+        }
+        Config config = Config.fromYAML(resource.getInputStream());
+        return Redisson.create(config);
     }
 
 }
