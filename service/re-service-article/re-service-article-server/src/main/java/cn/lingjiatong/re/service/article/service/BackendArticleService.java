@@ -142,6 +142,7 @@ public class BackendArticleService {
             ArticleEs articleEs = new ArticleEs();
             BeanUtils.copyProperties(article, articleEs);
             articleEs.setTagList(tagList);
+            elasticsearchRestTemplate.save(articleEs);
             // 删除草稿
             redisUtil.deleteObject(RedisCacheKeyEnum.ARTICLE_DRAFT.getValue()
                     .replaceAll("username", currentUser.getUsername())
