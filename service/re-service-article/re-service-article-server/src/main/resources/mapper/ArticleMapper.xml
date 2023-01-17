@@ -4,7 +4,6 @@
     <!-- ********************************结果映射******************************** -->
 
 
-
     <!-- ********************************新增类接口******************************** -->
 
     <!-- ********************************删除类接口******************************** -->
@@ -106,6 +105,26 @@
             COUNT(DISTINCT a.id)
         FROM re_article.article a
         LEFT JOIN re_article.category c ON c.id = a.category_id
+        WHERE a.is_deleted = ${@cn.lingjiatong.re.common.constant.CommonConstant@ENTITY_NORMAL}
+    </select>
+
+    <!-- 前端分页获取文章置顶列表 -->
+    <select id="findFrontendArticleTopList" resultType="cn.lingjiatong.re.service.article.api.vo.FrontendArticleTopListVO">
+        SELECT
+            a.id,
+            a.title,
+            a.view,
+            a.favorite
+        FROM re_article.article a
+        WHERE a.is_deleted = ${@cn.lingjiatong.re.common.constant.CommonConstant@ENTITY_NORMAL}
+        ORDER BY ${dto.order}
+    </select>
+
+    <!-- 前端分页获取文章置顶列表-查询总数 -->
+    <select id="findFrontendArticleTopListTotal" resultType="long">
+        SELECT
+            COUNT(DISTINCT a.id)
+        FROM re_article.article a
         WHERE a.is_deleted = ${@cn.lingjiatong.re.common.constant.CommonConstant@ENTITY_NORMAL}
     </select>
 </mapper>

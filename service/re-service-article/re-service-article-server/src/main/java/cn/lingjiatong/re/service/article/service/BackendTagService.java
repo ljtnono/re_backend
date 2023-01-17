@@ -3,6 +3,7 @@ package cn.lingjiatong.re.service.article.service;
 import cn.lingjiatong.re.common.constant.CommonConstant;
 import cn.lingjiatong.re.common.constant.UserConstant;
 import cn.lingjiatong.re.common.util.DateUtil;
+import cn.lingjiatong.re.common.util.MybatisBatchUtils;
 import cn.lingjiatong.re.common.util.SnowflakeIdWorkerUtil;
 import cn.lingjiatong.re.service.article.api.vo.BackendTagListVO;
 import cn.lingjiatong.re.service.article.bo.ArticleTagListBO;
@@ -12,13 +13,13 @@ import cn.lingjiatong.re.service.article.mapper.TagMapper;
 import cn.lingjiatong.re.service.article.mapper.TrArticleTagMapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.ibatis.session.SqlSessionFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
@@ -44,6 +45,8 @@ public class BackendTagService {
     private TrArticleTagMapper trArticleTagMapper;
     @Autowired
     private SnowflakeIdWorkerUtil snowflakeIdWorkerUtil;
+    @Autowired
+    private SqlSessionFactory sqlSessionFactory;
 
     // ********************************新增类接口********************************
     // ********************************删除类接口********************************
@@ -51,6 +54,42 @@ public class BackendTagService {
     // ********************************查询类接口********************************
 
     // ********************************私有函数********************************
+
+    /**
+     * 获取需要保存到数据库中的标签列表
+     *
+     * @param tagList 标签名列表
+     * @return 需要保存到数据库中的标签列表
+     */
+    private List<Tag> getTagListToSave(List<String> tagList) {
+        // 先获取已经存在的
+        List<Tag> existTagList = tagMapper.selectList(new LambdaQueryWrapper<Tag>()
+                .select(Tag::getName)
+                .in(Tag::getName, tagList));
+
+        List<Tag> tagListToSave = Lists.newArrayList();
+        if (!CollectionUtils.isEmpty(existTagList)) {
+            List<String> tagNameList = existTagList
+                    .stream()
+                    .map(Tag::getName)
+                    .collect(Collectors.toList());
+            // 移除已经存在的
+            tagList.stream()
+                    .filter(t -> !tagNameList.contains(t))
+                    .forEach(tag -> {
+                        Tag t = new Tag();
+                        t.setId(snowflakeIdWorkerUtil.nextId());
+                        t.setCreateTime(DateUtil.getLocalDateTimeNow());
+                        t.setModifyTime(DateUtil.getLocalDateTimeNow());
+                        t.setOptUser(UserConstant.SUPER_ADMIN_USER);
+                        t.setName(tag);
+                        t.setDeleted(CommonConstant.ENTITY_NORMAL);
+                        tagListToSave.add(t);
+                    });
+        }
+        return tagListToSave;
+    }
+
     // ********************************公共函数********************************
 
     /**
@@ -58,7 +97,6 @@ public class BackendTagService {
      *
      * @param articleIdList 文章id列表
      */
-    @Transactional(rollbackFor = Exception.class)
     public void deleteTrArticleTagBatch(List<Long> articleIdList) {
         if (CollectionUtils.isEmpty(articleIdList)) {
             return;
@@ -75,7 +113,7 @@ public class BackendTagService {
      */
     public Map<Long, List<String>> findTagListByArticleIdList(List<Long> articleIdList) {
         Map<Long, List<String>> resultMap = Maps.newHashMap();
-        List<ArticleTagListBO> boList = tagMapper.findTagNameListByArticleIdList(articleIdList);
+        List<ArticleTagListBO> boList = tagMapper.findBackendTagNameListByArticleIdList(articleIdList);
         if (CollectionUtils.isEmpty(boList)) {
             return resultMap;
         }
@@ -97,45 +135,65 @@ public class BackendTagService {
      *
      * @param tagList 标签名列表
      */
-    @Transactional(rollbackFor = Exception.class)
-    public void saveBatch(Long articleId, List<String> tagList) {
+    public void saveTagBatch(List<String> tagList) {
         if (CollectionUtils.isEmpty(tagList)) {
             return;
         }
-        List<Tag> existTagList = tagMapper.selectList(new LambdaQueryWrapper<Tag>()
-                .select(Tag::getName)
-                .in(Tag::getName, tagList));
-        if (!CollectionUtils.isEmpty(existTagList)) {
-            List<String> tagNameList = existTagList.stream().map(Tag::getName).collect(Collectors.toList());
-            // 移除已经存在的
-            tagList = tagList.stream().filter(t -> !tagNameList.contains(t)).collect(Collectors.toList());
+
+        List<Tag> tagListToSave = getTagListToSave(tagList);
+        if (CollectionUtils.isEmpty(tagListToSave)) {
+            return;
         }
-        // 只插入不存在的
-        tagList.forEach(tag -> {
-            Tag t = new Tag();
-            t.setId(snowflakeIdWorkerUtil.nextId());
-            t.setCreateTime(DateUtil.getLocalDateTimeNow());
-            t.setModifyTime(DateUtil.getLocalDateTimeNow());
-            t.setOptUser(UserConstant.SUPER_ADMIN_USER);
-            t.setName(tag);
-            t.setDeleted(CommonConstant.ENTITY_NORMAL);
-            try {
-                // TODO 此处进行优化SQL，改为只执行一个SQL
-                tagMapper.insert(t);
-                // 插入关联表
-                TrArticleTag trArticleTag = new TrArticleTag();
-                trArticleTag.setId(snowflakeIdWorkerUtil.nextId());
-                trArticleTag.setTagId(t.getId());
-                trArticleTag.setArticleId(articleId);
-                trArticleTagMapper.insert(trArticleTag);
-            } catch (DuplicateKeyException e) {
-                log.warn("==========重复标签");
-            }
-        });
+
+        MybatisBatchUtils.batchUpdateOrInsert(sqlSessionFactory, tagListToSave, TagMapper.class, (tag, tagMapper) -> tagMapper.insert(tag));
     }
 
     /**
-     * 后端获取文章标签列表
+     * 批量删除标签列表
+     *
+     * @param tagList 标签列表
+     */
+    public void deleteTagBatch(List<String> tagList) {
+        if (CollectionUtils.isEmpty(tagList)) {
+            return;
+        }
+        tagMapper.delete(new LambdaQueryWrapper<Tag>()
+                .in(Tag::getName, tagList));
+    }
+
+    /**
+     * 保存文章和标签列表对应关系
+     *
+     * @param articleId 文章id
+     * @param tagNameList 标签名列表
+     */
+    public void saveTrArticleTag(Long articleId, List<String> tagNameList) {
+        List<Long> tagIdList = tagMapper.selectList(new LambdaQueryWrapper<Tag>()
+                        .select(Tag::getId)
+                        .in(Tag::getName, tagNameList))
+                        .stream()
+                        .map(Tag::getId)
+                        .collect(Collectors.toList());
+        if (CollectionUtils.isEmpty(tagIdList)) {
+            return;
+        }
+
+        List<TrArticleTag> list = Lists.newArrayList();
+        tagIdList.forEach(tagId -> {
+            TrArticleTag trArticleTag = new TrArticleTag();
+            trArticleTag.setId(snowflakeIdWorkerUtil.nextId());
+            trArticleTag.setArticleId(articleId);
+            trArticleTag.setTagId(tagId);
+            list.add(trArticleTag);
+        });
+
+        MybatisBatchUtils.batchUpdateOrInsert(sqlSessionFactory, list, TrArticleTagMapper.class, (trArticleTag, trArticleTagMapper) -> trArticleTagMapper.insert(trArticleTag));
+
+    }
+
+
+    /**
+     * 获取文章标签列表
      *
      * @param fields 需要获取的字段列表
      * @return 后端获取文章标签列表VO对象列表

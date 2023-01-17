@@ -24,4 +24,10 @@ public class FrontendTagListVO {
      */
     @Schema(description = "标签名")
     private String name;
+    
+    /**
+     * 标签的文章数量
+     */
+    @Schema(description = "标签的文章数量")
+    private Long articleCount;
 }

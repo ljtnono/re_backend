@@ -35,7 +35,6 @@ public class FrontendTagService {
      * @return 前端博客标签列表VO对象列表
      */
     public List<FrontendTagListVO> findFrontendHotTagList() {
-
-        return null;
+        return tagMapper.findFrontendHotTagList();
     }
 }

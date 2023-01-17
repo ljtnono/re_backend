@@ -22,6 +22,15 @@ public class FrontendTagController implements FrontendTagFeignClient {
     @Autowired
     private FrontendTagService frontendTagService;
 
+    // ********************************新增类接口********************************
+
+    // ********************************删除类接口********************************
+
+    // ********************************修改类接口********************************
+
+    // ********************************查询类接口********************************
+
+
     @Override
     @GetMapping("/frontend/api/v1/tag/hotTagList")
     public ResultVO<List<FrontendTagListVO>> findFrontendHotTagList() {

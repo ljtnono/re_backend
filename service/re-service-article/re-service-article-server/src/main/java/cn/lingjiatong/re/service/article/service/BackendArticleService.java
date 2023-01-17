@@ -128,21 +128,33 @@ public class BackendArticleService {
 
         try {
             articleMapper.insert(article);
-            // 插入标签
-            backendTagService.saveBatch(article.getId(), tagList);
+            // 插入标签列表
+            backendTagService.saveTagBatch(tagList);
+            // 插入文章和标签的关联关系
+            backendTagService.saveTrArticleTag(article.getId(), tagList);
+        } catch (Exception e) {
+            log.error(e.toString(), e);
+            throw new BusinessException(ErrorEnum.SAVE_ARTICLE_ERROR);
+        }
+
+        try {
             // 插入es
             ArticleEs articleEs = new ArticleEs();
             BeanUtils.copyProperties(article, articleEs);
             articleEs.setTagList(tagList);
-            elasticsearchRestTemplate.save(articleEs);
             // 删除草稿
             redisUtil.deleteObject(RedisCacheKeyEnum.ARTICLE_DRAFT.getValue()
                     .replaceAll("username", currentUser.getUsername())
                     .replaceAll("draftId", draftId));
         } catch (Exception e) {
+            // 出现异常，需要删除之前插入的文章标签列表和文章标签关系信息
             log.error(e.toString(), e);
+            backendTagService.deleteTagBatch(tagList);
+            backendTagService.deleteTrArticleTagBatch(List.of(article.getId()));
             throw new BusinessException(ErrorEnum.SAVE_ARTICLE_ERROR);
         }
+
+        // TODO 重新统计标签的总浏览量和总喜欢数
     }
 
 
@@ -217,6 +229,10 @@ public class BackendArticleService {
         if (CollectionUtils.isEmpty(articleIdList)) {
             return;
         }
+        List<String> articleIdStrList = articleIdList
+                .stream()
+                .map(String::valueOf)
+                .collect(Collectors.toList());
         // 物理删除，删除文章所有相关信息
         try {
             // 删除文章
@@ -224,10 +240,6 @@ public class BackendArticleService {
             // 删除文章标签
             backendTagService.deleteTrArticleTagBatch(articleIdList);
             // 删除es数据
-            List<String> articleIdStrList = articleIdList
-                    .stream()
-                    .map(String::valueOf)
-                    .collect(Collectors.toList());
             String[] articleIds = articleIdStrList.toArray(String[]::new);
             NativeSearchQuery nativeSearchQuery = new NativeSearchQuery(QueryBuilders.idsQuery().addIds(articleIds));
             elasticsearchRestTemplate.delete(nativeSearchQuery, ArticleEs.class, IndexCoordinates.of("article"));

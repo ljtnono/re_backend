@@ -31,7 +31,7 @@ public class BackendTagController implements BackendTagFeignClient {
 
     @Override
     @GetMapping("/backend/api/v1/tag/list")
-    public ResultVO<List<BackendTagListVO>> findTagList(User currentUser) {
+    public ResultVO<List<BackendTagListVO>> findBackendTagList(User currentUser) {
         return ResultVO.success(backendTagService.findTagList(Tag::getId, Tag::getName));
     }
 

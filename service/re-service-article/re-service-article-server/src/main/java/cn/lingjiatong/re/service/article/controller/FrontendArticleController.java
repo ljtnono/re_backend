@@ -3,7 +3,9 @@ package cn.lingjiatong.re.service.article.controller;
 import cn.lingjiatong.re.common.ResultVO;
 import cn.lingjiatong.re.service.article.api.client.FrontendArticleFeignClient;
 import cn.lingjiatong.re.service.article.api.dto.FrontendArticleScrollDTO;
+import cn.lingjiatong.re.service.article.api.dto.FrontendArticleTopListDTO;
 import cn.lingjiatong.re.service.article.api.vo.FrontendArticleScrollVO;
+import cn.lingjiatong.re.service.article.api.vo.FrontendArticleTopListVO;
 import cn.lingjiatong.re.service.article.api.vo.FrontendArticleVO;
 import cn.lingjiatong.re.service.article.service.FrontendArticleService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -30,6 +32,7 @@ public class FrontendArticleController implements FrontendArticleFeignClient {
     // ********************************查询类接口********************************
 
     @Override
+    @GetMapping("/frontend/api/v1/article/scroll")
     public ResultVO<Page<FrontendArticleScrollVO>> findArticleScroll(FrontendArticleScrollDTO dto) {
         return ResultVO.success(frontendArticleService.findArticleScroll(dto));
     }
@@ -39,4 +42,11 @@ public class FrontendArticleController implements FrontendArticleFeignClient {
     public ResultVO<FrontendArticleVO> findArticleById(@PathVariable("articleId") Long articleId) {
         return ResultVO.success(frontendArticleService.findArticle(articleId));
     }
+
+    @Override
+    @GetMapping("/frontend/api/v1/article/topList")
+    public ResultVO<Page<FrontendArticleTopListVO>> findArticleTopList(FrontendArticleTopListDTO dto) {
+        return ResultVO.success(frontendArticleService.findArticleTopList(dto));
+    }
+
 }

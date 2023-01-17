@@ -3,7 +3,9 @@ package cn.lingjiatong.re.service.article.api.client;
 import cn.lingjiatong.re.common.ResultVO;
 import cn.lingjiatong.re.common.config.FeignBasicAuthRequestInterceptor;
 import cn.lingjiatong.re.service.article.api.dto.FrontendArticleScrollDTO;
+import cn.lingjiatong.re.service.article.api.dto.FrontendArticleTopListDTO;
 import cn.lingjiatong.re.service.article.api.vo.FrontendArticleScrollVO;
+import cn.lingjiatong.re.service.article.api.vo.FrontendArticleTopListVO;
 import cn.lingjiatong.re.service.article.api.vo.FrontendArticleVO;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -43,6 +45,14 @@ public interface FrontendArticleFeignClient {
     @GetMapping("/frontend/api/v1/article/{articleId}")
     ResultVO<FrontendArticleVO> findArticleById(@PathVariable("articleId") Long articleId);
 
+    /**
+     * 前端分页获取文章置顶列表
+     *
+     * @param dto 前端分页获取文章置顶列表DTO对象
+     * @return 前端分页获取文章置顶列表VO对象分页对象
+     */
+    @GetMapping("/frontend/api/v1/article/topList")
+    ResultVO<Page<FrontendArticleTopListVO>> findArticleTopList(@SpringQueryMap FrontendArticleTopListDTO dto);
 
 
 }

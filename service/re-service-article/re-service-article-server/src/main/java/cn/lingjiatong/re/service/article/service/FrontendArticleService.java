@@ -7,7 +7,9 @@ import cn.lingjiatong.re.common.exception.BusinessException;
 import cn.lingjiatong.re.common.exception.ErrorEnum;
 import cn.lingjiatong.re.common.exception.ResourceNotExistException;
 import cn.lingjiatong.re.service.article.api.dto.FrontendArticleScrollDTO;
+import cn.lingjiatong.re.service.article.api.dto.FrontendArticleTopListDTO;
 import cn.lingjiatong.re.service.article.api.vo.FrontendArticleScrollVO;
+import cn.lingjiatong.re.service.article.api.vo.FrontendArticleTopListVO;
 import cn.lingjiatong.re.service.article.api.vo.FrontendArticleVO;
 import cn.lingjiatong.re.service.article.constant.FrontendArticleErrorMessageConstant;
 import cn.lingjiatong.re.service.article.entity.Article;
@@ -23,7 +25,6 @@ import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -32,7 +33,6 @@ import javax.annotation.Resource;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.ExecutorService;
 import java.util.stream.Collectors;
 
 /**
@@ -53,9 +53,6 @@ public class FrontendArticleService {
     private TagMapper tagMapper;
     @Autowired
     private FrontendUserFeignClient frontendUserFeignClient;
-    @Autowired
-    @Qualifier("commonThreadPool")
-    private ExecutorService commonThreadPool;
 
     // ********************************新增类接口********************************
 
@@ -105,7 +102,7 @@ public class FrontendArticleService {
         }
 
         // 获取标签列表
-        List<String> tagList = tagMapper.findTagListByArticleId(articleId);
+        List<String> tagList = tagMapper.findFrontendTagListByArticleId(articleId);
         result.setTagList(tagList);
         return result;
     }
@@ -169,5 +166,29 @@ public class FrontendArticleService {
             }
         }
         return articleScroll;
+    }
+
+    /**
+     * 前端分页获取文章置顶列表
+     *
+     * @param dto 前端分页获取文章置顶列表DTO对象
+     * @return 前端分页获取文章置顶列表VO对象分页对象
+     */
+    @Transactional(readOnly = true)
+    public Page<FrontendArticleTopListVO> findArticleTopList(FrontendArticleTopListDTO dto) {
+        List<String> orderFieldList = dto.getOrderFieldList();
+        List<Byte> orderFlagList = dto.getOrderFlagList();
+        orderFieldList.add("create_time");
+        orderFlagList.add(CommonConstant.ORDER_BY_DESC);
+
+        dto.generateOrderCondition();
+        Page<?> page = new Page<>(dto.getPageNum(), dto.getPageSize());
+        // 不查询总数
+        page.setSearchCount(false);
+
+        Page<FrontendArticleTopListVO> articleTopList = articleMapper.findFrontendArticleTopList(page, dto);
+        long total = articleMapper.findFrontendArticleTopListTotal();
+        page.setTotal(total);
+        return articleTopList;
     }
 }

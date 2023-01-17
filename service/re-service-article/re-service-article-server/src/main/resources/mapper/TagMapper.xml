@@ -7,6 +7,8 @@
 
     <!-- ********************************新增类接口******************************** -->
 
+
+
     <!-- ********************************删除类接口******************************** -->
 
     <!-- ********************************修改类接口******************************** -->
@@ -15,20 +17,20 @@
 
 
     <!-- 根据文章id获取文章所有的标签列表 -->
-    <select id="findTagListByArticleId" resultType="java.lang.String">
+    <select id="findFrontendTagListByArticleId" resultType="java.lang.String">
         SELECT
             `name`
-        FROM tag t
+        FROM re_article.tag t
         <where>
             t.is_deleted = ${@cn.lingjiatong.re.common.constant.CommonConstant@ENTITY_NORMAL}
             <if test="articleId != null">
-                AND t.id IN (SELECT tat.tag_id FROM tr_article_tag tat WHERE article_id = #{articleId, jdbcType=BIGINT})
+                AND t.id IN (SELECT tat.tag_id FROM re_article.tr_article_tag tat WHERE tat.article_id = #{articleId, jdbcType=BIGINT})
             </if>
         </where>
     </select>
 
     <!-- 根据文章id列表查询文章的标签名列表 -->
-    <select id="findTagNameListByArticleIdList" resultType="cn.lingjiatong.re.service.article.bo.ArticleTagListBO">
+    <select id="findBackendTagNameListByArticleIdList" resultType="cn.lingjiatong.re.service.article.bo.ArticleTagListBO">
         SELECT
             GROUP_CONCAT(t.name) AS tagNameStr,
             tat.article_id
@@ -44,4 +46,18 @@
         </if>
         GROUP BY tat.article_id
     </select>
+
+    <!-- 获取前端热门标签列表数据 -->
+    <select id="findFrontendHotTagList" resultType="cn.lingjiatong.re.service.article.api.vo.FrontendTagListVO">
+        SELECT
+            t.id,
+            t.name,
+            COUNT(DISTINCT tat.article_id) AS article_count
+        FROM re_article.tag t
+        LEFT JOIN re_article.tr_article_tag tat ON t.id = tat.tag_id
+        WHERE t.is_deleted = ${@cn.lingjiatong.re.common.constant.CommonConstant@ENTITY_NORMAL}
+        GROUP BY t.id
+    </select>
+
+
 </mapper>

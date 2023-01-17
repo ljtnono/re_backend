@@ -48,7 +48,7 @@ public class TagController {
     @PreAuthorize("hasAuthority('blog:article') || hasAuthority('blog:article:read')")
     public ResultVO<List<BackendTagListVO>> findTagList(@Parameter(hidden = true) @CurrentUser User currentUser) {
         log.info("==========后端获取文章标签列表");
-        return backendTagFeignClient.findTagList(currentUser);
+        return backendTagFeignClient.findBackendTagList(currentUser);
     }
 
 }

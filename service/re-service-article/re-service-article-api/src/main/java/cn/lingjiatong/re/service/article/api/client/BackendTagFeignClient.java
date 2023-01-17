@@ -31,5 +31,5 @@ public interface BackendTagFeignClient {
      * @return 后端获取文章标签列表VO对象列表
      */
     @GetMapping("/backend/api/v1/tag/list")
-    ResultVO<List<BackendTagListVO>> findTagList(@SpringQueryMap User currentUser);
+    ResultVO<List<BackendTagListVO>> findBackendTagList(@SpringQueryMap User currentUser);
 }

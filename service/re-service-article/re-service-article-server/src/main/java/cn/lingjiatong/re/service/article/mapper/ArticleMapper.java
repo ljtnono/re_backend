@@ -2,8 +2,10 @@ package cn.lingjiatong.re.service.article.mapper;
 
 import cn.lingjiatong.re.service.article.api.dto.BackendArticleListDTO;
 import cn.lingjiatong.re.service.article.api.dto.FrontendArticleScrollDTO;
+import cn.lingjiatong.re.service.article.api.dto.FrontendArticleTopListDTO;
 import cn.lingjiatong.re.service.article.api.vo.BackendArticleListVO;
 import cn.lingjiatong.re.service.article.api.vo.FrontendArticleScrollVO;
+import cn.lingjiatong.re.service.article.api.vo.FrontendArticleTopListVO;
 import cn.lingjiatong.re.service.article.entity.Article;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -57,5 +59,21 @@ public interface ArticleMapper extends BaseMapper<Article> {
      * @return 分页获取文章列表-总数
      */
     long findFrontendArticleScrollTotal();
+
+    /**
+     * 前端分页获取文章置顶列表
+     *
+     * @param dto 前端分页获取文章置顶列表DTO对象
+     * @param page 分页对象
+     * @return 前端分页获取文章置顶列表VO对象分页对象
+     */
+    Page<FrontendArticleTopListVO> findFrontendArticleTopList(Page<?> page, @Param("dto") FrontendArticleTopListDTO dto);
+
+    /**
+     * 前端分页获取文章置顶列表-查询总数
+     *
+     * @return 前端分页获取文章置顶列表-总数
+     */
+    long findFrontendArticleTopListTotal();
 
 }
