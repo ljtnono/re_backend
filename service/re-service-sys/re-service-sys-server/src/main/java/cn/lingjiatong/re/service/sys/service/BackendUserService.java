@@ -155,7 +155,7 @@ public class BackendUserService {
         if (CollectionUtils.isEmpty(userIdList)) {
             return List.of();
         }
-        List<User> users = Lists.newArrayList();
+        List<User> users;
         if (fields == null || fields.length == 0) {
             users = userMapper.selectList(new LambdaQueryWrapper<User>()
                     .in(User::getId, userIdList));

@@ -22,7 +22,7 @@
         <where>
             t.is_deleted = ${@cn.lingjiatong.re.common.constant.CommonConstant@ENTITY_NORMAL}
             <if test="articleId != null">
-                AND t.id IN (SELECT tat.tag_id FROM tr_article_tag tat WHERE article_id = #{articleId,jdbcType=BIGINT})
+                AND t.id IN (SELECT tat.tag_id FROM tr_article_tag tat WHERE article_id = #{articleId, jdbcType=BIGINT})
             </if>
         </where>
     </select>

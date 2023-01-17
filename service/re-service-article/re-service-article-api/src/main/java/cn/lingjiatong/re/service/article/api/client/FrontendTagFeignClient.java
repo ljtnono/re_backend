@@ -1,6 +1,7 @@
 package cn.lingjiatong.re.service.article.api.client;
 
 import cn.lingjiatong.re.common.ResultVO;
+import cn.lingjiatong.re.common.config.FeignBasicAuthRequestInterceptor;
 import cn.lingjiatong.re.service.article.api.vo.FrontendTagListVO;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,7 +14,7 @@ import java.util.List;
  * @author Ling, Jiatong
  * Date: 2022/10/16 12:00
  */
-@FeignClient(name = "re-service-article-server", path = "/article", contextId = "FrontendTagFeignClient")
+@FeignClient(name = "re-service-article-server", path = "/article", contextId = "FrontendTagFeignClient", configuration = {FeignBasicAuthRequestInterceptor.class})
 public interface FrontendTagFeignClient {
 
     // ********************************新增类接口********************************

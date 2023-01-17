@@ -26,7 +26,7 @@
             <if test="startTime != null and startTime != ''">
                 start_time <![CDATA[<=]]> #{startTime, jdbcType=VARCHAR}
                 AND
-                end_time <![CDATA[>=]]> #{startTime,jdbcType=VARCHAR}
+                end_time <![CDATA[>=]]> DATE_ADD(#{startTime, jdbcType=VARCHAR}, INTERVAL 3 DAY)
             </if>
         </where>
         ORDER BY type ASC

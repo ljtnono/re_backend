@@ -64,11 +64,11 @@ public class FrontendNoticeService {
         FrontendNoticeListVO noNoticeMessageVO = new FrontendNoticeListVO();
         noNoticeMessageVO.setTitle(SysNoticeConstant.NO_NOTICE_MESSAGE);
         noNoticeMessageVO.setType(SysNoticeTypeEnum.NORMAL_NOTICE.getCode());
-        if (CollectionUtils.isEmpty(noticeByDateTime)) {
+        if (CollectionUtils.isEmpty(noticeByDateTime) || noticeByDateTime.size() < NO_NOTICE_MESSAGE_DEFAULT_NEWS_ITEM_COUNT) {
 
             List<SpToutiaoRb> spToutiaoRbList = spToutiaoRbMapper.selectList(new LambdaQueryWrapper<SpToutiaoRb>()
                     .select(SpToutiaoRb::getTitle, SpToutiaoRb::getLink, SpToutiaoRb::getState, SpToutiaoRb::getCreateTime)
-                    .orderByDesc(SpToutiaoRb::getHotValue)
+                    .orderByDesc(SpToutiaoRb::getCreateTime)
                     .last("LIMIT " + NO_NOTICE_MESSAGE_DEFAULT_NEWS_ITEM_COUNT)
             );
 

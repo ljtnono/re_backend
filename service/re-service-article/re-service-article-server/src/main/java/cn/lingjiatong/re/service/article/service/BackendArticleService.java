@@ -1,5 +1,6 @@
 package cn.lingjiatong.re.service.article.service;
 
+import cn.lingjiatong.re.common.ResultVO;
 import cn.lingjiatong.re.common.constant.ArticleConstant;
 import cn.lingjiatong.re.common.constant.CommonConstant;
 import cn.lingjiatong.re.common.constant.RedisCacheKeyEnum;
@@ -354,8 +355,8 @@ public class BackendArticleService {
         Page page = new Page<>(dto.getPageNum(), dto.getPageSize());
         // 不查询总数
         page.setSearchCount(false);
-        Page<BackendArticleListVO> articleList = articleMapper.findArticleList(page, dto);
-        long total = articleMapper.findArticleListTotal(dto);
+        Page<BackendArticleListVO> articleList = articleMapper.findBackendArticleList(page, dto);
+        long total = articleMapper.findBackendArticleListTotal(dto);
         page.setTotal(total);
         // 查询文章作者，查询文章标签
         List<BackendArticleListVO> records = articleList.getRecords();
@@ -370,7 +371,13 @@ public class BackendArticleService {
             Future<Map<Long, List<String>>> articleTagListFuture = commonThreadPool.submit(() -> backendTagService.findTagListByArticleIdList(articleIdList));
             Map<Long, String> articleAuthorMap = Maps.newHashMap();
             Map<Long, String> userMap = Maps.newHashMap();
-            List<BackendUserListVO> voList = backendUserFeignClient.findUserListByUserIdList(userIdList).getData();
+
+            ResultVO<List<BackendUserListVO>> resultVO = backendUserFeignClient.findUserListByUserIdList(userIdList);
+            if (!ResultVO.CODE_SUCCESS.equals(resultVO.getCode()) || !ResultVO.MESSAGE_SUCCESS.equals(resultVO.getMessage())) {
+                throw new BusinessException(ErrorEnum.COMMON_SERVER_ERROR);
+            }
+
+            List<BackendUserListVO> voList = resultVO.getData();
             voList.forEach(vo -> {
                 userMap.put(Long.valueOf(vo.getId()), vo.getUsername());
             });

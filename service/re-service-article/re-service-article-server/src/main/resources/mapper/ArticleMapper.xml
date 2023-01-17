@@ -15,7 +15,7 @@
 
 
     <!-- 分页获取文章列表 -->
-    <select id="findArticleList" resultType="cn.lingjiatong.re.service.article.api.vo.BackendArticleListVO">
+    <select id="findBackendArticleList" resultType="cn.lingjiatong.re.service.article.api.vo.BackendArticleListVO">
         SELECT
             a.id,
             a.title,
@@ -58,7 +58,7 @@
     </select>
 
     <!-- 分页获取文章列表-查询总数 -->
-    <select id="findArticleListTotal" resultType="long">
+    <select id="findBackendArticleListTotal" resultType="long">
         SELECT
             COUNT(DISTINCT a.id)
         FROM re_article.article a
@@ -81,5 +81,31 @@
                 AND a.is_top = #{dto.top, jdbcType=TINYINT}
             </if>
         </where>
+    </select>
+
+    <!-- 前端滚动获取文章列表 -->
+    <select id="findFrontendArticleScroll" resultType="cn.lingjiatong.re.service.article.api.vo.FrontendArticleScrollVO">
+        SELECT
+            a.id,
+            a.title,
+            a.summary,
+            c.name AS category,
+            a.user_id,
+            a.view,
+            a.favorite,
+            a.modify_time
+        FROM re_article.article a
+        LEFT JOIN re_article.category c ON c.id = a.category_id
+        WHERE a.is_deleted = ${@cn.lingjiatong.re.common.constant.CommonConstant@ENTITY_NORMAL}
+        ORDER BY ${dto.order}
+    </select>
+
+    <!-- 前端滚动获取文章列表-查询总数 -->
+    <select id="findFrontendArticleScrollTotal" resultType="long">
+        SELECT
+            COUNT(DISTINCT a.id)
+        FROM re_article.article a
+        LEFT JOIN re_article.category c ON c.id = a.category_id
+        WHERE a.is_deleted = ${@cn.lingjiatong.re.common.constant.CommonConstant@ENTITY_NORMAL}
     </select>
 </mapper>
