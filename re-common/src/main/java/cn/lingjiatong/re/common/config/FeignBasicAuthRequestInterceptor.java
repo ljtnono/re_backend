@@ -20,6 +20,12 @@ public class FeignBasicAuthRequestInterceptor implements RequestInterceptor {
 
     @Override
     public void apply(RequestTemplate requestTemplate) {
+        // 放行re-job相关的请求
+        String path = requestTemplate.path();
+        if (path.contains("/schedule")) {
+            // 定时任务属于非web调用，所以直接跳过
+            return;
+        }
         // 对于所有请求设置请求头
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         HttpServletRequest request = attributes.getRequest();
