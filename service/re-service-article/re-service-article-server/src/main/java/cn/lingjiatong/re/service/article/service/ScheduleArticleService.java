@@ -1,5 +1,6 @@
 package cn.lingjiatong.re.service.article.service;
 
+import cn.lingjiatong.re.common.ResultVO;
 import cn.lingjiatong.re.common.constant.DistributedTaskStatusEnum;
 import cn.lingjiatong.re.common.constant.RedissionLockKeyEnum;
 import cn.lingjiatong.re.common.entity.es.ESArticle;
@@ -59,7 +60,7 @@ public class ScheduleArticleService {
      * @see cn.lingjiatong.re.common.constant.DistributedTaskStatusEnum
      * @return 执行状态
      */
-    public Integer syncArticleToES() {
+    public ResultVO<Integer> syncArticleToES() {
         // 先获取需要同步的文章列表
         RLock lock = redissonClient.getLock(RedissionLockKeyEnum.ES_ARTICLE_SYNC_LOCK.getValue());
         boolean isLock;
@@ -68,7 +69,7 @@ public class ScheduleArticleService {
             isLock = lock.tryLock(2000, 5000, TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {
             // 获取锁失败
-            return DistributedTaskStatusEnum.LOCK_FAILED.getCode();
+            return ResultVO.success(DistributedTaskStatusEnum.LOCK_FAILED.getCode());
         } finally {
             // 释放锁
             lock.unlock();
@@ -81,7 +82,7 @@ public class ScheduleArticleService {
                         .orderByDesc(Article::getCreateTime));
                 if (CollectionUtils.isEmpty(articleList)) {
                     lock.unlock();
-                    return DistributedTaskStatusEnum.FINISHED.getCode();
+                    return ResultVO.success(DistributedTaskStatusEnum.FINISHED.getCode());
                 }
 
                 // 获取文章的标签列表
@@ -112,16 +113,16 @@ public class ScheduleArticleService {
                     elasticsearchRestTemplate.save(esArticle);
                 });
                 log.error("==========结束同步es数据");
-                return DistributedTaskStatusEnum.FINISHED.getCode();
+                return ResultVO.success(DistributedTaskStatusEnum.FINISHED.getCode());
             } catch (Exception e) {
                 log.error(e.toString(), e);
-                return DistributedTaskStatusEnum.ERROR_FINISHED.getCode();
+                return ResultVO.success(DistributedTaskStatusEnum.ERROR_FINISHED.getCode());
             } finally {
                 lock.unlock();
             }
         } else {
             // 获取锁失败
-            return DistributedTaskStatusEnum.LOCK_FAILED.getCode();
+            return ResultVO.success(DistributedTaskStatusEnum.LOCK_FAILED.getCode());
         }
     }
 }

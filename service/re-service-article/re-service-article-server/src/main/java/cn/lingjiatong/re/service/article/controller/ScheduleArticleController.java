@@ -1,5 +1,6 @@
 package cn.lingjiatong.re.service.article.controller;
 
+import cn.lingjiatong.re.common.ResultVO;
 import cn.lingjiatong.re.service.article.api.client.ScheduleArticleFeignClient;
 import cn.lingjiatong.re.service.article.service.ScheduleArticleService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +26,7 @@ public class ScheduleArticleController implements ScheduleArticleFeignClient {
 
     @Override
     @GetMapping("/schedule/api/v1/article/syncArticleToES")
-    public Integer syncArticleToES() {
+    public ResultVO<Integer> syncArticleToES() {
        return scheduleArticleService.syncArticleToES();
     }
 

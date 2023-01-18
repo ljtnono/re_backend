@@ -23,7 +23,7 @@ public class ESArticleSyncHandler {
     @XxlJob("esArticleSync")
     public void run() {
         log.info("==========开始同步文章数据到es，当前时间：{}", DateUtil.getNowString("yyyy-MM-dd HH:mm:ss"));
-        Integer code = scheduleArticleFeignClient.syncArticleToES();
+        Integer code = scheduleArticleFeignClient.syncArticleToES().getData();
         if (DistributedTaskStatusEnum.LOCK_FAILED.getCode().equals(code)) {
             // 获取锁失败
             log.info("==========获取锁失败，本次定时任务结束，当前时间：{}", DateUtil.getNowString("yyyy-MM-dd HH:mm:ss"));

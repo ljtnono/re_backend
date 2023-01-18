@@ -1,5 +1,6 @@
 package cn.lingjiatong.re.service.article.api.client;
 
+import cn.lingjiatong.re.common.ResultVO;
 import cn.lingjiatong.re.common.config.FeignBasicAuthRequestInterceptor;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,5 +25,5 @@ public interface ScheduleArticleFeignClient {
      * @return 执行状态
      */
     @GetMapping("/schedule/api/v1/article/syncArticleToES")
-    Integer syncArticleToES();
+    ResultVO<Integer> syncArticleToES();
 }
