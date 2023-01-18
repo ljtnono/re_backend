@@ -63,16 +63,13 @@ public class ScheduleArticleService {
     public ResultVO<Integer> syncArticleToES() {
         // 先获取需要同步的文章列表
         RLock lock = redissonClient.getLock(RedissionLockKeyEnum.ES_ARTICLE_SYNC_LOCK.getValue());
-        boolean isLock;
+        boolean isLock = false;
         try {
-            // 2000ms拿不到锁，就认为获取锁失败。5000ms是锁失效时间.
-            isLock = lock.tryLock(2000, 5000, TimeUnit.MILLISECONDS);
+            // 2s拿不到锁，就认为获取锁失败，锁的失效周期为60s
+            isLock = lock.tryLock(2, 60, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             // 获取锁失败
             return ResultVO.success(DistributedTaskStatusEnum.LOCK_FAILED.getCode());
-        } finally {
-            // 释放锁
-            lock.unlock();
         }
 
         // 获取锁成功
@@ -112,7 +109,7 @@ public class ScheduleArticleService {
                     }
                     elasticsearchRestTemplate.save(esArticle);
                 });
-                log.error("==========结束同步es数据");
+                log.info("==========结束同步es数据");
                 return ResultVO.success(DistributedTaskStatusEnum.FINISHED.getCode());
             } catch (Exception e) {
                 log.error(e.toString(), e);
