@@ -31,7 +31,7 @@ public class FrontendUserController implements FrontendUserFeignClient {
 
     @Override
     public ResultVO<List<FrontendUserListVO>> findUserListByUserIdList(@RequestParam("userIdList") List<Long> userIdList) {
-        return ResultVO.success(frontendUserService.findUserListByUserIdList(userIdList, User::getUsername));
+        return ResultVO.success(frontendUserService.findUserListByUserIdList(userIdList, User::getId, User::getUsername));
     }
 
 }

@@ -89,6 +89,7 @@
             a.title,
             a.summary,
             c.name AS category,
+            a.cover_url,
             a.user_id,
             a.view,
             a.favorite,

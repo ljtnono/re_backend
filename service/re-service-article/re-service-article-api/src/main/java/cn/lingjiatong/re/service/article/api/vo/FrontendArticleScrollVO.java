@@ -24,6 +24,12 @@ public class FrontendArticleScrollVO {
     private String id;
 
     /**
+     * 文章封面
+     */
+    @Schema(description = "文章封面")
+    private String coverUrl;
+
+    /**
      * 标题
      */
     @Schema(description = "标题")

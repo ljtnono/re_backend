@@ -17,7 +17,7 @@ public class FrontendArticleTopListVO {
      * id
      */
     @Schema(description = "id")
-    private Long id;
+    private String id;
 
     /**
      * 标题
