@@ -1,6 +1,7 @@
 package cn.lingjiatong.re.service.article.controller;
 
 import cn.lingjiatong.re.common.ResultVO;
+import cn.lingjiatong.re.common.annotation.PassToken;
 import cn.lingjiatong.re.service.article.api.client.ScheduleArticleFeignClient;
 import cn.lingjiatong.re.service.article.service.ScheduleArticleService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,12 +23,13 @@ public class ScheduleArticleController implements ScheduleArticleFeignClient {
     // ********************************新增类接口********************************
     // ********************************删除类接口********************************
     // ********************************修改类接口********************************
-    // ********************************查询类接口********************************
 
     @Override
+    @PassToken
     @GetMapping("/schedule/api/v1/article/syncArticleToES")
     public ResultVO<Integer> syncArticleToES() {
-       return scheduleArticleService.syncArticleToES();
+        return scheduleArticleService.syncArticleToES();
     }
+    // ********************************查询类接口********************************
 
 }
