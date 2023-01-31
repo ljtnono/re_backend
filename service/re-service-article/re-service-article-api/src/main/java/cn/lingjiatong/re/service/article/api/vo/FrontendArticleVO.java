@@ -43,12 +43,6 @@ public class FrontendArticleVO {
     private String markdownContent;
 
     /**
-     * 文章html格式内容
-     */
-    @Schema(description = "文章html格式内容")
-    private String htmlContent;
-
-    /**
      * 文章类型
      */
     @Schema(description = "文章分类")

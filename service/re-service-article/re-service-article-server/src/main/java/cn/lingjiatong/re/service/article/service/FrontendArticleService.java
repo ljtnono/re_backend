@@ -85,6 +85,7 @@ public class FrontendArticleService {
         FrontendArticleVO result = new FrontendArticleVO();
         BeanUtils.copyProperties(article, result);
         result.setId(String.valueOf(articleId));
+        result.setFinalUpdateTime(article.getModifyTime());
         Category category = categoryMapper.selectOne(new LambdaQueryWrapper<Category>()
                 .select(Category::getName)
                 .eq(Category::getId, article.getCategoryId())
