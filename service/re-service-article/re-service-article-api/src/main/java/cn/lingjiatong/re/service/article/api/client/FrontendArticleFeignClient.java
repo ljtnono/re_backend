@@ -1,14 +1,13 @@
 package cn.lingjiatong.re.service.article.api.client;
 
+import cn.lingjiatong.re.common.EsPage;
 import cn.lingjiatong.re.common.ResultVO;
 import cn.lingjiatong.re.common.config.FeignBasicAuthRequestInterceptor;
 import cn.lingjiatong.re.service.article.api.dto.FrontendArticleRecommendListDTO;
 import cn.lingjiatong.re.service.article.api.dto.FrontendArticleScrollDTO;
+import cn.lingjiatong.re.service.article.api.dto.FrontendArticleSearchDTO;
 import cn.lingjiatong.re.service.article.api.dto.FrontendArticleTopListDTO;
-import cn.lingjiatong.re.service.article.api.vo.FrontendArticleRecommendListVO;
-import cn.lingjiatong.re.service.article.api.vo.FrontendArticleScrollVO;
-import cn.lingjiatong.re.service.article.api.vo.FrontendArticleTopListVO;
-import cn.lingjiatong.re.service.article.api.vo.FrontendArticleVO;
+import cn.lingjiatong.re.service.article.api.vo.*;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.cloud.openfeign.SpringQueryMap;
@@ -65,5 +64,15 @@ public interface FrontendArticleFeignClient {
      */
     @GetMapping("/frontend/api/v1/article/recommendList")
     ResultVO<Page<FrontendArticleRecommendListVO>> findArticleRecommendList(@SpringQueryMap FrontendArticleRecommendListDTO dto);
+
+    /**
+     * 前端搜索文章列表
+     *
+     * @param dto 前端搜索文章列表DTO对象
+     * @return 前端搜索文章列表VO对象分页对象
+     */
+    @GetMapping("/frontend/api/v1/article/search")
+    ResultVO<EsPage<FrontendArticleSearchListVO>> search(@SpringQueryMap FrontendArticleSearchDTO dto);
+
 
 }

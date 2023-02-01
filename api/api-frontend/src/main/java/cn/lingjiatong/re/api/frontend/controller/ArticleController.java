@@ -1,14 +1,13 @@
 package cn.lingjiatong.re.api.frontend.controller;
 
+import cn.lingjiatong.re.common.EsPage;
 import cn.lingjiatong.re.common.ResultVO;
 import cn.lingjiatong.re.service.article.api.client.FrontendArticleFeignClient;
 import cn.lingjiatong.re.service.article.api.dto.FrontendArticleRecommendListDTO;
 import cn.lingjiatong.re.service.article.api.dto.FrontendArticleScrollDTO;
+import cn.lingjiatong.re.service.article.api.dto.FrontendArticleSearchDTO;
 import cn.lingjiatong.re.service.article.api.dto.FrontendArticleTopListDTO;
-import cn.lingjiatong.re.service.article.api.vo.FrontendArticleRecommendListVO;
-import cn.lingjiatong.re.service.article.api.vo.FrontendArticleScrollVO;
-import cn.lingjiatong.re.service.article.api.vo.FrontendArticleTopListVO;
-import cn.lingjiatong.re.service.article.api.vo.FrontendArticleVO;
+import cn.lingjiatong.re.service.article.api.vo.*;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -89,5 +88,18 @@ public class ArticleController {
     public ResultVO<Page<FrontendArticleRecommendListVO>> findArticleRecommendList(FrontendArticleRecommendListDTO dto) {
         log.info("==========前端分页获取推荐文章列表，参数：{}", dto);
         return frontendArticleFeignClient.findArticleRecommendList(dto);
+    }
+
+    /**
+     * 前端搜索文章列表
+     *
+     * @param dto 前端搜索文章列表DTO对象
+     * @return 前端搜索文章列表VO对象分页对象
+     */
+    @GetMapping("/search")
+    @Operation(summary = "前端搜索文章列表", method = "GET")
+    public ResultVO<EsPage<FrontendArticleSearchListVO>> searchArticle(FrontendArticleSearchDTO dto) {
+        log.info("==========前端搜索文章列表，参数：{}", dto);
+        return frontendArticleFeignClient.search(dto);
     }
 }

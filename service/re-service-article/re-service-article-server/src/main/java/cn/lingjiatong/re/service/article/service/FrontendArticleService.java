@@ -1,18 +1,18 @@
 package cn.lingjiatong.re.service.article.service;
 
+import cn.lingjiatong.re.common.EsPage;
 import cn.lingjiatong.re.common.ResultVO;
 import cn.lingjiatong.re.common.constant.CommonConstant;
 import cn.lingjiatong.re.common.constant.UserConstant;
+import cn.lingjiatong.re.common.entity.es.ESArticle;
 import cn.lingjiatong.re.common.exception.BusinessException;
 import cn.lingjiatong.re.common.exception.ErrorEnum;
 import cn.lingjiatong.re.common.exception.ResourceNotExistException;
 import cn.lingjiatong.re.service.article.api.dto.FrontendArticleRecommendListDTO;
 import cn.lingjiatong.re.service.article.api.dto.FrontendArticleScrollDTO;
+import cn.lingjiatong.re.service.article.api.dto.FrontendArticleSearchDTO;
 import cn.lingjiatong.re.service.article.api.dto.FrontendArticleTopListDTO;
-import cn.lingjiatong.re.service.article.api.vo.FrontendArticleRecommendListVO;
-import cn.lingjiatong.re.service.article.api.vo.FrontendArticleScrollVO;
-import cn.lingjiatong.re.service.article.api.vo.FrontendArticleTopListVO;
-import cn.lingjiatong.re.service.article.api.vo.FrontendArticleVO;
+import cn.lingjiatong.re.service.article.api.vo.*;
 import cn.lingjiatong.re.service.article.constant.FrontendArticleErrorMessageConstant;
 import cn.lingjiatong.re.service.article.entity.Article;
 import cn.lingjiatong.re.service.article.entity.Category;
@@ -23,10 +23,28 @@ import cn.lingjiatong.re.service.sys.api.client.FrontendUserFeignClient;
 import cn.lingjiatong.re.service.sys.api.vo.FrontendUserListVO;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.TermsQueryBuilder;
+import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
+import org.elasticsearch.search.sort.FieldSortBuilder;
+import org.elasticsearch.search.sort.ScoreSortBuilder;
+import org.elasticsearch.search.sort.SortBuilders;
+import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
+import org.springframework.data.elasticsearch.core.SearchHit;
+import org.springframework.data.elasticsearch.core.SearchHits;
+import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
+import org.springframework.data.elasticsearch.core.query.FetchSourceFilter;
+import org.springframework.data.elasticsearch.core.query.NativeSearchQuery;
+import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -55,7 +73,8 @@ public class FrontendArticleService {
     private TagMapper tagMapper;
     @Autowired
     private FrontendUserFeignClient frontendUserFeignClient;
-
+    @Autowired
+    private ElasticsearchRestTemplate elasticsearchRestTemplate;
     // ********************************新增类接口********************************
 
     // ********************************删除类接口********************************
@@ -219,5 +238,83 @@ public class FrontendArticleService {
         long total = articleMapper.findFrontendArticleRecommendListTotal();
         page.setTotal(total);
         return frontendArticleRecommendList;
+    }
+
+    /**
+     * 前端搜索文章列表
+     *
+     * @param dto 前端搜索文章列表DTO对象
+     * @return 前端搜索文章列表VO对象分页对象
+     */
+    public EsPage<FrontendArticleSearchListVO> search(FrontendArticleSearchDTO dto) {
+        // 从文章标签列表、文章简介、文章markdown内容中分词查询
+        EsPage<FrontendArticleSearchListVO> esPage = new EsPage<>();
+        esPage.setCurrent(dto.getPageNum());
+        esPage.setSize(dto.getPageSize());
+
+        ScoreSortBuilder scoreSortBuilder = SortBuilders
+                .scoreSort()
+                .order(SortOrder.DESC);
+        FieldSortBuilder fieldSortBuilder = SortBuilders.fieldSort("modifyTime")
+                .order(SortOrder.DESC);
+        PageRequest pageRequest = PageRequest.of(dto.getPageNum() - 1, dto.getPageSize());
+        BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery()
+                .should(QueryBuilders.matchQuery("title", dto.getSearchCondition()))
+                .should(QueryBuilders.matchQuery("summary", dto.getSearchCondition()))
+                .should(QueryBuilders.matchQuery("markdownContent", dto.getSearchCondition()))
+                // 最少满足一个条件
+                .minimumShouldMatch(1)
+                // 查询非隐藏的数据
+                .must(QueryBuilders.matchQuery("deleted", CommonConstant.ENTITY_NORMAL));
+
+        NativeSearchQuery query = new NativeSearchQueryBuilder()
+                .withQuery(queryBuilder)
+                // 分页查询
+                .withPageable(pageRequest)
+                // 根据匹配评分倒序
+                .withSort(scoreSortBuilder)
+                // 根据最后修改时间倒序
+                .withSort(fieldSortBuilder)
+                // 高亮
+                .withHighlightFields(new HighlightBuilder.Field("*").fragmentSize(15).preTags("<font color=\"#ff55ae\">").postTags("</font>"))
+                // 只获取部分字段
+                .withSourceFilter(new FetchSourceFilter(new String[]{"id", "summary", "title", "categoryId", "author", "userId", "coverUrl", "view", "favorite", "modifyTime"}, null))
+                .build();
+        // 设置追踪总数
+        query.setTrackTotalHits(true);
+        // 获取高亮数据并返回
+        SearchHits<ESArticle> searchHits = elasticsearchRestTemplate.search(query, ESArticle.class);
+        List<SearchHit<ESArticle>> searchHitList = searchHits.getSearchHits();
+        List<FrontendArticleSearchListVO> records = Lists.newArrayList();
+        // 取出高亮字段并返回
+        searchHitList.forEach(searchHit -> {
+            ESArticle esArticle = searchHit.getContent();
+            FrontendArticleSearchListVO vo = new FrontendArticleSearchListVO();
+            Map<String, List<String>> highlightFields = searchHit.getHighlightFields();
+            List<String> titleHighlightList = highlightFields.get("title");
+            List<String> summaryHighlightList = highlightFields.get("summary");
+            List<String> markdownContentHighlightList = highlightFields.get("markdownContent");
+            if (!CollectionUtils.isEmpty(titleHighlightList)) {
+                esArticle.setTitle(titleHighlightList.get(0));
+                vo.setTitle(esArticle.getTitle());
+            }
+            if (!CollectionUtils.isEmpty(summaryHighlightList)) {
+                esArticle.setSummary(summaryHighlightList.get(0));
+                vo.setSummary(esArticle.getSummary());
+            }
+            if (!CollectionUtils.isEmpty(markdownContentHighlightList)) {
+                esArticle.setMarkdownContent(markdownContentHighlightList.get(0));
+                vo.setSummary(esArticle.getMarkdownContent());
+            }
+
+            BeanUtils.copyProperties(esArticle, vo);
+            vo.setId(String.valueOf(esArticle.getId()));
+            records.add(vo);
+        });
+        // TODO 查询文章的作者、文章的分类名
+        esPage.setTotal(searchHits.getTotalHits());
+        esPage.setRecords(records);
+        // 设置高亮字段
+        return esPage;
     }
 }
