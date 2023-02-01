@@ -3,12 +3,10 @@ package cn.lingjiatong.re.service.article.controller;
 import cn.lingjiatong.re.common.EsPage;
 import cn.lingjiatong.re.common.ResultVO;
 import cn.lingjiatong.re.service.article.api.client.FrontendArticleFeignClient;
-import cn.lingjiatong.re.service.article.api.dto.FrontendArticleRecommendListDTO;
-import cn.lingjiatong.re.service.article.api.dto.FrontendArticleScrollDTO;
-import cn.lingjiatong.re.service.article.api.dto.FrontendArticleSearchDTO;
-import cn.lingjiatong.re.service.article.api.dto.FrontendArticleTopListDTO;
+import cn.lingjiatong.re.service.article.api.dto.*;
 import cn.lingjiatong.re.service.article.api.vo.*;
 import cn.lingjiatong.re.service.article.service.FrontendArticleService;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -60,6 +58,12 @@ public class FrontendArticleController implements FrontendArticleFeignClient {
     @GetMapping("/frontend/api/v1/article/search")
     public ResultVO<EsPage<FrontendArticleSearchListVO>> search(FrontendArticleSearchDTO dto) {
         return ResultVO.success(frontendArticleService.search(dto));
+    }
+
+    @Override
+    @GetMapping("/frontend/api/v1/article/list")
+    public ResultVO<IPage<FrontendArticleListVO>> findArticleList(FrontendArticleListDTO dto) {
+        return ResultVO.success(frontendArticleService.findArticleList(dto));
     }
 
 }

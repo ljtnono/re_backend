@@ -1,13 +1,7 @@
 package cn.lingjiatong.re.service.article.mapper;
 
-import cn.lingjiatong.re.service.article.api.dto.BackendArticleListDTO;
-import cn.lingjiatong.re.service.article.api.dto.FrontendArticleRecommendListDTO;
-import cn.lingjiatong.re.service.article.api.dto.FrontendArticleScrollDTO;
-import cn.lingjiatong.re.service.article.api.dto.FrontendArticleTopListDTO;
-import cn.lingjiatong.re.service.article.api.vo.BackendArticleListVO;
-import cn.lingjiatong.re.service.article.api.vo.FrontendArticleRecommendListVO;
-import cn.lingjiatong.re.service.article.api.vo.FrontendArticleScrollVO;
-import cn.lingjiatong.re.service.article.api.vo.FrontendArticleTopListVO;
+import cn.lingjiatong.re.service.article.api.dto.*;
+import cn.lingjiatong.re.service.article.api.vo.*;
 import cn.lingjiatong.re.service.article.entity.Article;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -94,4 +88,20 @@ public interface ArticleMapper extends BaseMapper<Article> {
      */
     long findFrontendArticleRecommendListTotal();
 
+    /**
+     * 前端分页获取文章列表
+     *
+     * @param page 分页对象
+     * @param dto 前端分页获取文章列表DTO对象
+     * @return 前端分页获取文章列表VO对象分页对象
+     */
+    Page<FrontendArticleListVO> findArticleList(Page<?> page, @Param("dto") FrontendArticleListDTO dto);
+
+    /**
+     * 前端分页获取文章列表-查询总数
+     *
+     * @param dto 前端分页获取文章列表DTO对象
+     * @return 文章总数
+     */
+    long findArticleListTotal(@Param("dto") FrontendArticleListDTO dto);
 }

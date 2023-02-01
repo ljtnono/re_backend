@@ -7,11 +7,9 @@ import cn.lingjiatong.re.common.constant.UserConstant;
 import cn.lingjiatong.re.common.entity.es.ESArticle;
 import cn.lingjiatong.re.common.exception.BusinessException;
 import cn.lingjiatong.re.common.exception.ErrorEnum;
+import cn.lingjiatong.re.common.exception.ParamErrorException;
 import cn.lingjiatong.re.common.exception.ResourceNotExistException;
-import cn.lingjiatong.re.service.article.api.dto.FrontendArticleRecommendListDTO;
-import cn.lingjiatong.re.service.article.api.dto.FrontendArticleScrollDTO;
-import cn.lingjiatong.re.service.article.api.dto.FrontendArticleSearchDTO;
-import cn.lingjiatong.re.service.article.api.dto.FrontendArticleTopListDTO;
+import cn.lingjiatong.re.service.article.api.dto.*;
 import cn.lingjiatong.re.service.article.api.vo.*;
 import cn.lingjiatong.re.service.article.constant.FrontendArticleErrorMessageConstant;
 import cn.lingjiatong.re.service.article.entity.Article;
@@ -22,14 +20,13 @@ import cn.lingjiatong.re.service.article.mapper.TagMapper;
 import cn.lingjiatong.re.service.sys.api.client.FrontendUserFeignClient;
 import cn.lingjiatong.re.service.sys.api.vo.FrontendUserListVO;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.index.query.TermsQueryBuilder;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
 import org.elasticsearch.search.sort.FieldSortBuilder;
 import org.elasticsearch.search.sort.ScoreSortBuilder;
@@ -41,7 +38,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
 import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.data.elasticsearch.core.SearchHits;
-import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
 import org.springframework.data.elasticsearch.core.query.FetchSourceFilter;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQuery;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
@@ -75,6 +71,8 @@ public class FrontendArticleService {
     private FrontendUserFeignClient frontendUserFeignClient;
     @Autowired
     private ElasticsearchRestTemplate elasticsearchRestTemplate;
+
+
     // ********************************新增类接口********************************
 
     // ********************************删除类接口********************************
@@ -316,5 +314,70 @@ public class FrontendArticleService {
         esPage.setRecords(records);
         // 设置高亮字段
         return esPage;
+    }
+
+    /**
+     * 前端分页获取文章列表
+     *
+     * @param dto 前端分页获取文章列表DTO对象
+     * @return 前端分页获取文章列表VO对象分页对象
+     */
+    @Transactional(readOnly = true)
+    public IPage<FrontendArticleListVO> findArticleList(FrontendArticleListDTO dto) {
+        Long categoryId = dto.getCategoryId();
+        Long tagId = dto.getTagId();
+        // 请求参数有误
+        if (categoryId == null && tagId == null) {
+            throw new ParamErrorException(ErrorEnum.REQUEST_PARAM_ERROR);
+        }
+
+        List<String> orderFieldList = dto.getOrderFieldList();
+        List<Byte> orderFlagList = dto.getOrderFlagList();
+        orderFieldList.add("modify_time");
+        orderFlagList.add(CommonConstant.ORDER_BY_DESC);
+        dto.generateOrderCondition();
+        Page<?> page = new Page<>(dto.getPageNum(), dto.getPageSize());
+        // 不查询总数
+        page.setSearchCount(false);
+
+        Page<FrontendArticleListVO> articleList = articleMapper.findArticleList(page, dto);
+        long total = articleMapper.findArticleListTotal(dto);
+        page.setTotal(total);
+
+        // 查询文章作者
+        List<FrontendArticleListVO> records = articleList.getRecords();
+        if (!CollectionUtils.isEmpty(records)) {
+            List<Long> userIdList = records.stream()
+                    .map(FrontendArticleListVO::getUserId)
+                    .collect(Collectors.toList());
+            Map<Long, String> articleAuthorMap = Maps.newHashMap();
+            Map<Long, String> userMap = Maps.newHashMap();
+
+            ResultVO<List<FrontendUserListVO>> resultVO = frontendUserFeignClient.findUserListByUserIdList(userIdList);
+            if (!ResultVO.CODE_SUCCESS.equals(resultVO.getCode()) || !ResultVO.MESSAGE_SUCCESS.equals(resultVO.getMessage())) {
+                throw new BusinessException(ErrorEnum.COMMON_SERVER_ERROR);
+            }
+
+            List<FrontendUserListVO> voList = resultVO.getData();
+            voList.forEach(vo -> {
+                userMap.put(Long.valueOf(vo.getId()), vo.getUsername());
+            });
+            records.forEach(record -> {
+                articleAuthorMap.put(Long.valueOf(record.getId()), userMap.get(record.getUserId()));
+            });
+
+            try {
+                records.forEach(record -> {
+                    Long id = Long.valueOf(record.getId());
+                    String author = articleAuthorMap.get(id);
+                    record.setAuthor(author);
+                });
+            } catch (Exception e) {
+                log.error(e.toString(), e);
+                throw new BusinessException(ErrorEnum.COMMON_SERVER_ERROR);
+            }
+        }
+
+        return articleList;
     }
 }

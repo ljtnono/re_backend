@@ -153,4 +153,49 @@
         WHERE a.is_deleted = ${@cn.lingjiatong.re.common.constant.CommonConstant@ENTITY_NORMAL}
         AND a.is_recommend = ${@cn.lingjiatong.re.common.constant.ArticleConstant@ARTICLE_RECOMMEND}
     </select>
+
+    <!-- 前端分页获取文章列表 -->
+    <select id="findArticleList" resultType="cn.lingjiatong.re.service.article.api.vo.FrontendArticleListVO">
+        SELECT
+            a.id,
+            a.title,
+            a.summary,
+            a.cover_url,
+            a.user_id,
+            a.view,
+            (SELECT c.name FROM re_article.category c WHERE c.id = a.category_id) AS category,
+            a.favorite,
+            a.modify_time
+        FROM re_article.article a
+        <where>
+            a.is_deleted = ${@cn.lingjiatong.re.common.constant.CommonConstant@ENTITY_NORMAL}
+            <!-- 根据文章分类进行查询 -->
+            <if test="dto.categoryId != null">
+                AND a.category_id = #{dto.categoryId, jdbcType=BIGINT}
+            </if>
+            <!-- 根据文章标签进行查询 -->
+            <if test="dto.tagId != null">
+                AND EXISTS(SELECT tat.article_id FROM re_article.tr_article_tag tat WHERE tat.tag_id = #{dto.tagId, jdbcType=BIGINT} AND a.id = tat.article_id)
+            </if>
+        </where>
+        ORDER BY ${dto.order}
+    </select>
+
+    <!-- 前端分页获取文章列表-总数 -->
+    <select id="findArticleListTotal" resultType="long">
+        SELECT
+            COUNT(DISTINCT a.id)
+        FROM re_article.article a
+        <where>
+            a.is_deleted = ${@cn.lingjiatong.re.common.constant.CommonConstant@ENTITY_NORMAL}
+            <!-- 根据文章分类进行查询 -->
+            <if test="dto.categoryId != null">
+                AND a.category_id = #{dto.categoryId, jdbcType=BIGINT}
+            </if>
+            <!-- 根据文章标签进行查询 -->
+            <if test="dto.tagId != null">
+                AND EXISTS(SELECT tat.article_id FROM re_article.tr_article_tag tat WHERE tat.tag_id = #{dto.tagId, jdbcType=BIGINT} AND a.id = tat.article_id)
+            </if>
+        </where>
+    </select>
 </mapper>
