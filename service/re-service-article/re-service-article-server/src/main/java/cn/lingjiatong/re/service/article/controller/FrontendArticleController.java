@@ -6,7 +6,6 @@ import cn.lingjiatong.re.service.article.api.client.FrontendArticleFeignClient;
 import cn.lingjiatong.re.service.article.api.dto.*;
 import cn.lingjiatong.re.service.article.api.vo.*;
 import cn.lingjiatong.re.service.article.service.FrontendArticleService;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -62,7 +61,7 @@ public class FrontendArticleController implements FrontendArticleFeignClient {
 
     @Override
     @GetMapping("/frontend/api/v1/article/list")
-    public ResultVO<IPage<FrontendArticleListVO>> findArticleList(FrontendArticleListDTO dto) {
+    public ResultVO<Page<FrontendArticleListVO>> findArticleList(FrontendArticleListDTO dto) {
         return ResultVO.success(frontendArticleService.findArticleList(dto));
     }
 

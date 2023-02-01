@@ -5,7 +5,6 @@ import cn.lingjiatong.re.common.ResultVO;
 import cn.lingjiatong.re.service.article.api.client.FrontendArticleFeignClient;
 import cn.lingjiatong.re.service.article.api.dto.*;
 import cn.lingjiatong.re.service.article.api.vo.*;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -109,7 +108,7 @@ public class ArticleController {
      */
     @GetMapping("/list")
     @Operation(summary = "前端分页获取文章列表", method = "GET")
-    public ResultVO<IPage<FrontendArticleListVO>> findArticleList(FrontendArticleListDTO dto) {
+    public ResultVO<Page<FrontendArticleListVO>> findArticleList(FrontendArticleListDTO dto) {
         log.info("==========前端分页获取文章列表，参数：{}", dto);
         return frontendArticleFeignClient.findArticleList(dto);
     }

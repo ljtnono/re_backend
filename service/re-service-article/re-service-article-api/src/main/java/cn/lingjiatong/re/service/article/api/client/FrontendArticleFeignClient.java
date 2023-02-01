@@ -5,7 +5,6 @@ import cn.lingjiatong.re.common.ResultVO;
 import cn.lingjiatong.re.common.config.FeignBasicAuthRequestInterceptor;
 import cn.lingjiatong.re.service.article.api.dto.*;
 import cn.lingjiatong.re.service.article.api.vo.*;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.cloud.openfeign.SpringQueryMap;
@@ -79,6 +78,6 @@ public interface FrontendArticleFeignClient {
      * @return 前端分页获取文章列表VO对象分页对象
      */
     @GetMapping("/frontend/api/v1/article/list")
-    ResultVO<IPage<FrontendArticleListVO>> findArticleList(@SpringQueryMap FrontendArticleListDTO dto);
+    ResultVO<Page<FrontendArticleListVO>> findArticleList(@SpringQueryMap FrontendArticleListDTO dto);
 
 }

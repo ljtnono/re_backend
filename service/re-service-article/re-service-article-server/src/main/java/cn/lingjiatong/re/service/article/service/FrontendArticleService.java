@@ -20,7 +20,6 @@ import cn.lingjiatong.re.service.article.mapper.TagMapper;
 import cn.lingjiatong.re.service.sys.api.client.FrontendUserFeignClient;
 import cn.lingjiatong.re.service.sys.api.vo.FrontendUserListVO;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -274,7 +273,7 @@ public class FrontendArticleService {
                 // 根据最后修改时间倒序
                 .withSort(fieldSortBuilder)
                 // 高亮
-                .withHighlightFields(new HighlightBuilder.Field("*").fragmentSize(15).preTags("<font color=\"#ff55ae\">").postTags("</font>"))
+                .withHighlightFields(new HighlightBuilder.Field("*").fragmentSize(200).preTags("<font color=\"#ff55ae\">").postTags("</font>"))
                 // 只获取部分字段
                 .withSourceFilter(new FetchSourceFilter(new String[]{"id", "summary", "title", "categoryId", "author", "userId", "coverUrl", "view", "favorite", "modifyTime"}, null))
                 .build();
@@ -292,6 +291,8 @@ public class FrontendArticleService {
             List<String> titleHighlightList = highlightFields.get("title");
             List<String> summaryHighlightList = highlightFields.get("summary");
             List<String> markdownContentHighlightList = highlightFields.get("markdownContent");
+            BeanUtils.copyProperties(esArticle, vo);
+            vo.setId(String.valueOf(esArticle.getId()));
             if (!CollectionUtils.isEmpty(titleHighlightList)) {
                 esArticle.setTitle(titleHighlightList.get(0));
                 vo.setTitle(esArticle.getTitle());
@@ -304,12 +305,41 @@ public class FrontendArticleService {
                 esArticle.setMarkdownContent(markdownContentHighlightList.get(0));
                 vo.setSummary(esArticle.getMarkdownContent());
             }
-
-            BeanUtils.copyProperties(esArticle, vo);
-            vo.setId(String.valueOf(esArticle.getId()));
             records.add(vo);
         });
-        // TODO 查询文章的作者、文章的分类名
+
+        // 查询文章的作者、文章的分类名
+        if (!CollectionUtils.isEmpty(records)) {
+            List<Long> userIdList = records.stream()
+                    .map(FrontendArticleSearchListVO::getUserId)
+                    .collect(Collectors.toList());
+            Map<Long, String> articleAuthorMap = Maps.newHashMap();
+            Map<Long, String> userMap = Maps.newHashMap();
+
+            ResultVO<List<FrontendUserListVO>> resultVO = frontendUserFeignClient.findUserListByUserIdList(userIdList);
+            if (!ResultVO.CODE_SUCCESS.equals(resultVO.getCode()) || !ResultVO.MESSAGE_SUCCESS.equals(resultVO.getMessage())) {
+                throw new BusinessException(ErrorEnum.COMMON_SERVER_ERROR);
+            }
+
+            List<FrontendUserListVO> voList = resultVO.getData();
+            voList.forEach(vo -> {
+                userMap.put(Long.valueOf(vo.getId()), vo.getUsername());
+            });
+            records.forEach(record -> {
+                articleAuthorMap.put(Long.valueOf(record.getId()), userMap.get(record.getUserId()));
+            });
+
+            try {
+                records.forEach(record -> {
+                    Long id = Long.valueOf(record.getId());
+                    String author = articleAuthorMap.get(id);
+                    record.setAuthor(author);
+                });
+            } catch (Exception e) {
+                log.error(e.toString(), e);
+                throw new BusinessException(ErrorEnum.COMMON_SERVER_ERROR);
+            }
+        }
         esPage.setTotal(searchHits.getTotalHits());
         esPage.setRecords(records);
         // 设置高亮字段
@@ -323,7 +353,7 @@ public class FrontendArticleService {
      * @return 前端分页获取文章列表VO对象分页对象
      */
     @Transactional(readOnly = true)
-    public IPage<FrontendArticleListVO> findArticleList(FrontendArticleListDTO dto) {
+    public Page<FrontendArticleListVO> findArticleList(FrontendArticleListDTO dto) {
         Long categoryId = dto.getCategoryId();
         Long tagId = dto.getTagId();
         // 请求参数有误
