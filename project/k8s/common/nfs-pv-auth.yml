@@ -1,0 +1,86 @@
+# StorageClass设置
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: nfs-sc
+  # 替换为自己需要部署的名称空间
+  namespace: rootelement
+provisioner: ljtnono/nfs-subdir-external-provisioner
+parameters:
+  archiveOnDelete: "false"
+  # 配置动态生成的目录规则
+  pathPattern: "${.PVC.namespace}/${.PVC.annotations.nfs.io/storage-path}"
+---
+# ServiceAccount设置
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: nfs-sa
+  # 替换为自己需要部署的名称空间
+  namespace: rootelement
+---
+# ClusterRole设置
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: nfs-cr
+rules:
+  - apiGroups: [""]
+    resources: ["nodes"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: [""]
+    resources: ["persistentvolumes"]
+    verbs: ["get", "list", "watch", "create", "delete"]
+  - apiGroups: [""]
+    resources: ["persistentvolumeclaims"]
+    verbs: ["get", "list", "watch", "update"]
+  - apiGroups: ["storage.k8s.io"]
+    resources: ["storageclasses"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: [""]
+    resources: ["events"]
+    verbs: ["create", "update", "patch"]
+---
+# ClusterRoleBinding设置
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: nfs-crb
+subjects:
+  - kind: ServiceAccount
+    name: nfs-sa
+    # 替换为自己需要部署的名称空间
+    namespace: rootelement
+roleRef:
+  kind: ClusterRole
+  name: nfs-cr
+  apiGroup: rbac.authorization.k8s.io
+---
+# Role设置
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: nfs-r
+  # 替换为自己需要部署的名称空间
+  namespace: rootelement
+rules:
+  - apiGroups: [""]
+    resources: ["endpoints"]
+    verbs: ["get", "list", "watch", "create", "update", "patch"]
+---
+# RoleBinding设置
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: nfs-rb
+  # 替换为自己需要部署的名称空间
+  namespace: rootelement
+subjects:
+  - kind: ServiceAccount
+    name: nfs-sa
+      # 替换为自己需要部署的名称空间
+    namespace: rootelement
+roleRef:
+  kind: Role
+  name: nfs-r
+  apiGroup: rbac.authorization.k8s.io

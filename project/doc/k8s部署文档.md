@@ -28,42 +28,42 @@ systemctl start nfs && systemctl enable nfs
 systemctl start rpcbind && systemctl enable rpcbind
 
 # 创建目录
-mkdir -p /home/nfs/mysql/data
-mkdir -p /home/nfs/mysql/log
-mkdir -p /home/nfs/nacos/data
-mkdir -p /home/nfs/nacos/log
-mkdir -p /home/nfs/redis/data
-mkdir -p /home/nfs/es/data
-mkdir -p /home/nfs/es/log
-mkdir -p /home/nfs/minio/data
-mkdir -p /home/nfs/minio/config
+mkdir -p /root/nfs/mysql/data
+mkdir -p /root/nfs/mysql/log
+mkdir -p /root/nfs/nacos/data
+mkdir -p /root/nfs/nacos/log
+mkdir -p /root/nfs/redis/data
+mkdir -p /root/nfs/es/data
+mkdir -p /root/nfs/es/log
+mkdir -p /root/nfs/minio/data
+mkdir -p /root/nfs/minio/config
 
 # 给目录授权
-chmod 777 -R /home/nfs/mysql/data
-chmod 777 -R /home/nfs/mysql/log
-chmod 777 -R /home/nfs/nacos/data
-chmod 777 -R /home/nfs/nacos/log
-chmod 777 -R /home/nfs/redis/data
-chmod 777 -R /home/nfs/es/log
-chmod 777 -R /home/nfs/es/data
-chmod 777 -R /home/nfs/minio/data
-chmod 777 -R /home/nfs/minio/config
+chmod 777 -R /root/nfs/mysql/data
+chmod 777 -R /root/nfs/mysql/log
+chmod 777 -R /root/nfs/nacos/data
+chmod 777 -R /root/nfs/nacos/log
+chmod 777 -R /root/nfs/redis/data
+chmod 777 -R /root/nfs/es/log
+chmod 777 -R /root/nfs/es/data
+chmod 777 -R /root/nfs/minio/data
+chmod 777 -R /root/nfs/minio/config
 
 # 编辑/etc/exports文件内容如下
 # mysql
-/home/nfs/mysql/data 192.168.8.0/24(rw,no_root_squash,sync)
-/home/nfs/mysql/log 192.168.8.0/24(rw,no_root_squash,sync)
+/root/nfs/mysql/data 192.168.8.0/24(rw,no_root_squash,sync)
+/root/nfs/mysql/log 192.168.8.0/24(rw,no_root_squash,sync)
 # nacos
-/home/nfs/nacos/data 192.168.8.0/24(rw,no_root_squash,sync)
-/home/nfs/nacos/log 192.168.8.0/24(rw,no_root_squash,sync)
+/root/nfs/nacos/data 192.168.8.0/24(rw,no_root_squash,sync)
+/root/nfs/nacos/log 192.168.8.0/24(rw,no_root_squash,sync)
 # redis
-/home/nfs/redis/data 192.168.8.0/24(rw,no_root_squash,sync)
+/root/nfs/redis/data 192.168.8.0/24(rw,no_root_squash,sync)
 # elasticsearch
-/home/nfs/es/data 192.168.8.0/24(rw,no_root_squash,sync)
-/home/nfs/es/log 192.168.8.0/24(rw,no_root_squash,sync)
+/root/nfs/es/data 192.168.8.0/24(rw,no_root_squash,sync)
+/root/nfs/es/log 192.168.8.0/24(rw,no_root_squash,sync)
 # minio
-/home/nfs/minio/data 192.168.8.0/24(rw,no_root_squash,sync)
-/home/nfs/minio/config 192.168.8.0/24(rw,no_root_squash,sync)
+/root/nfs/minio/data 192.168.8.0/24(rw,no_root_squash,sync)
+/root/nfs/minio/config 192.168.8.0/24(rw,no_root_squash,sync)
 
 # 更新配置
 exportfs -ar
@@ -86,7 +86,7 @@ kubectl apply -f re-pv.yml
 kubectl apply -f mysql.yml
 # 部署mysql之后，为了后面部署nacos，需要使用工具连接mysql执行nacos数据库初始化脚本
 # 部署nacos
-kubectl apply -f nacos.yml
+kubectl apply -f nacos-standalone.yml
 # 部署redis
 kubectl apply -f redis.yml
 # 部署elasticsearch

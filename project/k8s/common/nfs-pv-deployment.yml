@@ -1,0 +1,44 @@
+# deployment配置
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nfs-provisioner-deployment
+  labels:
+    app: nfs-provisioner-deployment
+  # 替换为自己需要部署的名称空间
+  namespace: rootelement
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: nfs-provisioner
+  template:
+    metadata:
+      labels:
+        app: nfs-provisioner
+    spec:
+      serviceAccountName: nfs-sa
+      containers:
+        - name: nfs-provisioner
+          image: ljtnono/nfs-subdir-external-provisioner:v4.0.2
+          volumeMounts:
+            - name: nfs-client-root
+              # 挂载到容器内部的路径，不能更改
+              mountPath: /persistentvolumes
+          env:
+            - name: PROVISIONER_NAME
+              # 设置storageclass时的provisioner的值
+              value: ljtnono/nfs-subdir-external-provisioner
+              # NFS服务器的IP地址
+            - name: NFS_SERVER
+              value: 192.168.8.132
+              # NFS服务器的路径
+            - name: NFS_PATH
+              value: /
+      volumes:
+        - name: nfs-client-root
+          nfs:
+            server: 192.168.8.132
+            path: /home/nfs/dynamic
