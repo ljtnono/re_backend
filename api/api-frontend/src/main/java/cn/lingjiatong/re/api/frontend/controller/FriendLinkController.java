@@ -1,8 +1,8 @@
 package cn.lingjiatong.re.api.frontend.controller;
 
 import cn.lingjiatong.re.common.ResultVO;
-import cn.lingjiatong.re.service.article.api.client.FrontendTagFeignClient;
-import cn.lingjiatong.re.service.article.api.vo.FrontendTagListVO;
+import cn.lingjiatong.re.service.sys.api.client.FrontendFriendLinkFeignClient;
+import cn.lingjiatong.re.service.sys.api.vo.FrontendFriendLinkListVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
@@ -14,19 +14,19 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 /**
- * 前端博客标签模块接口
+ * 前端博客友情链接模块接口
  *
  * @author Ling, Jiatong
- * Date: 2023/1/18 01:19
+ * Date: 2022/9/17 21:31
  */
 @Slf4j
 @RestController
-@RequestMapping("/tag")
-@Tag(name = "前端标签模块接口")
-public class TagController {
+@RequestMapping("/friendLink")
+@Tag(name = "前端友情链接模块接口")
+public class FriendLinkController {
 
     @Autowired
-    private FrontendTagFeignClient frontendTagFeignClient;
+    private FrontendFriendLinkFeignClient frontendFriendLinkFeignClient;
 
     // ********************************新增类接口********************************
     // ********************************删除类接口********************************
@@ -34,15 +34,14 @@ public class TagController {
     // ********************************查询类接口********************************
 
     /**
-     * 获取前端热门标签列表
+     * 获取前端友情链接列表
      *
-     * @return 前端博客标签列表VO对象列表
+     * @return 前端友情链接列表VO对象列表
      */
-    @GetMapping("/hotTagList")
-    @Operation(summary = "获取前端热门标签列表", method = "GET")
-    public ResultVO<List<FrontendTagListVO>> findFrontendHotTagList() {
-        log.info("==========获取前端热门标签列表");
-        return frontendTagFeignClient.findFrontendHotTagList();
+    @GetMapping("/list")
+    @Operation(summary = "获取前端友情链接列表", method = "GET")
+    public ResultVO<List<FrontendFriendLinkListVO>> findFriendLinkList() {
+        log.info("==========获取前端友情链接列表");
+        return frontendFriendLinkFeignClient.findFrontendNoticeList();
     }
-
 }
