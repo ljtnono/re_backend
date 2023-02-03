@@ -8,7 +8,7 @@ spec:
   selector:
     matchLabels:
       app: re-service-article-server
-  replicas: 3
+  replicas: 1
   template:
     metadata:
       labels:

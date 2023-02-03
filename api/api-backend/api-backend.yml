@@ -8,7 +8,7 @@ spec:
   selector:
     matchLabels:
       app: api-backend
-  replicas: 3
+  replicas: 1
   template:
     metadata:
       labels:
