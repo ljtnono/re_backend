@@ -2,8 +2,8 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: minio-headless-service
-  namespace: rootelement
+  name: minio-headless
+  namespace: common
 spec:
   clusterIP: None
   ports:
@@ -18,8 +18,8 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: minio-extern-service
-  namespace: rootelement
+  name: minio-extern
+  namespace: common
 spec:
   type: NodePort
   ports:
@@ -36,17 +36,16 @@ spec:
 
 ---
 # minio statefulset
-
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: minio-statefulset
-  namespace: rootelement
+  name: minio
+  namespace: common
 spec:
   selector:
     matchLabels:
       app: minio
-  serviceName: "minio-headless-service"
+  serviceName: "minio-headless"
   replicas: 1
   template:
     metadata:
@@ -78,27 +77,25 @@ spec:
   volumeClaimTemplates:
     - metadata:
         name: minio-data
-        namespace: rootelement
+        namespace: common
+        annotations:
+          # 子目录标签
+          nfs.io/storage-path: minio/data
       spec:
-        accessModes: ["ReadWriteOnce"]
+        accessModes: ["ReadWriteMany"]
         resources:
           requests:
             storage: 60Gi
-        storageClassName: nfs
-        volumeMode: Filesystem
-        selector:
-          matchLabels:
-            pv: minio-data-pv
+        storageClassName: nfs-sc
     - metadata:
         name: minio-config
-        namespace: rootelement
+        namespace: common
+        annotations:
+          # 子目录标签
+          nfs.io/storage-path: minio/config
       spec:
-        accessModes: [ "ReadWriteOnce" ]
+        accessModes: [ "ReadWriteMany" ]
         resources:
           requests:
             storage: 2Gi
-        storageClassName: nfs
-        volumeMode: Filesystem
-        selector:
-          matchLabels:
-            pv: minio-config-pv
+        storageClassName: nfs-sc

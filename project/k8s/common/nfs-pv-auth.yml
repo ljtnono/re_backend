@@ -4,7 +4,7 @@ kind: StorageClass
 metadata:
   name: nfs-sc
   # 替换为自己需要部署的名称空间
-  namespace: rootelement
+  namespace: common
 provisioner: ljtnono/nfs-subdir-external-provisioner
 parameters:
   archiveOnDelete: "false"
@@ -17,7 +17,7 @@ kind: ServiceAccount
 metadata:
   name: nfs-sa
   # 替换为自己需要部署的名称空间
-  namespace: rootelement
+  namespace: common
 ---
 # ClusterRole设置
 kind: ClusterRole
@@ -50,7 +50,7 @@ subjects:
   - kind: ServiceAccount
     name: nfs-sa
     # 替换为自己需要部署的名称空间
-    namespace: rootelement
+    namespace: common
 roleRef:
   kind: ClusterRole
   name: nfs-cr
@@ -62,7 +62,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: nfs-r
   # 替换为自己需要部署的名称空间
-  namespace: rootelement
+  namespace: common
 rules:
   - apiGroups: [""]
     resources: ["endpoints"]
@@ -74,12 +74,12 @@ apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: nfs-rb
   # 替换为自己需要部署的名称空间
-  namespace: rootelement
+  namespace: common
 subjects:
   - kind: ServiceAccount
     name: nfs-sa
       # 替换为自己需要部署的名称空间
-    namespace: rootelement
+    namespace: common
 roleRef:
   kind: Role
   name: nfs-r

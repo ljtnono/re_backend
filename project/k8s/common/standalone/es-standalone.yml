@@ -3,7 +3,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: es-headless-service
-  namespace: rootelement
+  namespace: common
 spec:
   clusterIP: None
   ports:
@@ -74,8 +74,8 @@ spec:
             - name: es-data
               mountPath: /usr/share/elasticsearch/data
             - name: es-config
-              mountPath: /usr/share/elasticsearch/config/elasticsearch.yml
-              subPath: elasticsearch.yml
+              mountPath: /usr/share/elasticsearch/config/es-standalone.yml
+              subPath: es-standalone.yml
             - name: es-log
               mountPath: /usr/share/elasticsearch/logs
 
@@ -85,7 +85,7 @@ spec:
             name: re-configmap
             items:
               - key: elasticsearch.yml
-                path: elasticsearch.yml
+                path: es-standalone.yml
 
   # pvc 模板
   volumeClaimTemplates:

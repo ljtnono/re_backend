@@ -1,0 +1,122 @@
+# nacos集群部署文件 参考 https://github.com/nacos-group/nacos-k8s/edit/master/deploy/nacos/nacos-no-pvc-ingress.yaml
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nacos-headless
+  namespace: common
+  labels:
+    app: nacos-headless
+spec:
+  type: ClusterIP
+  clusterIP: None
+  ports:
+    - port: 8848
+      name: server
+      targetPort: 8848
+    - port: 9848
+      name: client-rpc
+      targetPort: 9848
+    - port: 9849
+      name: raft-rpc
+      targetPort: 9849
+      ## 兼容1.4.x版本的选举端口
+    - port: 7848
+      name: old-raft-rpc
+      targetPort: 7848
+  selector:
+    app: nacos
+---
+# nacos extern service 对外暴露服务
+apiVersion: v1
+kind: Service
+metadata:
+  name: nacos-extern
+  namespace: common
+spec:
+  type: NodePort
+  ports:
+    - port: 8848
+      name: nacos
+      nodePort: 30048
+      targetPort: 8848
+#    - port: 9848
+#      name: client-to-server
+#      nodePort: 31048
+#      targetPort: 9848
+#    - port: 9849
+#      name: server-to-server
+#      nodePort: 31049
+#      targetPort: 9849
+  selector:
+    app: nacos
+
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: nacos
+  namespace: common
+spec:
+  serviceName: nacos-headless
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: nacos
+      annotations:
+        pod.alpha.kubernetes.io/initialized: "true"
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: "app"
+                    operator: In
+                    values:
+                      - nacos
+              topologyKey: "kubernetes.io/hostname"
+      containers:
+        - name: nacos
+          imagePullPolicy: Always
+          image: nacos/nacos-server:v2.1.0
+          resources:
+            requests:
+              memory: "2Gi"
+              cpu: "500m"
+          ports:
+            - containerPort: 8848
+              name: client
+            - containerPort: 9848
+              name: client-rpc
+            - containerPort: 9849
+              name: raft-rpc
+            - containerPort: 7848
+              name: old-raft-rpc
+          env:
+            - name: NACOS_REPLICAS
+              value: "3"
+            - name: MYSQL_SERVICE_HOST
+              value: ""
+            - name: MYSQL_SERVICE_DB_NAME
+              value: ""
+            - name: MYSQL_SERVICE_PORT
+              value: ""
+            - name: MYSQL_SERVICE_USER
+              value: ""
+            - name: MYSQL_SERVICE_PASSWORD
+              value: ""
+            - name: SPRING_DATASOURCE_PLATFORM
+              value: "mysql"
+            - name: MODE
+              value: "cluster"
+            - name: NACOS_SERVER_PORT
+              value: "8848"
+            - name: PREFER_HOST_MODE
+              value: "hostname"
+            - name: NACOS_SERVERS
+              value: "nacos-0.nacos-headless.default.svc.cluster.local:8848 nacos-1.nacos-headless.default.svc.cluster.local:8848 nacos-2.nacos-headless.default.svc.cluster.local:8848"
+  selector:
+    matchLabels:
+      app: nacos

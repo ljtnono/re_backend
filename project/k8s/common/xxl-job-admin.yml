@@ -35,6 +35,6 @@ spec:
       name: web
       nodePort: 31084
       targetPort: 8080
-      protocol: tcp
+      protocol: TCP
   selector:
     app: xxl-job-admin

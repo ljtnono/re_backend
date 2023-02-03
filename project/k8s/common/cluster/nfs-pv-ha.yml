@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nfs-provisioner
+  labels:
+    app: nfs-provisioner
+  # 替换为自己需要部署的名称空间
+  namespace: common
+spec:
+  # 因为要实现高可用，所以配置3个pod副本
+  replicas: 3
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: nfs-provisioner
+  template:
+    metadata:
+      labels:
+        app: nfs-provisioner
+    spec:
+      serviceAccountName: nfs-sa
+      imagePullSecrets:
+        - name: registry-auth-paas
+      containers:
+        - name: nfs-provisioner
+          image: ljtnono/nfs-subdir-external-provisioner:v4.0.2
+          imagePullPolicy: IfNotPresent
+          volumeMounts:
+            - name: nfs-client-root
+              mountPath: /persistentvolumes
+          env:
+            - name: PROVISIONER_NAME
+              value: ljtnono/nfs-subdir-external-provisioner
+              # 设置高可用允许选举
+            - name: ENABLE_LEADER_ELECTION
+              value: "True"
+            - name: NFS_SERVER
+              value: 192.168.8.136
+            - name: NFS_PATH
+              value: /
+      volumes:
+        - name: nfs-client-root
+          nfs:
+            server: 192.168.8.136
+            path: /home/nfs/dynamic
