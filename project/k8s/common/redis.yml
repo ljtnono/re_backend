@@ -2,8 +2,8 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: redis-headless-service
-  namespace: rootelement
+  name: redis-headless
+  namespace: common
 spec:
   clusterIP: None
   ports:
@@ -18,8 +18,8 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: redis-extern-service
-  namespace: rootelement
+  name: redis-extern
+  namespace: common
 spec:
   type: NodePort
   ports:
@@ -36,13 +36,13 @@ spec:
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: redis-statefulset
-  namespace: rootelement
+  name: redis
+  namespace: common
 spec:
   selector:
     matchLabels:
       app: redis
-  serviceName: "redis-headless-service"
+  serviceName: "redis-headless"
   replicas: 1
   template:
     metadata:
@@ -67,23 +67,22 @@ spec:
       volumes:
         - name: redis-conf
           configMap:
-            name: re-configmap
+            name: common-configmap
             items:
-              - key: redis.conf
+              - key: redis-standalone.conf
                 path: redis.conf
 
   # pvc 模板
   volumeClaimTemplates:
     - metadata:
         name: redis-data
-        namespace: rootelement
+        namespace: common
+        annotations:
+          # 子目录标签
+          nfs.io/storage-path: redis/data
       spec:
-        accessModes: ["ReadWriteOnce"]
+        accessModes: ["ReadWriteMany"]
         resources:
           requests:
             storage: 10Gi
-        storageClassName: nfs
-        volumeMode: Filesystem
-        selector:
-          matchLabels:
-            pv: redis-data-pv
+        storageClassName: nfs-sc

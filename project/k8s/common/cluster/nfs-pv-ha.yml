@@ -38,7 +38,7 @@ spec:
             - name: NFS_SERVER
               value: 192.168.8.136
             - name: NFS_PATH
-              value: /
+              value: /home/nfs/dynamic
       volumes:
         - name: nfs-client-root
           nfs:
