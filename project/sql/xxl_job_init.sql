@@ -1,5 +1,8 @@
 -- MySQL dump 10.13  Distrib 8.0.27, for Linux (x86_64)
---
+
+CREATE DATABASE xxl_job;
+USE xxl_job;
+
 -- Host: localhost    Database: xxl_job
 -- ------------------------------------------------------
 -- Server version	8.0.27
