@@ -24,6 +24,13 @@
             <groupId>cn.lingjiatong</groupId>
             <artifactId>re-common</artifactId>
             <version>${project.version}</version>
+            <exclusions>
+                <!-- elasticsearch -->
+                <exclusion>
+                    <groupId>org.springframework.data</groupId>
+                    <artifactId>spring-data-elasticsearch</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <!-- mybatis-plus -->
         <dependency>
