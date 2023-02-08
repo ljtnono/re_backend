@@ -1,6 +1,6 @@
-package cn.lingjiatong.re.api.backend.controller;
+package cn.lingjiatong.re.api.file.controller;
 
-import cn.lingjiatong.re.api.backend.service.FileService;
+import cn.lingjiatong.re.api.file.service.FileService;
 import cn.lingjiatong.re.common.ResultVO;
 import cn.lingjiatong.re.common.annotation.CurrentUser;
 import cn.lingjiatong.re.common.entity.User;

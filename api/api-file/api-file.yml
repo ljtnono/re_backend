@@ -1,0 +1,45 @@
+# Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: rootelement
+  name: api-file
+spec:
+  selector:
+    matchLabels:
+      app: api-file
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: api-file
+    spec:
+      containers:
+        - name: api-file
+          image: ljtnono/api-file:<VERSION>
+          imagePullPolicy: Always
+          resources:
+            requests:
+              memory: "1024Mi"
+            limits:
+              memory: "2048Mi"
+          ports:
+            - containerPort: 8080
+              name: web
+
+---
+# api-backend service
+apiVersion: v1
+kind: Service
+metadata:
+  name: api-file
+  namespace: rootelement
+spec:
+  type: NodePort
+  ports:
+    - port: 8080
+      name: web
+      nodePort: 30157
+      targetPort: 8080
+  selector:
+    app: api-file

@@ -13,6 +13,7 @@
 		<module>re-gateway</module>
 		<module>api/api-frontend</module>
 		<module>api/api-backend</module>
+		<module>api/api-file</module>
 		<module>service/re-service-sys</module>
 		<module>service/re-service-article</module>
     </modules>

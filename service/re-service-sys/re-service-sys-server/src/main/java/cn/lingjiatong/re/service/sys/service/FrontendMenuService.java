@@ -4,7 +4,6 @@ import cn.lingjiatong.re.service.sys.api.vo.FrontendMenuVO;
 import cn.lingjiatong.re.service.sys.entity.Menu;
 import cn.lingjiatong.re.service.sys.mapper.MenuMapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,7 +49,7 @@ public class FrontendMenuService {
                     return frontendMenuVO;
                 })
                 .collect(Collectors.toList());
-
+        // TODO 改为使用递归算法
         Map<Long, List<FrontendMenuVO>> collect = menus.stream().filter(menu -> !menu.getParentId().equals(-1L)).collect(Collectors.groupingBy(FrontendMenuVO::getParentId));
         menus.forEach(menu -> menu.setChildren(collect.get(menu.getId())));
         menus = menus.stream().filter(menu -> menu.getParentId().equals(-1L)).collect(Collectors.toList());

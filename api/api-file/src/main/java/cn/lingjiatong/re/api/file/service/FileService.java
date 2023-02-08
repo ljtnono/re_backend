@@ -1,4 +1,4 @@
-package cn.lingjiatong.re.api.backend.service;
+package cn.lingjiatong.re.api.file.service;
 
 import cn.lingjiatong.re.common.constant.MinioConstant;
 import cn.lingjiatong.re.common.exception.ErrorEnum;
