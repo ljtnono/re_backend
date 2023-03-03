@@ -1,6 +1,7 @@
 package cn.lingjiatong.re.service.sys.config;
 
 import cn.lingjiatong.re.common.constant.CommonConstant;
+import cn.lingjiatong.re.common.util.RedisUtil;
 import cn.lingjiatong.re.common.util.SnowflakeIdWorkerUtil;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
@@ -130,6 +131,12 @@ public class SpringBeanConfig {
         redisTemplate.setHashValueSerializer(jackson2JsonRedisSerializer);
         redisTemplate.afterPropertiesSet();
         return redisTemplate;
+    }
+
+    @Bean
+    public RedisUtil redisUtil(@Autowired RedisTemplate<String, Object> redisTemplate) {
+        RedisUtil redisUtil = new RedisUtil(redisTemplate);
+        return redisUtil;
     }
 
     @Bean

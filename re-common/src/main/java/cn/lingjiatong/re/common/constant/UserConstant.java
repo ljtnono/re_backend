@@ -14,7 +14,6 @@ public interface UserConstant {
     Long SUPER_ADMIN_USER_ID = 1L;
     // 系统操作用户名
     String SYSTEM_USER = "system";
-
     // 已注销用户显示的名称
     String USER_DELETE_SHOW_NAME = "该用户已注销";
 }

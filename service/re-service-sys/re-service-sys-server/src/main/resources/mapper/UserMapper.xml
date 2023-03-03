@@ -2,33 +2,23 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.lingjiatong.re.service.sys.mapper.UserMapper">
     <!-- ********************************结果映射******************************** -->
-
-    <!-- cn.lingjiatong.re.service.sys.api.vo.BackendUserListVO -->
-    <resultMap id="BackendUserListVO" type="cn.lingjiatong.re.service.sys.api.vo.BackendUserListVO">
-
-    </resultMap>
-
-
     <!-- ********************************新增类接口******************************** -->
-
     <!-- ********************************删除类接口******************************** -->
-
     <!-- ********************************修改类接口******************************** -->
-
     <!-- ********************************查询类接口******************************** -->
 
     <!-- 分页获取用户列表 -->
     <select id="findUserList" resultType="cn.lingjiatong.re.service.sys.api.vo.BackendUserListVO">
         SELECT
-            u.id
+            u.id,
             u.username,
             u.email,
             u.phone,
             u.avatar_url,
             u.create_time,
-            u.modify_time
+            u.modify_time,
             u.is_deleted
-        FROM user u
+        FROM re_sys.user u
         <where>
             <if test="dto.searchCondition != null and dto.searchCondition != ''">
                 AND
@@ -46,7 +36,7 @@
     <!-- 批量更新用户删除状态 -->
     <update id="updateUserDeleteStatusBatch">
         UPDATE
-        user u
+            re_sys.user u
         SET is_deleted = #{dto.deleteStatus, jdbcType=TINYINT}
         <where>
             u.id IN
@@ -55,4 +45,14 @@
             </foreach>
         </where>
     </update>
+
+    <!-- 根据用户id获取用户角色列表 -->
+    <select id="findUserRoleListById" resultType="cn.lingjiatong.re.common.entity.Role">
+        SELECT
+            r.id,
+            r.name
+        FROM re_sys.tr_user_role tur
+        LEFT JOIN re_sys.role r ON r.id = tur.role_id
+        WHERE tur.user_id = #{id, jdbcType=BIGINT}
+    </select>
 </mapper>

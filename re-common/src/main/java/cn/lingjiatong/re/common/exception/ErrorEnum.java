@@ -47,7 +47,8 @@ public enum ErrorEnum {
     PERMISSION_DENIED_ERROR(403, "禁止访问"),
     // 无法修改其他用户信息
     CAN_NOT_UPDATE_OTHER_USER_ERROR(403401, "无法修改其他用户信息"),
-
+    // 没有权限
+    NO_PERMISSION_ERROR(403402, "没有操作权限"),
 
     //#################### 500服务器异常 ####################//
     // 通用系统异常消息

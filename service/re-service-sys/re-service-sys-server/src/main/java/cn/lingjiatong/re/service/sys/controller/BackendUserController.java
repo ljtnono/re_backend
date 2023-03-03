@@ -9,6 +9,7 @@ import cn.lingjiatong.re.service.sys.api.dto.BackendUserUpdateDeleteStatusBatchD
 import cn.lingjiatong.re.service.sys.api.vo.BackendUserListVO;
 import cn.lingjiatong.re.service.sys.service.BackendUserService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,8 +34,8 @@ public class BackendUserController implements BackendUserFeignClient {
 
     @Override
     @PutMapping("/backend/api/v1/user/updateDeleteStatusBatch")
-    public ResultVO<?> updateUserDeleteStatusBatch(@RequestBody BackendUserUpdateDeleteStatusBatchDTO dto) {
-        backendUserService.updateUserDeleteStatusBatch(dto);
+    public ResultVO<?> updateUserDeleteStatusBatch(@RequestBody BackendUserUpdateDeleteStatusBatchDTO dto, User currentUser) {
+        backendUserService.updateUserDeleteStatusBatch(dto, currentUser);
         return ResultVO.success();
     }
 
@@ -56,8 +57,8 @@ public class BackendUserController implements BackendUserFeignClient {
 
     @Override
     @GetMapping("/backend/api/v1/user/list")
-    public ResultVO<IPage<BackendUserListVO>> findUserList(BackendUserListDTO dto) {
-        return ResultVO.success(backendUserService.findUserList(dto));
+    public ResultVO<Page<BackendUserListVO>> findUserList(BackendUserListDTO dto, User currentUser) {
+        return ResultVO.success(backendUserService.findUserList(dto, currentUser));
     }
 
     // ********************************其他微服务调用********************************

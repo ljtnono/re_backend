@@ -1,12 +1,16 @@
 package cn.lingjiatong.re.service.sys.mapper;
 
+import cn.lingjiatong.re.common.entity.Role;
 import cn.lingjiatong.re.common.entity.User;
 import cn.lingjiatong.re.service.sys.api.dto.BackendUserListDTO;
 import cn.lingjiatong.re.service.sys.api.dto.BackendUserUpdateDeleteStatusBatchDTO;
 import cn.lingjiatong.re.service.sys.api.vo.BackendUserListVO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
  * 用户mapper层
@@ -23,7 +27,7 @@ public interface UserMapper extends BaseMapper<User> {
      * @param dto 后台获取用户列表DTO对象
      * @return 后台获取用户列表VO对象分页对象
      */
-    IPage<BackendUserListVO> findUserList(IPage<User> page, @Param("dto") BackendUserListDTO dto);
+    Page<BackendUserListVO> findUserList(IPage<User> page, @Param("dto") BackendUserListDTO dto);
 
     /**
      * 批量更新用户删除状态
@@ -32,4 +36,11 @@ public interface UserMapper extends BaseMapper<User> {
      */
     void updateUserDeleteStatusBatch(@Param("dto") BackendUserUpdateDeleteStatusBatchDTO dto);
 
+    /**
+     * 根据用户id获取用户角色列表
+     *
+     * @param id
+     * @return 角色列表
+     */
+    List<Role> findUserRoleListById(Long id);
 }
