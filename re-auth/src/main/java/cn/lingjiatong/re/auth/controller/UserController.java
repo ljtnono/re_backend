@@ -90,12 +90,13 @@ public class UserController {
      *
      * @param verifyCodeKey       前端传递过来的验证码随机值
      * @param httpServletResponse http响应对象
+     * @return 验证码图片base64字符串
      */
     @GetMapping("/refreshVerifyCode")
     @Operation(summary = "刷新登录验证码", method = "POST")
-    public void refreshVerifyCode(@Parameter(name = "verifyCodeKey", description = "验证码key") String verifyCodeKey, @Parameter(hidden = true) HttpServletResponse httpServletResponse) throws IOException {
+    public ResultVO<String> refreshVerifyCode(@Parameter(name = "verifyCodeKey", description = "验证码key") String verifyCodeKey, @Parameter(hidden = true) HttpServletResponse httpServletResponse) throws IOException {
         log.info("==========刷新登录验证码，参数：{}", verifyCodeKey);
-        userService.refreshVerifyCode(verifyCodeKey, httpServletResponse);
+        return ResultVO.success(userService.refreshVerifyCode(verifyCodeKey, httpServletResponse));
     }
 
 

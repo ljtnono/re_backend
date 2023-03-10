@@ -33,11 +33,11 @@ import org.springframework.security.oauth2.provider.authentication.OAuth2Authent
 import org.springframework.security.oauth2.provider.endpoint.TokenEndpoint;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Base64Utils;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 
 import javax.annotation.Resource;
 import javax.imageio.ImageIO;
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
@@ -210,8 +210,9 @@ public class UserService implements UserDetailsService {
      * 刷新登录验证码
      *
      * @param verifyCodeKey 前端传递过来的验证码随机值
+     * @return 验证码图片base64字符串
      */
-    public void refreshVerifyCode(String verifyCodeKey, HttpServletResponse httpServletResponse) throws IOException {
+    public String refreshVerifyCode(String verifyCodeKey, HttpServletResponse httpServletResponse) throws IOException {
         byte[] captchaChallengeAsJpeg;
         ByteArrayOutputStream jpegOutputStream = new ByteArrayOutputStream();
         BufferedImage bufferedImage = new BufferedImage(300, 75, BufferedImage.TYPE_INT_RGB);
@@ -224,14 +225,7 @@ public class UserService implements UserDetailsService {
         ImageIO.write(bufferedImage, "jpg", jpegOutputStream);
         // 定义response输出类型为image/jpeg类型，使用response输出流输出图片的byte数组
         captchaChallengeAsJpeg = jpegOutputStream.toByteArray();
-        httpServletResponse.setHeader("Cache-Control", "no-store");
-        httpServletResponse.setHeader("Pragma", "no-cache");
-        httpServletResponse.setDateHeader("Expires", 0);
-        httpServletResponse.setContentType("image/jpeg");
-        ServletOutputStream responseOutputStream = httpServletResponse.getOutputStream();
-        responseOutputStream.write(captchaChallengeAsJpeg);
-        responseOutputStream.flush();
-        responseOutputStream.close();
+        return Base64Utils.encodeToString(captchaChallengeAsJpeg);
     }
 
     // ********************************私有函数********************************
