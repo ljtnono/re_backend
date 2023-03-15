@@ -58,8 +58,8 @@ public class SpringBeanConfig {
         WebDriver webDriver;
         // 开发环境 Mac
         if (osName.contains("Mac")) {
-            String webDirverHome = "/Users/lingjiatong/software/chromedriver";
-            System.setProperty("webdriver.chrome.driver", webDirverHome);
+            String webDriverHome = "/Users/lingjiatong/software/chromedriver";
+            System.setProperty("webdriver.chrome.driver", webDriverHome);
             ChromeOptions chromeOptions = new ChromeOptions();
             // 启用所有类型的日志并收集所有日志
             LoggingPreferences logPrefs = new LoggingPreferences();
@@ -73,8 +73,8 @@ public class SpringBeanConfig {
             webDriver = new ChromeDriver(chromeOptions);
         } else {
             // 生产环境 linux
-            String webDirverHome = "/usr/bin/chromedriver";
-            System.setProperty("webdriver.chrome.driver", webDirverHome);
+            String webDriverHome = "/usr/bin/chromedriver";
+            System.setProperty("webdriver.chrome.driver", webDriverHome);
             ChromeOptions options = new ChromeOptions();
             options.addArguments("--window-size=1920,1050");
             // 禁用沙盒

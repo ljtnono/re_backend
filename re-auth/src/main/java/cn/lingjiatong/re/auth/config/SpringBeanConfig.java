@@ -2,6 +2,7 @@ package cn.lingjiatong.re.auth.config;
 
 import cn.lingjiatong.re.common.constant.CommonConstant;
 import cn.lingjiatong.re.common.util.RedisUtil;
+import cn.lingjiatong.re.common.util.SnowflakeIdWorkerUtil;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
@@ -155,5 +156,9 @@ public class SpringBeanConfig {
         return defaultKaptcha;
     }
 
+    @Bean
+    public SnowflakeIdWorkerUtil snowflakeIdWorkerUtil() {
+        return new SnowflakeIdWorkerUtil();
+    }
 
 }

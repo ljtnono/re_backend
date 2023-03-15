@@ -1,13 +1,47 @@
-package cn.lingjiatong.re.service.sys.api.dto;/**
+package cn.lingjiatong.re.service.sys.api.dto;
+
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Data;
+
+import java.util.List;
+
+/**
+ * 后台保存用户DTO对象
  *
  * @author Ling, Jiatong
  * Date: 2023/3/3 15:39
  */
+@Data
+@Schema(name = "BackendUserSaveDTO", description = "后台保存用户DTO对象")
 public class BackendUserSaveDTO {
-    // ********************************新增类接口********************************
-    // ********************************删除类接口********************************
-    // ********************************修改类接口********************************
-    // ********************************查询类接口********************************
-    // ********************************私有函数********************************
-    // ********************************公用函数********************************
+
+    /**
+     * 用户名
+     */
+    @Schema(description = "用户名")
+    private String username;
+
+    /**
+     * 密码
+     */
+    @Schema(description = "密码")
+    private String password;
+
+    /**
+     * 用户角色id列表
+     */
+    @Schema(description = "用户角色id列表")
+    private List<Long> roleIdList;
+
+    /**
+     * 用户邮箱
+     */
+    @Schema(description = "用户邮箱")
+    private String email;
+
+    /**
+     * 用户手机号码
+     */
+    @Schema(description = "用户手机号码")
+    private String phone;
 }

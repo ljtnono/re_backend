@@ -5,16 +5,12 @@ import cn.lingjiatong.re.auth.security.JwtUtil;
 import cn.lingjiatong.re.auth.vo.UserLoginVO;
 import cn.lingjiatong.re.common.constant.CommonConstant;
 import cn.lingjiatong.re.common.constant.RedisCacheKeyEnum;
-import cn.lingjiatong.re.common.entity.Menu;
-import cn.lingjiatong.re.common.entity.Permission;
-import cn.lingjiatong.re.common.entity.Role;
-import cn.lingjiatong.re.common.entity.User;
+import cn.lingjiatong.re.common.entity.*;
 import cn.lingjiatong.re.common.entity.cache.LoginVerifyCodeCache;
 import cn.lingjiatong.re.common.entity.cache.UserInfoCache;
 import cn.lingjiatong.re.common.exception.ErrorEnum;
 import cn.lingjiatong.re.common.exception.ResourceNotExistException;
-import cn.lingjiatong.re.common.util.RedisUtil;
-import cn.lingjiatong.re.common.util.VerifyCodeUtil;
+import cn.lingjiatong.re.common.util.*;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -34,11 +30,12 @@ import org.springframework.security.oauth2.provider.endpoint.TokenEndpoint;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Base64Utils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 
 import javax.annotation.Resource;
 import javax.imageio.ImageIO;
-import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpServletRequest;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -71,6 +68,11 @@ public class UserService implements UserDetailsService {
     private RedisUtil redisUtil;
     @Autowired
     private JwtUtil jwtUtil;
+    @Autowired
+    private SnowflakeIdWorkerUtil snowflakeIdWorkerUtil;
+    @Autowired
+    private UserLoginLogService userLoginLogService;
+
     // ********************************新增类接口********************************
     // ********************************删除类接口********************************
     // ********************************修改类接口********************************
@@ -102,7 +104,7 @@ public class UserService implements UserDetailsService {
      * @param parameters 参数列表
      * @return 用户登录VO对象
      */
-    @Transactional(readOnly = true)
+    @Transactional(rollbackFor = Exception.class)
     public UserLoginVO login(Principal principal, Map<String, String> parameters, TokenEndpoint tokenEndpoint) throws HttpRequestMethodNotSupportedException {
         UserLoginVO result = new UserLoginVO();
         UserLoginVO.UserInfo userInfo;
@@ -151,6 +153,24 @@ public class UserService implements UserDetailsService {
         menus.forEach(menu -> menu.setChildren(collect.get(menu.getId())));
         menus = menus.stream().filter(menu -> menu.getParentId().equals(-1L)).collect(Collectors.toList());
 
+        // 生成登录日志实体并设置到数据库中去
+        HttpServletRequest currentRequest = SpringBeanUtil.getCurrentReq();
+        String ua = currentRequest.getHeader("User-Agent");
+        if (!StringUtils.hasLength(ua)) {
+            ua = null;
+        }
+        String ipAddr = IpUtil.getIpAddr(currentRequest);
+        UserLoginLog userLoginLog = new UserLoginLog();
+        userLoginLog.setId(snowflakeIdWorkerUtil.nextId());
+        userLoginLog.setUsername(userInfo.getUsername());
+        userLoginLog.setUserId(userInfo.getId());
+        userLoginLog.setUa(ua);
+        userLoginLog.setIp(ipAddr);
+        userLoginLog.setLoginTime(LocalDateTime.now(ZoneId.of("Asia/Shanghai")));
+        userLoginLog.setCreateTime(LocalDateTime.now(ZoneId.of("Asia/Shanghai")));
+        userLoginLog.setModifyTime(LocalDateTime.now(ZoneId.of("Asia/Shanghai")));
+        userLoginLogService.insert(userLoginLog);
+
         // 将用户信息设置到redis中去
         UserInfoCache userInfoCache = new UserInfoCache();
         userInfoCache.setId(userInfo.getId());
@@ -171,7 +191,7 @@ public class UserService implements UserDetailsService {
 
         // 删除验证码缓存
         String verifyCodeKey = parameters.get("verifyCodeKey");
-        if (!verifyCodeKey.equalsIgnoreCase("DEV-TEST")) {
+        if (!"DEV-TEST".equalsIgnoreCase(verifyCodeKey)) {
             redisUtil.deleteObject(RedisCacheKeyEnum.LOGIN_VERIFY_CODE.getValue() + verifyCodeKey);
         }
 
@@ -212,7 +232,7 @@ public class UserService implements UserDetailsService {
      * @param verifyCodeKey 前端传递过来的验证码随机值
      * @return 验证码图片base64字符串
      */
-    public String refreshVerifyCode(String verifyCodeKey, HttpServletResponse httpServletResponse) throws IOException {
+    public String refreshVerifyCode(String verifyCodeKey) throws IOException {
         byte[] captchaChallengeAsJpeg;
         ByteArrayOutputStream jpegOutputStream = new ByteArrayOutputStream();
         BufferedImage bufferedImage = new BufferedImage(300, 75, BufferedImage.TYPE_INT_RGB);

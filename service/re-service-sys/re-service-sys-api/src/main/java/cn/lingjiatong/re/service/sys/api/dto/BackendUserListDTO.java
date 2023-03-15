@@ -22,4 +22,7 @@ public class BackendUserListDTO extends BasePageDTO {
     @Schema(description = "查询条件")
     private String searchCondition;
 
+
+
+
 }

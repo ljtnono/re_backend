@@ -20,7 +20,6 @@ import org.springframework.security.oauth2.provider.endpoint.TokenEndpoint;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.security.Principal;
 import java.util.Map;
@@ -89,14 +88,13 @@ public class UserController {
      * 刷新登录验证码
      *
      * @param verifyCodeKey       前端传递过来的验证码随机值
-     * @param httpServletResponse http响应对象
      * @return 验证码图片base64字符串
      */
     @GetMapping("/refreshVerifyCode")
     @Operation(summary = "刷新登录验证码", method = "POST")
-    public ResultVO<String> refreshVerifyCode(@Parameter(name = "verifyCodeKey", description = "验证码key") String verifyCodeKey, @Parameter(hidden = true) HttpServletResponse httpServletResponse) throws IOException {
+    public ResultVO<String> refreshVerifyCode(@Parameter(name = "verifyCodeKey", description = "验证码key") String verifyCodeKey) throws IOException {
         log.info("==========刷新登录验证码，参数：{}", verifyCodeKey);
-        return ResultVO.success(userService.refreshVerifyCode(verifyCodeKey, httpServletResponse));
+        return ResultVO.success(userService.refreshVerifyCode(verifyCodeKey));
     }
 
 
