@@ -3,8 +3,6 @@ package cn.lingjiatong.re.service.sys.api.dto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
-import java.util.List;
-
 /**
  * 后台保存用户DTO对象
  *
@@ -31,7 +29,7 @@ public class BackendUserSaveDTO {
      * 用户角色id列表
      */
     @Schema(description = "用户角色id列表")
-    private List<Long> roleIdList;
+    private Long roleId;
 
     /**
      * 用户邮箱
@@ -44,4 +42,10 @@ public class BackendUserSaveDTO {
      */
     @Schema(description = "用户手机号码")
     private String phone;
+
+    /**
+     * 用户头像
+     */
+    @Schema(description = "用户头像")
+    private String avatarUrl;
 }

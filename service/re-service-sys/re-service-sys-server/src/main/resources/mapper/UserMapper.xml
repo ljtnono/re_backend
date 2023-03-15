@@ -12,13 +12,16 @@
         SELECT
             u.id,
             u.username,
+            r.name AS role,
             u.email,
             u.phone,
             u.avatar_url,
             u.create_time,
             u.modify_time,
-            u.is_deleted
+            u.is_deleted AS deleted
         FROM re_sys.user u
+        LEFT JOIN re_sys.tr_user_role tur ON tur.user_id = u.id
+        LEFT JOIN re_sys.role r ON r.id = tur.role_id
         <where>
             <if test="dto.searchCondition != null and dto.searchCondition != ''">
                 AND
@@ -28,6 +31,28 @@
                     u.email LIKE CONCAT('%', #{dto.searchCondition,jdbcType=VARCHAR}, '%')
                     OR
                     u.phone LIKE CONCAT('%', #{dto.searchCondition,jdbcType=VARCHAR}, '%')
+                )
+            </if>
+        </where>
+        <if test="dto.order != null and dto.order != ''">
+            ORDER BY ${dto.order}
+        </if>
+    </select>
+
+    <!-- 分页获取用户列表-查询总数 -->
+    <select id="findUserListTotal" resultType="long">
+        SELECT
+            COUNT(*)
+        FROM re_sys.user u
+        <where>
+            <if test="dto.searchCondition != null and dto.searchCondition != ''">
+                AND
+                (
+                    u.username LIKE CONCAT('%', #{dto.searchCondition, jdbcType=VARCHAR}, '%')
+                    OR
+                    u.email LIKE CONCAT('%', #{dto.searchCondition, jdbcType=VARCHAR}, '%')
+                    OR
+                    u.phone LIKE CONCAT('%', #{dto.searchCondition, jdbcType=VARCHAR}, '%')
                 )
             </if>
         </where>

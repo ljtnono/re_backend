@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.lingjiatong.re.service.sys.mapper.UserLoginLogMapper">
+    <!-- ********************************结果映射******************************** -->
+    <!-- ********************************新增类接口******************************** -->
+    <!-- ********************************删除类接口******************************** -->
+    <!-- ********************************修改类接口******************************** -->
+    <!-- ********************************查询类接口******************************** -->
+
+
+    <!-- 根据用户id列表获取用户最后一次登录日志列表 -->
+    <select id="findUserLastLoginLogListByUserIdList" resultType="cn.lingjiatong.re.common.entity.UserLoginLog">
+        SELECT
+            ull.id,
+            ull.username,
+            ull.user_id,
+            ull.ip,
+            ull.modify_time,
+            ull.modify_time,
+            MAX(ull.login_time) AS login_time
+        FROM re_sys.user_login_log ull
+        <where>
+            ull.user_id IN
+            <foreach collection="userIdList" item="userId" open="(" close=")" separator=",">
+                #{userId, jdbcType=BIGINT}
+            </foreach>
+        </where>
+        GROUP BY ull.user_id
+    </select>
+</mapper>

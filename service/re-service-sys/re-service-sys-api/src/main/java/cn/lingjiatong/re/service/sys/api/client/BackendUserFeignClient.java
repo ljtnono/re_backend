@@ -4,16 +4,14 @@ import cn.lingjiatong.re.common.ResultVO;
 import cn.lingjiatong.re.common.config.FeignBasicAuthRequestInterceptor;
 import cn.lingjiatong.re.common.entity.User;
 import cn.lingjiatong.re.service.sys.api.dto.BackendUserListDTO;
+import cn.lingjiatong.re.service.sys.api.dto.BackendUserSaveDTO;
 import cn.lingjiatong.re.service.sys.api.dto.BackendUserUpdateDTO;
 import cn.lingjiatong.re.service.sys.api.dto.BackendUserUpdateDeleteStatusBatchDTO;
 import cn.lingjiatong.re.service.sys.api.vo.BackendUserListVO;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.cloud.openfeign.SpringQueryMap;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -27,6 +25,18 @@ import java.util.List;
 public interface BackendUserFeignClient {
 
     // ********************************新增类接口********************************
+
+    /**
+     * 后台保存用户信息
+     *
+     * @param dto 后台保存用户DTO对象
+     * @param currentUser 当前登录用户
+     * @return 通用消息返回对象
+     */
+    @PostMapping("/backend/api/v1/user/save")
+    ResultVO<?> saveUser(@RequestBody BackendUserSaveDTO dto, User currentUser);
+
+
     // ********************************删除类接口********************************
     // ********************************修改类接口********************************
 

@@ -29,6 +29,12 @@ public class BackendUserListVO {
     private String username;
 
     /**
+     * 角色
+     */
+    @Schema(description = "角色")
+    private String role;
+
+    /**
      * 用户手机号
      */
     @Schema(description = "用户手机号")
@@ -54,14 +60,22 @@ public class BackendUserListVO {
     private LocalDateTime createTime;
 
     /**
-     * 用户最后修改时间
+     * 最近登录时间
      */
-    @Schema(description = "用户最后修改时间")
+    @Schema(description = "最近登录时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    private LocalDateTime modifyTime;
+    private LocalDateTime lastLoginTime;
+
+    /**
+     * ip地址
+     */
+    @Schema(description = "ip地址")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private String ip;
 
     /**
      * 是否删除
+     *
      * 0 正常
      * 1 已删除
      */

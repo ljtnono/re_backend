@@ -6,15 +6,13 @@ import cn.lingjiatong.re.common.constant.RoleConstant;
 import cn.lingjiatong.re.common.constant.UserConstant;
 import cn.lingjiatong.re.common.entity.Role;
 import cn.lingjiatong.re.common.entity.User;
+import cn.lingjiatong.re.common.entity.UserLoginLog;
 import cn.lingjiatong.re.common.exception.ErrorEnum;
 import cn.lingjiatong.re.common.exception.ParamErrorException;
 import cn.lingjiatong.re.common.exception.PermissionException;
 import cn.lingjiatong.re.common.exception.ServerException;
 import cn.lingjiatong.re.common.util.RedisUtil;
-import cn.lingjiatong.re.service.sys.api.dto.BackendUserListDTO;
-import cn.lingjiatong.re.service.sys.api.dto.BackendUserPhysicDeleteBatchDTO;
-import cn.lingjiatong.re.service.sys.api.dto.BackendUserUpdateDTO;
-import cn.lingjiatong.re.service.sys.api.dto.BackendUserUpdateDeleteStatusBatchDTO;
+import cn.lingjiatong.re.service.sys.api.dto.*;
 import cn.lingjiatong.re.service.sys.api.vo.BackendUserListVO;
 import cn.lingjiatong.re.service.sys.constant.BackendUserErrorMessageConstant;
 import cn.lingjiatong.re.service.sys.mapper.UserMapper;
@@ -32,6 +30,7 @@ import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -51,8 +50,31 @@ public class BackendUserService {
     private RedisUtil redisUtil;
     @Autowired
     private TrUserRoleService trUserRoleService;
+    @Autowired
+    private UserLoginLogService userLoginLogService;
 
     // ********************************新增类接口********************************
+
+    /**
+     * 后台保存用户信息
+     *
+     * @param dto 后台保存用户DTO对象
+     * @param currentUser 当前登录用户
+     * @return 通用消息返回对象
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public void saveUser(BackendUserSaveDTO dto, User currentUser) {
+        // 校验保存用户参数
+        checkBackendUserSaveDTO(dto);
+
+        // 插入用户实体
+
+
+        // 插入用户角色关联实体
+
+
+    }
+
     // ********************************删除类接口********************************
 
     /**
@@ -213,7 +235,33 @@ public class BackendUserService {
      */
     @Transactional(readOnly = true)
     public Page<BackendUserListVO> findUserList(BackendUserListDTO dto, User currentUser) {
-        return userMapper.findUserList(new Page<>(dto.getPageNum(), dto.getPageSize()), dto);
+        dto.generateOrderCondition();
+        Page page = new Page<>(dto.getPageNum(), dto.getPageSize());
+        // 不查询总数
+        page.setSearchCount(false);
+        Page<BackendUserListVO> userList = userMapper.findUserList(new Page<>(dto.getPageNum(), dto.getPageSize()), dto);
+        long total = userMapper.findUserListTotal(dto);
+        page.setTotal(total);
+
+        // 查询每个用户最后一次登录的信息数据
+        List<Long> userIdList = userList.getRecords()
+                .stream()
+                .map(vo -> Long.valueOf(vo.getId()))
+                .collect(Collectors.toList());
+        List<UserLoginLog> logList = userLoginLogService
+                .findUserLastLoginLogListByUserIdList(userIdList);
+        if (!CollectionUtils.isEmpty(logList)) {
+            Map<Long, List<UserLoginLog>> map = logList
+                    .stream()
+                    .collect(Collectors.groupingBy(UserLoginLog::getUserId));
+            userList.getRecords().forEach(user -> {
+                UserLoginLog userLoginLog = map.get(Long.valueOf(user.getId())).get(0);
+                user.setIp(userLoginLog.getIp());
+                user.setLastLoginTime(userLoginLog.getLoginTime());
+            });
+        }
+
+        return userList;
     }
 
 
@@ -236,6 +284,15 @@ public class BackendUserService {
 
     }
 
+    /**
+     * 校验后台保存用户DTO对象
+     *
+     * @param dto 后台保存用户DTO对象
+     */
+    private void checkBackendUserSaveDTO(BackendUserSaveDTO dto) {
+        String username = dto.getUsername();
+
+    }
 
     // ********************************公用函数********************************
 
@@ -267,5 +324,6 @@ public class BackendUserService {
                     return vo;
                 }).collect(Collectors.toList());
     }
+
 
 }

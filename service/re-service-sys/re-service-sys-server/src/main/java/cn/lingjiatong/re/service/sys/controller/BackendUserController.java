@@ -4,6 +4,7 @@ import cn.lingjiatong.re.common.ResultVO;
 import cn.lingjiatong.re.common.entity.User;
 import cn.lingjiatong.re.service.sys.api.client.BackendUserFeignClient;
 import cn.lingjiatong.re.service.sys.api.dto.BackendUserListDTO;
+import cn.lingjiatong.re.service.sys.api.dto.BackendUserSaveDTO;
 import cn.lingjiatong.re.service.sys.api.dto.BackendUserUpdateDTO;
 import cn.lingjiatong.re.service.sys.api.dto.BackendUserUpdateDeleteStatusBatchDTO;
 import cn.lingjiatong.re.service.sys.api.vo.BackendUserListVO;
@@ -27,6 +28,14 @@ public class BackendUserController implements BackendUserFeignClient {
     private BackendUserService backendUserService;
 
     // ********************************新增类接口********************************
+
+
+    @Override
+    @PostMapping("/backend/api/v1/user/save")
+    public ResultVO<?> saveUser(@RequestBody BackendUserSaveDTO dto, User currentUser) {
+        backendUserService.saveUser(dto, currentUser);
+        return ResultVO.success();
+    }
 
     // ********************************删除类接口********************************
     // ********************************修改类接口********************************

@@ -30,6 +30,14 @@ public interface UserMapper extends BaseMapper<User> {
     Page<BackendUserListVO> findUserList(IPage<User> page, @Param("dto") BackendUserListDTO dto);
 
     /**
+     * 分页获取用户列表-查询总数
+     *
+     * @param dto 后台获取用户列表DTO对象
+     * @return 用户总数
+     */
+    long findUserListTotal(@Param("dto") BackendUserListDTO dto);
+
+    /**
      * 批量更新用户删除状态
      *
      * @param dto 后台批量更改用户删除状态DTO对象
@@ -43,4 +51,5 @@ public interface UserMapper extends BaseMapper<User> {
      * @return 角色列表
      */
     List<Role> findUserRoleListById(Long id);
+
 }
