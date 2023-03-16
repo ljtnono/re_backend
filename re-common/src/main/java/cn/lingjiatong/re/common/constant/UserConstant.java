@@ -16,4 +16,5 @@ public interface UserConstant {
     String SYSTEM_USER = "system";
     // 已注销用户显示的名称
     String USER_DELETE_SHOW_NAME = "该用户已注销";
+
 }

@@ -21,10 +21,10 @@
             m.title,
             m.icon,
             m.path
-        FROM tr_role_permission trp
-        LEFT JOIN tr_user_role tur ON trp.role_id = tur.role_id
-        LEFT JOIN tr_role_menu trm ON trm.role_id = tur.role_id
-        LEFT JOIN menu m ON m.id = trm.menu_id
+        FROM re_sys.tr_role_permission trp
+        LEFT JOIN re_sys.tr_user_role tur ON trp.role_id = tur.role_id
+        LEFT JOIN re_sys.tr_role_menu trm ON trm.role_id = tur.role_id
+        LEFT JOIN re_sys.menu m ON m.id = trm.menu_id
         <where>
             tur.user_id = #{userId, jdbcType=BIGINT}
         </where>

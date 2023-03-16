@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
  * Date: 2022/10/15 22:53
  */
 @Data
-@TableName("user")
+@TableName(value = "user", schema = "re_sys")
 public class User implements UserDetails {
 
     /**

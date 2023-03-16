@@ -21,7 +21,7 @@
             type,
             news_state,
             news_date
-        FROM sys_notice
+        FROM re_sys.sys_notice
         <where>
             <if test="startTime != null and startTime != ''">
                 start_time <![CDATA[<=]]> #{startTime, jdbcType=VARCHAR}

@@ -34,7 +34,7 @@ public interface BackendUserFeignClient {
      * @return 通用消息返回对象
      */
     @PostMapping("/backend/api/v1/user/save")
-    ResultVO<?> saveUser(@RequestBody BackendUserSaveDTO dto, User currentUser);
+    ResultVO<?> saveUser(@RequestBody BackendUserSaveDTO dto, @SpringQueryMap User currentUser);
 
 
     // ********************************删除类接口********************************

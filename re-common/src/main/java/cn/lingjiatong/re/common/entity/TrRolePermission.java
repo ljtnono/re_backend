@@ -11,7 +11,7 @@ import lombok.Data;
  * Date: 2022/10/22 19:25
  */
 @Data
-@TableName("tr_role_permission")
+@TableName(value = "tr_role_permission", schema = "re_sys")
 public class TrRolePermission {
 
     /**

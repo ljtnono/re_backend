@@ -19,9 +19,9 @@
         SELECT
             r.id,
             r.name
-        FROM role r
+        FROM re_sys.role r
         <where>
-            r.id IN (SELECT role_id FROM tr_user_role tur WHERE user_id = #{userId, jdbcType=BIGINT})
+            r.id IN (SELECT role_id FROM re_sys.tr_user_role tur WHERE user_id = #{userId, jdbcType=BIGINT})
             AND r.is_deleted = ${@cn.lingjiatong.re.common.constant.CommonConstant@ENTITY_NORMAL}
         </where>
     </select>

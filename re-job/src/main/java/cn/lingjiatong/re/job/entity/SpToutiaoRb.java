@@ -18,8 +18,8 @@ import java.time.LocalDateTime;
  * Date: 2022/10/12 21:26
  */
 @Data
-@TableName("sp_toutiao_rb")
 @Document(indexName = "sp_toutiao_rb")
+@TableName(value = "sp_toutiao_rb", schema = "re_spider")
 public class SpToutiaoRb {
 
     @Id

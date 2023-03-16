@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
  * Date: 2022/10/14 00:53
  */
 @Data
-@TableName("sp_baidu_img")
+@TableName(value = "sp_baidu_img", schema = "re_spider")
 public class SpBaiduImg {
 
     /**
@@ -52,7 +52,7 @@ public class SpBaiduImg {
      * 此字段由 title + src + width + height + format计算而成
      */
     private String uniqueMd5;
-    
+
     /**
      * 记录创建时间
      */

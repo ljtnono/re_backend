@@ -11,7 +11,7 @@ import lombok.Data;
  * Date: 2022/12/29 22:15
  */
 @Data
-@TableName("page_route")
+@TableName(value = "page_route", schema = "re_sys")
 public class PageRoute {
 
     /**

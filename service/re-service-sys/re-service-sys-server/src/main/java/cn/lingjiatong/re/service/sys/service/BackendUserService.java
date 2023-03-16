@@ -1,10 +1,8 @@
 package cn.lingjiatong.re.service.sys.service;
 
-import cn.lingjiatong.re.common.constant.CommonConstant;
-import cn.lingjiatong.re.common.constant.RedisCacheKeyEnum;
-import cn.lingjiatong.re.common.constant.RoleConstant;
-import cn.lingjiatong.re.common.constant.UserConstant;
+import cn.lingjiatong.re.common.constant.*;
 import cn.lingjiatong.re.common.entity.Role;
+import cn.lingjiatong.re.common.entity.TrUserRole;
 import cn.lingjiatong.re.common.entity.User;
 import cn.lingjiatong.re.common.entity.UserLoginLog;
 import cn.lingjiatong.re.common.exception.ErrorEnum;
@@ -12,6 +10,7 @@ import cn.lingjiatong.re.common.exception.ParamErrorException;
 import cn.lingjiatong.re.common.exception.PermissionException;
 import cn.lingjiatong.re.common.exception.ServerException;
 import cn.lingjiatong.re.common.util.RedisUtil;
+import cn.lingjiatong.re.common.util.SnowflakeIdWorkerUtil;
 import cn.lingjiatong.re.service.sys.api.dto.*;
 import cn.lingjiatong.re.service.sys.api.vo.BackendUserListVO;
 import cn.lingjiatong.re.service.sys.constant.BackendUserErrorMessageConstant;
@@ -29,6 +28,8 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -52,6 +53,10 @@ public class BackendUserService {
     private TrUserRoleService trUserRoleService;
     @Autowired
     private UserLoginLogService userLoginLogService;
+    @Autowired
+    private SnowflakeIdWorkerUtil snowflakeIdWorkerUtil;
+    @Autowired
+    private BackendRoleService backendRoleService;
 
     // ********************************新增类接口********************************
 
@@ -68,10 +73,23 @@ public class BackendUserService {
         checkBackendUserSaveDTO(dto);
 
         // 插入用户实体
-
+        User user = new User();
+        user.setId(snowflakeIdWorkerUtil.nextId());
+        user.setUsername(dto.getUsername());
+        user.setPassword(dto.getPassword());
+        user.setEmail(dto.getEmail());
+        user.setAvatarUrl(dto.getAvatarUrl());
+        user.setPhone(dto.getPhone());
+        user.setCreateTime(LocalDateTime.now(ZoneId.of("Asia/Shanghai")));
+        user.setModifyTime(LocalDateTime.now(ZoneId.of("Asia/Shanghai")));
+        user.setDeleted(CommonConstant.ENTITY_NORMAL);
 
         // 插入用户角色关联实体
+        TrUserRole trUserRole = new TrUserRole();
+        trUserRole.setUserId(user.getId());
+        trUserRole.setRoleId(dto.getRoleId());
 
+        // 插入名称
 
     }
 
@@ -291,6 +309,37 @@ public class BackendUserService {
      */
     private void checkBackendUserSaveDTO(BackendUserSaveDTO dto) {
         String username = dto.getUsername();
+        String password = dto.getPassword();
+        String avatarUrl = dto.getAvatarUrl();
+        String email = dto.getEmail();
+        Long roleId = dto.getRoleId();
+        // 判空校验
+        if (!StringUtils.hasLength(username)) {
+            throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR.getCode(), UserErrorMessageConstant.USERNAME_EMPTY_ERROR_MESSAGE);
+        }
+        if (!StringUtils.hasLength(password)) {
+            throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR.getCode(), UserErrorMessageConstant.PASSWORD_EMPTY_ERROR_MESSAGE);
+        }
+        if (!StringUtils.hasLength(email)) {
+            throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR.getCode(), UserErrorMessageConstant.EMAIL_EMPTY_ERROR_MESSAGE);
+        }
+        if (!StringUtils.hasLength(avatarUrl)) {
+            // TODO 默认用户头像
+            avatarUrl = "";
+        }
+
+        // 正则校验
+        if (!UserRegexConstant.USERNAME_REGEX.matcher(username).matches()) {
+            throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR.getCode(), UserErrorMessageConstant.USERNAME_FORMAT_ERROR_MESSAGE);
+        }
+        if (!UserRegexConstant.PASSWORD_REGEX.matcher(password).matches()) {
+            throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR.getCode(), UserErrorMessageConstant.PASSWORD_FORMAT_ERROR_MESSAGE);
+        }
+        if (!UserRegexConstant.EMAIL_REGEX.matcher(email).matches()) {
+            throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR.getCode(), UserErrorMessageConstant.EMAIL_FORMAT_ERROR_MESSAGE);
+        }
+
+        // 校验角色是否存在
 
     }
 

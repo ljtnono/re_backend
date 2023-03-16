@@ -11,7 +11,7 @@ import lombok.Data;
  * Date: 2022/10/16 12:47
  */
 @Data
-@TableName("tr_article_tag")
+@TableName(value = "tr_article_tag", schema = "re_article")
 public class ArticleTag {
 
     /**
