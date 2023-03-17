@@ -46,9 +46,9 @@ public class BackendUserUpdateDTO {
     private String email;
 
     /**
-     * 用户角色列表
+     * 用户角色id
      */
-    @Schema(description = "用户角色id列表")
-    private Set<Long> roleIds;
+    @Schema(description = "用户角色id")
+    private Long roleId;
 
 }

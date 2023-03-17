@@ -20,4 +20,6 @@ public interface UserErrorMessageConstant {
     String EMAIL_EMPTY_ERROR_MESSAGE = "邮箱不能为空";
     // 邮箱格式错误
     String EMAIL_FORMAT_ERROR_MESSAGE = "邮箱格式错误";
+    // 角色不存在
+    String ROLE_NOT_EXIST_ERROR_MESSAGE = "角色不存在或已被删除";
 }

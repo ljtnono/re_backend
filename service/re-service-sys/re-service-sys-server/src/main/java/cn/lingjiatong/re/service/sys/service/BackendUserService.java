@@ -5,10 +5,7 @@ import cn.lingjiatong.re.common.entity.Role;
 import cn.lingjiatong.re.common.entity.TrUserRole;
 import cn.lingjiatong.re.common.entity.User;
 import cn.lingjiatong.re.common.entity.UserLoginLog;
-import cn.lingjiatong.re.common.exception.ErrorEnum;
-import cn.lingjiatong.re.common.exception.ParamErrorException;
-import cn.lingjiatong.re.common.exception.PermissionException;
-import cn.lingjiatong.re.common.exception.ServerException;
+import cn.lingjiatong.re.common.exception.*;
 import cn.lingjiatong.re.common.util.RedisUtil;
 import cn.lingjiatong.re.common.util.SnowflakeIdWorkerUtil;
 import cn.lingjiatong.re.service.sys.api.dto.*;
@@ -83,13 +80,13 @@ public class BackendUserService {
         user.setCreateTime(LocalDateTime.now(ZoneId.of("Asia/Shanghai")));
         user.setModifyTime(LocalDateTime.now(ZoneId.of("Asia/Shanghai")));
         user.setDeleted(CommonConstant.ENTITY_NORMAL);
+        userMapper.insert(user);
 
         // 插入用户角色关联实体
         TrUserRole trUserRole = new TrUserRole();
         trUserRole.setUserId(user.getId());
         trUserRole.setRoleId(dto.getRoleId());
-
-        // 插入名称
+        trUserRoleService.saveTrUserRole(trUserRole);
 
     }
 
@@ -282,6 +279,20 @@ public class BackendUserService {
         return userList;
     }
 
+    /**
+     * 校验用户名是否重复
+     *
+     * @param username 用户名
+     * @param currentUser 当前用户
+     * @return 重复返回true，不重复返回false
+     */
+    @Transactional(readOnly = true)
+    public Boolean testUsernameDuplicate(String username, User currentUser) {
+        User user = userMapper.selectOne(new LambdaQueryWrapper<User>()
+                .eq(User::getUsername, username)
+                .eq(User::getDeleted, CommonConstant.ENTITY_NORMAL));
+        return user != null;
+    }
 
     // ********************************私有函数********************************
 
@@ -327,8 +338,7 @@ public class BackendUserService {
             // TODO 默认用户头像
             avatarUrl = "";
         }
-
-        // 正则校验
+        // 正则规则校验
         if (!UserRegexConstant.USERNAME_REGEX.matcher(username).matches()) {
             throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR.getCode(), UserErrorMessageConstant.USERNAME_FORMAT_ERROR_MESSAGE);
         }
@@ -338,9 +348,10 @@ public class BackendUserService {
         if (!UserRegexConstant.EMAIL_REGEX.matcher(email).matches()) {
             throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR.getCode(), UserErrorMessageConstant.EMAIL_FORMAT_ERROR_MESSAGE);
         }
-
         // 校验角色是否存在
-
+        if (!backendRoleService.isRoleExist(roleId)) {
+            throw new ResourceNotExistException(ErrorEnum.RESOURCE_NOT_EXIST_ERROR.getCode(), UserErrorMessageConstant.ROLE_NOT_EXIST_ERROR_MESSAGE);
+        }
     }
 
     // ********************************公用函数********************************
@@ -373,6 +384,4 @@ public class BackendUserService {
                     return vo;
                 }).collect(Collectors.toList());
     }
-
-
 }

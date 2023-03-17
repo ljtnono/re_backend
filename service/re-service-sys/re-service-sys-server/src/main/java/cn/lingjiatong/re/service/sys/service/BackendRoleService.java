@@ -54,4 +54,17 @@ public class BackendRoleService {
 
     // ********************************私有函数********************************
     // ********************************公用函数********************************
+
+    /**
+     * 校验角色是否存在
+     *
+     * @param roleId 角色id
+     * @return 存在返回true，不存在返回false
+     */
+    public boolean isRoleExist(Long roleId) {
+        Role role = roleMapper.selectOne(new LambdaQueryWrapper<Role>()
+                .select(Role::getId)
+                .eq(Role::getId, roleId));
+        return role != null;
+    }
 }

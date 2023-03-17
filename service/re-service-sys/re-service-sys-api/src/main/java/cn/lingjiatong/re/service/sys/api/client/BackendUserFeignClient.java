@@ -82,6 +82,16 @@ public interface BackendUserFeignClient {
     @GetMapping("/backend/api/v1/user/list")
     ResultVO<Page<BackendUserListVO>> findUserList(@SpringQueryMap BackendUserListDTO dto, @SpringQueryMap User currentUser);
 
+    /**
+     * 校验用户名是否重复
+     *
+     * @param username 用户名
+     * @param currentUser 当前用户
+     * @return 重复返回true，不重复返回false
+     */
+    @GetMapping("/backend/api/v1/user/testUsernameDuplicate")
+    ResultVO<Boolean> testUsernameDuplicate(String username, @SpringQueryMap User currentUser);
+
     // ********************************其他微服务调用********************************
 
     /**

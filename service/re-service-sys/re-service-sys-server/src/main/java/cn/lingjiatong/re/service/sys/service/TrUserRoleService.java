@@ -38,4 +38,14 @@ public class TrUserRoleService {
         trUserRoleMapper.delete(new LambdaQueryWrapper<TrUserRole>()
                 .in(TrUserRole::getUserId, userIdList));
     }
+
+    /**
+     * 保存用户角色关系对象
+     *
+     * @param trUserRole 用户角色关系实体
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public void saveTrUserRole(TrUserRole trUserRole) {
+        trUserRoleMapper.insert(trUserRole);
+    }
 }

@@ -69,6 +69,12 @@ public class BackendUserController implements BackendUserFeignClient {
         return ResultVO.success(backendUserService.findUserList(dto, currentUser));
     }
 
+    @Override
+    @GetMapping("/backend/api/v1/user/testUsernameDuplicate")
+    public ResultVO<Boolean> testUsernameDuplicate(String username, User currentUser) {
+        return ResultVO.success(backendUserService.testUsernameDuplicate(username, currentUser));
+    }
+
     // ********************************其他微服务调用********************************
 
     @Override
