@@ -90,7 +90,7 @@ public interface BackendUserFeignClient {
      * @return 重复返回true，不重复返回false
      */
     @GetMapping("/backend/api/v1/user/testUsernameDuplicate")
-    ResultVO<Boolean> testUsernameDuplicate(String username, @SpringQueryMap User currentUser);
+    ResultVO<Boolean> testUsernameDuplicate(@RequestParam("username") String username, @SpringQueryMap User currentUser);
 
     // ********************************其他微服务调用********************************
 

@@ -11,6 +11,7 @@ import cn.lingjiatong.re.service.sys.api.vo.BackendUserListVO;
 import cn.lingjiatong.re.service.sys.service.BackendUserService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.openfeign.SpringQueryMap;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -70,8 +71,10 @@ public class BackendUserController implements BackendUserFeignClient {
     }
 
     @Override
-    @GetMapping("/backend/api/v1/user/testUsernameDuplicate")
-    public ResultVO<Boolean> testUsernameDuplicate(String username, User currentUser) {
+    @GetMapping(value = "/backend/api/v1/user/testUsernameDuplicate")
+    public ResultVO<Boolean> testUsernameDuplicate(@RequestParam("username") String username, User currentUser) {
+        // 由于这里openfeign会将用户名封装为map,这里的username参数获取到会变为两个用逗号隔开的值，值是一模一样的，任意取其中一个都行
+        username = username.split(",")[0];
         return ResultVO.success(backendUserService.testUsernameDuplicate(username, currentUser));
     }
 
