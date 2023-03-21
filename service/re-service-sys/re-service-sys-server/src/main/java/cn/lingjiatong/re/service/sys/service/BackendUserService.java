@@ -6,6 +6,7 @@ import cn.lingjiatong.re.common.entity.TrUserRole;
 import cn.lingjiatong.re.common.entity.User;
 import cn.lingjiatong.re.common.entity.UserLoginLog;
 import cn.lingjiatong.re.common.exception.*;
+import cn.lingjiatong.re.common.util.EncryptUtil;
 import cn.lingjiatong.re.common.util.RedisUtil;
 import cn.lingjiatong.re.common.util.SnowflakeIdWorkerUtil;
 import cn.lingjiatong.re.service.sys.api.dto.*;
@@ -74,7 +75,7 @@ public class BackendUserService {
         User user = new User();
         user.setId(snowflakeIdWorkerUtil.nextId());
         user.setUsername(dto.getUsername());
-        user.setPassword(dto.getPassword());
+        user.setPassword(EncryptUtil.getInstance().getMd5LowerCase(dto.getPassword()));
         user.setEmail(dto.getEmail());
         user.setAvatarUrl(dto.getAvatarUrl());
         user.setPhone(dto.getPhone());
