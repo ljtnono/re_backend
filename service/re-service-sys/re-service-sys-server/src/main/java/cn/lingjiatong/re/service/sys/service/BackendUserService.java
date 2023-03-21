@@ -29,6 +29,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -270,9 +271,12 @@ public class BackendUserService {
                     .stream()
                     .collect(Collectors.groupingBy(UserLoginLog::getUserId));
             userList.getRecords().forEach(user -> {
-                UserLoginLog userLoginLog = map.get(Long.valueOf(user.getId())).get(0);
-                user.setIp(userLoginLog.getIp());
-                user.setLastLoginTime(userLoginLog.getLoginTime());
+                List<UserLoginLog> userLoginLogList = map.get(Long.valueOf(user.getId()));
+                if (!CollectionUtils.isEmpty(userLoginLogList)) {
+                    UserLoginLog userLoginLog = map.get(Long.valueOf(user.getId())).get(0);
+                    user.setIp(userLoginLog.getIp());
+                    user.setLastLoginTime(userLoginLog.getLoginTime());
+                }
             });
         }
 
@@ -335,8 +339,11 @@ public class BackendUserService {
             throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR.getCode(), UserErrorMessageConstant.EMAIL_EMPTY_ERROR_MESSAGE);
         }
         if (!StringUtils.hasLength(avatarUrl)) {
-            // TODO 默认用户头像
-            avatarUrl = "";
+            // 默认用户头像, 目前从阿尼亚图片中随机选一个，后面可以改为其他的
+            Random random = new Random();
+            int index = random.nextInt(40);
+            avatarUrl = UserConstant.DEFAULT_USER_AVATAR_LIST.get(index);
+            dto.setAvatarUrl(avatarUrl);
         }
         // 正则规则校验
         if (!UserRegexConstant.USERNAME_REGEX.matcher(username).matches()) {
