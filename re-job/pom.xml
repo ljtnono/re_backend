@@ -29,6 +29,18 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        <!-- re-service-sys-api -->
+        <dependency>
+            <groupId>cn.lingjiatong</groupId>
+            <artifactId>re-service-sys-api</artifactId>
+            <version>${project.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.cloud</groupId>
+                    <artifactId>spring-cloud-starter-oauth2</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
         <!-- mybatis-plus -->
         <dependency>
             <groupId>com.baomidou</groupId>

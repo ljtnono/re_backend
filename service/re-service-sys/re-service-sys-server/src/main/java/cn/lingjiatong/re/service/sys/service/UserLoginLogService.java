@@ -3,7 +3,6 @@ package cn.lingjiatong.re.service.sys.service;
 import cn.lingjiatong.re.common.entity.UserLoginLog;
 import cn.lingjiatong.re.service.sys.mapper.UserLoginLogMapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,5 +44,27 @@ public class UserLoginLogService {
             return Lists.newArrayList();
         }
         return userLoginLogMapper.findUserLastLoginLogListByUserIdList(userIdList);
+    }
+
+    /**
+     * 根据用户id列表删除用户登陆日志
+     *
+     * @param userIdList 用户id列表
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public void deleteUserLoginLogByUserIdList(List<Long> userIdList) {
+        if (CollectionUtils.isEmpty(userIdList)) {
+            return;
+        }
+        userLoginLogMapper.delete(new LambdaQueryWrapper<UserLoginLog>()
+                .in(UserLoginLog::getUserId, userIdList));
+    }
+
+    /**
+     * 定期删除用户登陆日志
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public void deleteUserLoginLogSchedule() {
+        userLoginLogMapper.deleteUserLoginLogSchedule();
     }
 }

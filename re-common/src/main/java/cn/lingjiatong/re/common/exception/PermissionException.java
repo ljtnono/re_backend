@@ -6,7 +6,7 @@ package cn.lingjiatong.re.common.exception;
  * @author Ling, Jiatong
  * Date: 2022/10/23 10:39
  */
-public class PermissionException extends BaseException{
+public class PermissionException extends BaseException {
 
     public PermissionException(ErrorEnum errorEnum) {
         super(errorEnum);

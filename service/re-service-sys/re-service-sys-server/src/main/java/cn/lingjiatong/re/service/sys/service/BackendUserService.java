@@ -20,6 +20,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -32,6 +33,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
 import java.util.stream.Collectors;
 
 /**
@@ -56,6 +58,10 @@ public class BackendUserService {
     private SnowflakeIdWorkerUtil snowflakeIdWorkerUtil;
     @Autowired
     private BackendRoleService backendRoleService;
+    @Autowired
+    @Qualifier("commonThreadPool")
+    private ExecutorService commonThreadPool;
+
 
     // ********************************新增类接口********************************
 
@@ -135,6 +141,10 @@ public class BackendUserService {
             throw new ServerException(ErrorEnum.DATABASE_OPERATION_ERROR);
         }
 
+        // TODO 删除用户产生的所有其他资源
+        // 异步删除用户的登陆日志
+        commonThreadPool.submit(() -> userLoginLogService.deleteUserLoginLogByUserIdList(userIdList));
+
         // 删除用户缓存
         Set<String> userInfoKeySet = userIdList
                 .stream()
@@ -186,9 +196,10 @@ public class BackendUserService {
         if (userIdList.contains(UserConstant.SUPER_ADMIN_USER_ID)) {
             throw new PermissionException(ErrorEnum.NO_PERMISSION_ERROR.getCode(), BackendUserErrorMessageConstant.DELETE_SUPER_ADMIN_ERROR_MESSAGE);
         }
-        // 更新用户删除状态
         try {
+            // 更新用户删除状态
             userMapper.updateUserDeleteStatusBatch(dto);
+            // TODO 将用户相关的文章、评论、等都设置为隐藏
         } catch (Exception e) {
             log.error(e.toString(), e);
             throw new ServerException(ErrorEnum.DATABASE_OPERATION_ERROR);
@@ -299,6 +310,21 @@ public class BackendUserService {
         return user != null;
     }
 
+    /**
+     * 校验邮箱是否重复
+     *
+     * @param email 邮箱
+     * @param currentUser 当前用户
+     * @return 重复返回true, 不重复返回false
+     */
+    @Transactional(readOnly = true)
+    public Boolean testEmailDuplicate(String email, User currentUser) {
+        User user = userMapper.selectOne(new LambdaQueryWrapper<User>()
+                .eq(User::getEmail, email)
+                .eq(User::getDeleted, CommonConstant.ENTITY_NORMAL));
+        return user != null;
+    }
+
     // ********************************私有函数********************************
 
     /**
@@ -392,4 +418,6 @@ public class BackendUserService {
                     return vo;
                 }).collect(Collectors.toList());
     }
+
+
 }

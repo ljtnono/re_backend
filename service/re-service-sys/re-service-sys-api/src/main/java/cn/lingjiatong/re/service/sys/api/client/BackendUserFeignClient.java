@@ -3,10 +3,7 @@ package cn.lingjiatong.re.service.sys.api.client;
 import cn.lingjiatong.re.common.ResultVO;
 import cn.lingjiatong.re.common.config.FeignBasicAuthRequestInterceptor;
 import cn.lingjiatong.re.common.entity.User;
-import cn.lingjiatong.re.service.sys.api.dto.BackendUserListDTO;
-import cn.lingjiatong.re.service.sys.api.dto.BackendUserSaveDTO;
-import cn.lingjiatong.re.service.sys.api.dto.BackendUserUpdateDTO;
-import cn.lingjiatong.re.service.sys.api.dto.BackendUserUpdateDeleteStatusBatchDTO;
+import cn.lingjiatong.re.service.sys.api.dto.*;
 import cn.lingjiatong.re.service.sys.api.vo.BackendUserListVO;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -38,6 +35,17 @@ public interface BackendUserFeignClient {
 
 
     // ********************************删除类接口********************************
+
+    /**
+     * 批量删除用户列表
+     *
+     * @param dto 后台批量物理删除用户DTO对象
+     * @param currentUser 当前登陆用户
+     * @return 通用消息返回对象
+     */
+    @DeleteMapping("/backend/api/v1/user/deleteBatch")
+    ResultVO<?> deleteUserBatch(@RequestBody BackendUserPhysicDeleteBatchDTO dto, @SpringQueryMap User currentUser);
+
     // ********************************修改类接口********************************
 
     /**
@@ -92,6 +100,16 @@ public interface BackendUserFeignClient {
     @GetMapping("/backend/api/v1/user/testUsernameDuplicate")
     ResultVO<Boolean> testUsernameDuplicate(@RequestParam("username") String username, @SpringQueryMap User currentUser);
 
+    /**
+     * 测试邮箱是否重复
+     *
+     * @param email 邮箱
+     * @param currentUser 当前登陆用户
+     * @return 重复返回true, 不重复返回false
+     */
+    @GetMapping("/backend/api/v1/user/testEmailDuplicate")
+    ResultVO<Boolean> testEmailDuplicate(@RequestParam("email") String email, @SpringQueryMap User currentUser);
+
     // ********************************其他微服务调用********************************
 
     /**
@@ -102,4 +120,5 @@ public interface BackendUserFeignClient {
      */
     @GetMapping("/backend/api/v1/user/findUserByUserIdList")
     ResultVO<List<BackendUserListVO>> findUserListByUserIdList(@RequestParam("userIdList") List<Long> userIdList);
+
 }

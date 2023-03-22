@@ -27,4 +27,11 @@
         </where>
         GROUP BY ull.user_id
     </select>
+
+    <!-- 定期删除用户登陆日志 -->
+    <delete id="deleteUserLoginLogSchedule">
+        DELETE
+        FROM re_sys.user_login_log AS ull
+        WHERE ull.create_time <![CDATA[<=]]> NOW() + INTERVAL 8 HOUR - INTERVAL 30 DAY
+    </delete>
 </mapper>

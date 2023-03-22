@@ -77,6 +77,20 @@ public class GlobalControllerAspect {
         return ResultVO.error(e.getCode(), e.getMessage());
     }
 
+    /**
+     * 权限异常
+     *
+     * @param e 权限异常
+     * @return 通用消息返回对象
+     */
+    @ExceptionHandler(PermissionException.class)
+    @ResponseStatus(value = HttpStatus.OK)
+    public ResultVO<?> handlePermissionException(PermissionException e) {
+        log.error("==========权限异常");
+        log.error(e.toString(), e);
+        return ResultVO.error(e.getCode(), e.getMessage());
+    }
+
 
     /**
      * 处理资源不存在异常

@@ -18,6 +18,12 @@ public interface UserLoginLogMapper extends BaseMapper<UserLoginLog> {
     // ********************************新增类接口********************************
     // ********************************删除类接口********************************
     // ********************************修改类接口********************************
+
+    /**
+     * 定期删除用户登陆日志
+     */
+    void deleteUserLoginLogSchedule();
+
     // ********************************查询类接口********************************
 
     /**
@@ -27,6 +33,7 @@ public interface UserLoginLogMapper extends BaseMapper<UserLoginLog> {
      * @return 用户登录日志实体列表
      */
     List<UserLoginLog> findUserLastLoginLogListByUserIdList(@Param("userIdList") List<Long> userIdList);
+
 
     // ********************************私有函数********************************
     // ********************************公用函数********************************

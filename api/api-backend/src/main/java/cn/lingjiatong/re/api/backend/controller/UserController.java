@@ -5,7 +5,9 @@ import cn.lingjiatong.re.common.annotation.CurrentUser;
 import cn.lingjiatong.re.common.entity.User;
 import cn.lingjiatong.re.service.sys.api.client.BackendUserFeignClient;
 import cn.lingjiatong.re.service.sys.api.dto.BackendUserListDTO;
+import cn.lingjiatong.re.service.sys.api.dto.BackendUserPhysicDeleteBatchDTO;
 import cn.lingjiatong.re.service.sys.api.dto.BackendUserSaveDTO;
+import cn.lingjiatong.re.service.sys.api.dto.BackendUserUpdateDeleteStatusBatchDTO;
 import cn.lingjiatong.re.service.sys.api.vo.BackendUserListVO;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.Operation;
@@ -49,7 +51,32 @@ public class UserController {
     }
 
     // ********************************删除类接口********************************
+
+    @DeleteMapping("/deleteUserBatch")
+    @PreAuthorize("hasAuthority('system:user:write')")
+    @Operation(summary = "批量删除用户", method = "POST")
+    public ResultVO<?> deleteUserBatch(@RequestBody BackendUserPhysicDeleteBatchDTO dto, @Parameter(hidden = true) @CurrentUser User currentUser) {
+        log.info("==========批量删除用户，参数：{}", dto);
+        return backendUserFeignClient.deleteUserBatch(dto, currentUser);
+    }
+
     // ********************************修改类接口********************************
+
+    /**
+     * 批量更新用户状态
+     *
+     * @param dto 后台批量更改用户删除状态DTO对象
+     * @param currentUser 当前登陆用户
+     * @return 通用消息返回对象
+     */
+    @PutMapping("/updateUserDeleteStatusBatch")
+    @PreAuthorize("hasAuthority('system:user:write')")
+    @Operation(summary = "批量更新用户删除状态", method = "POST")
+    public ResultVO<?> updateUserDeleteStatusBatch(@RequestBody BackendUserUpdateDeleteStatusBatchDTO dto, @Parameter(hidden = true) @CurrentUser User currentUser) {
+        log.info("==========批量更新用户删除状态，参数：{}", dto);
+        return backendUserFeignClient.updateUserDeleteStatusBatch(dto, currentUser);
+    }
+
     // ********************************查询类接口********************************
 
     /**
@@ -79,6 +106,21 @@ public class UserController {
     public ResultVO<Boolean> testUsernameDuplicate(String username, @Parameter(hidden = true) @CurrentUser User currentUser) {
         log.info("==========校验用户名是否重复，参数：{}", username);
         return backendUserFeignClient.testUsernameDuplicate(username, currentUser);
+    }
+
+    /**
+     * 校验邮箱是否重复
+     *
+     * @param email 邮箱
+     * @param currentUser 当前用户
+     * @return 重复返回true，不重复返回false
+     */
+    @GetMapping("/testEmailDuplicate")
+    @Operation(summary = "测试邮箱是否重复", method = "GET")
+    @PreAuthorize("hasAuthority('system:user') || hasAuthority('system:user:read')")
+    public ResultVO<Boolean> testEmailDuplicate(String email, @Parameter(hidden = true) @CurrentUser User currentUser) {
+        log.info("==========测试邮箱是否重复，参数：{}", email);
+        return backendUserFeignClient.testEmailDuplicate(email, currentUser);
     }
 
     // ********************************私有函数********************************

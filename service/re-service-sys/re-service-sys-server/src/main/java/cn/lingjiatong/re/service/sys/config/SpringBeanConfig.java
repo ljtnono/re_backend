@@ -36,6 +36,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.TimeZone;
+import java.util.concurrent.*;
 
 /**
  * spring bean配置类
@@ -144,4 +145,23 @@ public class SpringBeanConfig {
         return new SnowflakeIdWorkerUtil();
     }
 
+    @Bean(name="commonThreadPool")
+    public ExecutorService commonThreadPool(){
+        // 返回可用处理器的Java虚拟机的数量
+        int processNum = Runtime.getRuntime().availableProcessors();
+        // 核心池大小
+        int corePoolSize = (int) (processNum / (1 - 0.2));
+        // 最大线程数
+        int maxPoolSize = (int) (processNum / (1 - 0.5));
+        ThreadFactory threadFactory = Executors.defaultThreadFactory();
+        ThreadPoolExecutor executorService = new ThreadPoolExecutor(
+                corePoolSize,
+                maxPoolSize,
+                300,
+                TimeUnit.SECONDS,
+                new ArrayBlockingQueue<>(maxPoolSize * 1000),
+                threadFactory,
+                new ThreadPoolExecutor.CallerRunsPolicy());
+        return executorService;
+    }
 }
