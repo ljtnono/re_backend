@@ -57,7 +57,7 @@ public interface BackendUserFeignClient {
      * @return 通用消息返回对象
      */
     @PutMapping("/backend/api/v1/user/updateDeleteStatusBatch")
-    ResultVO<?> updateUserDeleteStatusBatch(@SpringQueryMap BackendUserUpdateDeleteStatusBatchDTO dto, @SpringQueryMap User currentUser);
+    ResultVO<?> updateUserDeleteStatusBatch(@RequestBody BackendUserUpdateDeleteStatusBatchDTO dto, @SpringQueryMap User currentUser);
 
     /**
      * 更改用户信息-管理员

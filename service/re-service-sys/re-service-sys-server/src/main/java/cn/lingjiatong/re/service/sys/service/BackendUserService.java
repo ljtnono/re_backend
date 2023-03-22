@@ -68,7 +68,7 @@ public class BackendUserService {
     /**
      * 后台保存用户信息
      *
-     * @param dto 后台保存用户DTO对象
+     * @param dto         后台保存用户DTO对象
      * @param currentUser 当前登录用户
      * @return 通用消息返回对象
      */
@@ -102,10 +102,11 @@ public class BackendUserService {
 
     /**
      * 后台批量物理删除用户，规则如下：<br/>
-     *
+     * <p>
      * 1、只有超级管理员能物理删除（校验role角色）
      * 2、无法删除lingjiatong账号
-     * @param dto 后台批量物理删除用户DTO对象
+     *
+     * @param dto         后台批量物理删除用户DTO对象
      * @param currentUser 当前登录用户
      */
     @Transactional(rollbackFor = Exception.class)
@@ -146,10 +147,7 @@ public class BackendUserService {
         commonThreadPool.submit(() -> userLoginLogService.deleteUserLoginLogByUserIdList(userIdList));
 
         // 删除用户缓存
-        Set<String> userInfoKeySet = userIdList
-                .stream()
-                .map(userId -> RedisCacheKeyEnum.USER_INFO.getValue() + userId)
-                .collect(Collectors.toSet());
+        Set<String> userInfoKeySet = userIdList.stream().map(userId -> RedisCacheKeyEnum.USER_INFO.getValue() + userId).collect(Collectors.toSet());
         if (!CollectionUtils.isEmpty(userInfoKeySet)) {
             redisUtil.deleteObjects(userInfoKeySet);
         }
@@ -160,10 +158,10 @@ public class BackendUserService {
 
     /**
      * 批量更新用户删除状态，更新规则：<br/>
+     * <p>
+     * 1、lingjiatong账号不能被删除 <br/>
      *
-     * 1、只有超级管理员有权限删除和恢复账号 <br/>
-     * 2、lingjiatong账号不能被删除 <br/>
-     * @param dto 后台批量更改用户删除状态DTO对象
+     * @param dto         后台批量更改用户删除状态DTO对象
      * @param currentUser 当前用户
      */
     @Transactional(rollbackFor = Exception.class)
@@ -173,45 +171,35 @@ public class BackendUserService {
         if (CollectionUtils.isEmpty(userIdList)) {
             return;
         }
-        if (CommonConstant.deleteValues().contains(deleteStatus)) {
+        if (!CommonConstant.deleteValues().contains(deleteStatus)) {
             throw new ParamErrorException(ErrorEnum.REQUEST_PARAM_ERROR.getCode(), BackendUserErrorMessageConstant.DELETE_STATUS_NOT_SUPPORT_ERROR_MESSAGE);
         }
-        // 如果是删除操作，需要判断是否是超级管理员角色
-        if (deleteStatus.equals(CommonConstant.ENTITY_DELETE)) {
-            boolean[] isSuperAdmin = new boolean[]{false};
-            Long currentUserId = currentUser.getId();
-            // 获取用户所有的角色列表
-            List<Role> roleList = userMapper.findUserRoleListById(currentUserId);
-            roleList.forEach(role -> {
-                if (RoleConstant.SUPER_ADMIN_ROLE_ID.equals(role.getId())) {
-                    isSuperAdmin[0] = true;
-                }
-            });
-            if (!isSuperAdmin[0]) {
-                // 没有操作权限
-                throw new PermissionException(ErrorEnum.NO_PERMISSION_ERROR);
-            }
-        }
-        // 如果删除的用户中含有系统内置超级管理员，则无法删除
-        if (userIdList.contains(UserConstant.SUPER_ADMIN_USER_ID)) {
-            throw new PermissionException(ErrorEnum.NO_PERMISSION_ERROR.getCode(), BackendUserErrorMessageConstant.DELETE_SUPER_ADMIN_ERROR_MESSAGE);
-        }
-        try {
-            // 更新用户删除状态
-            userMapper.updateUserDeleteStatusBatch(dto);
-            // TODO 将用户相关的文章、评论、等都设置为隐藏
-        } catch (Exception e) {
-            log.error(e.toString(), e);
-            throw new ServerException(ErrorEnum.DATABASE_OPERATION_ERROR);
-        }
-        // 删除用户缓存
+        // 如果是删除操作
         if (CommonConstant.ENTITY_DELETE.equals(deleteStatus)) {
-            Set<String> userInfoKeySet = userIdList
-                    .stream()
-                    .map(userId -> RedisCacheKeyEnum.USER_INFO.getValue() + userId)
-                    .collect(Collectors.toSet());
+            // 如果删除的用户中含有系统内置超级管理员，则无法隐藏
+            if (userIdList.contains(UserConstant.SUPER_ADMIN_USER_ID)) {
+                throw new PermissionException(ErrorEnum.NO_PERMISSION_ERROR.getCode(), BackendUserErrorMessageConstant.DELETE_SUPER_ADMIN_ERROR_MESSAGE);
+            }
+            try {
+                // 更新用户删除状态
+                userMapper.updateUserDeleteStatusBatch(dto);
+                // TODO 如果是删除操作将用户相关的文章、评论、等都设置为隐藏
+            } catch (Exception e) {
+                log.error(e.toString(), e);
+                throw new ServerException(ErrorEnum.DATABASE_OPERATION_ERROR);
+            }
+            // 删除用户缓存
+            Set<String> userInfoKeySet = userIdList.stream().map(userId -> RedisCacheKeyEnum.USER_INFO.getValue() + userId).collect(Collectors.toSet());
             if (!CollectionUtils.isEmpty(userInfoKeySet)) {
                 redisUtil.deleteObjects(userInfoKeySet);
+            }
+        } else {
+            try {
+                // 更新用户删除状态
+                userMapper.updateUserDeleteStatusBatch(dto);
+            } catch (Exception e) {
+                log.error(e.toString(), e);
+                throw new ServerException(ErrorEnum.DATABASE_OPERATION_ERROR);
             }
         }
     }
@@ -220,7 +208,7 @@ public class BackendUserService {
      * 个人更新用户信息
      * 个人能够编辑的字段：用户名、邮箱、手机号
      *
-     * @param dto 后台编辑用户信息DTO对象
+     * @param dto         后台编辑用户信息DTO对象
      * @param currentUser 当前用户实体
      */
     @Transactional(rollbackFor = Exception.class)
@@ -233,11 +221,7 @@ public class BackendUserService {
         }
         // 更新用户信息
         try {
-            userMapper.update(null, new LambdaUpdateWrapper<User>()
-                    .set(StringUtils.hasLength(dto.getUsername()), User::getUsername, dto.getUsername())
-                    .set(StringUtils.hasLength(dto.getEmail()), User::getEmail, dto.getEmail())
-                    .set(StringUtils.hasLength(dto.getPhone()), User::getPhone, dto.getPhone())
-                    .eq(User::getId, dto.getUserId()));
+            userMapper.update(null, new LambdaUpdateWrapper<User>().set(StringUtils.hasLength(dto.getUsername()), User::getUsername, dto.getUsername()).set(StringUtils.hasLength(dto.getEmail()), User::getEmail, dto.getEmail()).set(StringUtils.hasLength(dto.getPhone()), User::getPhone, dto.getPhone()).eq(User::getId, dto.getUserId()));
         } catch (Exception e) {
             log.error(e.toString(), e);
             throw new ServerException(ErrorEnum.DATABASE_OPERATION_ERROR);
@@ -272,16 +256,10 @@ public class BackendUserService {
         page.setTotal(total);
 
         // 查询每个用户最后一次登录的信息数据
-        List<Long> userIdList = userList.getRecords()
-                .stream()
-                .map(vo -> Long.valueOf(vo.getId()))
-                .collect(Collectors.toList());
-        List<UserLoginLog> logList = userLoginLogService
-                .findUserLastLoginLogListByUserIdList(userIdList);
+        List<Long> userIdList = userList.getRecords().stream().map(vo -> Long.valueOf(vo.getId())).collect(Collectors.toList());
+        List<UserLoginLog> logList = userLoginLogService.findUserLastLoginLogListByUserIdList(userIdList);
         if (!CollectionUtils.isEmpty(logList)) {
-            Map<Long, List<UserLoginLog>> map = logList
-                    .stream()
-                    .collect(Collectors.groupingBy(UserLoginLog::getUserId));
+            Map<Long, List<UserLoginLog>> map = logList.stream().collect(Collectors.groupingBy(UserLoginLog::getUserId));
             userList.getRecords().forEach(user -> {
                 List<UserLoginLog> userLoginLogList = map.get(Long.valueOf(user.getId()));
                 if (!CollectionUtils.isEmpty(userLoginLogList)) {
@@ -298,30 +276,26 @@ public class BackendUserService {
     /**
      * 校验用户名是否重复
      *
-     * @param username 用户名
+     * @param username    用户名
      * @param currentUser 当前用户
      * @return 重复返回true，不重复返回false
      */
     @Transactional(readOnly = true)
     public Boolean testUsernameDuplicate(String username, User currentUser) {
-        User user = userMapper.selectOne(new LambdaQueryWrapper<User>()
-                .eq(User::getUsername, username)
-                .eq(User::getDeleted, CommonConstant.ENTITY_NORMAL));
+        User user = userMapper.selectOne(new LambdaQueryWrapper<User>().eq(User::getUsername, username).eq(User::getDeleted, CommonConstant.ENTITY_NORMAL));
         return user != null;
     }
 
     /**
      * 校验邮箱是否重复
      *
-     * @param email 邮箱
+     * @param email       邮箱
      * @param currentUser 当前用户
      * @return 重复返回true, 不重复返回false
      */
     @Transactional(readOnly = true)
     public Boolean testEmailDuplicate(String email, User currentUser) {
-        User user = userMapper.selectOne(new LambdaQueryWrapper<User>()
-                .eq(User::getEmail, email)
-                .eq(User::getDeleted, CommonConstant.ENTITY_NORMAL));
+        User user = userMapper.selectOne(new LambdaQueryWrapper<User>().eq(User::getEmail, email).eq(User::getDeleted, CommonConstant.ENTITY_NORMAL));
         return user != null;
     }
 
@@ -332,7 +306,7 @@ public class BackendUserService {
      * 个人能编辑的字段：用户名、邮箱、手机号
      * 管理员能编辑的信息：用户名、密码、邮箱、手机号、用户角色列表
      *
-     * @param dto 后台编辑用户信息DTO对象
+     * @param dto         后台编辑用户信息DTO对象
      * @param adminUpdate 是否是管理员编辑 true 是 false 不是
      */
     private void checkBackendUserUpdateDTO(BackendUserUpdateDTO dto, boolean adminUpdate) {
@@ -394,7 +368,7 @@ public class BackendUserService {
      * 根据用户id列表获取用户列表
      *
      * @param userIdList 用户id列表
-     * @param fields 要获取的字段列表
+     * @param fields     要获取的字段列表
      * @return 后台获取用户列表VO对象列表
      */
     public List<BackendUserListVO> findUserListByUserIdList(List<Long> userIdList, SFunction<User, ?>... fields) {
@@ -403,20 +377,16 @@ public class BackendUserService {
         }
         List<User> users;
         if (fields == null || fields.length == 0) {
-            users = userMapper.selectList(new LambdaQueryWrapper<User>()
-                    .in(User::getId, userIdList));
+            users = userMapper.selectList(new LambdaQueryWrapper<User>().in(User::getId, userIdList));
         } else {
-            users = userMapper.selectList(new LambdaQueryWrapper<User>()
-                    .select(fields)
-                    .in(User::getId, userIdList));
+            users = userMapper.selectList(new LambdaQueryWrapper<User>().select(fields).in(User::getId, userIdList));
         }
-        return users.stream()
-                .map(user -> {
-                    BackendUserListVO vo = new BackendUserListVO();
-                    BeanUtils.copyProperties(user, vo);
-                    vo.setId(String.valueOf(user.getId()));
-                    return vo;
-                }).collect(Collectors.toList());
+        return users.stream().map(user -> {
+            BackendUserListVO vo = new BackendUserListVO();
+            BeanUtils.copyProperties(user, vo);
+            vo.setId(String.valueOf(user.getId()));
+            return vo;
+        }).collect(Collectors.toList());
     }
 
 

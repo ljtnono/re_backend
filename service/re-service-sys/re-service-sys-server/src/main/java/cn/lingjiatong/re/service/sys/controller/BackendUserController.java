@@ -8,7 +8,6 @@ import cn.lingjiatong.re.service.sys.api.vo.BackendUserListVO;
 import cn.lingjiatong.re.service.sys.service.BackendUserService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cloud.openfeign.SpringQueryMap;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -55,7 +54,7 @@ public class BackendUserController implements BackendUserFeignClient {
 
     @Override
     @PutMapping("/backend/api/v1/user/updateUser")
-    public ResultVO<?> adminUpdateUser(BackendUserUpdateDTO dto) {
+    public ResultVO<?> adminUpdateUser(@RequestBody BackendUserUpdateDTO dto) {
         backendUserService.adminUpdateUser(dto);
         return ResultVO.success();
     }
