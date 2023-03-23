@@ -90,6 +90,12 @@ public class BackendUserController implements BackendUserFeignClient {
         return ResultVO.success(backendUserService.testEmailDuplicate(email, currentUser));
     }
 
+    @Override
+    @GetMapping("/backend/api/v1/user/adminEditUserTestEmailAvailability")
+    public ResultVO<Boolean> adminEditUserTestEmailAvailability(BackendAdminEditUserEmailTestAvailabilityDTO dto, User currentUser) {
+        return ResultVO.success(backendUserService.adminEditUserTestEmailAvailability(dto, currentUser));
+    }
+
     // ********************************其他微服务调用********************************
 
     @Override

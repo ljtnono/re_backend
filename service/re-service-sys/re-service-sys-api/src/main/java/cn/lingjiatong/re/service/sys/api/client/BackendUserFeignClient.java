@@ -110,7 +110,19 @@ public interface BackendUserFeignClient {
     @GetMapping("/backend/api/v1/user/testEmailDuplicate")
     ResultVO<Boolean> testEmailDuplicate(@RequestParam("email") String email, @SpringQueryMap User currentUser);
 
+    /**
+     * 管理员编辑用户表单测试邮箱是否可用接口
+     *
+     * @param dto 后台管理员用户编辑用户信息表单测试邮箱是否可用DTO对象
+     * @param currentUser 当前登陆用户
+     * @return 可用返回true，不可用返回false
+     */
+    @GetMapping("/backend/api/v1/user/adminEditUserTestEmailAvailability")
+    ResultVO<Boolean> adminEditUserTestEmailAvailability(@SpringQueryMap BackendAdminEditUserEmailTestAvailabilityDTO dto, @SpringQueryMap User currentUser);
+
+
     // ********************************其他微服务调用********************************
+
 
     /**
      * 根据用户id列表获取用户列表

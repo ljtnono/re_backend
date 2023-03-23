@@ -300,6 +300,23 @@ public class BackendUserService {
         return user != null;
     }
 
+    /**
+     * 管理员编辑用户表单测试邮箱是否可用
+     *
+     * @param dto 后台管理员用户编辑用户信息表单测试邮箱是否可用DTO对象
+     * @param currentUser 当前登陆用户
+     * @return 可用返回true，不可用返回false
+     */
+    @Transactional(readOnly = true)
+    public Boolean adminEditUserTestEmailAvailability(BackendAdminEditUserEmailTestAvailabilityDTO dto, User currentUser) {
+        String email = dto.getEmail();
+        Long userId = dto.getUserId();
+        User user = userMapper.selectOne(new LambdaQueryWrapper<User>()
+                .eq(User::getEmail, email)
+                .ne(User::getId, userId));
+        return user == null;
+    }
+
     // ********************************私有函数********************************
 
     /**
@@ -389,6 +406,7 @@ public class BackendUserService {
             return vo;
         }).collect(Collectors.toList());
     }
+
 
 
 }
