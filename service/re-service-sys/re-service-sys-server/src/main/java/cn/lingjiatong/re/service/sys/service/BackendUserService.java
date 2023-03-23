@@ -266,6 +266,7 @@ public class BackendUserService {
                     UserLoginLog userLoginLog = map.get(Long.valueOf(user.getId())).get(0);
                     user.setIp(userLoginLog.getIp());
                     user.setLastLoginTime(userLoginLog.getLoginTime());
+                    user.setBrowserUA(userLoginLog.getUa());
                 }
             });
         }

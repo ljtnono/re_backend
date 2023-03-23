@@ -17,6 +17,7 @@
             ull.ip,
             ull.modify_time,
             ull.modify_time,
+            ull.ua,
             MAX(ull.login_time) AS login_time
         FROM re_sys.user_login_log ull
         <where>

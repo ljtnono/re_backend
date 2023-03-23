@@ -72,6 +72,12 @@ public class BackendUserListVO {
     @Schema(description = "ip地址")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private String ip;
+    
+    /**
+     * 浏览器UA标识
+     */
+    @Schema(description = "浏览器UA标识")
+    private String browserUA;
 
     /**
      * 是否删除
