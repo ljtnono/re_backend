@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.lingjiatong.re.service.sys.mapper.RoleMapper">
+
+    <!-- ********************************结果映射******************************** -->
+    <!-- ********************************新增类接口******************************** -->
+    <!-- ********************************删除类接口******************************** -->
+    <!-- ********************************修改类接口******************************** -->
+    <!-- ********************************查询类接口******************************** -->
+
+
+    <!-- 后台分页获取角色列表 -->
+    <select id="findRolePageList" resultType="cn.lingjiatong.re.service.sys.api.vo.BackendRoleListVO">
+        SELECT
+            r.id,
+            r.name,
+            r.description,
+            r.create_time,
+            r.modify_time,
+            r.is_deleted AS deleted
+        FROM re_sys.role r
+        <where>
+            <if test="dto.searchCondition != null and dto.searchCondition != ''">
+                AND
+                (
+                    r.name LIKE CONCAT('%', #{dto.searchCondition,jdbcType=VARCHAR}, '%')
+                    OR
+                    r.description LIKE CONCAT('%', #{dto.searchCondition,jdbcType=VARCHAR}, '%')
+                )
+            </if>
+        </where>
+        <if test="dto.order != null and dto.order != ''">
+            ORDER BY ${dto.order}
+        </if>
+    </select>
+
+    <!-- 后台分页获取角色列表-查询总数 -->
+    <select id="findRolePageListTotal" resultType="long">
+        SELECT
+            COUNT(*)
+        FROM re_sys.role r
+        <where>
+            <if test="dto.searchCondition != null and dto.searchCondition != ''">
+                AND
+                (
+                r.name LIKE CONCAT('%', #{dto.searchCondition,jdbcType=VARCHAR}, '%')
+                OR
+                r.description LIKE CONCAT('%', #{dto.searchCondition,jdbcType=VARCHAR}, '%')
+                )
+            </if>
+        </where>
+    </select>
+</mapper>

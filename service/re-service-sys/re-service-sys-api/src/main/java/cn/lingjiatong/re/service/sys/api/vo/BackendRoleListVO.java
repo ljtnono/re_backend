@@ -1,7 +1,11 @@
 package cn.lingjiatong.re.service.sys.api.vo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import java.time.LocalDateTime;
 
 /**
  * 后台获取角色列表VO对象
@@ -24,4 +28,35 @@ public class BackendRoleListVO {
      */
     @Schema(description = "角色名")
     private String name;
+
+    /**
+     * 角色描述
+     */
+    @Schema(description = "角色描述")
+    private String description;
+
+    /**
+     * 创建时间
+     */
+    @Schema(description = "创建时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime createTime;
+
+    /**
+     * 最后修改时间
+     */
+    @Schema(description = "最后修改时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime modifyTime;
+
+    /**
+     * 是否删除
+     *
+     * 0 正常
+     * 1 已删除
+     */
+    @Schema(description = "是否删除 0 正常 1 已删除")
+    private Byte deleted;
 }
