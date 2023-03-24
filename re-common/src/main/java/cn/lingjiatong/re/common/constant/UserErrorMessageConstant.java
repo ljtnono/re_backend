@@ -22,4 +22,8 @@ public interface UserErrorMessageConstant {
     String EMAIL_FORMAT_ERROR_MESSAGE = "邮箱格式错误";
     // 角色不存在
     String ROLE_NOT_EXIST_ERROR_MESSAGE = "角色不存在或已被删除";
+    // 用户id不能为空
+    String USER_ID_EMPTY_ERROR_MESSAGE = "用户id不能为空";
+    // 用户不存在或已被删除
+    String USER_NOT_EXIST_ERROR_MESSAGE = "用户不存在或已被删除";
 }

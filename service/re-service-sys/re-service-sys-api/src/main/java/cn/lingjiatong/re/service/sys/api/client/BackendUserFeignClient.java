@@ -64,10 +64,11 @@ public interface BackendUserFeignClient {
      * 此方法只有管理员能够调用
      *
      * @param dto 后台编辑用户信息DTO对象
+     * @param currentUser 当前登陆用户
      * @return 通用消息返回对象
      */
-    @PutMapping("/backend/api/v1/user/updateUser")
-    ResultVO<?> adminUpdateUser(@RequestBody BackendUserUpdateDTO dto);
+    @PutMapping("/backend/api/v1/user/adminEditUser")
+    ResultVO<?> adminEditUser(@RequestBody BackendAdminUpdateUserDTO dto, @SpringQueryMap User currentUser);
 
     /**
      * 更改用户信息-个人
@@ -77,7 +78,7 @@ public interface BackendUserFeignClient {
      * @return 通用消息返回对象
      */
     @PutMapping("/backend/api/v1/user")
-    ResultVO<?> updateUser(@RequestBody BackendUserUpdateDTO dto, @SpringQueryMap User currentUser);
+    ResultVO<?> updateUser(@RequestBody BackendAdminUpdateUserDTO dto, @SpringQueryMap User currentUser);
 
     // ********************************查询类接口********************************
 

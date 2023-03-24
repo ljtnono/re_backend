@@ -51,7 +51,7 @@ public class UserController {
 
     @DeleteMapping("/deleteUserBatch")
     @PreAuthorize("hasAuthority('system:user:write')")
-    @Operation(summary = "批量删除用户", method = "POST")
+    @Operation(summary = "批量删除用户", method = "DELETE")
     public ResultVO<?> deleteUserBatch(@RequestBody BackendUserPhysicDeleteBatchDTO dto, @Parameter(hidden = true) @CurrentUser User currentUser) {
         log.info("==========批量删除用户，参数：{}", dto);
         return backendUserFeignClient.deleteUserBatch(dto, currentUser);
@@ -68,10 +68,26 @@ public class UserController {
      */
     @PutMapping("/updateUserDeleteStatusBatch")
     @PreAuthorize("hasAuthority('system:user:write')")
-    @Operation(summary = "批量更新用户删除状态", method = "POST")
+    @Operation(summary = "批量更新用户删除状态", method = "PUT")
     public ResultVO<?> updateUserDeleteStatusBatch(@RequestBody BackendUserUpdateDeleteStatusBatchDTO dto, @Parameter(hidden = true) @CurrentUser User currentUser) {
         log.info("==========批量更新用户删除状态，参数：{}", dto);
         return backendUserFeignClient.updateUserDeleteStatusBatch(dto, currentUser);
+    }
+
+
+    /**
+     * 超级管理员编辑用户信息
+     *
+     * @param currentUser 当前登陆用户
+     * @param dto 后台管理员编辑用户信息DTO对象
+     * @return 通用消息返回对象
+     */
+    @PutMapping("/adminEditUser")
+    @PreAuthorize("hasAuthority('system:user:write')")
+    @Operation(summary = "超级管理员编辑用户信息", method = "PUT")
+    public ResultVO<?> adminEditUser(@RequestBody BackendAdminUpdateUserDTO dto, @Parameter(hidden = true) @CurrentUser User currentUser) {
+        log.info("==========超级管理员编辑用户信息，参数：{}", dto);
+        return backendUserFeignClient.adminEditUser(dto, currentUser);
     }
 
     // ********************************查询类接口********************************

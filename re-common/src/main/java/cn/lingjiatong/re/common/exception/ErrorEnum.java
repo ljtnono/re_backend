@@ -62,6 +62,7 @@ public enum ErrorEnum {
     //#################### 600 业务类异常 ####################//
     SAVE_ARTICLE_ERROR(600001, "保存文章失败"),
     LOGIN_VERIFY_CODE_EXPIRED_ERROR(600002, "验证码已过期，请刷新验证码后再试"),
+    EMAIL_OCCUPY_BY_OTHER_USER_ERROR(600003, "邮箱被其他用户占用"),
 
 
     //#################### 未知异常信息 ####################//

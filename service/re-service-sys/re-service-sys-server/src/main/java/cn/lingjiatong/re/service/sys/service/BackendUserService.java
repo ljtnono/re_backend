@@ -36,6 +36,8 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.stream.Collectors;
 
+import static cn.lingjiatong.re.common.constant.UserErrorMessageConstant.*;
+
 /**
  * 后台用户模块service层
  *
@@ -61,6 +63,7 @@ public class BackendUserService {
     @Autowired
     @Qualifier("commonThreadPool")
     private ExecutorService commonThreadPool;
+
 
 
     // ********************************新增类接口********************************
@@ -212,20 +215,20 @@ public class BackendUserService {
      * @param currentUser 当前用户实体
      */
     @Transactional(rollbackFor = Exception.class)
-    public void updateUser(BackendUserUpdateDTO dto, User currentUser) {
-        // 校验参数
-        checkBackendUserUpdateDTO(dto, Boolean.FALSE);
-        // 校验需要更新信息的用户是否是当前用户，如果不是，那么报错
-        if (!currentUser.getId().equals(dto.getUserId())) {
-            throw new PermissionException(ErrorEnum.CAN_NOT_UPDATE_OTHER_USER_ERROR);
-        }
-        // 更新用户信息
-        try {
-            userMapper.update(null, new LambdaUpdateWrapper<User>().set(StringUtils.hasLength(dto.getUsername()), User::getUsername, dto.getUsername()).set(StringUtils.hasLength(dto.getEmail()), User::getEmail, dto.getEmail()).set(StringUtils.hasLength(dto.getPhone()), User::getPhone, dto.getPhone()).eq(User::getId, dto.getUserId()));
-        } catch (Exception e) {
-            log.error(e.toString(), e);
-            throw new ServerException(ErrorEnum.DATABASE_OPERATION_ERROR);
-        }
+    public void updateUser(BackendAdminUpdateUserDTO dto, User currentUser) {
+//        // 校验参数
+//        checkBackendUserUpdateDTO(dto, Boolean.FALSE);
+//        // 校验需要更新信息的用户是否是当前用户，如果不是，那么报错
+//        if (!currentUser.getId().equals(dto.getUserId())) {
+//            throw new PermissionException(ErrorEnum.CAN_NOT_UPDATE_OTHER_USER_ERROR);
+//        }
+//        // 更新用户信息
+//        try {
+//            userMapper.update(null, new LambdaUpdateWrapper<User>().set(StringUtils.hasLength(dto.getUsername()), User::getUsername, dto.getUsername()).set(StringUtils.hasLength(dto.getEmail()), User::getEmail, dto.getEmail()).set(StringUtils.hasLength(dto.getPhone()), User::getPhone, dto.getPhone()).eq(User::getId, dto.getUserId()));
+//        } catch (Exception e) {
+//            log.error(e.toString(), e);
+//            throw new ServerException(ErrorEnum.DATABASE_OPERATION_ERROR);
+//        }
     }
 
     /**
@@ -233,9 +236,47 @@ public class BackendUserService {
      *
      * @param dto 后台编辑用户信息DTO对象
      */
-    public void adminUpdateUser(BackendUserUpdateDTO dto) {
+    @Transactional(rollbackFor = Exception.class)
+    public void adminEditUser(BackendAdminUpdateUserDTO dto, User currentUser) {
+        // 校验用户是否是超级管理员
+        boolean[] isSuperAdmin = new boolean[]{false};
+        Long currentUserId = currentUser.getId();
+        // 获取用户所有的角色列表
+        List<Role> roleList = userMapper.findUserRoleListById(currentUserId);
+        roleList.forEach(role -> {
+            if (RoleConstant.SUPER_ADMIN_ROLE_ID.equals(role.getId())) {
+                isSuperAdmin[0] = true;
+            }
+        });
+        if (!isSuperAdmin[0]) {
+            // 没有操作权限
+            throw new PermissionException(ErrorEnum.NO_PERMISSION_ERROR);
+        }
 
+        // 后台管理员编辑用户信息DTO对象
+        checkBackendAdminUpdateUserDTO(dto);
+        try {
+            // 更新用户信息
+            LambdaUpdateWrapper<User> userLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+            userLambdaUpdateWrapper.eq(User::getId, dto.getUserId());
+            userLambdaUpdateWrapper.set(User::getEmail, dto.getEmail());
+            if (StringUtils.hasLength(dto.getPassword())) {
+                userLambdaUpdateWrapper.set(User::getPassword, EncryptUtil.getInstance().getMd5LowerCase(dto.getPassword()));
+            }
+            userMapper.update(null, userLambdaUpdateWrapper);
+            // 先删除原来用户的角色信息
+            trUserRoleService.deleteTrUserRoleBatchByUserIdList(List.of(dto.getUserId()));
+            // 新增用户角色关联信息
+            TrUserRole trUserRole = new TrUserRole();
+            trUserRole.setUserId(dto.getUserId());
+            trUserRole.setRoleId(dto.getRoleId());
+            trUserRoleService.saveTrUserRole(trUserRole);
+        } catch (Exception e) {
+            log.error(e.toString(), e);
+            throw new ServerException(ErrorEnum.DATABASE_OPERATION_ERROR);
+        }
     }
+
 
     // ********************************查询类接口********************************
 
@@ -320,6 +361,51 @@ public class BackendUserService {
     // ********************************私有函数********************************
 
     /**
+     * 校验后台管理员编辑用户信息DTO对象
+     *
+     * @param dto 后台管理员编辑用户信息DTO对象
+     */
+    private void checkBackendAdminUpdateUserDTO(BackendAdminUpdateUserDTO dto) {
+        Long userId = dto.getUserId();
+        String email = dto.getEmail();
+        String password = dto.getPassword();
+        Long roleId = dto.getRoleId();
+
+        // 判空校验
+        if (userId == null) {
+            throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR.getCode(), UserErrorMessageConstant.USER_ID_EMPTY_ERROR_MESSAGE);
+        }
+        if (!StringUtils.hasLength(email)) {
+            throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR.getCode(), UserErrorMessageConstant.EMAIL_EMPTY_ERROR_MESSAGE);
+        }
+        // 正则规则校验
+        if (StringUtils.hasLength(password)) {
+            if (!UserRegexConstant.PASSWORD_REGEX.matcher(password).matches()) {
+                throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR.getCode(), UserErrorMessageConstant.PASSWORD_FORMAT_ERROR_MESSAGE);
+            }
+        }
+        if (!UserRegexConstant.EMAIL_REGEX.matcher(email).matches()) {
+            throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR.getCode(), UserErrorMessageConstant.EMAIL_FORMAT_ERROR_MESSAGE);
+        }
+        // 判断用户是否存在
+        if (!isExist(userId)) {
+            throw new ResourceNotExistException(ErrorEnum.RESOURCE_NOT_EXIST_ERROR.getCode(), UserErrorMessageConstant.USER_NOT_EXIST_ERROR_MESSAGE);
+        }
+        // 判断邮箱可用性
+        User user = userMapper.selectOne(new LambdaQueryWrapper<User>()
+                .eq(User::getEmail, email)
+                .ne(User::getId, userId));
+        if (user != null) {
+            throw new BusinessException(ErrorEnum.EMAIL_OCCUPY_BY_OTHER_USER_ERROR);
+        }
+        // 校验角色是否存在
+        if (!backendRoleService.isRoleExist(roleId)) {
+            throw new ResourceNotExistException(ErrorEnum.RESOURCE_NOT_EXIST_ERROR.getCode(), UserErrorMessageConstant.ROLE_NOT_EXIST_ERROR_MESSAGE);
+        }
+    }
+
+
+    /**
      * 校验后台更新用户DTO对象
      * 个人能编辑的字段：用户名、邮箱、手机号
      * 管理员能编辑的信息：用户名、密码、邮箱、手机号、用户角色列表
@@ -327,11 +413,11 @@ public class BackendUserService {
      * @param dto         后台编辑用户信息DTO对象
      * @param adminUpdate 是否是管理员编辑 true 是 false 不是
      */
-    private void checkBackendUserUpdateDTO(BackendUserUpdateDTO dto, boolean adminUpdate) {
-        Long userId = dto.getUserId();
-        String username = dto.getUsername();
-        String email = dto.getEmail();
-        String phone = dto.getPhone();
+    private void checkBackendUserUpdateDTO(BackendAdminUpdateUserDTO dto, boolean adminUpdate) {
+//        Long userId = dto.getUserId();
+//        String username = dto.getUsername();
+//        String email = dto.getEmail();
+//        String phone = dto.getPhone();
         // TODO 校验逻辑
 
     }
@@ -407,6 +493,17 @@ public class BackendUserService {
         }).collect(Collectors.toList());
     }
 
-
+    /**
+     * 判断用户是否存在
+     *
+     * @param userId 用户id
+     * @return 存在返回true, 不存在返回false
+     */
+    public boolean isExist(Long userId) {
+        User user = userMapper.selectOne(new LambdaQueryWrapper<User>()
+                .select(User::getId)
+                .eq(User::getId, userId));
+        return user != null;
+    }
 
 }

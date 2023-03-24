@@ -1,19 +1,19 @@
 package cn.lingjiatong.re.service.sys.api.dto;
 
+import com.baomidou.mybatisplus.annotation.FieldStrategy;
+import com.baomidou.mybatisplus.annotation.TableField;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
-import java.util.Set;
-
 /**
- * 后台编辑用户信息DTO对象
+ * 后台管理员编辑用户信息DTO对象
  *
  * @author Ling, Jiatong
  * Date: 2022/10/31 21:14
  */
 @Data
-@Schema(name = "BackendUserUpdateDTO", description = "后台编辑用户信息DTO对象")
-public class BackendUserUpdateDTO {
+@Schema(name = "BackendAdminUpdateUserDTO", description = "后台管理员编辑用户信息DTO对象")
+public class BackendAdminUpdateUserDTO {
 
     /**
      * 主键id
@@ -22,22 +22,11 @@ public class BackendUserUpdateDTO {
     private Long userId;
 
     /**
-     * 用户名
-     */
-    @Schema(description = "用户名")
-    private String username;
-
-    /**
      * 密码
      */
     @Schema(description = "密码 只在管理员修改时传此参数")
+    @TableField(updateStrategy = FieldStrategy.NEVER)
     private String password;
-
-    /**
-     * 手机号
-     */
-    @Schema(description = "手机号")
-    private String phone;
 
     /**
      * 邮箱

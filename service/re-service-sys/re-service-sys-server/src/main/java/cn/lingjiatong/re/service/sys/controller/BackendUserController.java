@@ -53,15 +53,15 @@ public class BackendUserController implements BackendUserFeignClient {
     }
 
     @Override
-    @PutMapping("/backend/api/v1/user/updateUser")
-    public ResultVO<?> adminUpdateUser(@RequestBody BackendUserUpdateDTO dto) {
-        backendUserService.adminUpdateUser(dto);
+    @PutMapping("/backend/api/v1/user/adminEditUser")
+    public ResultVO<?> adminEditUser(@RequestBody BackendAdminUpdateUserDTO dto, User currentUser) {
+        backendUserService.adminEditUser(dto, currentUser);
         return ResultVO.success();
     }
 
     @Override
     @PutMapping("/backend/api/v1/user")
-    public ResultVO<?> updateUser(@RequestBody BackendUserUpdateDTO dto, User currentUser) {
+    public ResultVO<?> updateUser(@RequestBody BackendAdminUpdateUserDTO dto, User currentUser) {
         backendUserService.updateUser(dto, currentUser);
         return ResultVO.success();
     }
