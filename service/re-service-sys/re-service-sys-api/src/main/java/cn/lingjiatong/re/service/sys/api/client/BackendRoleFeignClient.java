@@ -5,10 +5,12 @@ import cn.lingjiatong.re.common.config.FeignBasicAuthRequestInterceptor;
 import cn.lingjiatong.re.common.entity.User;
 import cn.lingjiatong.re.service.sys.api.dto.BackendRolePageListDTO;
 import cn.lingjiatong.re.service.sys.api.vo.BackendRoleListVO;
+import cn.lingjiatong.re.service.sys.api.vo.BackendRoleMenuTreeVO;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.cloud.openfeign.SpringQueryMap;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 
@@ -45,6 +47,16 @@ public interface BackendRoleFeignClient {
      */
     @GetMapping("/backend/api/v1/role/pageList")
     ResultVO<Page<BackendRoleListVO>> findRolePageList(@SpringQueryMap BackendRolePageListDTO dto, @SpringQueryMap User currentUser);
+
+    /**
+     * 后台获取角色的菜单树
+     *
+     * @param roleId 角色id
+     * @param currentUser 当前登陆角色
+     * @return 角色菜单树VO对象
+     */
+    @GetMapping("/backend/api/v1/role/menuTree/{roleId}")
+    ResultVO<BackendRoleMenuTreeVO> findRoleMenuTree(@PathVariable("roleId") Long roleId, @SpringQueryMap User currentUser);
 
     // ********************************私有函数********************************
     // ********************************公用函数********************************

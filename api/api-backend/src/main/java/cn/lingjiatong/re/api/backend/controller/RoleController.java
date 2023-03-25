@@ -1,11 +1,13 @@
 package cn.lingjiatong.re.api.backend.controller;
 
 import cn.lingjiatong.re.common.ResultVO;
+import cn.lingjiatong.re.common.annotation.CurrentUser;
 import cn.lingjiatong.re.common.annotation.PassToken;
 import cn.lingjiatong.re.common.entity.User;
 import cn.lingjiatong.re.service.sys.api.client.BackendRoleFeignClient;
 import cn.lingjiatong.re.service.sys.api.dto.BackendRolePageListDTO;
 import cn.lingjiatong.re.service.sys.api.vo.BackendRoleListVO;
+import cn.lingjiatong.re.service.sys.api.vo.BackendRoleMenuTreeVO;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -14,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -48,7 +51,7 @@ public class RoleController {
     @GetMapping("/list")
     @Operation(summary = "后台获取角色列表", method = "GET")
     @PreAuthorize("hasAuthority('system:role') || hasAuthority('system:role:read')")
-    public ResultVO<List<BackendRoleListVO>> findRoleList(@Parameter(hidden = true) User currentUser) {
+    public ResultVO<List<BackendRoleListVO>> findRoleList(@Parameter(hidden = true) @CurrentUser User currentUser) {
         log.info("==========获取角色列表");
         return backendRoleFeignClient.findRoleList(currentUser);
     }
@@ -62,13 +65,27 @@ public class RoleController {
      */
     @GetMapping("/pageList")
     @Operation(summary = "后台分页获取角色列表", method = "GET")
-//    @PreAuthorize("hasAuthority('system:role') || hasAuthority('system:role:read')")
-    @PassToken
-    public ResultVO<Page<BackendRoleListVO>> findRoleList(BackendRolePageListDTO dto, @Parameter(hidden = true) User currentUser) {
+    @PreAuthorize("hasAuthority('system:role') || hasAuthority('system:role:read')")
+//    @PassToken
+    public ResultVO<Page<BackendRoleListVO>> findRoleList(BackendRolePageListDTO dto, @Parameter(hidden = true) @CurrentUser User currentUser) {
         log.info("==========后台分页获取角色列表，参数：{}", dto);
         return backendRoleFeignClient.findRolePageList(dto, currentUser);
     }
 
+    /**
+     * 后台获取角色菜单树
+     *
+     * @param roleId 角色id
+     * @param currentUser 当前登陆用户
+     * @return 角色菜单树VO对象
+     */
+    @GetMapping("/menuTree/{roleId}")
+    @Operation(summary = "后台获取角色菜单树", method = "GET")
+    @PreAuthorize("hasAuthority('system:role') || hasAuthority('system:role:read')")
+    public ResultVO<BackendRoleMenuTreeVO> findRoleMenuTree(@PathVariable("roleId") Long roleId, @Parameter(hidden = true) @CurrentUser User currentUser) {
+        log.info("==========后台获取角色菜单树，参数：{}", roleId);
+        return backendRoleFeignClient.findRoleMenuTree(roleId, currentUser);
+    }
 
     // ********************************私有函数********************************
     // ********************************公用函数********************************
