@@ -1,6 +1,6 @@
 package cn.lingjiatong.re.service.sys.mapper;
 
-import cn.lingjiatong.re.service.sys.entity.Menu;
+import cn.lingjiatong.re.common.entity.Menu;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**

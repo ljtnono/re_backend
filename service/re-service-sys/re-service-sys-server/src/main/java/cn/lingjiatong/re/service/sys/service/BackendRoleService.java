@@ -1,6 +1,7 @@
 package cn.lingjiatong.re.service.sys.service;
 
 import cn.lingjiatong.re.common.constant.CommonConstant;
+import cn.lingjiatong.re.common.entity.Menu;
 import cn.lingjiatong.re.common.entity.Permission;
 import cn.lingjiatong.re.common.entity.Role;
 import cn.lingjiatong.re.common.entity.User;
@@ -9,7 +10,6 @@ import cn.lingjiatong.re.common.exception.ResourceNotExistException;
 import cn.lingjiatong.re.service.sys.api.dto.BackendRolePageListDTO;
 import cn.lingjiatong.re.service.sys.api.vo.BackendRoleListVO;
 import cn.lingjiatong.re.service.sys.api.vo.BackendRoleMenuTreeVO;
-import cn.lingjiatong.re.service.sys.entity.Menu;
 import cn.lingjiatong.re.service.sys.mapper.RoleMapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
