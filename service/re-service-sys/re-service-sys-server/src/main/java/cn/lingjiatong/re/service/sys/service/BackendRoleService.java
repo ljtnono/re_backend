@@ -6,6 +6,7 @@ import cn.lingjiatong.re.common.constant.RoleRegexConstant;
 import cn.lingjiatong.re.common.entity.*;
 import cn.lingjiatong.re.common.exception.*;
 import cn.lingjiatong.re.common.util.SnowflakeIdWorkerUtil;
+import cn.lingjiatong.re.service.sys.api.dto.BackendRoleDeleteBatchDTO;
 import cn.lingjiatong.re.service.sys.api.dto.BackendRolePageListDTO;
 import cn.lingjiatong.re.service.sys.api.dto.BackendRoleSaveDTO;
 import cn.lingjiatong.re.service.sys.api.vo.BackendRoleListVO;
@@ -26,6 +27,7 @@ import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -53,6 +55,8 @@ public class BackendRoleService {
     private SnowflakeIdWorkerUtil snowflakeIdWorkerUtil;
     @Autowired
     private MenuService menuService;
+    @Autowired
+    private TrUserRoleService trUserRoleService;
 
     // ********************************新增类接口********************************
 
@@ -96,12 +100,47 @@ public class BackendRoleService {
             }
         } catch (Exception e) {
             log.error(e.toString(), e);
-            throw new BusinessException(ErrorEnum.DATABASE_OPERATION_ERROR);
+            throw new ServerException(ErrorEnum.DATABASE_OPERATION_ERROR);
         }
     }
 
 
     // ********************************删除类接口********************************
+
+    /**
+     * 后台批量删除角色
+     *
+     * @param dto 后台角色批量删除DTO对象
+     * @param currentUser 当前登陆用户
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public void deleteRoleBatch(BackendRoleDeleteBatchDTO dto, User currentUser) {
+        Set<Long> roleIdSet = dto.getRoleIdSet();
+        if (CollectionUtils.isEmpty(roleIdSet)) {
+            return;
+        }
+        // 校验角色是否都存在
+        if (!isRoleExist(roleIdSet)) {
+            throw new ResourceNotExistException(ErrorEnum.RESOURCE_NOT_EXIST_ERROR);
+        }
+        // 删除角色必须得该角色不存在关联的用户才能删除
+        roleIdSet.forEach(roleId -> {
+            List<Long> userIdList = trUserRoleService.findUserIdListByRoleId(roleId);
+            if (!CollectionUtils.isEmpty(userIdList)) {
+                throw new BusinessException(ErrorEnum.ROLE_IS_RELATED_BY_USER_ERROR_MESSAGE);
+            }
+        });
+        try {
+            // 删除角色
+            roleMapper.deleteBatchIds(roleIdSet);
+            // 删除角色菜单关联
+            trRoleMenuService.deleteByRoleIdCollection(roleIdSet);
+        } catch (Exception e) {
+            log.error(e.toString(), e);
+            throw new ServerException(ErrorEnum.DATABASE_OPERATION_ERROR);
+        }
+    }
+
     // ********************************修改类接口********************************
     // ********************************查询类接口********************************
 
@@ -282,6 +321,22 @@ public class BackendRoleService {
 
 
     // ********************************公用函数********************************
+
+    /**
+     * 校验角色是否都存在
+     *
+     * @param roleIdCollection 角色id集合
+     * @return 都存在则返回true, 否则返回false
+     */
+    @Transactional(readOnly = true)
+    public boolean isRoleExist(Collection<Long> roleIdCollection) {
+        if (CollectionUtils.isEmpty(roleIdCollection)) {
+            return false;
+        }
+        Integer count = roleMapper.selectCount(new LambdaQueryWrapper<Role>()
+                .in(Role::getId, roleIdCollection));
+        return count.equals(roleIdCollection.size());
+    }
 
     /**
      * 校验角色是否存在

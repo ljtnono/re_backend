@@ -64,6 +64,7 @@ public enum ErrorEnum {
     LOGIN_VERIFY_CODE_EXPIRED_ERROR(600002, "验证码已过期，请刷新验证码后再试"),
     EMAIL_OCCUPY_BY_OTHER_USER_ERROR(600003, "邮箱被其他用户占用"),
     ROLE_NAME_EXIST_ERROR_MESSAGE(600004, "角色名已存在"),
+    ROLE_IS_RELATED_BY_USER_ERROR_MESSAGE(600005, "角色关联了用户，无法删除"),
 
 
     //#################### 未知异常信息 ####################//
