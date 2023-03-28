@@ -37,8 +37,6 @@ public interface BackendRoleFeignClient {
     ResultVO<?> saveRole(@RequestBody BackendRoleSaveDTO dto, @SpringQueryMap User currentUser);
 
     // ********************************删除类接口********************************
-    // ********************************修改类接口********************************
-    // ********************************查询类接口********************************
 
     /**
      * 批量删除角色
@@ -49,6 +47,20 @@ public interface BackendRoleFeignClient {
      */
     @DeleteMapping("/backend/api/v1/role/deleteBatch")
     ResultVO<?> deleteRoleBatch(@RequestBody BackendRoleDeleteBatchDTO dto, @SpringQueryMap User currentUser);
+
+
+    // ********************************修改类接口********************************
+    // ********************************查询类接口********************************
+
+    /**
+     * 测试角色名称是否可用
+     *
+     * @param roleName 角色名称
+     * @param currentUser 当前登陆用户
+     * @return 可用返回true，不可用返回false
+     */
+    @GetMapping("/backend/api/v1/role/testRoleNameAvailability")
+    ResultVO<Boolean> testRoleNameAvailability(@RequestParam("roleName") String roleName, @SpringQueryMap User currentUser);
 
     /**
      * 后台获取角色列表

@@ -145,6 +145,26 @@ public class BackendRoleService {
     // ********************************查询类接口********************************
 
     /**
+     * 校验角色名称可用性
+     *
+     * @param roleName 角色名称
+     * @param currentUser 当前登陆用户
+     * @return 可用返回true，不可用返回false
+     */
+    public boolean testRoleNameAvailability(String roleName, User currentUser) {
+        // 判空校验
+        if (!StringUtils.hasLength(roleName)) {
+            throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR.getCode(), RoleErrorMessageConstant.ROLE_SAVE_NAME_EMPTY_ERROR_MESSAGE);
+        }
+        // 格式校验
+        if (StringUtils.hasLength(roleName) && !RoleRegexConstant.ROLE_SAVE_NAME_REGEX.matcher(roleName).matches()) {
+            throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR.getCode(), RoleErrorMessageConstant.ROLE_SAVE_NAME_FORMAT_ERROR_MESSAGE);
+        }
+
+        return !isRoleExist(roleName);
+    }
+
+    /**
      * 获取角色列表
      *
      * @param currentUser 当前用户
@@ -366,5 +386,6 @@ public class BackendRoleService {
                 .eq(Role::getName, roleName));
         return role != null;
     }
+
 
 }

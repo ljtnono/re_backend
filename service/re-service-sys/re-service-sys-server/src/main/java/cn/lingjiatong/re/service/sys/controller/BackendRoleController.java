@@ -46,9 +46,18 @@ public class BackendRoleController implements BackendRoleFeignClient {
         return ResultVO.success();
     }
 
+
+
     // ********************************修改类接口********************************
     // ********************************查询类接口********************************
 
+
+    @Override
+    @GetMapping("/backend/api/v1/role/testRoleNameAvailability")
+    public ResultVO<Boolean> testRoleNameAvailability(@RequestParam("roleName") String roleName, User currentUser) {
+        roleName = roleName.split(",")[0];
+        return ResultVO.success(backendRoleService.testRoleNameAvailability(roleName, currentUser));
+    }
 
     @Override
     @GetMapping("/backend/api/v1/role/list")
