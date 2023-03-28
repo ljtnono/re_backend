@@ -11,7 +11,6 @@ import cn.lingjiatong.re.common.util.RedisUtil;
 import cn.lingjiatong.re.common.util.SnowflakeIdWorkerUtil;
 import cn.lingjiatong.re.service.sys.api.dto.*;
 import cn.lingjiatong.re.service.sys.api.vo.BackendUserListVO;
-import cn.lingjiatong.re.service.sys.constant.BackendUserErrorMessageConstant;
 import cn.lingjiatong.re.service.sys.mapper.UserMapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
@@ -35,8 +34,6 @@ import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.stream.Collectors;
-
-import static cn.lingjiatong.re.common.constant.UserErrorMessageConstant.*;
 
 /**
  * 后台用户模块service层
@@ -133,7 +130,7 @@ public class BackendUserService {
         }
         // 如果删除的用户中含有系统内置超级管理员，则无法删除
         if (userIdList.contains(UserConstant.SUPER_ADMIN_USER_ID)) {
-            throw new PermissionException(ErrorEnum.NO_PERMISSION_ERROR.getCode(), BackendUserErrorMessageConstant.DELETE_SUPER_ADMIN_ERROR_MESSAGE);
+            throw new PermissionException(ErrorEnum.NO_PERMISSION_ERROR.getCode(), UserErrorMessageConstant.DELETE_SUPER_ADMIN_ERROR_MESSAGE);
         }
         try {
             // 删除用户
@@ -175,13 +172,13 @@ public class BackendUserService {
             return;
         }
         if (!CommonConstant.deleteValues().contains(deleteStatus)) {
-            throw new ParamErrorException(ErrorEnum.REQUEST_PARAM_ERROR.getCode(), BackendUserErrorMessageConstant.DELETE_STATUS_NOT_SUPPORT_ERROR_MESSAGE);
+            throw new ParamErrorException(ErrorEnum.REQUEST_PARAM_ERROR.getCode(), UserErrorMessageConstant.DELETE_STATUS_NOT_SUPPORT_ERROR_MESSAGE);
         }
         // 如果是删除操作
         if (CommonConstant.ENTITY_DELETE.equals(deleteStatus)) {
             // 如果删除的用户中含有系统内置超级管理员，则无法隐藏
             if (userIdList.contains(UserConstant.SUPER_ADMIN_USER_ID)) {
-                throw new PermissionException(ErrorEnum.NO_PERMISSION_ERROR.getCode(), BackendUserErrorMessageConstant.DELETE_SUPER_ADMIN_ERROR_MESSAGE);
+                throw new PermissionException(ErrorEnum.NO_PERMISSION_ERROR.getCode(), UserErrorMessageConstant.DELETE_SUPER_ADMIN_ERROR_MESSAGE);
             }
             try {
                 // 更新用户删除状态

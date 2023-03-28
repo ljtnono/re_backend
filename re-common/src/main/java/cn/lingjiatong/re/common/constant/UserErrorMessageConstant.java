@@ -26,4 +26,10 @@ public interface UserErrorMessageConstant {
     String USER_ID_EMPTY_ERROR_MESSAGE = "用户id不能为空";
     // 用户不存在或已被删除
     String USER_NOT_EXIST_ERROR_MESSAGE = "用户不存在或已被删除";
+
+    // 不支持的deleteStatus值
+    String DELETE_STATUS_NOT_SUPPORT_ERROR_MESSAGE = "不支持的deleteStatus值";
+    // 无法删除超级管理员账号
+    String DELETE_SUPER_ADMIN_ERROR_MESSAGE = "无法删除系统内置超级管理员账号";
+
 }

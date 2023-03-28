@@ -6,6 +6,7 @@ import cn.lingjiatong.re.common.annotation.PassToken;
 import cn.lingjiatong.re.common.entity.User;
 import cn.lingjiatong.re.service.sys.api.client.BackendRoleFeignClient;
 import cn.lingjiatong.re.service.sys.api.dto.BackendRolePageListDTO;
+import cn.lingjiatong.re.service.sys.api.dto.BackendRoleSaveDTO;
 import cn.lingjiatong.re.service.sys.api.vo.BackendRoleListVO;
 import cn.lingjiatong.re.service.sys.api.vo.BackendRoleMenuTreeVO;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -15,10 +16,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -38,6 +36,22 @@ public class RoleController {
     private BackendRoleFeignClient backendRoleFeignClient;
 
     // ********************************新增类接口********************************
+
+    /**
+     * 后台新增角色
+     *
+     * @param dto 后台新增角色DTO对象
+     * @param currentUser 当前登陆用户
+     * @return 通用消息返回对象
+     */
+    @PostMapping("/save")
+    @Operation(summary = "后台新增角色", method = "POST")
+    @PreAuthorize("hasAuthority('system:role:write')")
+    public ResultVO<?> saveRole(@RequestBody BackendRoleSaveDTO dto, @Parameter(hidden = true) @CurrentUser User currentUser) {
+        log.info("==========后台新增角色，参数：{}", dto);
+        return backendRoleFeignClient.saveRole(dto, currentUser);
+    }
+
     // ********************************删除类接口********************************
     // ********************************修改类接口********************************
     // ********************************查询类接口********************************

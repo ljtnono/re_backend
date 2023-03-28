@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -44,6 +45,22 @@ public class BackendMenuService {
         return menuMapper.selectList(new LambdaQueryWrapper<Menu>()
                 .in(Menu::getId, menuIdList));
     }
+
+    /**
+     * 根据菜单id列表校验菜单是否都存在
+     *
+     * @param menuIdCollection 菜单id集合
+     * @return 都存在则返回true，否则返回false，参数为空返回false
+     */
+    public boolean isExistsByIdList(Collection<Long> menuIdCollection) {
+        if (CollectionUtils.isEmpty(menuIdCollection)) {
+            return false;
+        }
+        Integer count = menuMapper.selectCount(new LambdaQueryWrapper<Menu>()
+                .in(Menu::getId, menuIdCollection));
+        return count.equals(menuIdCollection.size());
+    }
+
 
     /**
      * 后台获取菜单树

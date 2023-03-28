@@ -1,5 +1,6 @@
 package cn.lingjiatong.re.service.sys.service;
 
+import cn.lingjiatong.re.common.entity.Menu;
 import cn.lingjiatong.re.common.entity.TrRoleMenu;
 import cn.lingjiatong.re.service.sys.mapper.TrRoleMenuMapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -24,6 +25,16 @@ public class TrRoleMenuService {
     private TrRoleMenuMapper trRoleMenuMapper;
 
     // ********************************新增类接口********************************
+
+    /**
+     * 插入角色菜单关联信息
+     *
+     * @param trRoleMenu 角色菜单关联实体
+     */
+    public void saveTrRoleMenu(TrRoleMenu trRoleMenu) {
+        trRoleMenuMapper.insert(trRoleMenu);
+    }
+
     // ********************************删除类接口********************************
     // ********************************修改类接口********************************
 
