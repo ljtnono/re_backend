@@ -21,7 +21,7 @@ public class BackendRoleListVO {
      * id
      */
     @Schema(description = "角色id")
-    private Long id;
+    private String id;
 
     /**
      * 角色名

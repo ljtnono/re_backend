@@ -5,8 +5,10 @@ import cn.lingjiatong.re.common.annotation.CurrentUser;
 import cn.lingjiatong.re.common.annotation.PassToken;
 import cn.lingjiatong.re.common.entity.User;
 import cn.lingjiatong.re.service.sys.api.client.BackendRoleFeignClient;
+import cn.lingjiatong.re.service.sys.api.dto.BackendRoleDeleteBatchDTO;
 import cn.lingjiatong.re.service.sys.api.dto.BackendRolePageListDTO;
 import cn.lingjiatong.re.service.sys.api.dto.BackendRoleSaveDTO;
+import cn.lingjiatong.re.service.sys.api.dto.BackendRoleUpdateDTO;
 import cn.lingjiatong.re.service.sys.api.vo.BackendRoleListVO;
 import cn.lingjiatong.re.service.sys.api.vo.BackendRoleMenuTreeVO;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -53,7 +55,41 @@ public class RoleController {
     }
 
     // ********************************删除类接口********************************
+
+    /**
+     * 后台批量删除角色
+     *
+     * @param dto 后台批量删除角色DTO对象
+     * @param currentUser 当前登陆用户
+     * @return 通用消息返回对象
+     */
+    @DeleteMapping("/deleteBatch")
+    @Operation(summary = "后台批量删除角色", method = "DELETE")
+    @PreAuthorize("hasAuthority('system:role:write')")
+    public ResultVO<?> deleteRoleBatch(@RequestBody BackendRoleDeleteBatchDTO dto, @Parameter(hidden = true) @CurrentUser User currentUser) {
+        log.info("==========后台批量删除角色，参数：{}", dto);
+        return backendRoleFeignClient.deleteRoleBatch(dto, currentUser);
+    }
+
+
     // ********************************修改类接口********************************
+
+    /**
+     * 后台修改角色
+     *
+     * @param dto 后台修改角色
+     * @param currentUser 当前登陆用户
+     * @return 通用消息对象
+     */
+    @PutMapping("/updateRole")
+    @Operation(summary = "后台修改角色", method = "PUT")
+    @PreAuthorize("hasAuthority('system:role:write')")
+    public ResultVO<?> updateRole(@RequestBody BackendRoleUpdateDTO dto, @Parameter(hidden = true) @CurrentUser User currentUser) {
+        log.info("==========后台修改角色，参数：{}", dto);
+        return backendRoleFeignClient.updateRole(dto, currentUser);
+    }
+
+
     // ********************************查询类接口********************************
 
     /**

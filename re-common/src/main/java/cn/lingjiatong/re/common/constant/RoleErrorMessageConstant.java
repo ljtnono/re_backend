@@ -19,7 +19,8 @@ public interface RoleErrorMessageConstant {
     // 角色描述长度异常
     String ROLE_SAVE_DESCRIPTION_LENGTH_ERROR_MESSAGE = "角色描述长度不能超过200个字符";
     // 角色菜单不存在
-    String ROLE_SAVE_MENU_ID_NOT_EXIST_MESSAGE = "菜单不存在或已被删除";
-
+    String ROLE_SAVE_MENU_ID_NOT_EXIST_ERROR_MESSAGE = "菜单不存在或已被删除";
+    // 不能删除内置的admin角色
+    String ROLE_DELETE_CAN_NOT_DELETE_ADMIN_ROLE_ERROR_MESSAGE = "无法删除内置管理员角色";
 
 }

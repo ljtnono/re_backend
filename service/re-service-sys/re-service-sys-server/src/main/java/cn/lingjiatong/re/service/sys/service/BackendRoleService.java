@@ -1,6 +1,7 @@
 package cn.lingjiatong.re.service.sys.service;
 
 import cn.lingjiatong.re.common.constant.CommonConstant;
+import cn.lingjiatong.re.common.constant.RoleConstant;
 import cn.lingjiatong.re.common.constant.RoleErrorMessageConstant;
 import cn.lingjiatong.re.common.constant.RoleRegexConstant;
 import cn.lingjiatong.re.common.entity.*;
@@ -13,7 +14,6 @@ import cn.lingjiatong.re.service.sys.api.dto.BackendRoleUpdateDTO;
 import cn.lingjiatong.re.service.sys.api.vo.BackendRoleListVO;
 import cn.lingjiatong.re.service.sys.api.vo.BackendRoleMenuTreeVO;
 import cn.lingjiatong.re.service.sys.mapper.RoleMapper;
-import cn.lingjiatong.re.service.sys.mapper.TrRoleMenuMapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -28,7 +28,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Collection;
@@ -127,6 +126,10 @@ public class BackendRoleService {
         if (!isRoleExist(roleIdSet)) {
             throw new ResourceNotExistException(ErrorEnum.RESOURCE_NOT_EXIST_ERROR);
         }
+        // 超级管理员角色不能删除
+        if (roleIdSet.contains(RoleConstant.SUPER_ADMIN_ROLE_ID)) {
+            throw new PermissionException(ErrorEnum.NO_PERMISSION_ERROR.getCode(), RoleErrorMessageConstant.ROLE_DELETE_CAN_NOT_DELETE_ADMIN_ROLE_ERROR_MESSAGE);
+        }
         // 删除角色必须得该角色不存在关联的用户才能删除
         roleIdSet.forEach(roleId -> {
             List<Long> userIdList = trUserRoleService.findUserIdListByRoleId(roleId);
@@ -134,6 +137,7 @@ public class BackendRoleService {
                 throw new BusinessException(ErrorEnum.ROLE_IS_RELATED_BY_USER_ERROR_MESSAGE);
             }
         });
+
         try {
             // 删除角色
             roleMapper.deleteBatchIds(roleIdSet);
@@ -356,7 +360,7 @@ public class BackendRoleService {
         // 校验菜单id是否正确
         if (!CollectionUtils.isEmpty(menuIdSet)) {
             if (!backendMenuService.isExistsByIdList(menuIdSet)) {
-                throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR.getCode(), RoleErrorMessageConstant.ROLE_SAVE_MENU_ID_NOT_EXIST_MESSAGE);
+                throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR.getCode(), RoleErrorMessageConstant.ROLE_SAVE_MENU_ID_NOT_EXIST_ERROR_MESSAGE);
             }
             // 如果菜单是子菜单，那么需要确保菜单中含有其父菜单id, 如果菜单是父菜单，那么当这个菜单的子菜单不存在时，则需要删除该父菜单id
             Iterator<Long> iterator = menuIdSet.iterator();
@@ -425,7 +429,7 @@ public class BackendRoleService {
         }
         if (!CollectionUtils.isEmpty(menuIdSet)) {
             if (!backendMenuService.isExistsByIdList(menuIdSet)) {
-                throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR.getCode(), RoleErrorMessageConstant.ROLE_SAVE_MENU_ID_NOT_EXIST_MESSAGE);
+                throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR.getCode(), RoleErrorMessageConstant.ROLE_SAVE_MENU_ID_NOT_EXIST_ERROR_MESSAGE);
             }
             // 如果菜单是子菜单，那么需要确保菜单中含有其父菜单id, 如果菜单是父菜单，那么当这个菜单的子菜单不存在时，则需要删除该父菜单id
             Iterator<Long> iterator = menuIdSet.iterator();
