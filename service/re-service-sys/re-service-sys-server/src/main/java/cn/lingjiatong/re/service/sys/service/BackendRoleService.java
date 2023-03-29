@@ -159,7 +159,10 @@ public class BackendRoleService {
     public void updateRole(BackendRoleUpdateDTO dto, User currentUser) {
         // 校验后台更新角色DTO对象
         checkBackendRoleUpdateDTO(dto);
-
+        // 无法修改超级管理员角色
+        if (RoleConstant.SUPER_ADMIN_ROLE_ID.equals(dto.getRoleId())) {
+            throw new PermissionException(ErrorEnum.PERMISSION_DENIED_ERROR.getCode(), RoleErrorMessageConstant.ROLE_UPDATE_CAN_NOT_UPDATE_ADMIN_ROLE_ERROR_MESSAGE);
+        }
         try {
             // 更新角色信息
             roleMapper.update(null, new LambdaUpdateWrapper<Role>()
@@ -197,6 +200,7 @@ public class BackendRoleService {
      * @param currentUser 当前登陆用户
      * @return 可用返回true，不可用返回false
      */
+    @Transactional(readOnly = true)
     public boolean testRoleNameAvailability(String roleName, User currentUser) {
         // 判空校验
         if (!StringUtils.hasLength(roleName)) {
@@ -367,8 +371,9 @@ public class BackendRoleService {
                 Long parentId = menu.getParentId();
                 if (parentId.equals(-1L)) {
                     // 查询子菜单id列表
-                    List<Long> childrenMenuId = menuService.findChildrenMenuIdList(menuId);
-                    if (CollectionUtils.isEmpty(Sets.intersection(menuIdSet, Set.of(childrenMenuId)))) {
+                    List<Long> childrenMenuIdList = menuService.findChildrenMenuIdList(menuId);
+                    Set<Long> childrenMenuIdSet = new HashSet<>(childrenMenuIdList);
+                    if (CollectionUtils.isEmpty(Sets.intersection(menuIdSet, childrenMenuIdSet))) {
                         iterator.remove();
                     }
                 } else {

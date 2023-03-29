@@ -1,5 +1,6 @@
 package cn.lingjiatong.re.common.entity;
 
+import com.baomidou.mybatisplus.annotation.FieldStrategy;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -18,7 +19,7 @@ import java.time.LocalDateTime;
 public class Role {
 
     /**
-     * 主键，自增
+     * 主键
      */
     @TableId
     private Long id;
@@ -31,6 +32,7 @@ public class Role {
     /**
      * 角色描述
      */
+    @TableField(updateStrategy = FieldStrategy.IGNORED)
     private String description;
 
     /**

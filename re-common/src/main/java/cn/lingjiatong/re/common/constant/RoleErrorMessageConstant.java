@@ -22,5 +22,7 @@ public interface RoleErrorMessageConstant {
     String ROLE_SAVE_MENU_ID_NOT_EXIST_ERROR_MESSAGE = "菜单不存在或已被删除";
     // 不能删除内置的admin角色
     String ROLE_DELETE_CAN_NOT_DELETE_ADMIN_ROLE_ERROR_MESSAGE = "无法删除内置管理员角色";
+    // 无法修改内置admin角色
+    String ROLE_UPDATE_CAN_NOT_UPDATE_ADMIN_ROLE_ERROR_MESSAGE = "无法修改内置管理员角色";
 
 }
