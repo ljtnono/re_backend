@@ -6,6 +6,7 @@ import cn.lingjiatong.re.common.entity.User;
 import cn.lingjiatong.re.service.sys.api.dto.BackendRoleDeleteBatchDTO;
 import cn.lingjiatong.re.service.sys.api.dto.BackendRolePageListDTO;
 import cn.lingjiatong.re.service.sys.api.dto.BackendRoleSaveDTO;
+import cn.lingjiatong.re.service.sys.api.dto.BackendRoleUpdateDTO;
 import cn.lingjiatong.re.service.sys.api.vo.BackendRoleListVO;
 import cn.lingjiatong.re.service.sys.api.vo.BackendRoleMenuTreeVO;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -50,7 +51,19 @@ public interface BackendRoleFeignClient {
 
 
     // ********************************修改类接口********************************
+
+    /**
+     * 更新角色
+     *
+     * @param dto 后台更新角色DTO对象
+     * @param currentUser 当前登录用户
+     * @return 通用消息返回对象
+     */
+    @PutMapping("/backend/api/v1/role/update")
+    ResultVO<?> updateRole(@RequestBody BackendRoleUpdateDTO dto, @SpringQueryMap User currentUser);
+
     // ********************************查询类接口********************************
+
 
     /**
      * 测试角色名称是否可用

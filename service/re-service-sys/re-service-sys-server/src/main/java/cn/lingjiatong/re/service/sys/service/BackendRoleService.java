@@ -9,10 +9,13 @@ import cn.lingjiatong.re.common.util.SnowflakeIdWorkerUtil;
 import cn.lingjiatong.re.service.sys.api.dto.BackendRoleDeleteBatchDTO;
 import cn.lingjiatong.re.service.sys.api.dto.BackendRolePageListDTO;
 import cn.lingjiatong.re.service.sys.api.dto.BackendRoleSaveDTO;
+import cn.lingjiatong.re.service.sys.api.dto.BackendRoleUpdateDTO;
 import cn.lingjiatong.re.service.sys.api.vo.BackendRoleListVO;
 import cn.lingjiatong.re.service.sys.api.vo.BackendRoleMenuTreeVO;
 import cn.lingjiatong.re.service.sys.mapper.RoleMapper;
+import cn.lingjiatong.re.service.sys.mapper.TrRoleMenuMapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -25,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Collection;
@@ -63,13 +67,13 @@ public class BackendRoleService {
     /**
      * 后台保存角色
      *
-     * @param dto 后台保存角色DTO对象
+     * @param dto         后台保存角色DTO对象
      * @param currentUser 当前登陆用户
      */
     @Transactional(rollbackFor = Exception.class)
     public void saveRole(BackendRoleSaveDTO dto, User currentUser) {
         // 参数校验
-        checkBackendSaveRole(dto);
+        checkBackendRoleSaveDTO(dto);
         Role role = new Role();
         role.setId(snowflakeIdWorkerUtil.nextId());
         role.setName(dto.getName());
@@ -110,7 +114,7 @@ public class BackendRoleService {
     /**
      * 后台批量删除角色
      *
-     * @param dto 后台角色批量删除DTO对象
+     * @param dto         后台角色批量删除DTO对象
      * @param currentUser 当前登陆用户
      */
     @Transactional(rollbackFor = Exception.class)
@@ -141,13 +145,54 @@ public class BackendRoleService {
         }
     }
 
+
     // ********************************修改类接口********************************
+
+    /**
+     * 后台更新角色
+     *
+     * @param dto 后台更新角色DTO对象
+     * @param currentUser 当前登录用户
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public void updateRole(BackendRoleUpdateDTO dto, User currentUser) {
+        // 校验后台更新角色DTO对象
+        checkBackendRoleUpdateDTO(dto);
+
+        try {
+            // 更新角色信息
+            roleMapper.update(null, new LambdaUpdateWrapper<Role>()
+                    .set(Role::getName, dto.getName())
+                    .set(Role::getDescription, dto.getDescription())
+                    .set(Role::getModifyTime, LocalDateTime.now(ZoneId.of("Asia/Shanghai")))
+                    .eq(Role::getId, dto.getRoleId()));
+            // 更新角色关联菜单信息，先删除原来的菜单关联信息
+            trRoleMenuService.deleteByRoleIdCollection(List.of(dto.getRoleId()));
+            Set<Long> menuIdSet = dto.getMenuIdSet();
+            if (!CollectionUtils.isEmpty(menuIdSet)) {
+                menuIdSet.forEach(menuId -> {
+                    TrRoleMenu trRoleMenu = new TrRoleMenu();
+                    trRoleMenu.setRoleId(dto.getRoleId());
+                    trRoleMenu.setMenuId(menuId);
+                    trRoleMenu.setId(snowflakeIdWorkerUtil.nextId());
+                    trRoleMenuService.saveTrRoleMenu(trRoleMenu);
+                });
+            }
+            // TODO 考虑是否要强制下线相关的用户，不然可能存在用户能够访问没有权限的菜单的情况
+        } catch (Exception e) {
+            log.error(e.toString(), e);
+            throw new ServerException(ErrorEnum.DATABASE_OPERATION_ERROR);
+        }
+    }
+
+
+
     // ********************************查询类接口********************************
 
     /**
      * 校验角色名称可用性
      *
-     * @param roleName 角色名称
+     * @param roleName    角色名称
      * @param currentUser 当前登陆用户
      * @return 可用返回true，不可用返回false
      */
@@ -187,7 +232,7 @@ public class BackendRoleService {
     /**
      * 后台分页获取角色列表
      *
-     * @param dto 后台分页获取角色列表DTO对象
+     * @param dto         后台分页获取角色列表DTO对象
      * @param currentUser 当前登陆用户
      * @return 后台获取角色列表VO对象分页对象
      */
@@ -206,7 +251,7 @@ public class BackendRoleService {
     /**
      * 获取角色的菜单树
      *
-     * @param roleId 角色id
+     * @param roleId      角色id
      * @param currentUser 当前登陆用户
      * @return 角色菜单树VO对象
      */
@@ -271,6 +316,70 @@ public class BackendRoleService {
     // ********************************私有函数********************************
 
     /**
+     * 校验后台更新角色
+     *
+     * @param dto 后台更新角色DTO对象
+     */
+    private void checkBackendRoleUpdateDTO(BackendRoleUpdateDTO dto) {
+        Long roleId = dto.getRoleId();
+        String name = dto.getName();
+        String description = dto.getDescription();
+        Set<Long> menuIdSet = dto.getMenuIdSet();
+
+        // 判空校验
+        if (roleId == null) {
+            throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR.getCode(), RoleErrorMessageConstant.ROLE_UPDATE_ID_EMPTY_ERROR_MESSAGE);
+        }
+        if (!StringUtils.hasLength(name)) {
+            throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR.getCode(), RoleErrorMessageConstant.ROLE_SAVE_NAME_EMPTY_ERROR_MESSAGE);
+        }
+        // 格式校验
+        if (StringUtils.hasLength(name) && !RoleRegexConstant.ROLE_SAVE_NAME_REGEX.matcher(name).matches()) {
+            throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR.getCode(), RoleErrorMessageConstant.ROLE_SAVE_NAME_FORMAT_ERROR_MESSAGE);
+        }
+        // 描述校验
+        if (StringUtils.hasLength(description) && description.length() > 200) {
+            throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR.getCode(), RoleErrorMessageConstant.ROLE_SAVE_DESCRIPTION_LENGTH_ERROR_MESSAGE);
+        }
+        // 校验角色是否存在
+        if (!isRoleExist(roleId)) {
+            throw new ResourceNotExistException(ErrorEnum.RESOURCE_NOT_EXIST_ERROR.getCode(), RoleErrorMessageConstant.ROLE_UPDATE_ROLE_NOT_EXIST_ERROR_MESSAGE);
+        }
+        // 校验角色名是否重复
+        Integer count = roleMapper.selectCount(new LambdaQueryWrapper<Role>()
+                .eq(Role::getName, name)
+                .ne(Role::getId, roleId));
+        if (count > 0) {
+            throw new BusinessException(ErrorEnum.NAME_OCCUPY_BY_OTHER_ROLE_ERROR_MESSAGE);
+        }
+
+        // 校验菜单id是否正确
+        if (!CollectionUtils.isEmpty(menuIdSet)) {
+            if (!backendMenuService.isExistsByIdList(menuIdSet)) {
+                throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR.getCode(), RoleErrorMessageConstant.ROLE_SAVE_MENU_ID_NOT_EXIST_MESSAGE);
+            }
+            // 如果菜单是子菜单，那么需要确保菜单中含有其父菜单id, 如果菜单是父菜单，那么当这个菜单的子菜单不存在时，则需要删除该父菜单id
+            Iterator<Long> iterator = menuIdSet.iterator();
+            while (iterator.hasNext()) {
+                Long menuId = iterator.next();
+                Menu menu = menuService.findById(menuId);
+                Long parentId = menu.getParentId();
+                if (parentId.equals(-1L)) {
+                    // 查询子菜单id列表
+                    List<Long> childrenMenuId = menuService.findChildrenMenuIdList(menuId);
+                    if (CollectionUtils.isEmpty(Sets.intersection(menuIdSet, Set.of(childrenMenuId)))) {
+                        iterator.remove();
+                    }
+                } else {
+                    if (!menuIdSet.contains(parentId)) {
+                        menuIdSet.add(parentId);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
      * 将角色菜单权限列表转换为角色菜单权限树对象列表
      *
      * @param menuList 菜单实体列表
@@ -294,7 +403,7 @@ public class BackendRoleService {
      *
      * @param dto 后台保存角色DTO对象
      */
-    private void checkBackendSaveRole(BackendRoleSaveDTO dto) {
+    private void checkBackendRoleSaveDTO(BackendRoleSaveDTO dto) {
         String name = dto.getName();
         String description = dto.getDescription();
         Set<Long> menuIdSet = dto.getMenuIdSet();
@@ -386,6 +495,5 @@ public class BackendRoleService {
                 .eq(Role::getName, roleName));
         return role != null;
     }
-
 
 }

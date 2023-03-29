@@ -6,6 +6,7 @@ import cn.lingjiatong.re.service.sys.api.client.BackendRoleFeignClient;
 import cn.lingjiatong.re.service.sys.api.dto.BackendRoleDeleteBatchDTO;
 import cn.lingjiatong.re.service.sys.api.dto.BackendRolePageListDTO;
 import cn.lingjiatong.re.service.sys.api.dto.BackendRoleSaveDTO;
+import cn.lingjiatong.re.service.sys.api.dto.BackendRoleUpdateDTO;
 import cn.lingjiatong.re.service.sys.api.vo.BackendRoleListVO;
 import cn.lingjiatong.re.service.sys.api.vo.BackendRoleMenuTreeVO;
 import cn.lingjiatong.re.service.sys.service.BackendRoleService;
@@ -49,6 +50,14 @@ public class BackendRoleController implements BackendRoleFeignClient {
 
 
     // ********************************修改类接口********************************
+
+    @Override
+    @PutMapping("/backend/api/v1/role/update")
+    public ResultVO<?> updateRole(@RequestBody BackendRoleUpdateDTO dto, User currentUser) {
+        backendRoleService.updateRole(dto, currentUser);
+        return ResultVO.success();
+    }
+
     // ********************************查询类接口********************************
 
 

@@ -8,6 +8,10 @@ package cn.lingjiatong.re.common.constant;
  */
 public interface RoleErrorMessageConstant {
 
+    // 角色id为空
+    String ROLE_UPDATE_ID_EMPTY_ERROR_MESSAGE = "请选择要编辑的角色";
+    // 角色不存在或已经被删除
+    String ROLE_UPDATE_ROLE_NOT_EXIST_ERROR_MESSAGE = "角色不存在或已被删除";
     // 角色名为空
     String ROLE_SAVE_NAME_EMPTY_ERROR_MESSAGE = "角色名不能为空";
     // 角色格式错误
