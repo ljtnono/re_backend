@@ -30,10 +30,7 @@ import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -439,8 +436,10 @@ public class BackendRoleService {
                 Long parentId = menu.getParentId();
                 if (parentId.equals(-1L)) {
                     // 查询子菜单id列表
-                    List<Long> childrenMenuId = menuService.findChildrenMenuIdList(menuId);
-                    if (CollectionUtils.isEmpty(Sets.intersection(menuIdSet, Set.of(childrenMenuId)))) {
+                    List<Long> childrenMenuIdList = menuService.findChildrenMenuIdList(menuId);
+                    Set<Long> childrenMenuIdSet = new HashSet<>(childrenMenuIdList);
+                    // 这里使用Sets.of函数将childrenMenuIdList转换为set会导致求交集产生错误
+                    if (CollectionUtils.isEmpty(Sets.intersection(menuIdSet, childrenMenuIdSet))) {
                         iterator.remove();
                     }
                 } else {

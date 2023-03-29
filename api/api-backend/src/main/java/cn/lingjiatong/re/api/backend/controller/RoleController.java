@@ -46,7 +46,7 @@ public class RoleController {
      * @param currentUser 当前登陆用户
      * @return 通用消息返回对象
      */
-    @PostMapping("/save")
+    @PostMapping
     @Operation(summary = "后台新增角色", method = "POST")
     @PreAuthorize("hasAuthority('system:role:write')")
     public ResultVO<?> saveRole(@RequestBody BackendRoleSaveDTO dto, @Parameter(hidden = true) @CurrentUser User currentUser) {
@@ -91,6 +91,21 @@ public class RoleController {
 
 
     // ********************************查询类接口********************************
+
+    /**
+     * 测试角色名称可用性
+     *
+     * @param roleName 角色名称
+     * @param currentUser 当前登陆用户
+     * @return 可用返回true, 不可用返回false
+     */
+    @GetMapping("/testRoleNameAvailability")
+    @Operation(summary = "测试角色名称可用性", method = "GET")
+    @PreAuthorize("hasAuthority('system:role') || hasAuthority('system:role:read')")
+    public ResultVO<Boolean> testRoleNameAvailability(String roleName, @Parameter(hidden = true) @CurrentUser User currentUser) {
+        log.info("==========测试角色名称可用性，参数：{}", roleName);
+        return backendRoleFeignClient.testRoleNameAvailability(roleName, currentUser);
+    }
 
     /**
      * 后台获取角色列表

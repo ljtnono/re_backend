@@ -11,6 +11,6 @@ import java.util.regex.Pattern;
 public interface RoleRegexConstant {
 
     // 角色名正则表达式  只能为中文、英文、数字，长度不超过4-30个字符
-    Pattern ROLE_SAVE_NAME_REGEX = Pattern.compile("[a-zA-Z0-9\\u4e00-\\u9fa5]{4,30}");
+    Pattern ROLE_SAVE_NAME_REGEX = Pattern.compile("^[a-zA-Z0-9\\u4e00-\\u9fa5]{4,30}$");
 
 }
