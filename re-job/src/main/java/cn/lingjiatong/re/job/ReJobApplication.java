@@ -13,7 +13,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
  */
 @EnableDiscoveryClient
 @SpringBootApplication
-@EnableFeignClients(basePackages = {"cn.lingjiatong.re.service.article.api"})
+@EnableFeignClients(basePackages = {"cn.lingjiatong.re.service.article.api", "cn.lingjiatong.re.service.sys.api"})
 public class ReJobApplication {
 
     public static void main(String[] args) {
