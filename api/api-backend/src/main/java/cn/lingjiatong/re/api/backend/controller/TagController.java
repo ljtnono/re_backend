@@ -45,7 +45,7 @@ public class TagController {
      */
     @GetMapping("/list")
     @Operation(summary = "后端获取文章标签列表", method = "GET")
-    @PreAuthorize("hasAuthority('blog:article') || hasAuthority('blog:article:read')")
+    @PreAuthorize("isAuthenticated()")
     public ResultVO<List<BackendTagListVO>> findTagList(@Parameter(hidden = true) @CurrentUser User currentUser) {
         log.info("==========后端获取文章标签列表");
         return backendTagFeignClient.findBackendTagList(currentUser);

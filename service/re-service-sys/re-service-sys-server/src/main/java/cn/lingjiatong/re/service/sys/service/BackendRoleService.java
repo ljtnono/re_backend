@@ -257,7 +257,7 @@ public class BackendRoleService {
         Optional.ofNullable(dto)
                 .orElseThrow(() -> new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR));
         String roleName = dto.getRoleName();
-        Long roleId = dto.getRoleId();
+        Long roleId = Long.valueOf(dto.getRoleId());
         if (roleId == null) {
             throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR.getCode(), RoleErrorMessageConstant.ROLE_UPDATE_ID_EMPTY_ERROR_MESSAGE);
         }
@@ -292,6 +292,7 @@ public class BackendRoleService {
                 .map(role -> {
                     BackendRoleListVO vo = new BackendRoleListVO();
                     BeanUtils.copyProperties(role, vo);
+                    vo.setId(String.valueOf(role.getId()));
                     return vo;
                 })
                 .collect(Collectors.toList());

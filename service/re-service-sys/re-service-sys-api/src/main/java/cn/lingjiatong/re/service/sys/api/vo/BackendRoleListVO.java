@@ -59,4 +59,6 @@ public class BackendRoleListVO {
      */
     @Schema(description = "是否删除 0 正常 1 已删除")
     private Byte deleted;
+
+
 }

@@ -45,7 +45,7 @@ public class CategoryController {
      */
     @GetMapping("/list")
     @Operation(summary = "后端获取文章分类列表", method = "GET")
-    @PreAuthorize("hasAuthority('blog:article') || hasAuthority('blog:article:read')")
+    @PreAuthorize("isAuthenticated()")
     public ResultVO<List<BackendCategoryListVO>> findCategoryList(@Parameter(hidden = true) @CurrentUser User currentUser) {
         log.info("==========后端获取文章分类列表");
         return backendCategoryFeignClient.findCategoryList(currentUser);

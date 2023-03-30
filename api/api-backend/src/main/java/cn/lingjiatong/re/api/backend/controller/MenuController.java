@@ -45,6 +45,7 @@ public class MenuController {
      */
     @GetMapping("/tree")
     @Operation(description = "后台获取菜单树", method = "GET")
+    @PreAuthorize("isAuthenticated()")
     public ResultVO<List<BackendMenuTreeVO>> findMenuTree(@Parameter(hidden = true) @CurrentUser User currentUser) {
         log.info("==========后台获取菜单树");
         return backendMenuFeignClient.findBackendMenuTree(currentUser);

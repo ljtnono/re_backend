@@ -121,13 +121,14 @@ public class RoleController {
 
     /**
      * 后台获取角色列表
+     * 这里只需要角色登录即可
      *
      * @param currentUser 当前用户
      * @return 后台角色列表VO对象
      */
     @GetMapping("/list")
     @Operation(summary = "后台获取角色列表", method = "GET")
-    @PreAuthorize("hasAuthority('system:role') || hasAuthority('system:role:read')")
+    @PreAuthorize("isAuthenticated()")
     public ResultVO<List<BackendRoleListVO>> findRoleList(@Parameter(hidden = true) @CurrentUser User currentUser) {
         log.info("==========获取角色列表");
         return backendRoleFeignClient.findRoleList(currentUser);
