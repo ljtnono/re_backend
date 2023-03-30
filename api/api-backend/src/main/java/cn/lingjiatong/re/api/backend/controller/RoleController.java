@@ -78,7 +78,7 @@ public class RoleController {
      * @param currentUser 当前登陆用户
      * @return 通用消息对象
      */
-    @PutMapping("/updateRole")
+    @PutMapping
     @Operation(summary = "后台修改角色", method = "PUT")
     @PreAuthorize("hasAuthority('system:role:write')")
     public ResultVO<?> updateRole(@RequestBody BackendRoleUpdateDTO dto, @Parameter(hidden = true) @CurrentUser User currentUser) {

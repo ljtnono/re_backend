@@ -20,7 +20,7 @@ public class BackendRoleUpdateDTO {
      * 角色id
      */
     @Schema(description = "角色id")
-    private Long roleId;
+    private Long id;
 
     /**
      * 角色名
