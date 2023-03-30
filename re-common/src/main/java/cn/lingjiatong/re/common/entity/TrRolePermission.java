@@ -26,8 +26,8 @@ public class TrRolePermission {
     private Long roleId;
 
     /**
-     * 用户id
+     * 权限id
      */
-    private Long userId;
+    private Long permissionId;
 
 }

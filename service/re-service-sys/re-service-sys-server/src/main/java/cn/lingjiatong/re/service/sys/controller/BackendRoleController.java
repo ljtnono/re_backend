@@ -3,10 +3,7 @@ package cn.lingjiatong.re.service.sys.controller;
 import cn.lingjiatong.re.common.ResultVO;
 import cn.lingjiatong.re.common.entity.User;
 import cn.lingjiatong.re.service.sys.api.client.BackendRoleFeignClient;
-import cn.lingjiatong.re.service.sys.api.dto.BackendRoleDeleteBatchDTO;
-import cn.lingjiatong.re.service.sys.api.dto.BackendRolePageListDTO;
-import cn.lingjiatong.re.service.sys.api.dto.BackendRoleSaveDTO;
-import cn.lingjiatong.re.service.sys.api.dto.BackendRoleUpdateDTO;
+import cn.lingjiatong.re.service.sys.api.dto.*;
 import cn.lingjiatong.re.service.sys.api.vo.BackendRoleListVO;
 import cn.lingjiatong.re.service.sys.api.vo.BackendRoleMenuTreeVO;
 import cn.lingjiatong.re.service.sys.service.BackendRoleService;
@@ -58,14 +55,20 @@ public class BackendRoleController implements BackendRoleFeignClient {
         return ResultVO.success();
     }
 
+
     // ********************************查询类接口********************************
 
+    @Override
+    @GetMapping("/backend/api/v1/role/editFormRoleNameCheck")
+    public ResultVO<Boolean> editFormRoleNameCheck(BackendRoleNameCheckDTO dto, User currentUser) {
+        return ResultVO.success(backendRoleService.editFormRoleNameCheck(dto, currentUser));
+    }
 
     @Override
-    @GetMapping("/backend/api/v1/role/testRoleNameAvailability")
-    public ResultVO<Boolean> testRoleNameAvailability(@RequestParam("roleName") String roleName, User currentUser) {
+    @GetMapping("/backend/api/v1/role/addFormRoleNameCheck")
+    public ResultVO<Boolean> addFormRoleNameCheck(@RequestParam("roleName") String roleName, User currentUser) {
         roleName = roleName.split(",")[0];
-        return ResultVO.success(backendRoleService.testRoleNameAvailability(roleName, currentUser));
+        return ResultVO.success(backendRoleService.addFormRoleNameCheck(roleName, currentUser));
     }
 
     @Override

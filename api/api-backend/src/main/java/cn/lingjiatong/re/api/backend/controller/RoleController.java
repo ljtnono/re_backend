@@ -5,10 +5,7 @@ import cn.lingjiatong.re.common.annotation.CurrentUser;
 import cn.lingjiatong.re.common.annotation.PassToken;
 import cn.lingjiatong.re.common.entity.User;
 import cn.lingjiatong.re.service.sys.api.client.BackendRoleFeignClient;
-import cn.lingjiatong.re.service.sys.api.dto.BackendRoleDeleteBatchDTO;
-import cn.lingjiatong.re.service.sys.api.dto.BackendRolePageListDTO;
-import cn.lingjiatong.re.service.sys.api.dto.BackendRoleSaveDTO;
-import cn.lingjiatong.re.service.sys.api.dto.BackendRoleUpdateDTO;
+import cn.lingjiatong.re.service.sys.api.dto.*;
 import cn.lingjiatong.re.service.sys.api.vo.BackendRoleListVO;
 import cn.lingjiatong.re.service.sys.api.vo.BackendRoleMenuTreeVO;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -93,18 +90,33 @@ public class RoleController {
     // ********************************查询类接口********************************
 
     /**
-     * 测试角色名称可用性
+     * 新增角色表单角色名称校验
      *
      * @param roleName 角色名称
      * @param currentUser 当前登陆用户
      * @return 可用返回true, 不可用返回false
      */
-    @GetMapping("/testRoleNameAvailability")
-    @Operation(summary = "测试角色名称可用性", method = "GET")
+    @GetMapping("/addFormRoleNameCheck")
+    @Operation(summary = "新增角色表单名称校验", method = "GET")
     @PreAuthorize("hasAuthority('system:role') || hasAuthority('system:role:read')")
-    public ResultVO<Boolean> testRoleNameAvailability(String roleName, @Parameter(hidden = true) @CurrentUser User currentUser) {
-        log.info("==========测试角色名称可用性，参数：{}", roleName);
-        return backendRoleFeignClient.testRoleNameAvailability(roleName, currentUser);
+    public ResultVO<Boolean> addFormRoleNameCheck(String roleName, @Parameter(hidden = true) @CurrentUser User currentUser) {
+        log.info("==========新增角色表单名称校验，参数：{}", roleName);
+        return backendRoleFeignClient.addFormRoleNameCheck(roleName, currentUser);
+    }
+
+    /**
+     * 编辑角色表单角色名称校验
+     *
+     * @param dto 后台角色名称校验DTO对象
+     * @param currentUser 当前登录用户
+     * @return 可用返回true，不可用返回false
+     */
+    @GetMapping("/editFormRoleNameCheck")
+    @Operation(summary = "编辑角色表单角色名称校验", method = "GET")
+    @PreAuthorize("hasAuthority('system:role') || hasAuthority('system:role:read')")
+    public ResultVO<Boolean> editFormRoleNameCheck(BackendRoleNameCheckDTO dto, @Parameter(hidden = true) @CurrentUser User currentUser) {
+        log.info("==========编辑角色表单名称校验，参数：{}", dto);
+        return backendRoleFeignClient.editFormRoleNameCheck(dto, currentUser);
     }
 
     /**

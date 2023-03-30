@@ -3,10 +3,7 @@ package cn.lingjiatong.re.service.sys.api.client;
 import cn.lingjiatong.re.common.ResultVO;
 import cn.lingjiatong.re.common.config.FeignBasicAuthRequestInterceptor;
 import cn.lingjiatong.re.common.entity.User;
-import cn.lingjiatong.re.service.sys.api.dto.BackendRoleDeleteBatchDTO;
-import cn.lingjiatong.re.service.sys.api.dto.BackendRolePageListDTO;
-import cn.lingjiatong.re.service.sys.api.dto.BackendRoleSaveDTO;
-import cn.lingjiatong.re.service.sys.api.dto.BackendRoleUpdateDTO;
+import cn.lingjiatong.re.service.sys.api.dto.*;
 import cn.lingjiatong.re.service.sys.api.vo.BackendRoleListVO;
 import cn.lingjiatong.re.service.sys.api.vo.BackendRoleMenuTreeVO;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -64,16 +61,25 @@ public interface BackendRoleFeignClient {
 
     // ********************************查询类接口********************************
 
+    /**
+     * 编辑角色表单角色名称校验
+     *
+     * @param dto 后台角色名称DTO对象
+     * @param currentUser 当前登录用户
+     * @return 可用返回true，不可用返回false
+     */
+    @GetMapping("/backend/api/v1/role/editFormRoleNameCheck")
+    ResultVO<Boolean> editFormRoleNameCheck(@SpringQueryMap BackendRoleNameCheckDTO dto, @SpringQueryMap User currentUser);
 
     /**
-     * 测试角色名称是否可用
+     * 新增角色表单角色名称校验
      *
      * @param roleName 角色名称
      * @param currentUser 当前登陆用户
      * @return 可用返回true，不可用返回false
      */
-    @GetMapping("/backend/api/v1/role/testRoleNameAvailability")
-    ResultVO<Boolean> testRoleNameAvailability(@RequestParam("roleName") String roleName, @SpringQueryMap User currentUser);
+    @GetMapping("/backend/api/v1/role/addFormRoleNameCheck")
+    ResultVO<Boolean> addFormRoleNameCheck(@RequestParam("roleName") String roleName, @SpringQueryMap User currentUser);
 
     /**
      * 后台获取角色列表
@@ -104,6 +110,8 @@ public interface BackendRoleFeignClient {
      */
     @GetMapping("/backend/api/v1/role/menuTree/{roleId}")
     ResultVO<BackendRoleMenuTreeVO> findRoleMenuTree(@PathVariable("roleId") Long roleId, @SpringQueryMap User currentUser);
+
+
 
     // ********************************私有函数********************************
     // ********************************公用函数********************************

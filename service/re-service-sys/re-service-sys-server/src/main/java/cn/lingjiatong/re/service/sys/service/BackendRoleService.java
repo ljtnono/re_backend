@@ -7,10 +7,7 @@ import cn.lingjiatong.re.common.constant.RoleRegexConstant;
 import cn.lingjiatong.re.common.entity.*;
 import cn.lingjiatong.re.common.exception.*;
 import cn.lingjiatong.re.common.util.SnowflakeIdWorkerUtil;
-import cn.lingjiatong.re.service.sys.api.dto.BackendRoleDeleteBatchDTO;
-import cn.lingjiatong.re.service.sys.api.dto.BackendRolePageListDTO;
-import cn.lingjiatong.re.service.sys.api.dto.BackendRoleSaveDTO;
-import cn.lingjiatong.re.service.sys.api.dto.BackendRoleUpdateDTO;
+import cn.lingjiatong.re.service.sys.api.dto.*;
 import cn.lingjiatong.re.service.sys.api.vo.BackendRoleListVO;
 import cn.lingjiatong.re.service.sys.api.vo.BackendRoleMenuTreeVO;
 import cn.lingjiatong.re.service.sys.mapper.RoleMapper;
@@ -57,6 +54,8 @@ public class BackendRoleService {
     private MenuService menuService;
     @Autowired
     private TrUserRoleService trUserRoleService;
+    @Autowired
+    private TrRolePermissionService trRolePermissionService;
 
     // ********************************新增类接口********************************
 
@@ -83,20 +82,34 @@ public class BackendRoleService {
             roleMapper.insert(role);
             // 插入角色菜单关联信息
             Set<Long> menuIdSet = dto.getMenuIdSet();
-            List<TrRoleMenu> trRoleMenuList = Lists.newArrayList();
             if (!CollectionUtils.isEmpty(menuIdSet)) {
                 menuIdSet.forEach(menuId -> {
                     TrRoleMenu trRoleMenu = new TrRoleMenu();
                     trRoleMenu.setId(snowflakeIdWorkerUtil.nextId());
                     trRoleMenu.setRoleId(role.getId());
                     trRoleMenu.setMenuId(menuId);
-                    trRoleMenuList.add(trRoleMenu);
                     try {
+                        // 新增角色菜单关联关系
                         trRoleMenuService.saveTrRoleMenu(trRoleMenu);
                     } catch (DuplicateKeyException e) {
                         log.warn("忽略角色重复菜单，角色id：{}，菜单id：{}", trRoleMenu.getRoleId(), trRoleMenu.getMenuId());
                     }
                 });
+                // 查询菜单对应的所有权限id列表
+                List<Long> permissionIdList = permissionService
+                        .findPermissionIdListByMenuIdCollectionAndProjectName(menuIdSet, CommonConstant.PROJECT_NAME_BACKEND_PAGE);
+                if (!CollectionUtils.isEmpty(permissionIdList)) {
+                    List<TrRolePermission> rolePermissionList = permissionIdList
+                            .stream().map(permissionId -> {
+                                TrRolePermission trp = new TrRolePermission();
+                                trp.setId(snowflakeIdWorkerUtil.nextId());
+                                trp.setRoleId(role.getId());
+                                trp.setPermissionId(permissionId);
+                                return trp;
+                            }).collect(Collectors.toList());
+                    // 插入角色权限关联表数据
+                    trRolePermissionService.saveTrRolePermissionBatch(rolePermissionList);
+                }
             }
         } catch (Exception e) {
             log.error(e.toString(), e);
@@ -125,7 +138,7 @@ public class BackendRoleService {
         }
         // 超级管理员角色不能删除
         if (roleIdSet.contains(RoleConstant.SUPER_ADMIN_ROLE_ID)) {
-            throw new PermissionException(ErrorEnum.NO_PERMISSION_ERROR.getCode(), RoleErrorMessageConstant.ROLE_DELETE_CAN_NOT_DELETE_ADMIN_ROLE_ERROR_MESSAGE);
+            throw new PermissionException(ErrorEnum.NO_PERMISSION_ERROR.getCode(), RoleErrorMessageConstant.CAN_NOT_DELETE_ADMIN_ROLE_ERROR_MESSAGE);
         }
         // 删除角色必须得该角色不存在关联的用户才能删除
         roleIdSet.forEach(roleId -> {
@@ -140,6 +153,8 @@ public class BackendRoleService {
             roleMapper.deleteBatchIds(roleIdSet);
             // 删除角色菜单关联
             trRoleMenuService.deleteByRoleIdCollection(roleIdSet);
+            // 删除角色权限关联
+            trRolePermissionService.deleteByRoleIdCollection(roleIdSet);
         } catch (Exception e) {
             log.error(e.toString(), e);
             throw new ServerException(ErrorEnum.DATABASE_OPERATION_ERROR);
@@ -161,7 +176,7 @@ public class BackendRoleService {
         checkBackendRoleUpdateDTO(dto);
         // 无法修改超级管理员角色
         if (RoleConstant.SUPER_ADMIN_ROLE_ID.equals(dto.getRoleId())) {
-            throw new PermissionException(ErrorEnum.PERMISSION_DENIED_ERROR.getCode(), RoleErrorMessageConstant.ROLE_UPDATE_CAN_NOT_UPDATE_ADMIN_ROLE_ERROR_MESSAGE);
+            throw new PermissionException(ErrorEnum.PERMISSION_DENIED_ERROR.getCode(), RoleErrorMessageConstant.CAN_NOT_UPDATE_ADMIN_ROLE_ERROR_MESSAGE);
         }
         try {
             // 更新角色信息
@@ -182,6 +197,22 @@ public class BackendRoleService {
                     trRoleMenuService.saveTrRoleMenu(trRoleMenu);
                 });
             }
+            // 更新角色权限关联信息，先删除，再插入
+            trRolePermissionService.deleteByRoleIdCollection(Set.of(dto.getRoleId()));
+            List<Long> permissionIdList = permissionService.findPermissionIdListByMenuIdCollectionAndProjectName(menuIdSet, CommonConstant.PROJECT_NAME_BACKEND_PAGE);
+            if (!CollectionUtils.isEmpty(permissionIdList)) {
+                List<TrRolePermission> trRolePermissionList = permissionIdList
+                        .stream()
+                        .map(permissionId -> {
+                            TrRolePermission trp = new TrRolePermission();
+                            trp.setRoleId(dto.getRoleId());
+                            trp.setPermissionId(permissionId);
+                            trp.setId(snowflakeIdWorkerUtil.nextId());
+                            return trp;
+                        }).collect(Collectors.toList());
+                trRolePermissionService.saveTrRolePermissionBatch(trRolePermissionList);
+            }
+
             // TODO 考虑是否要强制下线相关的用户，不然可能存在用户能够访问没有权限的菜单的情况
         } catch (Exception e) {
             log.error(e.toString(), e);
@@ -194,24 +225,56 @@ public class BackendRoleService {
     // ********************************查询类接口********************************
 
     /**
-     * 校验角色名称可用性
+     * 新增角色时对角色名称进行校验
      *
      * @param roleName    角色名称
      * @param currentUser 当前登陆用户
      * @return 可用返回true，不可用返回false
      */
     @Transactional(readOnly = true)
-    public boolean testRoleNameAvailability(String roleName, User currentUser) {
+    public boolean addFormRoleNameCheck(String roleName, User currentUser) {
         // 判空校验
         if (!StringUtils.hasLength(roleName)) {
-            throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR.getCode(), RoleErrorMessageConstant.ROLE_SAVE_NAME_EMPTY_ERROR_MESSAGE);
+            throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR.getCode(), RoleErrorMessageConstant.ROLE_NAME_EMPTY_ERROR_MESSAGE);
         }
         // 格式校验
         if (StringUtils.hasLength(roleName) && !RoleRegexConstant.ROLE_SAVE_NAME_REGEX.matcher(roleName).matches()) {
-            throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR.getCode(), RoleErrorMessageConstant.ROLE_SAVE_NAME_FORMAT_ERROR_MESSAGE);
+            throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR.getCode(), RoleErrorMessageConstant.ROLE_NAME_FORMAT_ERROR_MESSAGE);
         }
 
         return !isRoleExist(roleName);
+    }
+
+    /**
+     * 编辑角色表单角色名称校验
+     *
+     * @param dto 后台校验角色名称DTO对象
+     * @param currentUser 当前登录用户
+     * @return 可用返回true，不可用返回false
+     */
+    @Transactional(readOnly = true)
+    public boolean editFormRoleNameCheck(BackendRoleNameCheckDTO dto, User currentUser) {
+        Optional.ofNullable(dto)
+                .orElseThrow(() -> new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR));
+        String roleName = dto.getRoleName();
+        Long roleId = dto.getRoleId();
+        if (roleId == null) {
+            throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR.getCode(), RoleErrorMessageConstant.ROLE_UPDATE_ID_EMPTY_ERROR_MESSAGE);
+        }
+        if (!isRoleExist(roleId)) {
+            throw new ResourceNotExistException(ErrorEnum.RESOURCE_NOT_EXIST_ERROR.getCode(), RoleErrorMessageConstant.ROLE_NOT_EXIST_ERROR_MESSAGE);
+        }
+        if (!StringUtils.hasLength(roleName)) {
+            throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR.getCode(), RoleErrorMessageConstant.ROLE_NAME_EMPTY_ERROR_MESSAGE);
+        }
+        // 格式校验
+        if (StringUtils.hasLength(roleName) && !RoleRegexConstant.ROLE_SAVE_NAME_REGEX.matcher(roleName).matches()) {
+            throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR.getCode(), RoleErrorMessageConstant.ROLE_NAME_FORMAT_ERROR_MESSAGE);
+        }
+        Integer count = roleMapper.selectCount(new LambdaQueryWrapper<Role>()
+                .eq(Role::getName, roleName)
+                .ne(Role::getId, roleId));
+        return count.equals(0);
     }
 
     /**
@@ -336,19 +399,19 @@ public class BackendRoleService {
             throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR.getCode(), RoleErrorMessageConstant.ROLE_UPDATE_ID_EMPTY_ERROR_MESSAGE);
         }
         if (!StringUtils.hasLength(name)) {
-            throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR.getCode(), RoleErrorMessageConstant.ROLE_SAVE_NAME_EMPTY_ERROR_MESSAGE);
+            throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR.getCode(), RoleErrorMessageConstant.ROLE_NAME_EMPTY_ERROR_MESSAGE);
         }
         // 格式校验
         if (StringUtils.hasLength(name) && !RoleRegexConstant.ROLE_SAVE_NAME_REGEX.matcher(name).matches()) {
-            throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR.getCode(), RoleErrorMessageConstant.ROLE_SAVE_NAME_FORMAT_ERROR_MESSAGE);
+            throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR.getCode(), RoleErrorMessageConstant.ROLE_NAME_FORMAT_ERROR_MESSAGE);
         }
         // 描述校验
         if (StringUtils.hasLength(description) && description.length() > 200) {
-            throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR.getCode(), RoleErrorMessageConstant.ROLE_SAVE_DESCRIPTION_LENGTH_ERROR_MESSAGE);
+            throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR.getCode(), RoleErrorMessageConstant.ROLE_DESCRIPTION_LENGTH_ERROR_MESSAGE);
         }
         // 校验角色是否存在
         if (!isRoleExist(roleId)) {
-            throw new ResourceNotExistException(ErrorEnum.RESOURCE_NOT_EXIST_ERROR.getCode(), RoleErrorMessageConstant.ROLE_UPDATE_ROLE_NOT_EXIST_ERROR_MESSAGE);
+            throw new ResourceNotExistException(ErrorEnum.RESOURCE_NOT_EXIST_ERROR.getCode(), RoleErrorMessageConstant.ROLE_NOT_EXIST_ERROR_MESSAGE);
         }
         // 校验角色名是否重复
         Integer count = roleMapper.selectCount(new LambdaQueryWrapper<Role>()
@@ -361,7 +424,7 @@ public class BackendRoleService {
         // 校验菜单id是否正确
         if (!CollectionUtils.isEmpty(menuIdSet)) {
             if (!backendMenuService.isExistsByIdList(menuIdSet)) {
-                throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR.getCode(), RoleErrorMessageConstant.ROLE_SAVE_MENU_ID_NOT_EXIST_ERROR_MESSAGE);
+                throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR.getCode(), RoleErrorMessageConstant.ROLE_MENU_ID_NOT_EXIST_ERROR_MESSAGE);
             }
             // 如果菜单是子菜单，那么需要确保菜单中含有其父菜单id, 如果菜单是父菜单，那么当这个菜单的子菜单不存在时，则需要删除该父菜单id
             Iterator<Long> iterator = menuIdSet.iterator();
@@ -415,15 +478,15 @@ public class BackendRoleService {
         Set<Long> menuIdSet = dto.getMenuIdSet();
         // 判空校验
         if (!StringUtils.hasLength(name)) {
-            throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR.getCode(), RoleErrorMessageConstant.ROLE_SAVE_NAME_EMPTY_ERROR_MESSAGE);
+            throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR.getCode(), RoleErrorMessageConstant.ROLE_NAME_EMPTY_ERROR_MESSAGE);
         }
         // 格式校验
         if (StringUtils.hasLength(name) && !RoleRegexConstant.ROLE_SAVE_NAME_REGEX.matcher(name).matches()) {
-            throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR.getCode(), RoleErrorMessageConstant.ROLE_SAVE_NAME_FORMAT_ERROR_MESSAGE);
+            throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR.getCode(), RoleErrorMessageConstant.ROLE_NAME_FORMAT_ERROR_MESSAGE);
         }
         // 描述校验
         if (StringUtils.hasLength(description) && description.length() > 200) {
-            throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR.getCode(), RoleErrorMessageConstant.ROLE_SAVE_DESCRIPTION_LENGTH_ERROR_MESSAGE);
+            throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR.getCode(), RoleErrorMessageConstant.ROLE_DESCRIPTION_LENGTH_ERROR_MESSAGE);
         }
         // 角色名重复校验
         if (isRoleExist(name)) {
@@ -431,7 +494,7 @@ public class BackendRoleService {
         }
         if (!CollectionUtils.isEmpty(menuIdSet)) {
             if (!backendMenuService.isExistsByIdList(menuIdSet)) {
-                throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR.getCode(), RoleErrorMessageConstant.ROLE_SAVE_MENU_ID_NOT_EXIST_ERROR_MESSAGE);
+                throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR.getCode(), RoleErrorMessageConstant.ROLE_MENU_ID_NOT_EXIST_ERROR_MESSAGE);
             }
             // 如果菜单是子菜单，那么需要确保菜单中含有其父菜单id, 如果菜单是父菜单，那么当这个菜单的子菜单不存在时，则需要删除该父菜单id
             Iterator<Long> iterator = menuIdSet.iterator();
