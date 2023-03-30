@@ -311,9 +311,40 @@ public class BackendRoleService {
         Page page = new Page<>(dto.getPageNum(), dto.getPageSize());
         // 不查询总数
         page.setSearchCount(false);
-        Page<BackendRoleListVO> rolePageList = roleMapper.findRolePageList(new Page<>(dto.getPageNum(), dto.getPageSize()), dto);
+        Page<BackendRoleListVO> rolePageList = roleMapper
+                .findRolePageList(new Page<>(dto.getPageNum(), dto.getPageSize()), dto);
         long total = roleMapper.findRolePageListTotal(dto);
         page.setTotal(total);
+
+        rolePageList.getRecords().forEach(vo -> {
+            // 获取每个角色的菜单树
+            Long roleId = Long.valueOf(vo.getId());
+            BackendRoleMenuTreeVO backendRoleMenuTreeVO = new BackendRoleMenuTreeVO();
+            backendRoleMenuTreeVO.setRoleId(roleId);
+
+            // 获取角色的所有菜单id列表
+            List<Long> menuIdList = trRoleMenuService.findMenuIdListByRoleId(roleId);
+            if (CollectionUtils.isEmpty(menuIdList)) {
+                backendRoleMenuTreeVO.setMenuTree(Lists.newArrayList());
+                vo.setRoleMenuTree(backendRoleMenuTreeVO);
+                return;
+            }
+            List<Menu> menuList = backendMenuService.findMenuListByIdList(menuIdList);
+            List<BackendRoleMenuTreeVO.MenuTree> roleMenuList = menuList
+                    .stream()
+                    .map(menu -> {
+                        BackendRoleMenuTreeVO.MenuTree menuTree = new BackendRoleMenuTreeVO.MenuTree();
+                        menuTree.setMenuName(menu.getName());
+                        menuTree.setMenuId(menu.getId());
+                        menuTree.setParentMenuId(menu.getParentId());
+                        menuTree.setMenuTitle(menu.getTitle());
+                        return menuTree;
+                    })
+                    .collect(Collectors.toList());
+            List<BackendRoleMenuTreeVO.MenuTree> menuTreeList = menuListToMenuTree(roleMenuList, -1L);
+            backendRoleMenuTreeVO.setMenuTree(menuTreeList);
+            vo.setRoleMenuTree(backendRoleMenuTreeVO);
+        });
         return rolePageList;
     }
 
@@ -327,11 +358,11 @@ public class BackendRoleService {
     @Transactional(readOnly = true)
     public BackendRoleMenuTreeVO findRoleMenuTree(Long roleId, User currentUser) {
         BackendRoleMenuTreeVO backendRoleMenuTreeVO = new BackendRoleMenuTreeVO();
+        backendRoleMenuTreeVO.setRoleId(roleId);
         // 判断角色是否存在
         if (!isRoleExist(roleId)) {
             throw new ResourceNotExistException(ErrorEnum.RESOURCE_NOT_EXIST_ERROR);
         }
-        backendRoleMenuTreeVO.setRoleId(roleId);
         // 获取角色的所有菜单id列表
         List<Long> menuIdList = trRoleMenuService.findMenuIdListByRoleId(roleId);
         if (CollectionUtils.isEmpty(menuIdList)) {
@@ -339,10 +370,6 @@ public class BackendRoleService {
             return backendRoleMenuTreeVO;
         }
         List<Menu> menuList = backendMenuService.findMenuListByIdList(menuIdList);
-        if (CollectionUtils.isEmpty(menuList)) {
-            backendRoleMenuTreeVO.setMenuTree(Lists.newArrayList());
-            return backendRoleMenuTreeVO;
-        }
 
         List<BackendRoleMenuTreeVO.MenuTree> roleMenuList = menuList
                 .stream()
@@ -356,28 +383,6 @@ public class BackendRoleService {
                 })
                 .collect(Collectors.toList());
         List<BackendRoleMenuTreeVO.MenuTree> menuTreeList = menuListToMenuTree(roleMenuList, -1L);
-        // 遍历菜单树，根据菜单树的menuId去查询菜单的权限列表，这里只有两层菜单，可以直接遍历
-        for (BackendRoleMenuTreeVO.MenuTree menuTree : menuTreeList) {
-            List<BackendRoleMenuTreeVO.MenuTree> children = menuTree.getChildren();
-            for (BackendRoleMenuTreeVO.MenuTree child : children) {
-                Long menuId = child.getMenuId();
-                List<Permission> permissionList = permissionService
-                        .findPermissionListByMenuIdAndProjectName(menuId, CommonConstant.PROJECT_NAME_BACKEND_PAGE);
-                if (CollectionUtils.isEmpty(permissionList)) {
-                    child.setPermissionList(Lists.newArrayList());
-                }
-                List<BackendRoleMenuTreeVO.MenuPermission> menuPermissionList = Lists.newArrayList();
-                permissionList.forEach(p -> {
-                    BackendRoleMenuTreeVO.MenuPermission menuPermission = new BackendRoleMenuTreeVO.MenuPermission();
-                    menuPermission.setExpression(p.getExpression());
-                    menuPermission.setPermissionId(p.getId());
-                    menuPermission.setPermissionName(p.getName());
-                    menuPermissionList.add(menuPermission);
-                });
-                child.setPermissionList(menuPermissionList);
-            }
-        }
-
         backendRoleMenuTreeVO.setMenuTree(menuTreeList);
         return backendRoleMenuTreeVO;
     }

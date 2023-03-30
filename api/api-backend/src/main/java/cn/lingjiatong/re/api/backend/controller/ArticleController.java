@@ -63,7 +63,7 @@ public class ArticleController {
      */
     @DeleteMapping("/deleteDraft/{draftId}")
     @Operation(summary = "删除草稿", method = "DELETE")
-    @PreAuthorize("hasAuthority('blog:article') && hasAuthority('blog:article:write')")
+    @PreAuthorize("isAuthenticated()")
     public ResultVO<?> deleteDraft(@PathVariable("draftId") String draftId, @Parameter(hidden = true) @CurrentUser User currentUser) {
         log.info("==========删除草稿，参数：{}", draftId);
         return backendArticleFeignClient.deleteDraft(draftId, currentUser);
@@ -95,7 +95,7 @@ public class ArticleController {
      */
     @PostMapping("/saveOrUpdateDraft")
     @Operation(summary = "保存或更新草稿", method = "POST")
-    @PreAuthorize("hasAuthority('blog:article') && hasAuthority('blog:article:write')")
+    @PreAuthorize("isAuthenticated()")
     public ResultVO<?> saveOrUpdateDraft(@RequestBody BackendDraftSaveOrUpdateDTO dto, @Parameter(hidden = true) @CurrentUser User currentUser) {
         log.info("==========保存或更新草稿，参数：{}，{}", dto.getDraftId(), dto.getTitle());
         return backendArticleFeignClient.saveOrUpdateDraft(dto, currentUser);
@@ -174,7 +174,7 @@ public class ArticleController {
      */
     @GetMapping("/draft/{draftId}")
     @Operation(summary = "后端获取草稿详情", method = "GET")
-    @PreAuthorize("hasAuthority('blog:article') || hasAuthority('blog:article:read')")
+    @PreAuthorize("isAuthenticated()")
     public ResultVO<BackendDraftDetailVO> getDraftDetail(@PathVariable("draftId") String draftId, @Parameter(hidden = true) @CurrentUser User currentUser) {
         log.info("==========后端获取草稿详情，参数：{}", draftId);
         return backendArticleFeignClient.getDraftDetail(draftId, currentUser);
@@ -188,7 +188,7 @@ public class ArticleController {
      */
     @GetMapping("/draftList")
     @Operation(summary = "获取当前用户的草稿列表", method = "GET")
-    @PreAuthorize("hasAuthority('blog:article') || hasAuthority('blog:article:read')")
+    @PreAuthorize("isAuthenticated()")
     public ResultVO<List<BackendDraftListVO>> getDraftList(@CurrentUser @Parameter(hidden = true) User currentUser) {
         log.info("==========获取当前用户的草稿列表");
         return backendArticleFeignClient.getDraftList(currentUser);
