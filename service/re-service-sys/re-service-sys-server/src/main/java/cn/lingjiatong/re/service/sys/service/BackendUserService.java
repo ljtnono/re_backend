@@ -178,7 +178,7 @@ public class BackendUserService {
         if (CommonConstant.ENTITY_DELETE.equals(deleteStatus)) {
             // 如果删除的用户中含有系统内置超级管理员，则无法隐藏
             if (userIdList.contains(UserConstant.SUPER_ADMIN_USER_ID)) {
-                throw new PermissionException(ErrorEnum.NO_PERMISSION_ERROR.getCode(), UserErrorMessageConstant.DELETE_SUPER_ADMIN_ERROR_MESSAGE);
+                throw new PermissionException(ErrorEnum.NO_PERMISSION_ERROR.getCode(), UserErrorMessageConstant.HIDDEN_SUPER_ADMIN_ERROR_MESSAGE);
             }
             try {
                 // 更新用户删除状态
