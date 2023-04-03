@@ -46,6 +46,8 @@
 		<k8s-client.version>16.0.2</k8s-client.version>
 		<dynamic-datasource.version>3.6.1</dynamic-datasource.version>
 		<redission.version>3.16.8</redission.version>
+		<jsch.version>0.1.54</jsch.version>
+		<oshi.version>5.8.2</oshi.version>
 		<!-- nacos配置 -->
 		<nacos-server-addr>www.lingjiatong.cn:30048</nacos-server-addr>
 		<!-- 各模块端口配置 -->
@@ -225,6 +227,18 @@
 				<groupId>org.redisson</groupId>
 				<artifactId>redisson</artifactId>
 				<version>${redission.version}</version>
+			</dependency>
+			<!-- jsch -->
+			<dependency>
+				<groupId>com.jcraft</groupId>
+				<artifactId>jsch</artifactId>
+				<version>${jsch.version}</version>
+			</dependency>
+			<!-- oshi -->
+			<dependency>
+				<groupId>com.github.oshi</groupId>
+				<artifactId>oshi-core</artifactId>
+				<version>${oshi.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

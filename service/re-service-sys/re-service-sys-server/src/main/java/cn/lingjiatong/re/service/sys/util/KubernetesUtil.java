@@ -1,11 +1,10 @@
 package cn.lingjiatong.re.service.sys.util;
 
-import cn.lingjiatong.re.common.util.JSONUtil;
-import cn.lingjiatong.re.service.sys.bo.K8sPodBO;
 import io.kubernetes.client.openapi.ApiClient;
 import io.kubernetes.client.openapi.ApiException;
 import io.kubernetes.client.openapi.Configuration;
 import io.kubernetes.client.openapi.apis.CoreV1Api;
+import io.kubernetes.client.openapi.models.V1ContainerStatus;
 import io.kubernetes.client.openapi.models.V1NamespaceList;
 import io.kubernetes.client.openapi.models.V1Pod;
 import io.kubernetes.client.openapi.models.V1PodList;
@@ -14,7 +13,11 @@ import io.kubernetes.client.util.credentials.AccessTokenAuthentication;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import java.time.Duration;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * k8s功能类
@@ -64,22 +67,61 @@ public class KubernetesUtil {
      * @param namespace 名称空间
      * @return pod信息列表
      */
-    public V1PodList getPodList(String namespace) throws ApiException {
+    public void getPodList(String namespace) throws ApiException {
         CoreV1Api apiInstance = new CoreV1Api();
         V1PodList v1PodList = apiInstance.listNamespacedPod(namespace, "true", null, null, null, null, null, null, null, null, null);
-        return v1PodList;
+        List<V1Pod> items = v1PodList.getItems();
+        System.out.printf("%-50s%-10s%-20s%-10s%-20s%-20s%-20s%-20s%-20s%n",
+                "NAME", "READY", "STATUS", "RESTARTS", "AGE", "IP", "NODE", "NOMINATED NODE", "READINESS GATES");
+        for (V1Pod item: items) {
+            String name = item.getMetadata().getName();
+            List<V1ContainerStatus> containerStatuses = item.getStatus().getContainerStatuses();
+            int readyCount = 0;
+            int totalCount = containerStatuses.size();
+            for (V1ContainerStatus containerStatus : containerStatuses) {
+                if (containerStatus.getReady()) {
+                    readyCount++;
+                }
+            }
+            String ready = readyCount + "/" + totalCount;
+            String status = item.getStatus().getPhase();
+
+            OffsetDateTime lastRestartTime = item.getStatus().getStartTime();
+            Duration lastRestartTimeduration = Duration.between(lastRestartTime, OffsetDateTime.now());
+            StringBuilder restartStringBuilder = new StringBuilder(String.valueOf(item.getStatus().getContainerStatuses().get(0).getRestartCount()));
+            if (lastRestartTimeduration.toMinutes() < 60) {
+                restartStringBuilder.append(" (").append(lastRestartTimeduration.toMinutes()).append("m ago)");
+            } else if (lastRestartTimeduration.toHours() < 24) {
+                restartStringBuilder.append(" (").append(lastRestartTimeduration.toHours()).append("h ago)");
+            } else {
+                restartStringBuilder.append(" (").append(lastRestartTimeduration.toDays()).append("d ago)");
+            }
+            String restarts = restartStringBuilder.toString();
+
+
+            OffsetDateTime podStartTime = item.getStatus().getStartTime();
+            Duration duration = Duration.between(podStartTime, OffsetDateTime.now(ZoneOffset.UTC));
+            long totalSeconds = duration.getSeconds();
+            long days = totalSeconds / (60 * 60 * 24);
+            long hours = (totalSeconds % (60 * 60 * 24)) / (60 * 60);
+            String age = days + "d" + hours + "h";
+            String ip = item.getStatus().getPodIP();
+            String node = item.getSpec().getNodeName();
+            String nominatedNodeName = item.getStatus().getNominatedNodeName();
+            String readinessGates = item.getSpec().getReadinessGates() == null ? null :
+                    String.join(",", item.getSpec().getReadinessGates()
+                            .stream()
+                            .map(rg -> rg.getConditionType()).collect(Collectors.toList()));
+            System.out.printf("%-50s%-10s%-20s%-10s%-20s%-20s%-20s%-20s%-20s%n", name, ready, status, restarts, age, ip, node, nominatedNodeName, readinessGates);
+
+        }
     }
 
 
     public static void main(String[] args) throws ApiException {
         KubernetesUtil kubernetesUtil = new KubernetesUtil();
-        kubernetesUtil.getConnection();
-        V1PodList rootelement = kubernetesUtil.getPodList("rootelement");
-        List<V1Pod> items = rootelement.getItems();
-        for (V1Pod item : items) {
-            K8sPodBO k8sPodBO = new K8sPodBO(item);
-            System.out.println(JSONUtil.objectToString(k8sPodBO));
-        }
-    }
+        ApiClient connection = kubernetesUtil.getConnection();
 
+        kubernetesUtil.getPodList("common");
+    }
 }
