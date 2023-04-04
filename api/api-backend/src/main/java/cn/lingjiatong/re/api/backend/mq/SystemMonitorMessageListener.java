@@ -1,9 +1,11 @@
 package cn.lingjiatong.re.api.backend.mq;
 
 import cn.lingjiatong.re.api.backend.websocket.SystemMonitorWebSocketConfig;
+import cn.lingjiatong.re.service.sys.api.client.BackendSystemMonitorFeignClient;
 import org.apache.rocketmq.spring.annotation.MessageModel;
 import org.apache.rocketmq.spring.annotation.RocketMQMessageListener;
 import org.apache.rocketmq.spring.core.RocketMQListener;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
@@ -18,12 +20,11 @@ import java.util.concurrent.ConcurrentHashMap;
  * Date: 4/3/23 10:31 PM
  */
 @Component
-@RocketMQMessageListener(
-        topic = "systemMonitor",
-        messageModel = MessageModel.BROADCASTING,
-        consumerGroup = "systemMonitor"
-)
+@RocketMQMessageListener(topic = "systemMonitor", messageModel = MessageModel.BROADCASTING, consumerGroup = "api-backend")
 public class SystemMonitorMessageListener implements RocketMQListener<SystemMonitorMessage> {
+
+    @Autowired
+    private BackendSystemMonitorFeignClient backendSystemMonitorFeignClient;
 
     @Override
     public void onMessage(SystemMonitorMessage message) {

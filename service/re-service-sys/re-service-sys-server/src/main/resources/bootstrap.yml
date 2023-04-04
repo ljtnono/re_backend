@@ -9,6 +9,3 @@ feign:
       default:
         connectTimeout: 60000
         readTimeout: 600000
-mybatis-plus:
-  configuration:
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl

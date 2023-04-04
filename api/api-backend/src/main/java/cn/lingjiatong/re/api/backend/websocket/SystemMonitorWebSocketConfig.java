@@ -20,13 +20,12 @@ import java.util.concurrent.ConcurrentHashMap;
  * Date: 4/3/23 10:40 PM
  */
 @Slf4j
-@ServerEndpoint("/system/monitor")
 @Component
+@ServerEndpoint("/system/monitor")
 public class SystemMonitorWebSocketConfig {
 
     @Autowired
     private RocketMQTemplate rocketMQTemplate;
-
     // 用户session map
     public static final ConcurrentHashMap<Long, WebSocketSession> SESSIONS = new ConcurrentHashMap<>();
 

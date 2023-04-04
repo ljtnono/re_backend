@@ -57,6 +57,8 @@ public enum ErrorEnum {
     MINIO_SERVER_ERROR(500001, "图片服务器异常，上传失败"),
     // 数据操作失败
     DATABASE_OPERATION_ERROR(500002, "数据库操作失败"),
+    // 获取系统信息异常
+    SYSTEM_MONITOR_ERROR(500003, "获取系统信息异常"),
 
 
     //#################### 600 业务类异常 ####################//

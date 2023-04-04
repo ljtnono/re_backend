@@ -15,6 +15,9 @@ import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
+import io.kubernetes.client.openapi.ApiClient;
+import io.kubernetes.client.util.ClientBuilder;
+import io.kubernetes.client.util.credentials.AccessTokenAuthentication;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Contact;
@@ -22,6 +25,7 @@ import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringBootVersion;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -31,6 +35,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -49,6 +54,11 @@ public class SpringBeanConfig {
 
     @Autowired
     private SwaggerProperties swaggerProperties;
+
+    @Value("${k8sConfig.accessToken}")
+    private String k8sAccessToken;
+    @Value("${k8sConfig.endPoint}")
+    private String k8sEndPoint;
 
     @Bean
     public OpenAPI docket() {
@@ -163,5 +173,18 @@ public class SpringBeanConfig {
                 threadFactory,
                 new ThreadPoolExecutor.CallerRunsPolicy());
         return executorService;
+    }
+
+    @Bean
+    public ApiClient apiClient() {
+        ApiClient client = new ClientBuilder()
+                .setBasePath(k8sEndPoint)
+                .setVerifyingSsl(false)
+                .setAuthentication(new AccessTokenAuthentication(k8sAccessToken))
+                .setPingInterval(Duration.ofMinutes(1))
+                .setReadTimeout(Duration.ofMinutes(10))
+                .build();
+        io.kubernetes.client.openapi.Configuration.setDefaultApiClient(client);
+        return client;
     }
 }

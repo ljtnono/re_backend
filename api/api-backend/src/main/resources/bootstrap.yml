@@ -9,3 +9,10 @@ feign:
       default:
         connectTimeout: 60000
         readTimeout: 600000
+rocketmq:
+  name-server: www.lingjiatong.cn:30160
+  producer:
+    group: api-backend
+    send-message-timeout: 3000
+  consumer:
+    group: api-backend

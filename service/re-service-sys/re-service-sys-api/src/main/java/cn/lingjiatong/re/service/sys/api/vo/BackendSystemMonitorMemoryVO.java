@@ -26,10 +26,10 @@ public class BackendSystemMonitorMemoryVO {
     private String usedMemory;
 
     /**
-     * 空闲内存
+     * 可用内存
      */
-    @Schema(description = "空闲内存")
-    private String freeMemory;
+    @Schema(description = "可用内存")
+    private String availableMemory;
 
     /**
      * 已使用内存百分比
