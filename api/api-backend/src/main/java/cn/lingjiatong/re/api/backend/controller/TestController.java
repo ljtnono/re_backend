@@ -32,6 +32,6 @@ public class TestController {
 
     @GetMapping("/test")
     public ResultVO<?> test(@RequestParam("ipAddr") String ipAddr, @CurrentUser User currentUser) {
-        return backendSystemMonitorFeignClient.findK8sPodList("rootelement", currentUser);
+        return backendSystemMonitorFeignClient.findNamespaceList(currentUser);
     }
 }

@@ -26,6 +26,15 @@ public interface BackendSystemMonitorFeignClient {
     // ********************************查询类接口********************************
 
     /**
+     * 获取k8s集群名称空间列表
+     *
+     * @param currentUser 当前登陆用户
+     * @return 后台系统监控获取k8s集群名称空间列表VO对象列表
+     */
+    @GetMapping("/backend/api/v1/systemMonitor/namespaceList")
+    ResultVO<List<BackendSystemMonitorNamespaceListVO>> findNamespaceList(@SpringQueryMap User currentUser);
+
+    /**
      * 获取系统硬盘信息
      *
      * @param ipAddr 主机ip地址

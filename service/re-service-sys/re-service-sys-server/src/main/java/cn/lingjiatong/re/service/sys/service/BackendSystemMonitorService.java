@@ -51,6 +51,31 @@ public class BackendSystemMonitorService {
     // ********************************查询类接口********************************
 
     /**
+     * 获取k8s集群名称空间列表
+     *
+     * @return 后台系统监控k8s集群名称空间列表VO对象列表
+     */
+    public List<BackendSystemMonitorNamespaceListVO> findNamespaceList() {
+        List<BackendSystemMonitorNamespaceListVO> result = Lists.newArrayList();
+        try {
+            V1NamespaceList namespaceList = KubernetesUtil.getInstance().getNamespaceList();
+            List<V1Namespace> n = namespaceList.getItems();
+            if (!CollectionUtils.isEmpty(n)) {
+                for (V1Namespace v1Namespace : n) {
+                    String name = v1Namespace.getMetadata().getName();
+                    BackendSystemMonitorNamespaceListVO vo = new BackendSystemMonitorNamespaceListVO();
+                    vo.setName(name);
+                    result.add(vo);
+                }
+            }
+        } catch (ApiException e) {
+            log.error(e.toString(), e);
+            throw new BusinessException(ErrorEnum.SYSTEM_MONITOR_ERROR);
+        }
+        return result;
+    }
+
+    /**
      * 获取系统监控硬盘信息
      *
      * @param ipAddr 主机ip地址

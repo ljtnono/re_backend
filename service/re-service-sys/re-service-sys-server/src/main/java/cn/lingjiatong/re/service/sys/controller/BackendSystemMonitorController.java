@@ -8,6 +8,8 @@ import cn.lingjiatong.re.service.sys.api.client.BackendSystemMonitorFeignClient;
 import cn.lingjiatong.re.service.sys.api.vo.*;
 import cn.lingjiatong.re.service.sys.properties.KubernetesProperties;
 import cn.lingjiatong.re.service.sys.service.BackendSystemMonitorService;
+import cn.lingjiatong.re.service.sys.util.KubernetesUtil;
+import io.kubernetes.client.openapi.ApiException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -31,6 +33,12 @@ public class BackendSystemMonitorController implements BackendSystemMonitorFeign
     // ********************************删除类接口********************************
     // ********************************修改类接口********************************
     // ********************************查询类接口********************************
+
+    @Override
+    @GetMapping("/backend/api/v1/systemMonitor/namespaceList")
+    public ResultVO<List<BackendSystemMonitorNamespaceListVO>> findNamespaceList(User currentUser) {
+        return ResultVO.success(backendSystemMonitorService.findNamespaceList());
+    }
 
     @Override
     @GetMapping("/backend/api/v1/systemMonitor/hardDiskInfo")
