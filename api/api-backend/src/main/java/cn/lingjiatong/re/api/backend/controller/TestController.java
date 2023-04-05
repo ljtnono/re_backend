@@ -5,6 +5,7 @@ import cn.lingjiatong.re.common.annotation.CurrentUser;
 import cn.lingjiatong.re.common.entity.User;
 import cn.lingjiatong.re.service.sys.api.client.BackendSystemMonitorFeignClient;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,6 +23,8 @@ public class TestController {
 
     @Autowired
     private BackendSystemMonitorFeignClient backendSystemMonitorFeignClient;
+    @Autowired
+    private RocketMQTemplate rocketMQTemplate;
 
     // ********************************新增类接口********************************
     // ********************************删除类接口********************************
@@ -31,7 +34,8 @@ public class TestController {
     // ********************************公用函数********************************
 
     @GetMapping("/test")
-    public ResultVO<?> test(@RequestParam("ipAddr") String ipAddr, @CurrentUser User currentUser) {
-        return backendSystemMonitorFeignClient.findNamespaceList(currentUser);
+    public ResultVO<?> test(@CurrentUser User currentUser) {
+        rocketMQTemplate.convertAndSend("systemMonitor", "helloworld");
+        return ResultVO.success();
     }
 }
