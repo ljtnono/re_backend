@@ -1,15 +1,15 @@
 package cn.lingjiatong.re.api.backend.websocket;
 
-import cn.lingjiatong.re.api.backend.mq.SystemMonitorMessage;
 import cn.lingjiatong.re.common.util.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.web.socket.WebSocketSession;
 
+import javax.websocket.OnClose;
 import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
+import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -21,25 +21,36 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 @Slf4j
 @Component
-@ServerEndpoint("/system/monitor")
+@ServerEndpoint("/websocket")
 public class SystemMonitorWebSocketConfig {
 
     @Autowired
     private RocketMQTemplate rocketMQTemplate;
     // 用户session map
-    public static final ConcurrentHashMap<Long, WebSocketSession> SESSIONS = new ConcurrentHashMap<>();
+    public static final ConcurrentHashMap<String, Session> SESSION_MAP = new ConcurrentHashMap<>();
 
     @OnOpen
-    public void onOpen(WebSocketSession session) throws Exception {
-        String userId = (String) session.getAttributes().get("userId");
-        log.info("==========用户：{}，链接websocket服务端", Long.valueOf(userId));
-        SESSIONS.put(Long.valueOf(userId), session);
+    public void onOpen(Session session) {
+        String username = session.getUserPrincipal().getName();
+        log.info("==========用户：{}，连接websocket服务器", username);
+        SESSION_MAP.putIfAbsent(username, session);
     }
 
     @OnMessage
-    public void onMessage(WebSocketSession session, String textMessage) throws Exception {
-        // 处理逻辑  ----   从TextMesasge对象中获取到用户id和想要获取的数据类型等信息，发送给mq
-        SystemMonitorMessage systemMonitorMessage = JSONUtil.stringToObject(textMessage, SystemMonitorMessage.class);
-        rocketMQTemplate.convertAndSend("", systemMonitorMessage);
+    public void onMessage(Session session, String message) {
+        String username = session.getUserPrincipal().getName();
+        try {
+            WebSocketMessageDTO dto = JSONUtil.stringToObject(message, WebSocketMessageDTO.class);
+        } catch (Exception e) {
+            //
+        }
     }
+
+    @OnClose
+    public void onClose(Session session) {
+        String username = session.getUserPrincipal().getName();
+        log.info("==========用户：{}，断开连接", username);
+        SESSION_MAP.remove(username);
+    }
+
 }

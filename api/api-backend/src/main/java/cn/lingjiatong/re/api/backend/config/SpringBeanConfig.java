@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringBootVersion;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.socket.server.standard.ServerEndpointExporter;
 
 /**
  * spring bean配置类
@@ -49,6 +50,11 @@ public class SpringBeanConfig {
                 .description(swaggerProperties.getApplicationDescription())
                 .contact(contact)
                 .version("Application Version: " + swaggerProperties.getApplicationVersion() + ", Spring Boot Version: " + SpringBootVersion.getVersion());
+    }
+
+    @Bean
+    public ServerEndpointExporter endpointExporter(){
+        return new ServerEndpointExporter();
     }
 
 }
