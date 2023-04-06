@@ -1,20 +1,20 @@
-package cn.lingjiatong.re.api.backend.mq;
+package cn.lingjiatong.re.api.backend.websocket.dto;
 
 import lombok.Data;
 
 /**
- * 前端获取系统监控数据消息对象
+ * 前端获取系统监控数据消息DTO对象
  *
  * @author Ling, Jiatong
  * Date: 4/3/23 10:55 PM
  */
 @Data
-public class SystemMonitorMessage {
+public class SystemMonitorMessageDTO {
 
     /**
      * 用户id
      */
-    private String userId;
+    private String username;
 
     /**
      * 获取的消息类型

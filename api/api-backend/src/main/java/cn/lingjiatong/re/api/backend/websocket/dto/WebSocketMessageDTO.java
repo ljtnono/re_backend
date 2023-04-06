@@ -1,4 +1,4 @@
-package cn.lingjiatong.re.api.backend.websocket;
+package cn.lingjiatong.re.api.backend.websocket.dto;
 
 import lombok.Data;
 
