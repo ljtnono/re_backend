@@ -25,6 +25,8 @@ public interface CommonConstant {
 
     // token的http请求头
     String TOKE_HTTP_HEADER = "Authorization";
+    // websocket协议携带token的请求头
+    String WEBSOCKET_TOKEN_HEADER = "Sec-WebSocket-Protocol";
     // cookie中的token键名
     String TOKEN_COOKIE_HEADER = TOKE_HTTP_HEADER;
     // token内容前缀

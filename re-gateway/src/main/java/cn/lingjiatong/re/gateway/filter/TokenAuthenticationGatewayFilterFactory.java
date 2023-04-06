@@ -63,6 +63,7 @@ public class TokenAuthenticationGatewayFilterFactory extends AbstractGatewayFilt
             MultiValueMap<String, HttpCookie> cookies = request.getCookies();
             String username = null;
             String token = request.getHeaders().getFirst(CommonConstant.TOKE_HTTP_HEADER);
+            String websocketToken = request.getHeaders().getFirst(CommonConstant.WEBSOCKET_TOKEN_HEADER);
             if (!CollectionUtils.isEmpty(passTokenUrl)) {
                 // passTokenUrl中匹配的路径
                 AtomicBoolean atomicBoolean = new AtomicBoolean(Boolean.FALSE);
@@ -91,7 +92,17 @@ public class TokenAuthenticationGatewayFilterFactory extends AbstractGatewayFilt
                     return responseInfo(exchange, e.getCode(), e.getMessage());
                 }
             }
-
+            if (StringUtils.hasLength(websocketToken) && websocketToken.startsWith(CommonConstant.TOKEN_PREFIX)) {
+                websocketToken = websocketToken.substring(CommonConstant.TOKEN_PREFIX.length());
+                // 从token中解析出来用户名
+                try {
+                    username = jwtUtil.getUsernameFromToken(websocketToken);
+                    token = websocketToken;
+                } catch (PermissionException e) {
+                    // 返回错误消息
+                    return responseInfo(exchange, e.getCode(), e.getMessage());
+                }
+            }
             // 如果header中没有，那么从url中取
             if (!CollectionUtils.isEmpty(queryParams) && StringUtils.hasLength(queryParams.getFirst(CommonConstant.TOKE_HTTP_HEADER))) {
                 token = URLDecoder.decode(queryParams.getFirst(CommonConstant.TOKE_HTTP_HEADER).substring(CommonConstant.TOKEN_PREFIX.length()), StandardCharsets.UTF_8);

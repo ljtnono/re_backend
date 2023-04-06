@@ -21,66 +21,51 @@ import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
+import org.springframework.web.socket.*;
+import org.springframework.web.socket.handler.TextWebSocketHandler;
 
-import javax.websocket.OnClose;
-import javax.websocket.OnMessage;
-import javax.websocket.OnOpen;
-import javax.websocket.Session;
-import javax.websocket.server.ServerEndpoint;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * 系统监控websocket消息处理
+ * websocket处理器
  *
  * @author Ling, Jiatong
- * Date: 4/3/23 10:40 PM
+ * Date: 4/7/23 2:15 AM
  */
 @Slf4j
 @Component
-@ServerEndpoint("/websocket")
-public class SystemMonitorWebSocketConfig {
-
-    private static RocketMQTemplate rocketMQTemplate;
-    private static BackendSystemMonitorFeignClient backendSystemMonitorFeignClient;
-    private static JwtUtil jwtUtil;
+public class WebSocketService extends TextWebSocketHandler {
 
     @Autowired
-    public void setRocketMQTemplate(RocketMQTemplate rocketMQTemplate) {
-        SystemMonitorWebSocketConfig.rocketMQTemplate = rocketMQTemplate;
-    }
+    private RocketMQTemplate rocketMQTemplate;
     @Autowired
-    public void setBackendSystemMonitorFeignClient(BackendSystemMonitorFeignClient backendSystemMonitorFeignClient) {
-        SystemMonitorWebSocketConfig.backendSystemMonitorFeignClient = backendSystemMonitorFeignClient;
-    }
+    private BackendSystemMonitorFeignClient backendSystemMonitorFeignClient;
     @Autowired
-    public void setJwtUtil(JwtUtil jwtUtil) {
-        SystemMonitorWebSocketConfig.jwtUtil = jwtUtil;
-    }
-
+    private JwtUtil jwtUtil;
     // 用户session map
-    public static final ConcurrentHashMap<String, Session> SESSION_MAP = new ConcurrentHashMap<>();
+    public static final ConcurrentHashMap<String, WebSocketSession> SESSION_MAP = new ConcurrentHashMap<>();
 
-    @OnOpen
-    public void onOpen(Session session) {
-        String username = session.getUserPrincipal().getName();
+    @Override
+    public void afterConnectionEstablished(WebSocketSession session) throws Exception {
+        String username = session.getPrincipal().getName();
         log.info("==========用户：{}，连接websocket服务器", username);
         SESSION_MAP.putIfAbsent(username, session);
     }
 
-    @OnMessage
-    public void onMessage(Session session, String message) throws IOException {
+    @Override
+    public void handleTextMessage(WebSocketSession session, TextMessage textMessage) throws Exception {
+        String message = textMessage.getPayload().toString();
         WebSocketMessageDTO dto = JSONUtil.stringToObject(message, WebSocketMessageDTO.class);
         if (dto == null) {
             ResultVO<?> error = ResultVO.error(ErrorEnum.ILLEGAL_PARAM_ERROR);
-            session.getBasicRemote().sendText(JSONUtil.objectToString(error));
+            session.sendMessage(new TextMessage(JSONUtil.objectToString(error)));
             return;
         }
 
         // 通过token，解析出来用户对象
-        OAuth2AuthenticationDetails details = (OAuth2AuthenticationDetails) ((OAuth2Authentication) session.getUserPrincipal()).getDetails();
+        OAuth2AuthenticationDetails details = (OAuth2AuthenticationDetails) ((OAuth2Authentication) session.getPrincipal()).getDetails();
         String token = details.getTokenValue();
         User user = getUserFromToken(token);
         ResultVO<?> resultVO;
@@ -91,21 +76,21 @@ public class SystemMonitorWebSocketConfig {
             SystemMonitorMessageDTO systemMonitorMessageDTO = JSONUtil.stringToObject(JSONUtil.objectToString(dto.getBody()), SystemMonitorMessageDTO.class);
             if (systemMonitorMessageDTO == null) {
                 ResultVO<?> error = ResultVO.error(ErrorEnum.ILLEGAL_PARAM_ERROR);
-                session.getBasicRemote().sendText(JSONUtil.objectToString(error));
+                session.sendMessage(new TextMessage(JSONUtil.objectToString(error)));
                 return;
             }
 
             Integer type = systemMonitorMessageDTO.getType();
             if (!Arrays.asList(1, 2, 3, 4).contains(type)) {
                 resultVO = ResultVO.error(ErrorEnum.ILLEGAL_PARAM_ERROR);
-                session.getBasicRemote().sendText(JSONUtil.objectToString(resultVO));
+                session.sendMessage(new TextMessage(JSONUtil.objectToString(resultVO)));
                 return;
             }
             if (type.equals(1) || type.equals(2) || type.equals(4)) {
                 String hostIPAddr = systemMonitorMessageDTO.getHostIPAddr();
                 if (!StringUtils.hasLength(hostIPAddr)) {
                     resultVO = ResultVO.error(ErrorEnum.ILLEGAL_PARAM_ERROR);
-                    session.getBasicRemote().sendText(JSONUtil.objectToString(resultVO));
+                    session.sendMessage(new TextMessage(JSONUtil.objectToString(resultVO)));
                     return;
                 }
 
@@ -126,13 +111,13 @@ public class SystemMonitorWebSocketConfig {
                 } catch (Exception exception) {
                     log.error(exception.toString(), exception);
                     resultVO = ResultVO.error(ErrorEnum.COMMON_SERVER_ERROR);
-                    session.getBasicRemote().sendText(JSONUtil.objectToString(resultVO));
+                    session.sendMessage(new TextMessage(JSONUtil.objectToString(resultVO)));
                 }
             } else if (type.equals(3)) {
                 String namespace = systemMonitorMessageDTO.getNamespace();
                 if (!StringUtils.hasLength(namespace)) {
                     resultVO = ResultVO.error(ErrorEnum.ILLEGAL_PARAM_ERROR);
-                    session.getBasicRemote().sendText(JSONUtil.objectToString(resultVO));
+                    session.sendMessage(new TextMessage(JSONUtil.objectToString(resultVO)));
                     return;
                 }
 
@@ -143,26 +128,37 @@ public class SystemMonitorWebSocketConfig {
                 } catch (Exception exception) {
                     log.error(exception.toString(), exception);
                     resultVO = ResultVO.error(ErrorEnum.COMMON_SERVER_ERROR);
-                    session.getBasicRemote().sendText(JSONUtil.objectToString(resultVO));
+                    session.sendMessage(new TextMessage(JSONUtil.objectToString(resultVO)));
                 }
             } else {
                 // TODO 其他类型报错
                 resultVO = ResultVO.error(ErrorEnum.ILLEGAL_PARAM_ERROR);
-                session.getBasicRemote().sendText(JSONUtil.objectToString(resultVO));
+                session.sendMessage(new TextMessage(JSONUtil.objectToString(resultVO)));
             }
         } else {
             resultVO = ResultVO.error(ErrorEnum.ILLEGAL_PARAM_ERROR);
-            session.getBasicRemote().sendText(JSONUtil.objectToString(resultVO));
+            session.sendMessage(new TextMessage(JSONUtil.objectToString(resultVO)));
         }
     }
 
-    @OnClose
-    public void onClose(Session session) throws IOException {
-        String username = session.getUserPrincipal().getName();
+    @Override
+    public void handleTransportError(WebSocketSession session, Throwable exception) throws Exception {
+
+    }
+
+    @Override
+    public void afterConnectionClosed(WebSocketSession session, CloseStatus closeStatus) throws Exception {
+        String username = session.getPrincipal().getName();
         log.info("==========用户：{}，断开连接", username);
         SESSION_MAP.remove(username);
         session.close();
     }
+
+    @Override
+    public boolean supportsPartialMessages() {
+        return false;
+    }
+
 
 
     /**
@@ -190,5 +186,4 @@ public class SystemMonitorWebSocketConfig {
         user.setPhone(phone);
         return user;
     }
-
 }

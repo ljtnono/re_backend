@@ -52,9 +52,5 @@ public class SpringBeanConfig {
                 .version("Application Version: " + swaggerProperties.getApplicationVersion() + ", Spring Boot Version: " + SpringBootVersion.getVersion());
     }
 
-    @Bean
-    public ServerEndpointExporter endpointExporter(){
-        return new ServerEndpointExporter();
-    }
 
 }
