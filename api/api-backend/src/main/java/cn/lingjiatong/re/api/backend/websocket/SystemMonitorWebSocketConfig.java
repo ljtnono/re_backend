@@ -1,5 +1,6 @@
 package cn.lingjiatong.re.api.backend.websocket;
 
+import cn.lingjiatong.re.api.backend.mq.message.SystemMonitorMessage;
 import cn.lingjiatong.re.api.backend.security.JwtUtil;
 import cn.lingjiatong.re.api.backend.websocket.dto.SystemMonitorMessageDTO;
 import cn.lingjiatong.re.api.backend.websocket.dto.WebSocketMessageDTO;
@@ -83,6 +84,8 @@ public class SystemMonitorWebSocketConfig {
         String token = details.getTokenValue();
         User user = getUserFromToken(token);
         ResultVO<?> resultVO;
+        SystemMonitorMessage systemMonitorMessage = new SystemMonitorMessage();
+        systemMonitorMessage.setUsername(user.getUsername());
         if ("SYSTEM_MONITOR".equalsIgnoreCase(dto.getType())) {
             // 系统监控
             SystemMonitorMessageDTO systemMonitorMessageDTO = JSONUtil.stringToObject(JSONUtil.objectToString(dto.getBody()), SystemMonitorMessageDTO.class);
@@ -109,13 +112,16 @@ public class SystemMonitorWebSocketConfig {
                 try {
                     if (type.equals(1)) {
                         ResultVO<BackendSystemMonitorCPUVO> cpuInfo = backendSystemMonitorFeignClient.findCPUInfo(hostIPAddr, user);
-                        rocketMQTemplate.convertAndSend("systemMonitor", JSONUtil.objectToString(cpuInfo));
+                        systemMonitorMessage.setResultVO(cpuInfo);
+                        rocketMQTemplate.convertAndSend("systemMonitor", JSONUtil.objectToString(systemMonitorMessage));
                     } else if (type.equals(2)) {
                         ResultVO<BackendSystemMonitorMemoryVO> memoryInfo = backendSystemMonitorFeignClient.findMemoryInfo(hostIPAddr, user);
-                        rocketMQTemplate.convertAndSend("systemMonitor", JSONUtil.objectToString(memoryInfo));
+                        systemMonitorMessage.setResultVO(memoryInfo);
+                        rocketMQTemplate.convertAndSend("systemMonitor", JSONUtil.objectToString(systemMonitorMessage));
                     } else {
                         ResultVO<List<BackendSystemMonitorHardDiskVO>> hardDiskInfo = backendSystemMonitorFeignClient.findHardDiskInfo(hostIPAddr, user);
-                        rocketMQTemplate.convertAndSend("systemMonitor", JSONUtil.objectToString(hardDiskInfo));
+                        systemMonitorMessage.setResultVO(hardDiskInfo);
+                        rocketMQTemplate.convertAndSend("systemMonitor", JSONUtil.objectToString(systemMonitorMessage));
                     }
                 } catch (Exception exception) {
                     log.error(exception.toString(), exception);
@@ -132,7 +138,8 @@ public class SystemMonitorWebSocketConfig {
 
                 try {
                     ResultVO<List<BackendSystemMonitorPodListVO>> k8sPodList = backendSystemMonitorFeignClient.findK8sPodList(namespace, user);
-                    rocketMQTemplate.convertAndSend("systemMonitor", JSONUtil.objectToString(k8sPodList));
+                    systemMonitorMessage.setResultVO(k8sPodList);
+                    rocketMQTemplate.convertAndSend("systemMonitor", JSONUtil.objectToString(systemMonitorMessage));
                 } catch (Exception exception) {
                     log.error(exception.toString(), exception);
                     resultVO = ResultVO.error(ErrorEnum.COMMON_SERVER_ERROR);

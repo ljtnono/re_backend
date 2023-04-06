@@ -1,6 +1,7 @@
 package cn.lingjiatong.re.service.sys.controller;
 
 import cn.lingjiatong.re.common.ResultVO;
+import cn.lingjiatong.re.common.annotation.PassToken;
 import cn.lingjiatong.re.common.entity.User;
 import cn.lingjiatong.re.common.exception.ErrorEnum;
 import cn.lingjiatong.re.common.exception.ParamErrorException;
@@ -8,8 +9,6 @@ import cn.lingjiatong.re.service.sys.api.client.BackendSystemMonitorFeignClient;
 import cn.lingjiatong.re.service.sys.api.vo.*;
 import cn.lingjiatong.re.service.sys.properties.KubernetesProperties;
 import cn.lingjiatong.re.service.sys.service.BackendSystemMonitorService;
-import cn.lingjiatong.re.service.sys.util.KubernetesUtil;
-import io.kubernetes.client.openapi.ApiException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -42,6 +41,7 @@ public class BackendSystemMonitorController implements BackendSystemMonitorFeign
 
     @Override
     @GetMapping("/backend/api/v1/systemMonitor/hardDiskInfo")
+    @PassToken
     public ResultVO<List<BackendSystemMonitorHardDiskVO>> findHardDiskInfo(@RequestParam("ipAddr") String ipAddr, User currentUser) {
         ipAddr = ipAddr.split(",")[0];
         KubernetesProperties.KubernetesNode node = backendSystemMonitorService.findK8sNodeInfoByIpAddr(ipAddr);
@@ -59,6 +59,7 @@ public class BackendSystemMonitorController implements BackendSystemMonitorFeign
 
     @Override
     @GetMapping("/backend/api/v1/systemMonitor/cpuInfo")
+    @PassToken
     public ResultVO<BackendSystemMonitorCPUVO> findCPUInfo(@RequestParam("ipAddr") String ipAddr, User currentUser) {
         ipAddr = ipAddr.split(",")[0];
         KubernetesProperties.KubernetesNode node = backendSystemMonitorService.findK8sNodeInfoByIpAddr(ipAddr);
@@ -70,6 +71,7 @@ public class BackendSystemMonitorController implements BackendSystemMonitorFeign
 
     @Override
     @GetMapping("/backend/api/v1/systemMonitor/memoryInfo")
+    @PassToken
     public ResultVO<BackendSystemMonitorMemoryVO> findMemoryInfo(@RequestParam("ipAddr") String ipAddr, User currentUser) {
         ipAddr = ipAddr.split(",")[0];
         KubernetesProperties.KubernetesNode node = backendSystemMonitorService.findK8sNodeInfoByIpAddr(ipAddr);
@@ -81,6 +83,7 @@ public class BackendSystemMonitorController implements BackendSystemMonitorFeign
 
     @Override
     @GetMapping("/backend/api/v1/systemMonitor/k8sPodList")
+    @PassToken
     public ResultVO<List<BackendSystemMonitorPodListVO>> findK8sPodList(@RequestParam("namespace") String namespace, User currentUser) {
         namespace = namespace.split(",")[0];
         return ResultVO.success(backendSystemMonitorService.findK8sPodList(namespace));
