@@ -18,6 +18,11 @@ public class SystemMonitorMessage {
     private String username;
 
     /**
+     * 消息类型
+     */
+    private Integer type;
+
+    /**
      * 消息体
      */
     private ResultVO resultVO;

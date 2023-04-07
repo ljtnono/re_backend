@@ -166,7 +166,7 @@ public class BackendSystemMonitorService {
                     if ("InternalIP".equals(type)) {
                         vo.setNodeIPAddr(addr);
                     } else if ("Hostname".equals(type)) {
-                        vo.setNodeHostName(addr);
+                        vo.setNodeHostname(addr);
                     }
                 });
                 result.add(vo);

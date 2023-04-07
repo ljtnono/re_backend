@@ -17,7 +17,7 @@ public class BackendSystemMonitorK8sNodeListVO {
      * 节点主机名称
      */
     @Schema(description = "节点主机名称")
-    private String nodeHostName;
+    private String nodeHostname;
 
     /**
      * 节点ip地址

@@ -16,7 +16,7 @@ public class WebSocketMessageDTO {
      *
      * SYSTEM_MONITOR
      */
-    private String type;
+    private String messageTopic;
 
     /**
      * 消息体

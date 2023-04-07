@@ -21,13 +21,11 @@ public class WebSocketConfig implements WebSocketConfigurer {
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
         registry.addHandler(webSocketHandler(), "/websocket")
-                .withSockJS()
-                .setHeartbeatTime(10000);
+                .setAllowedOrigins("*");
     }
 
     @Bean
     public WebSocketService webSocketHandler() {
         return new WebSocketService();
     }
-
 }

@@ -71,7 +71,7 @@ public class WebSocketService extends TextWebSocketHandler {
         ResultVO<?> resultVO;
         SystemMonitorMessage systemMonitorMessage = new SystemMonitorMessage();
         systemMonitorMessage.setUsername(user.getUsername());
-        if ("SYSTEM_MONITOR".equalsIgnoreCase(dto.getType())) {
+        if ("SYSTEM_MONITOR".equalsIgnoreCase(dto.getMessageTopic())) {
             // 系统监控
             SystemMonitorMessageDTO systemMonitorMessageDTO = JSONUtil.stringToObject(JSONUtil.objectToString(dto.getBody()), SystemMonitorMessageDTO.class);
             if (systemMonitorMessageDTO == null) {
@@ -86,6 +86,7 @@ public class WebSocketService extends TextWebSocketHandler {
                 session.sendMessage(new TextMessage(JSONUtil.objectToString(resultVO)));
                 return;
             }
+            systemMonitorMessage.setType(type);
             if (type.equals(1) || type.equals(2) || type.equals(4)) {
                 String hostIPAddr = systemMonitorMessageDTO.getHostIPAddr();
                 if (!StringUtils.hasLength(hostIPAddr)) {
@@ -158,8 +159,6 @@ public class WebSocketService extends TextWebSocketHandler {
     public boolean supportsPartialMessages() {
         return false;
     }
-
-
 
     /**
      * token

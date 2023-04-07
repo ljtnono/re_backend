@@ -39,7 +39,7 @@ public class SystemMonitorMessageListener implements RocketMQListener<String> {
         WebSocketSession session = sessions.get(username);
         if (session != null) {
             try {
-                session.sendMessage(new TextMessage(JSONUtil.objectToString(JSONUtil.objectToString(systemMonitorMessage.getResultVO()))));
+                session.sendMessage(new TextMessage(JSONUtil.objectToString(systemMonitorMessage)));
             } catch (IOException e) {
                 log.error(e.toString(), e);
             }

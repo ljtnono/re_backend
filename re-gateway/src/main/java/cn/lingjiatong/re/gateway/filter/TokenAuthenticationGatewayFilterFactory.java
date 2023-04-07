@@ -20,7 +20,10 @@ import org.springframework.http.MediaType;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.stereotype.Component;
-import org.springframework.util.*;
+import org.springframework.util.AntPathMatcher;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.MultiValueMap;
+import org.springframework.util.StringUtils;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -31,7 +34,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * 认证过滤器
@@ -63,7 +65,6 @@ public class TokenAuthenticationGatewayFilterFactory extends AbstractGatewayFilt
             MultiValueMap<String, HttpCookie> cookies = request.getCookies();
             String username = null;
             String token = request.getHeaders().getFirst(CommonConstant.TOKE_HTTP_HEADER);
-            String websocketToken = request.getHeaders().getFirst(CommonConstant.WEBSOCKET_TOKEN_HEADER);
             if (!CollectionUtils.isEmpty(passTokenUrl)) {
                 // passTokenUrl中匹配的路径
                 AtomicBoolean atomicBoolean = new AtomicBoolean(Boolean.FALSE);
@@ -87,17 +88,6 @@ public class TokenAuthenticationGatewayFilterFactory extends AbstractGatewayFilt
                 // 从token中解析出来用户名
                 try {
                     username = jwtUtil.getUsernameFromToken(token);
-                } catch (PermissionException e) {
-                    // 返回错误消息
-                    return responseInfo(exchange, e.getCode(), e.getMessage());
-                }
-            }
-            if (StringUtils.hasLength(websocketToken) && websocketToken.startsWith(CommonConstant.TOKEN_PREFIX)) {
-                websocketToken = websocketToken.substring(CommonConstant.TOKEN_PREFIX.length());
-                // 从token中解析出来用户名
-                try {
-                    username = jwtUtil.getUsernameFromToken(websocketToken);
-                    token = websocketToken;
                 } catch (PermissionException e) {
                     // 返回错误消息
                     return responseInfo(exchange, e.getCode(), e.getMessage());
