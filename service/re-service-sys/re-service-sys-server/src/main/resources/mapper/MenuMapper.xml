@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.lingjiatong.re.service.sys.mapper.MenuMapper">
+    <!-- ********************************结果映射******************************** -->
+
+
+
+    <!-- ********************************新增类接口******************************** -->
+
+    <!-- ********************************删除类接口******************************** -->
+
+    <!-- ********************************修改类接口******************************** -->
+
+    <!-- ********************************查询类接口******************************** -->
+
+
+    <!-- 分页获取菜单列表 -->
+    <select id="findMenuList" resultType="cn.lingjiatong.re.service.sys.api.vo.BackendMenuListVO">
+        SELECT
+            m.id,
+            m.parent_id,
+            m.name,
+            m.title,
+            m.icon,
+            m.path
+        FROM re_sys.menu m
+        <where>
+            m.parent_id = -1
+            <if test="dto.searchCondition != null and dto.searchCondition != ''">
+              AND  (
+                m.name LIKE CONCAT('%', #{dto.searchCondition, jdbcType=VARCHAR}, '%')
+                OR
+                m.title LIKE CONCAT('%', #{dto.searchCondition, jdbcType=VARCHAR}, '%')
+                )
+            </if>
+        </where>
+    </select>
+
+    <!-- 分页获取菜单列表-总数 -->
+    <select id="findMenuListTotal" resultType="java.lang.Long">
+        SELECT
+            COUNT(*)
+        FROM re_sys.menu m
+        <where>
+            m.parent_id = -1
+            <if test="dto.searchCondition != null and dto.searchCondition != ''">
+                AND  (
+                m.name LIKE CONCAT('%', #{dto.searchCondition, jdbcType=VARCHAR}, '%')
+                OR
+                m.title LIKE CONCAT('%', #{dto.searchCondition, jdbcType=VARCHAR}, '%')
+                )
+            </if>
+        </where>
+    </select>
+</mapper>

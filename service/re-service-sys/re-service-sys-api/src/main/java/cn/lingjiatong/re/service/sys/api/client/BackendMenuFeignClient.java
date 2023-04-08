@@ -3,7 +3,10 @@ package cn.lingjiatong.re.service.sys.api.client;
 import cn.lingjiatong.re.common.ResultVO;
 import cn.lingjiatong.re.common.config.FeignBasicAuthRequestInterceptor;
 import cn.lingjiatong.re.common.entity.User;
+import cn.lingjiatong.re.service.sys.api.dto.BackendMenuListDTO;
+import cn.lingjiatong.re.service.sys.api.vo.BackendMenuListVO;
 import cn.lingjiatong.re.service.sys.api.vo.BackendMenuTreeVO;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.cloud.openfeign.SpringQueryMap;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,12 +28,22 @@ public interface BackendMenuFeignClient {
     // ********************************查询类接口********************************
 
     /**
+     * 分页获取后台菜单列表
+     *
+     * @param dto 获取后台菜单列表DTO对象
+     * @param currentUser 当前登陆用户
+     * @return 后台获取菜单列表VO对象分页对象
+     */
+    @GetMapping("/backend/api/v1/menu/list")
+    ResultVO<Page<BackendMenuListVO>> findMenuList(@SpringQueryMap BackendMenuListDTO dto, @SpringQueryMap User currentUser);
+
+    /**
      * 获取后台所有的菜单树
      *
      * @param currentUser 当前登陆用户
      * @return 后台获取菜单树VO对象列表
      */
-    @GetMapping("/backend/api/v1/backendMenuTree")
+    @GetMapping("/backend/api/v1/menu/tree")
     ResultVO<List<BackendMenuTreeVO>> findBackendMenuTree(@SpringQueryMap User currentUser);
 
 }
