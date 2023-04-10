@@ -19,6 +19,7 @@
         SELECT
             m.id,
             m.parent_id,
+            m.project_name,
             m.name,
             m.title,
             m.icon,

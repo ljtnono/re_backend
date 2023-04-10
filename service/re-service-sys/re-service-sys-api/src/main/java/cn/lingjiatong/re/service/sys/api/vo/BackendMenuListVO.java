@@ -36,6 +36,12 @@ public class BackendMenuListVO {
     private String name;
 
     /**
+     * 所属项目名称
+     */
+    @Schema(description = "所属项目名称")
+    private String projectName;
+
+    /**
      * 菜单标题
      */
     @Schema(description = "菜单标题")

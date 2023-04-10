@@ -11,8 +11,8 @@ import lombok.Data;
  * Date: 2022/12/29 22:15
  */
 @Data
-@TableName(value = "page_route", schema = "re_sys")
-public class PageRoute {
+@TableName(value = "route", schema = "re_sys")
+public class Route {
 
     /**
      * 主键id
@@ -26,19 +26,34 @@ public class PageRoute {
     private String projectName;
 
     /**
-     * 父路由信息，不存在则为-1
-     */
-    private Long parentId;
-
-    /**
      * 路由名称
      */
     private String name;
 
     /**
-     * 路由描述
+     * 命名视图组件
      */
-    private String description;
+    private String component;
+
+    /**
+     * 嵌套路由
+     */
+    private String children;
+
+    /**
+     * 进入路由之前钩子函数
+     */
+    private String beforeEnter;
+
+    /**
+     * 匹配规则是否大小写敏感
+     */
+    private Byte caseSensitive;
+
+    /**
+     * 编译正则的选项
+     */
+    private String pathToRegexOptions;
 
     /**
      * 路由路径
