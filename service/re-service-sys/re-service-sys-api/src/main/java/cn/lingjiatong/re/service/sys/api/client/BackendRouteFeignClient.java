@@ -27,10 +27,9 @@ public interface BackendRouteFeignClient {
     /**
      * 获取后台前端所有的路由列表
      *
-     * @param currentUser 当前登陆用户
      * @return 前端路由列表VO对象列表
      */
     @GetMapping("/backend/api/v1/route/list")
-    ResultVO<List<BackendRouteListVO>> findBackendRouteList(@SpringQueryMap User currentUser);
+    ResultVO<List<BackendRouteListVO>> findBackendRouteList();
 
 }

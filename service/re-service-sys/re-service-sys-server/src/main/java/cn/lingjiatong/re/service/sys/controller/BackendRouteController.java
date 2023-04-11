@@ -1,6 +1,7 @@
 package cn.lingjiatong.re.service.sys.controller;
 
 import cn.lingjiatong.re.common.ResultVO;
+import cn.lingjiatong.re.common.annotation.PassToken;
 import cn.lingjiatong.re.common.constant.CommonConstant;
 import cn.lingjiatong.re.common.entity.User;
 import cn.lingjiatong.re.service.sys.api.client.BackendRouteFeignClient;
@@ -30,8 +31,9 @@ public class BackendRouteController implements BackendRouteFeignClient {
     // ********************************查询类接口********************************
 
     @Override
+    @PassToken
     @GetMapping("/backend/api/v1/route/list")
-    public ResultVO<List<BackendRouteListVO>> findBackendRouteList(User currentUser) {
-        return ResultVO.success(backendRouteService.findBackendRouteList(currentUser, CommonConstant.PROJECT_NAME_BACKEND_PAGE));
+    public ResultVO<List<BackendRouteListVO>> findBackendRouteList() {
+        return ResultVO.success(backendRouteService.findBackendRouteList(CommonConstant.PROJECT_NAME_BACKEND_PAGE));
     }
 }

@@ -34,12 +34,11 @@ public class BackendRouteService {
     /**
      * 获取前端路由列表
      *
-     * @param currentUser 当前登陆用户
      * @param projectName 所属项目名称
      * @return 前端路由列表
      */
     @Transactional(readOnly = true)
-    public List<BackendRouteListVO> findBackendRouteList(User currentUser, String projectName) {
+    public List<BackendRouteListVO> findBackendRouteList(String projectName) {
         return routeMapper.selectList(new LambdaQueryWrapper<Route>()
                 .eq(Route::getProjectName, projectName))
                 .stream()
