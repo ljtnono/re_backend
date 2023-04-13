@@ -404,54 +404,6 @@ spec:
         resources:
           requests:
             storage: 1Gi
-
----
-apiVersion: rocketmq.apache.org/v1alpha1
-kind: Console
-metadata:
-  name: console
-  namespace: common
-spec:
-  nameServers: ""
-  consoleDeployment:
-    apiVersion: apps/v1
-    kind: Deployment
-    metadata:
-      labels:
-        app: rocketmq-console
-    spec:
-      replicas: 1
-      selector:
-        matchLabels:
-          app: rocketmq-console
-      template:
-        metadata:
-          labels:
-            app: rocketmq-console
-        spec:
-          containers:
-            - name: console
-              image: apacherocketmq/rocketmq-console:2.0.0
-              ports:
-                - containerPort: 8080
-
----
-# console service服务暴露
-apiVersion: v1
-kind: Service
-metadata:
-  name: rocketmq-console-extern
-  namespace: common
-spec:
-  type: NodePort
-  ports:
-    - port: 8080
-      name: console-web
-      nodePort: 30159
-      targetPort: 8080
-  selector:
-    app: rocketmq-console
-
 ---
 # namesrv service服务暴露
 apiVersion: v1
