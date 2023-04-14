@@ -49,4 +49,14 @@ public class Menu {
      * 菜单的路径
      */
     private String path;
+
+    /**
+     * 菜单组件名称
+     */
+    private String componentName;
+
+    /**
+     * 菜单组件路径
+     */
+    private String componentPath;
 }

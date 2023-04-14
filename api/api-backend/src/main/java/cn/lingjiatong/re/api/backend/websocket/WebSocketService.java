@@ -132,7 +132,7 @@ public class WebSocketService extends TextWebSocketHandler {
                     session.sendMessage(new TextMessage(JSONUtil.objectToString(resultVO)));
                 }
             } else {
-                // TODO 其他类型报错
+                // 其他类型报错
                 resultVO = ResultVO.error(ErrorEnum.ILLEGAL_PARAM_ERROR);
                 session.sendMessage(new TextMessage(JSONUtil.objectToString(resultVO)));
             }

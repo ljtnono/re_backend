@@ -56,17 +56,17 @@ public class MenuController {
     }
 
     /**
-     * 后台分页获取菜单列表
+     * 后台分获取菜单列表
      *
      * @param dto 后台分页获取菜单列表DTO对象
      * @param currentUser 当前登陆用户
-     * @return 后台分页获取菜单列表VO对象分页对象
+     * @return 后台分页获取菜单列表VO对象
      */
     // TODO 需要在权限表中加入相关权限
     @GetMapping("/list")
     @Operation(description = "后台获取菜单列表", method = "GET")
     @PassToken
-    public ResultVO<Page<BackendMenuListVO>> findMenuList(BackendMenuListDTO dto, @Parameter(hidden = true) @CurrentUser User currentUser) {
+    public ResultVO<List<BackendMenuListVO>> findMenuList(BackendMenuListDTO dto, @Parameter(hidden = true) @CurrentUser User currentUser) {
         log.info("==========后台获取菜单列表，参数：{}", dto);
         return backendMenuFeignClient.findMenuList(dto, currentUser);
     }

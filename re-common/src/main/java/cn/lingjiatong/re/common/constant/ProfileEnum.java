@@ -8,11 +8,13 @@ package cn.lingjiatong.re.common.constant;
  */
 public enum ProfileEnum {
 
+    // 生产环境
     PRD("prd"),
+    // 开发环境
     DEV("dev")
     ;
 
-    private String name;
+    private final String name;
 
     ProfileEnum(String name) {
         this.name = name;

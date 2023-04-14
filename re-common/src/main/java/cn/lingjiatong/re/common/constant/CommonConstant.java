@@ -43,4 +43,6 @@ public interface CommonConstant {
     String PROJECT_NAME_BACKEND_PAGE = "re_admin";
     // re_frontend项目名
     String PROJECT_NAME_FRONTEND_PAGE = "re_frontend";
+    // 项目名称列表
+    List<String> PROJECT_NAME_VALUES = List.of(PROJECT_NAME_BACKEND_PAGE, PROJECT_NAME_FRONTEND_PAGE);
 }

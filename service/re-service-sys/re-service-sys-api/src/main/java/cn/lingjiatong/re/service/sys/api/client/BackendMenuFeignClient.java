@@ -4,12 +4,14 @@ import cn.lingjiatong.re.common.ResultVO;
 import cn.lingjiatong.re.common.config.FeignBasicAuthRequestInterceptor;
 import cn.lingjiatong.re.common.entity.User;
 import cn.lingjiatong.re.service.sys.api.dto.BackendMenuListDTO;
+import cn.lingjiatong.re.service.sys.api.dto.BackendMenuSaveDTO;
 import cn.lingjiatong.re.service.sys.api.vo.BackendMenuListVO;
 import cn.lingjiatong.re.service.sys.api.vo.BackendMenuTreeVO;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.cloud.openfeign.SpringQueryMap;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
@@ -23,19 +25,30 @@ import java.util.List;
 public interface BackendMenuFeignClient {
 
     // ********************************新增类接口********************************
+
+    /**
+     * 后台新增菜单
+     *
+     * @param dto 后台新增菜单DTO对象
+     * @param currentUser 当前登录用户
+     * @return 通用消息返回对象
+     */
+    @PostMapping("/backend/api/v1/menu/save")
+    ResultVO<?> saveMenu(@RequestBody BackendMenuSaveDTO dto, @SpringQueryMap User currentUser);
+
     // ********************************删除类接口********************************
     // ********************************修改类接口********************************
     // ********************************查询类接口********************************
 
     /**
-     * 分页获取后台菜单列表
+     * 获取后台菜单列表
      *
      * @param dto 获取后台菜单列表DTO对象
      * @param currentUser 当前登陆用户
-     * @return 后台获取菜单列表VO对象分页对象
+     * @return 后台获取菜单列表VO对象
      */
     @GetMapping("/backend/api/v1/menu/list")
-    ResultVO<Page<BackendMenuListVO>> findMenuList(@SpringQueryMap BackendMenuListDTO dto, @SpringQueryMap User currentUser);
+    ResultVO<List<BackendMenuListVO>> findMenuList(@SpringQueryMap BackendMenuListDTO dto, @SpringQueryMap User currentUser);
 
     /**
      * 获取后台所有的菜单树

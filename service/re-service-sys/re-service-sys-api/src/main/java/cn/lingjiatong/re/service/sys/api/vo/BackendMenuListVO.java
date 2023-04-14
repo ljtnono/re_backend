@@ -1,10 +1,8 @@
 package cn.lingjiatong.re.service.sys.api.vo;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -58,6 +56,18 @@ public class BackendMenuListVO {
      */
     @Schema(description = "菜单路径")
     private String path;
+
+    /**
+     * 菜单组件名称
+     */
+    @Schema(description = "菜单组件名称")
+    private String componentName;
+
+    /**
+     * 菜单组件路径
+     */
+    @Schema(description = "菜单组件路径")
+    private String componentPath;
 
     /**
      * 子菜单列表
