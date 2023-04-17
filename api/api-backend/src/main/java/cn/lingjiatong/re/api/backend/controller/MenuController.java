@@ -2,13 +2,11 @@ package cn.lingjiatong.re.api.backend.controller;
 
 import cn.lingjiatong.re.common.ResultVO;
 import cn.lingjiatong.re.common.annotation.CurrentUser;
-import cn.lingjiatong.re.common.annotation.PassToken;
 import cn.lingjiatong.re.common.entity.User;
 import cn.lingjiatong.re.service.sys.api.client.BackendMenuFeignClient;
 import cn.lingjiatong.re.service.sys.api.dto.BackendMenuListDTO;
 import cn.lingjiatong.re.service.sys.api.vo.BackendMenuListVO;
 import cn.lingjiatong.re.service.sys.api.vo.BackendMenuTreeVO;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -62,10 +60,9 @@ public class MenuController {
      * @param currentUser 当前登陆用户
      * @return 后台分页获取菜单列表VO对象
      */
-    // TODO 需要在权限表中加入相关权限
     @GetMapping("/list")
+    @PreAuthorize("isAuthenticated()")
     @Operation(description = "后台获取菜单列表", method = "GET")
-    @PassToken
     public ResultVO<List<BackendMenuListVO>> findMenuList(BackendMenuListDTO dto, @Parameter(hidden = true) @CurrentUser User currentUser) {
         log.info("==========后台获取菜单列表，参数：{}", dto);
         return backendMenuFeignClient.findMenuList(dto, currentUser);

@@ -1,7 +1,6 @@
 package cn.lingjiatong.re.api.backend.mq;
 
 import cn.lingjiatong.re.api.backend.mq.message.SystemMonitorMessage;
-import cn.lingjiatong.re.api.backend.websocket.WebSocketConfig;
 import cn.lingjiatong.re.api.backend.websocket.WebSocketService;
 import cn.lingjiatong.re.common.util.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -13,7 +12,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
-import javax.websocket.Session;
 import java.io.IOException;
 import java.util.concurrent.ConcurrentHashMap;
 

@@ -21,6 +21,11 @@ public class Route {
     private Long id;
 
     /**
+     * 父路由id
+     */
+    private Long parentId;
+
+    /**
      * 路由所属项目名称
      */
     private String projectName;
@@ -34,11 +39,6 @@ public class Route {
      * 命名视图组件
      */
     private String component;
-
-    /**
-     * 嵌套路由
-     */
-    private String children;
 
     /**
      * 进入路由之前钩子函数

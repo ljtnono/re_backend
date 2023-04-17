@@ -3,6 +3,8 @@ package cn.lingjiatong.re.service.sys.api.vo;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
+import java.util.List;
+
 /**
  * 后台获取路由列表VO对象
  *
@@ -37,11 +39,6 @@ public class BackendRouteListVO {
     @Schema(description = "命名视图组件")
     private String component;
 
-    /**
-     * 嵌套路由
-     */
-    @Schema(description = "嵌套路由")
-    private String children;
 
     /**
      * 进入路由之前钩子函数
@@ -90,4 +87,10 @@ public class BackendRouteListVO {
      */
     @Schema(description = "路由参数")
     private String props;
+
+    /**
+     * 嵌套路由
+     */
+    @Schema(description = "嵌套路由")
+    private List<BackendRouteListVO> children;
 }

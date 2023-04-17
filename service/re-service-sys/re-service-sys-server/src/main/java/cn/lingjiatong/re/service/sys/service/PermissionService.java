@@ -26,6 +26,12 @@ public class PermissionService {
     private PermissionMapper permissionMapper;
 
     // ********************************新增类接口********************************
+
+    @Transactional(rollbackFor = Exception.class)
+    public void save(Permission permission) {
+        permissionMapper.insert(permission);
+    }
+
     // ********************************删除类接口********************************
     // ********************************修改类接口********************************
     // ********************************查询类接口********************************

@@ -10,12 +10,14 @@ import java.util.regex.Pattern;
  */
 public interface MenuRegexConstant {
 
-    // 菜单名称为2-20个字符，只能为字母
-    Pattern MENU_NAME_REGEX = Pattern.compile("");
     // 菜单标题为2-20个字符，包含字母、数字、中文，不能包含特殊字符
-    Pattern MENU_TITLE_REGEX = Pattern.compile("");
-    // 菜单组件名称
-    Pattern MENU_COMPONENT_NAME = Pattern.compile("");
-    // 菜单组件路径
-    Pattern MENU_COMPONENT_PATH = Pattern.compile("");
+    Pattern MENU_TITLE_REGEX = Pattern.compile("^[\\u4E00-\\u9FA5A-Za-z0-9]{2,20}$");
+    // 菜单名称为2-20个字符，只能为字母
+    Pattern MENU_NAME_REGEX = Pattern.compile("^[a-zA-Z]{2,20}$");
+    // 菜单路由路径
+    Pattern MENU_PATH_REGEX = Pattern.compile("^(?!.*?\\/\\/)(?!.*?\\.\\.\\/)((\\/?[a-zA-Z_][\\w\\-]*)+\\/?)*");
+    // 菜单组件名称 2-20个字母的字符串
+    Pattern MENU_COMPONENT_NAME = Pattern.compile("^[a-zA-Z]{2,20}$");
+    // 菜单组件路径 后缀名为.vue的路径
+    Pattern MENU_COMPONENT_PATH = Pattern.compile("^(?!.*\\.\\.\\//\\.\\.\\/)[\\w\\/]+\\.vue$");
 }

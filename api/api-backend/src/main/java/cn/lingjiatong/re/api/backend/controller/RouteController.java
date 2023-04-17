@@ -1,13 +1,9 @@
 package cn.lingjiatong.re.api.backend.controller;
 
 import cn.lingjiatong.re.common.ResultVO;
-import cn.lingjiatong.re.common.annotation.CurrentUser;
-import cn.lingjiatong.re.common.annotation.PassToken;
-import cn.lingjiatong.re.common.entity.User;
 import cn.lingjiatong.re.service.sys.api.client.BackendRouteFeignClient;
 import cn.lingjiatong.re.service.sys.api.vo.BackendRouteListVO;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -38,10 +34,8 @@ public class RouteController {
     /**
      * 后台获取路由列表
      *
-     * @param currentUser 当前登陆用户
      * @return 路由列表
      */
-    @PassToken
     @GetMapping("/list")
     @Operation(description = "获取路由列表", method = "GET")
     public ResultVO<List<BackendRouteListVO>> findBackendRouteList() {
