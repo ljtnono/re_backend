@@ -69,16 +69,17 @@ public class BackendMenuService {
             menu.setParentId(dto.getParentId());
             menu.setName(dto.getName());
             menu.setIcon(dto.getIcon());
-            menu.setPath(dto.getPath());
-            menu.setComponentName(dto.getComponentName());
-            menu.setComponentPath(dto.getComponentPath());
+            if (!Long.valueOf(-1L).equals(dto.getParentId())) {
+                menu.setPath(dto.getPath());
+                menu.setComponentName(dto.getComponentName());
+                menu.setComponentPath(dto.getComponentPath());
+            }
             menu.setTitle(dto.getTitle());
             menu.setProjectName(CommonConstant.PROJECT_NAME_BACKEND_PAGE);
             menuMapper.insert(menu);
             // 生成新菜单的路由
             backendRouteService.saveNewMenuRoute(menu, CommonConstant.PROJECT_NAME_BACKEND_PAGE);
-            // 生成新的权限
-//            permissionService.saveNewMenuPermission(menu, CommonConstant.PROJECT_NAME_BACKEND_PAGE);
+            // TODO 自动生成新权限
         } catch (Exception e) {
             log.error(e.toString(), e);
             throw new ServerException(ErrorEnum.DATABASE_OPERATION_ERROR);
