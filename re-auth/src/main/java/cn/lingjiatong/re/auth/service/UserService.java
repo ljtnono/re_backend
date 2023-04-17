@@ -72,6 +72,8 @@ public class UserService implements UserDetailsService {
     private SnowflakeIdWorkerUtil snowflakeIdWorkerUtil;
     @Autowired
     private UserLoginLogService userLoginLogService;
+    @Autowired
+    private TrRoleMenuService trRoleMenuService;
 
     // ********************************新增类接口********************************
     // ********************************删除类接口********************************
@@ -138,11 +140,7 @@ public class UserService implements UserDetailsService {
         userInfo.setPermissionIdList(permissionIdList);
 
         // 获取菜单列表
-        List<Long> menuIdList = permissionList
-                .stream()
-                .map(Permission::getMenuId)
-                .distinct()
-                .collect(Collectors.toList());
+        List<Long> menuIdList = trRoleMenuService.findMenuIdListByRoleIdList(roleIdList);
         List<Menu> menuList = menuService.getMenuListByIdListAndProjectName(menuIdList, CommonConstant.PROJECT_NAME_BACKEND_PAGE);
         for (Menu menu : menuList) {
             UserLoginVO.MenuInfo menuInfo = new UserLoginVO.MenuInfo();

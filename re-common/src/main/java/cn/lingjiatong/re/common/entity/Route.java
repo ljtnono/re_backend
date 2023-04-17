@@ -80,4 +80,9 @@ public class Route {
      */
     private String props;
 
+    /**
+     * 对应的菜单id
+     */
+    private Long menuId;
+
 }

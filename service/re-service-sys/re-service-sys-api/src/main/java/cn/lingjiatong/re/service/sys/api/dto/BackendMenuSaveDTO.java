@@ -14,12 +14,6 @@ import lombok.Data;
 public class BackendMenuSaveDTO {
 
     /**
-     * 菜单所属项目
-     */
-    @Schema(description = "菜单所属项目")
-    private String projectName;
-
-    /**
      * 菜单标题
      */
     @Schema(description = "菜单标题")

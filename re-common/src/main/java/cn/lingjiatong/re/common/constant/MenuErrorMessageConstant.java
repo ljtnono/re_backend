@@ -30,6 +30,6 @@ public interface MenuErrorMessageConstant {
     String MENU_COMPONENT_PATH_EMPTY_ERROR_MESSAGE = "菜单组件路径不能为空";
     // 菜单组件路径格式异常
     String MENU_COMPONENT_PATH_FORMAT_ERROR_MESSAGE = "菜单组件路径格式异常";
-    // 子级菜单不能再添加子级菜单
-    String MENU_CANNOT_ADD_MENU_TO_A_SUB_MENU_ERROR_MESSAGE = "子级菜单无法再添加子级菜单";
+    // 父级菜单不存在
+    String MENU_PARENT_MENU_NOT_EXIST_ERROR_MESSAGE = "父级菜单不存在或已被删除";
 }

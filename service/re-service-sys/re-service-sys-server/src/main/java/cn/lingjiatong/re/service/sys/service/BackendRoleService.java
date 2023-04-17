@@ -432,23 +432,17 @@ public class BackendRoleService {
             if (!backendMenuService.isExistsByIdList(menuIdSet)) {
                 throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR.getCode(), RoleErrorMessageConstant.ROLE_MENU_ID_NOT_EXIST_ERROR_MESSAGE);
             }
-            // 如果菜单是子菜单，那么需要确保菜单中含有其父菜单id, 如果菜单是父菜单，那么当这个菜单的子菜单不存在时，则需要删除该父菜单id
+            // 如果菜单是子菜单，那么需要确保菜单中含有其父菜单id
             Iterator<Long> iterator = menuIdSet.iterator();
             while (iterator.hasNext()) {
                 Long menuId = iterator.next();
                 Menu menu = menuService.findById(menuId);
                 Long parentId = menu.getParentId();
-                if (parentId.equals(-1L)) {
-                    // 查询子菜单id列表
-                    List<Long> childrenMenuIdList = menuService.findChildrenMenuIdList(menuId);
-                    Set<Long> childrenMenuIdSet = new HashSet<>(childrenMenuIdList);
-                    if (CollectionUtils.isEmpty(Sets.intersection(menuIdSet, childrenMenuIdSet))) {
-                        iterator.remove();
-                    }
-                } else {
+                if (!parentId.equals(-1L)) {
                     if (!menuIdSet.contains(parentId)) {
                         menuIdSet.add(parentId);
                     }
+
                 }
             }
         }
@@ -502,21 +496,13 @@ public class BackendRoleService {
             if (!backendMenuService.isExistsByIdList(menuIdSet)) {
                 throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR.getCode(), RoleErrorMessageConstant.ROLE_MENU_ID_NOT_EXIST_ERROR_MESSAGE);
             }
-            // 如果菜单是子菜单，那么需要确保菜单中含有其父菜单id, 如果菜单是父菜单，那么当这个菜单的子菜单不存在时，则需要删除该父菜单id
+            // 如果菜单是子菜单，那么需要确保菜单中含有其父菜单id
             Iterator<Long> iterator = menuIdSet.iterator();
             while (iterator.hasNext()) {
                 Long menuId = iterator.next();
                 Menu menu = menuService.findById(menuId);
                 Long parentId = menu.getParentId();
-                if (parentId.equals(-1L)) {
-                    // 查询子菜单id列表
-                    List<Long> childrenMenuIdList = menuService.findChildrenMenuIdList(menuId);
-                    Set<Long> childrenMenuIdSet = new HashSet<>(childrenMenuIdList);
-                    // 这里使用Sets.of函数将childrenMenuIdList转换为set会导致求交集产生错误
-                    if (CollectionUtils.isEmpty(Sets.intersection(menuIdSet, childrenMenuIdSet))) {
-                        iterator.remove();
-                    }
-                } else {
+                if (!parentId.equals(-1L)) {
                     if (!menuIdSet.contains(parentId)) {
                         menuIdSet.add(parentId);
                     }

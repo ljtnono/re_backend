@@ -1,6 +1,7 @@
 package cn.lingjiatong.re.api.backend.controller;
 
 import cn.lingjiatong.re.common.ResultVO;
+import cn.lingjiatong.re.common.annotation.PassToken;
 import cn.lingjiatong.re.service.sys.api.client.BackendRouteFeignClient;
 import cn.lingjiatong.re.service.sys.api.vo.BackendRouteListVO;
 import io.swagger.v3.oas.annotations.Operation;
@@ -38,6 +39,7 @@ public class RouteController {
      */
     @GetMapping("/list")
     @Operation(description = "获取路由列表", method = "GET")
+    @PassToken
     public ResultVO<List<BackendRouteListVO>> findBackendRouteList() {
         log.info("==========获取路由列表");
         return backendRouteFeignClient.findBackendRouteList();

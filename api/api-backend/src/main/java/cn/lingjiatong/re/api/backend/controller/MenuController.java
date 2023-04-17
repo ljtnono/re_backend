@@ -5,6 +5,7 @@ import cn.lingjiatong.re.common.annotation.CurrentUser;
 import cn.lingjiatong.re.common.entity.User;
 import cn.lingjiatong.re.service.sys.api.client.BackendMenuFeignClient;
 import cn.lingjiatong.re.service.sys.api.dto.BackendMenuListDTO;
+import cn.lingjiatong.re.service.sys.api.dto.BackendMenuSaveDTO;
 import cn.lingjiatong.re.service.sys.api.vo.BackendMenuListVO;
 import cn.lingjiatong.re.service.sys.api.vo.BackendMenuTreeVO;
 import io.swagger.v3.oas.annotations.Operation;
@@ -13,9 +14,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -35,9 +34,25 @@ public class MenuController {
     private BackendMenuFeignClient backendMenuFeignClient;
 
     // ********************************新增类接口********************************
+
+    /**
+     * 后台新增菜单
+     *
+     * @param dto 后台新增菜单DTO对象
+     * @param currentUser 当前登陆用户
+     * @return 通用消息返回对象
+     */
+    @PostMapping
+    @PreAuthorize("isAuthenticated()")
+    @Operation(description = "后台新增菜单", method = "POST")
+    public ResultVO<?> saveMenu(@RequestBody BackendMenuSaveDTO dto, @Parameter(hidden = true) @CurrentUser User currentUser) {
+        return backendMenuFeignClient.saveMenu(dto, currentUser);
+    }
+
     // ********************************删除类接口********************************
     // ********************************修改类接口********************************
     // ********************************查询类接口********************************
+
 
     /**
      * 后台获取菜单树
