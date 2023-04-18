@@ -16,8 +16,7 @@
             r.name,
             r.description,
             r.create_time,
-            r.modify_time,
-            r.is_deleted AS deleted
+            r.modify_time
         FROM re_sys.role r
         <where>
             <if test="dto.searchCondition != null and dto.searchCondition != ''">

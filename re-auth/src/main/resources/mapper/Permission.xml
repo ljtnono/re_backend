@@ -19,7 +19,6 @@
         SELECT
             p.id,
             p.name,
-            p.type,
             p.expression,
             p.menu_id
         FROM re_sys.permission p
@@ -35,7 +34,6 @@
                     </foreach>
                 </where>
             )
-            AND p.is_deleted = ${@cn.lingjiatong.re.common.constant.CommonConstant@ENTITY_NORMAL}
             AND p.project_name = #{projectName, jdbcType=VARCHAR}
         </where>
     </select>

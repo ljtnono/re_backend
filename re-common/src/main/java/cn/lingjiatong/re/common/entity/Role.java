@@ -44,12 +44,4 @@ public class Role {
      * 最后修改时间
      */
     private LocalDateTime modifyTime;
-
-    /**
-     * 是否删除
-     *
-     * 0 正常 1 已删除
-     */
-    @TableField("is_deleted")
-    private Byte deleted;
 }

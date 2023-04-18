@@ -75,7 +75,6 @@ public class BackendRoleService {
         role.setDescription(dto.getDescription());
         role.setCreateTime(LocalDateTime.now(ZoneId.of("Asia/Shanghai")));
         role.setModifyTime(LocalDateTime.now(ZoneId.of("Asia/Shanghai")));
-        role.setDeleted(CommonConstant.ENTITY_NORMAL);
 
         try {
             // 插入角色
@@ -285,8 +284,7 @@ public class BackendRoleService {
      */
     @Transactional(readOnly = true)
     public List<BackendRoleListVO> findRoleList(User currentUser) {
-        List<Role> roleList = roleMapper.selectList(new LambdaQueryWrapper<Role>()
-                .eq(Role::getDeleted, CommonConstant.ENTITY_NORMAL));
+        List<Role> roleList = roleMapper.selectList(new LambdaQueryWrapper<Role>());
         return roleList
                 .stream()
                 .map(role -> {
@@ -433,18 +431,17 @@ public class BackendRoleService {
                 throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR.getCode(), RoleErrorMessageConstant.ROLE_MENU_ID_NOT_EXIST_ERROR_MESSAGE);
             }
             // 如果菜单是子菜单，那么需要确保菜单中含有其父菜单id
+            Set<Long> newMenuIdSet = new HashSet<>();
             Iterator<Long> iterator = menuIdSet.iterator();
             while (iterator.hasNext()) {
                 Long menuId = iterator.next();
                 Menu menu = menuService.findById(menuId);
                 Long parentId = menu.getParentId();
                 if (!parentId.equals(-1L)) {
-                    if (!menuIdSet.contains(parentId)) {
-                        menuIdSet.add(parentId);
-                    }
-
+                    newMenuIdSet.add(parentId);
                 }
             }
+            menuIdSet.addAll(newMenuIdSet);
         }
     }
 
@@ -497,17 +494,17 @@ public class BackendRoleService {
                 throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR.getCode(), RoleErrorMessageConstant.ROLE_MENU_ID_NOT_EXIST_ERROR_MESSAGE);
             }
             // 如果菜单是子菜单，那么需要确保菜单中含有其父菜单id
+            Set<Long> newMenuIdSet = new HashSet<>();
             Iterator<Long> iterator = menuIdSet.iterator();
             while (iterator.hasNext()) {
                 Long menuId = iterator.next();
                 Menu menu = menuService.findById(menuId);
                 Long parentId = menu.getParentId();
                 if (!parentId.equals(-1L)) {
-                    if (!menuIdSet.contains(parentId)) {
-                        menuIdSet.add(parentId);
-                    }
+                    newMenuIdSet.add(parentId);
                 }
             }
+            menuIdSet.addAll(newMenuIdSet);
         }
     }
 
