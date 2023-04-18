@@ -112,7 +112,7 @@ public class BackendRouteService {
         // 新增菜单的路由项
         Route route = new Route();
         if (Long.valueOf(-1L).equals(parentId)) {
-            // 如果是父级菜单，那么将id + 100，parentId设置为1001
+            // 如果是顶层菜单，那么将id + 100，parentId设置为1001
             Route lastChildRoute = routeMapper.selectOne(new LambdaQueryWrapper<Route>()
                     .select(Route::getId)
                     .eq(Route::getParentId, 1001L)

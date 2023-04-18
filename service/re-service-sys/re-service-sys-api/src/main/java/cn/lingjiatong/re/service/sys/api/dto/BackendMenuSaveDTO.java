@@ -3,6 +3,8 @@ package cn.lingjiatong.re.service.sys.api.dto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
+import java.util.List;
+
 /**
  * 后台新增菜单DTO对象
  *
@@ -55,5 +57,27 @@ public class BackendMenuSaveDTO {
     @Schema(description = "组件路径")
     private String componentPath;
 
+    /**
+     * 菜单权限列表
+     */
+    @Schema(description = "菜单权限列表")
+    private List<MenuPermission> permissionList;
+
+    @Data
+    public static final class MenuPermission {
+
+        /**
+         * 菜单权限名称
+         */
+        @Schema(description = "菜单权限名称")
+        private String name;
+
+        /**
+         * 菜单权限表达式
+         */
+        @Schema(description = "菜单权限表达式")
+        private String expression;
+
+    }
 
 }

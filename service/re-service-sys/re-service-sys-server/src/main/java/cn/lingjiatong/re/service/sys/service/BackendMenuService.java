@@ -77,9 +77,12 @@ public class BackendMenuService {
             menu.setTitle(dto.getTitle());
             menu.setProjectName(CommonConstant.PROJECT_NAME_BACKEND_PAGE);
             menuMapper.insert(menu);
+
             // 生成新菜单的路由
             backendRouteService.saveNewMenuRoute(menu, CommonConstant.PROJECT_NAME_BACKEND_PAGE);
             // TODO 自动生成新权限
+
+
         } catch (Exception e) {
             log.error(e.toString(), e);
             throw new ServerException(ErrorEnum.DATABASE_OPERATION_ERROR);
@@ -101,31 +104,7 @@ public class BackendMenuService {
     @Transactional(readOnly = true)
     public List<BackendMenuListVO> findMenuList(BackendMenuListDTO dto, User currentUser) {
         List<BackendMenuListVO> menuList = menuMapper.findMenuList(dto);
-        if (!CollectionUtils.isEmpty(menuList)) {
-            menuList.forEach(vo -> {
-                Long parentId = Long.valueOf(vo.getParentId());
-                Long id = Long.valueOf(vo.getId());
-                if (parentId.equals(-1L)) {
-                    List<BackendMenuListVO> children = vo.getChildren();
-                    if (CollectionUtils.isEmpty(children)) {
-                        children = Lists.newArrayList();
-                        vo.setChildren(children);
-                    }
-                    List<Menu> childMenuList = menuMapper.selectList(new LambdaQueryWrapper<Menu>()
-                            .eq(Menu::getParentId, id));
-                    if (!CollectionUtils.isEmpty(childMenuList)) {
-                        for (Menu childMenu : childMenuList) {
-                            BackendMenuListVO childVO = new BackendMenuListVO();
-                            BeanUtils.copyProperties(childMenu, childVO);
-                            childVO.setId(String.valueOf(childMenu.getId()));
-                            childVO.setParentId(String.valueOf(childMenu.getParentId()));
-                            children.add(childVO);
-                        }
-                    }
-                }
-            });
-        }
-        return menuList;
+        return generateMenuList(menuList);
     }
 
     /**
@@ -187,6 +166,42 @@ public class BackendMenuService {
     // ********************************私有函数********************************
 
     /**
+     * 递归生成菜单列表的子菜单列表
+     *
+     * @param menuList 每次循环的菜单列表
+     * @return 菜单列表
+     */
+    private List<BackendMenuListVO> generateMenuList(List<BackendMenuListVO> menuList) {
+        if (CollectionUtils.isEmpty(menuList)) {
+            return menuList;
+        }
+        menuList.forEach(vo -> {
+            Long parentId = Long.valueOf(vo.getParentId());
+            Long id = Long.valueOf(vo.getId());
+            if (parentId.equals(-1L)) {
+                List<BackendMenuListVO> children = vo.getChildren();
+                if (CollectionUtils.isEmpty(children)) {
+                    children = Lists.newArrayList();
+                    vo.setChildren(children);
+                }
+                List<Menu> childMenuList = menuMapper.selectList(new LambdaQueryWrapper<Menu>()
+                        .eq(Menu::getParentId, id));
+                if (!CollectionUtils.isEmpty(childMenuList)) {
+                    for (Menu childMenu : childMenuList) {
+                        BackendMenuListVO childVO = new BackendMenuListVO();
+                        BeanUtils.copyProperties(childMenu, childVO);
+                        childVO.setId(String.valueOf(childMenu.getId()));
+                        childVO.setParentId(String.valueOf(childMenu.getParentId()));
+                        children.add(childVO);
+                    }
+                    generateMenuList(children);
+                }
+            }
+        });
+        return menuList;
+    }
+
+    /**
      * 生成新的菜单id
      *
      * @param parentId 菜单的父级菜单id
@@ -243,6 +258,7 @@ public class BackendMenuService {
         String path = dto.getPath();
         String componentName = dto.getComponentName();
         String componentPath = dto.getComponentPath();
+        List<BackendMenuSaveDTO.MenuPermission> permissionList = dto.getPermissionList();
 
         if (parentId == null) {
             throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR.getCode(), MenuErrorMessageConstant.PARENT_ID_EMPTY_ERROR_MESSAGE);
@@ -265,7 +281,6 @@ public class BackendMenuService {
             }
         }
 
-
         // 正则校验
         if (!MenuRegexConstant.MENU_TITLE_REGEX.matcher(title).matches()) {
             throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR.getCode(), MenuErrorMessageConstant.MENU_TITLE_FORMAT_ERROR_MESSAGE);
@@ -285,13 +300,14 @@ public class BackendMenuService {
             }
         }
 
+        // TODO 权限表达式校验
+
         // 业务校验，校验父菜单是否存在
         if (!Long.valueOf(-1L).equals(parentId)) {
             Menu menu = menuMapper.selectOne(new LambdaQueryWrapper<Menu>()
                     .select(Menu::getId)
                     .eq(Menu::getId, parentId));
             if (menu == null) {
-                // 父级菜单id不能为子级菜单
                 throw new ResourceNotExistException(ErrorEnum.RESOURCE_NOT_EXIST_ERROR.getCode(), MenuErrorMessageConstant.MENU_PARENT_MENU_NOT_EXIST_ERROR_MESSAGE);
             }
         }
