@@ -104,7 +104,8 @@ public class BackendMenuService {
     @Transactional(readOnly = true)
     public List<BackendMenuListVO> findMenuList(BackendMenuListDTO dto, User currentUser) {
         List<BackendMenuListVO> menuList = menuMapper.findMenuList(dto);
-        return generateMenuList(menuList);
+        menuList.forEach(this::dfsGenerateMenuChildren);
+        return menuList;
     }
 
     /**
@@ -166,39 +167,30 @@ public class BackendMenuService {
     // ********************************私有函数********************************
 
     /**
-     * 递归生成菜单列表的子菜单列表
+     * 深度优先搜索生成菜单的子菜单
      *
-     * @param menuList 每次循环的菜单列表
-     * @return 菜单列表
+     * @param menu 每次循环的菜单
      */
-    private List<BackendMenuListVO> generateMenuList(List<BackendMenuListVO> menuList) {
-        if (CollectionUtils.isEmpty(menuList)) {
-            return menuList;
+    private void dfsGenerateMenuChildren(BackendMenuListVO menu) {
+        Long id = Long.valueOf(menu.getId());
+        List<BackendMenuListVO> cc = menu.getChildren();
+        if (CollectionUtils.isEmpty(cc)) {
+            cc = Lists.newArrayList();
+            menu.setChildren(cc);
         }
-        menuList.forEach(vo -> {
-            Long parentId = Long.valueOf(vo.getParentId());
-            Long id = Long.valueOf(vo.getId());
-            if (parentId.equals(-1L)) {
-                List<BackendMenuListVO> children = vo.getChildren();
-                if (CollectionUtils.isEmpty(children)) {
-                    children = Lists.newArrayList();
-                    vo.setChildren(children);
-                }
-                List<Menu> childMenuList = menuMapper.selectList(new LambdaQueryWrapper<Menu>()
-                        .eq(Menu::getParentId, id));
-                if (!CollectionUtils.isEmpty(childMenuList)) {
-                    for (Menu childMenu : childMenuList) {
-                        BackendMenuListVO childVO = new BackendMenuListVO();
-                        BeanUtils.copyProperties(childMenu, childVO);
-                        childVO.setId(String.valueOf(childMenu.getId()));
-                        childVO.setParentId(String.valueOf(childMenu.getParentId()));
-                        children.add(childVO);
-                    }
-                    generateMenuList(children);
-                }
+        // 查询子菜单
+        List<Menu> childMenuList = menuMapper.selectList(new LambdaQueryWrapper<Menu>()
+                .eq(Menu::getParentId, id));
+        if (!CollectionUtils.isEmpty(childMenuList)) {
+            for (Menu childMenu : childMenuList) {
+                BackendMenuListVO childVO = new BackendMenuListVO();
+                BeanUtils.copyProperties(childMenu, childVO);
+                childVO.setId(String.valueOf(childMenu.getId()));
+                childVO.setParentId(String.valueOf(childMenu.getParentId()));
+                cc.add(childVO);
+                dfsGenerateMenuChildren(childVO);
             }
-        });
-        return menuList;
+        }
     }
 
     /**
