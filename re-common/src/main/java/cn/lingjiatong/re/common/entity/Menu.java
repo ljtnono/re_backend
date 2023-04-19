@@ -31,11 +31,6 @@ public class Menu {
     private Long parentId;
 
     /**
-     * 菜单名称
-     */
-    private String name;
-
-    /**
      * 菜单标题
      */
     private String title;
@@ -46,14 +41,14 @@ public class Menu {
     private String icon;
 
     /**
-     * 菜单的路径
+     * 菜单的路由路径
      */
-    private String path;
+    private String routePath;
 
     /**
-     * 菜单组件名称
+     * 菜单路由名称
      */
-    private String componentName;
+    private String routeName;
 
     /**
      * 菜单组件路径

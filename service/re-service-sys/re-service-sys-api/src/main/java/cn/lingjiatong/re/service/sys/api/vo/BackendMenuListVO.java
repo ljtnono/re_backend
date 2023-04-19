@@ -28,12 +28,6 @@ public class BackendMenuListVO {
     private String parentId;
 
     /**
-     * 菜单名称
-     */
-    @Schema(description = "菜单名称")
-    private String name;
-
-    /**
      * 所属项目名称
      */
     @Schema(description = "所属项目名称")
@@ -52,16 +46,16 @@ public class BackendMenuListVO {
     private String icon;
 
     /**
-     * 菜单路径
+     * 菜单路由路径
      */
-    @Schema(description = "菜单路径")
-    private String path;
+    @Schema(description = "菜单路由路径")
+    private String routePath;
 
     /**
-     * 菜单组件名称
+     * 菜单路由名称
      */
-    @Schema(description = "菜单组件名称")
-    private String componentName;
+    @Schema(description = "菜单路由名称")
+    private String routeName;
 
     /**
      * 菜单组件路径

@@ -22,22 +22,16 @@ public class BackendMenuSaveDTO {
     private String title;
 
     /**
-     * 菜单名称
-     */
-    @Schema(description = "菜单名称")
-    private String name;
-
-    /**
      * 菜单icon
      */
     @Schema(description = "菜单icon")
     private String icon;
 
     /**
-     * 菜单路径
+     * 菜单路由路径
      */
-    @Schema(description = "菜单路径")
-    private String path;
+    @Schema(description = "菜单路由路径")
+    private String routePath;
 
     /**
      * 父级菜单id
@@ -46,10 +40,10 @@ public class BackendMenuSaveDTO {
     private Long parentId;
 
     /**
-     * 对应组件名称
+     * 菜单路由名称
      */
-    @Schema(description = "对应组件名称")
-    private String componentName;
+    @Schema(description = "菜单路由名称")
+    private String routeName;
 
     /**
      * 对应的组件路径

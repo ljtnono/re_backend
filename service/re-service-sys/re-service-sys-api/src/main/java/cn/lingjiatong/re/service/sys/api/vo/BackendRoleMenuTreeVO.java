@@ -30,11 +30,6 @@ public class BackendRoleMenuTreeVO {
     @Data
     public final static class MenuTree {
 
-        /**
-         * 菜单名称
-         */
-        @Schema(description = "菜单名称")
-        private String menuName;
 
         /**
          * 菜单标题

@@ -1,5 +1,6 @@
 package cn.lingjiatong.re.service.sys.service;
 
+import cn.lingjiatong.re.common.constant.CommonConstant;
 import cn.lingjiatong.re.common.entity.Menu;
 import cn.lingjiatong.re.common.entity.Route;
 import cn.lingjiatong.re.common.util.JSONUtil;
@@ -107,43 +108,31 @@ public class BackendRouteService {
      *
      * @param menu 菜单实体
      */
-    public void saveNewMenuRoute(Menu menu, String projectName) {
-        Long parentId = menu.getParentId();
-        // 新增菜单的路由项
-        Route route = new Route();
-        if (Long.valueOf(-1L).equals(parentId)) {
-            // 如果是顶层菜单，那么将id + 100，parentId设置为1001
-            Route lastChildRoute = routeMapper.selectOne(new LambdaQueryWrapper<Route>()
-                    .select(Route::getId)
-                    .eq(Route::getParentId, 1001L)
-                    .orderByDesc(Route::getId)
-                    .last("LIMIT 1"));
-            if (lastChildRoute == null) {
-                route.setId(1002L);
-            } else {
-                route.setId(lastChildRoute.getId() + 100);
-            }
+    public void saveNewMenuRoute(Menu menu) {
+        Long menuParentId = menu.getParentId();
+        if (Long.valueOf(-1L).equals(menuParentId)) {
+            // 新增的为顶级菜单
+            Route route = new Route();
+            route.setProjectName(CommonConstant.PROJECT_NAME_BACKEND_PAGE);
+            route.setPath(menu.getRoutePath());
+            route.setName(menu.getRouteName());
+            route.setComponent(menu.getComponentPath());
+            route.setRedirect(null);
+            route.setProps(null);
+            route.setAlias(null);
+            route.setBeforeEnter(null);
+            Map<String, Object> metaMap = new HashMap<>(2);
+            metaMap.put("title", menu.getTitle());
+            metaMap.put("hideInMenu", true);
+            route.setMeta(JSONUtil.objectToString(metaMap));
+            route.setCaseSensitive((byte) 1);
+            route.setPathToRegexOptions(null);
             route.setParentId(1001L);
+            route.setMenuId(menu.getId());
+            this.save(route);
         } else {
-            // 如果是子级菜单，那么需要找到对应的父级路由
-            Route parentRoute = routeMapper.selectOne(new LambdaQueryWrapper<Route>()
-                    .select(Route::getId)
-                    .eq(Route::getMenuId, parentId)
-                    .orderByDesc(Route::getId)
-                    .last("LIMIT 1"));
-            route.setId(parentRoute.getId() + 1);
-            route.setParentId(parentRoute.getId());
+            // 新增的为子级菜单，
         }
-        route.setComponent(menu.getComponentPath());
-        route.setPath(menu.getPath());
-        route.setName(menu.getName());
-        route.setProjectName(projectName);
-        Map<String, Object> meta = new HashMap<>(2);
-        meta.put("title", menu.getTitle());
-        meta.put("hideInMenu", true);
-        route.setMeta(JSONUtil.objectToString(meta));
-        route.setMenuId(menu.getId());
-        save(route);
     }
 
 }

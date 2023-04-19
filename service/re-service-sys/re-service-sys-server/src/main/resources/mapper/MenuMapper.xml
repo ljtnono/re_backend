@@ -20,17 +20,14 @@
             m.id,
             m.parent_id,
             m.project_name,
-            m.name,
             m.title,
             m.icon,
-            m.path,
-            m.component_name,
+            m.route_path,
+            m.route_name,
             m.component_path
         FROM re_sys.menu m
         <where>
             <if test="dto.searchCondition != null and dto.searchCondition != ''">
-                m.name LIKE CONCAT('%', #{dto.searchCondition, jdbcType=VARCHAR}, '%')
-                OR
                 m.title LIKE CONCAT('%', #{dto.searchCondition, jdbcType=VARCHAR}, '%')
             </if>
             <if test="dto.searchCondition == null || dto.searchCondition == ''">

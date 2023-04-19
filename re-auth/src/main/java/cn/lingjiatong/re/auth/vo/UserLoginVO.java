@@ -111,16 +111,10 @@ public class UserLoginVO {
         private String icon;
 
         /**
-         * 菜单名称
+         * 菜单路由路径
          */
-        @Schema(description = "菜单名称")
-        private String name;
-
-        /**
-         * 菜单路路径
-         */
-        @Schema(description = "菜单路径")
-        private String path;
+        @Schema(description = "路由路径")
+        private String routePath;
 
         /**
          * 子菜单列表

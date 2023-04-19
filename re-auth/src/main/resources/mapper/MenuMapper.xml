@@ -17,10 +17,9 @@
     <select id="getMenuListByUserId" resultType="cn.lingjiatong.re.common.entity.Menu">
         SELECT
             m.id,
-            m.name,
             m.title,
             m.icon,
-            m.path
+            m.route_path
         FROM re_sys.tr_role_permission trp
         LEFT JOIN re_sys.tr_user_role tur ON trp.role_id = tur.role_id
         LEFT JOIN re_sys.tr_role_menu trm ON trm.role_id = tur.role_id

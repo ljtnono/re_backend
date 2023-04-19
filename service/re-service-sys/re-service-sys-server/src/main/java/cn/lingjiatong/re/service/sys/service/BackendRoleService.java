@@ -332,7 +332,6 @@ public class BackendRoleService {
                     .stream()
                     .map(menu -> {
                         BackendRoleMenuTreeVO.MenuTree menuTree = new BackendRoleMenuTreeVO.MenuTree();
-                        menuTree.setMenuName(menu.getName());
                         menuTree.setMenuId(menu.getId());
                         menuTree.setParentMenuId(menu.getParentId());
                         menuTree.setMenuTitle(menu.getTitle());
@@ -373,7 +372,6 @@ public class BackendRoleService {
                 .stream()
                 .map(menu -> {
                     BackendRoleMenuTreeVO.MenuTree menuTree = new BackendRoleMenuTreeVO.MenuTree();
-                    menuTree.setMenuName(menu.getName());
                     menuTree.setMenuId(menu.getId());
                     menuTree.setParentMenuId(menu.getParentId());
                     menuTree.setMenuTitle(menu.getTitle());
