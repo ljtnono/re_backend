@@ -5,6 +5,7 @@ import cn.lingjiatong.re.common.entity.User;
 import cn.lingjiatong.re.service.sys.api.client.BackendMenuFeignClient;
 import cn.lingjiatong.re.service.sys.api.dto.BackendMenuListDTO;
 import cn.lingjiatong.re.service.sys.api.dto.BackendMenuSaveDTO;
+import cn.lingjiatong.re.service.sys.api.vo.BackendBreadcrumbListVO;
 import cn.lingjiatong.re.service.sys.api.vo.BackendMenuListVO;
 import cn.lingjiatong.re.service.sys.api.vo.BackendMenuTreeVO;
 import cn.lingjiatong.re.service.sys.service.BackendMenuService;
@@ -35,6 +36,12 @@ public class BackendMenuController implements BackendMenuFeignClient {
     public ResultVO<?> saveMenu(@RequestBody BackendMenuSaveDTO dto, User currentUser) {
         backendMenuService.saveMenu(dto, currentUser);
         return ResultVO.success();
+    }
+
+    @Override
+    @GetMapping("/backend/api/v1/menu/breadcrumbList")
+    public ResultVO<List<BackendBreadcrumbListVO>> findBreadcrumbList(User currentUser) {
+        return ResultVO.success(backendMenuService.findBreadcrumbList(currentUser));
     }
 
     // ********************************删除类接口********************************

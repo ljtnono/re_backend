@@ -6,6 +6,7 @@ import cn.lingjiatong.re.common.entity.User;
 import cn.lingjiatong.re.service.sys.api.client.BackendMenuFeignClient;
 import cn.lingjiatong.re.service.sys.api.dto.BackendMenuListDTO;
 import cn.lingjiatong.re.service.sys.api.dto.BackendMenuSaveDTO;
+import cn.lingjiatong.re.service.sys.api.vo.BackendBreadcrumbListVO;
 import cn.lingjiatong.re.service.sys.api.vo.BackendMenuListVO;
 import cn.lingjiatong.re.service.sys.api.vo.BackendMenuTreeVO;
 import io.swagger.v3.oas.annotations.Operation;
@@ -52,6 +53,19 @@ public class MenuController {
     // ********************************删除类接口********************************
     // ********************************修改类接口********************************
     // ********************************查询类接口********************************
+
+    /**
+     * 后台获取面包屑导航列表
+     *
+     * @param currentUser 当前登陆用户
+     * @return 面包屑导航VO对象列表
+     */
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/breadcrumbList")
+    @Operation(description = "后台获取面包屑导航列表", method = "GET")
+    public ResultVO<List<BackendBreadcrumbListVO>> findBreadcrumbList(@Parameter(hidden = true) @CurrentUser User currentUser) {
+        return backendMenuFeignClient.findBreadcrumbList(currentUser);
+    }
 
 
     /**

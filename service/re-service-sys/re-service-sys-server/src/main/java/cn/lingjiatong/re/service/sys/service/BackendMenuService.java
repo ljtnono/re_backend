@@ -9,6 +9,7 @@ import cn.lingjiatong.re.common.entity.User;
 import cn.lingjiatong.re.common.exception.*;
 import cn.lingjiatong.re.service.sys.api.dto.BackendMenuListDTO;
 import cn.lingjiatong.re.service.sys.api.dto.BackendMenuSaveDTO;
+import cn.lingjiatong.re.service.sys.api.vo.BackendBreadcrumbListVO;
 import cn.lingjiatong.re.service.sys.api.vo.BackendMenuListVO;
 import cn.lingjiatong.re.service.sys.api.vo.BackendMenuTreeVO;
 import cn.lingjiatong.re.service.sys.mapper.MenuMapper;
@@ -78,6 +79,7 @@ public class BackendMenuService {
             List<BackendMenuSaveDTO.MenuPermission> permissionList = dto.getPermissionList();
             if (!CollectionUtils.isEmpty(permissionList)) {
                 // TODO 自动生成新权限，新增菜单需要注意对权限去重
+
             }
         } catch (Exception e) {
             log.error(e.toString(), e);
@@ -101,6 +103,17 @@ public class BackendMenuService {
 
     // ********************************查询类接口********************************
 
+    /**
+     * 后台获取面包屑导航
+     *
+     * @param currentUser 当前登陆用户
+     * @return 后台面包屑导航VO对象列表
+     */
+    @Transactional(readOnly = true)
+    public List<BackendBreadcrumbListVO> findBreadcrumbList(User currentUser) {
+
+        return null;
+    }
 
     /**
      * 分页获取菜单列表
@@ -326,6 +339,7 @@ public class BackendMenuService {
             }
         }
     }
+
 
 
     // ********************************公用函数********************************

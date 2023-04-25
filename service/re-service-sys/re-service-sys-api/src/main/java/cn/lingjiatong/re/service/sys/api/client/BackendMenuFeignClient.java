@@ -5,6 +5,7 @@ import cn.lingjiatong.re.common.config.FeignBasicAuthRequestInterceptor;
 import cn.lingjiatong.re.common.entity.User;
 import cn.lingjiatong.re.service.sys.api.dto.BackendMenuListDTO;
 import cn.lingjiatong.re.service.sys.api.dto.BackendMenuSaveDTO;
+import cn.lingjiatong.re.service.sys.api.vo.BackendBreadcrumbListVO;
 import cn.lingjiatong.re.service.sys.api.vo.BackendMenuListVO;
 import cn.lingjiatong.re.service.sys.api.vo.BackendMenuTreeVO;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -39,6 +40,15 @@ public interface BackendMenuFeignClient {
     // ********************************删除类接口********************************
     // ********************************修改类接口********************************
     // ********************************查询类接口********************************
+
+    /**
+     * 后台获取面包屑导航列表
+     *
+     * @param currentUser 当前登陆用户
+     * @return 面包屑导航VO对象列表
+     */
+    @GetMapping("/backend/api/v1/menu/breadcrumbList")
+    ResultVO<List<BackendBreadcrumbListVO>> findBreadcrumbList(@SpringQueryMap User currentUser);
 
     /**
      * 获取后台菜单列表
