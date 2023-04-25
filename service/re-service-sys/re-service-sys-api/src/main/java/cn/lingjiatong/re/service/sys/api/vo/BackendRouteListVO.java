@@ -22,6 +22,12 @@ public class BackendRouteListVO {
     private Long id;
 
     /**
+     * 父路由id
+     */
+    @Schema(description = "父路由id")
+    private Long parentId;
+
+    /**
      * 路由所属项目名称
      */
     @Schema(description = "路由所属项目名称")

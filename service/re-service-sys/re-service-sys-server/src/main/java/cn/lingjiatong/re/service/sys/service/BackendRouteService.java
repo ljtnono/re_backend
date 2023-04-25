@@ -48,6 +48,9 @@ public class BackendRouteService {
     // ********************************修改类接口********************************
     // ********************************查询类接口********************************
 
+
+
+
     /**
      * 获取前端路由列表
      *
@@ -102,6 +105,38 @@ public class BackendRouteService {
     }
 
     // ********************************公共函数********************************
+
+    /**
+     * 获取全部路由列表（非树结构）
+     *
+     * @return 全部路由列表
+     */
+    @Transactional(readOnly = true)
+    public List<Route> findRouteListAll() {
+        return routeMapper.selectList(new LambdaQueryWrapper<Route>());
+    }
+
+    /**
+     * 根据id获取路由信息
+     *
+     * @param id 路由id
+     * @return 路由实体
+     */
+    @Transactional(readOnly = true)
+    public Route findRouteById(Long id) {
+        return routeMapper.selectById(id);
+    }
+
+    /**
+     * 根据parentId获取路由信息
+     *
+     * @param parentId 父路由id
+     * @return 路由实体列表
+     */
+    @Transactional(readOnly = true)
+    public List<Route> findRouteByParentId(Long parentId) {
+        return routeMapper.selectList(new LambdaQueryWrapper<Route>().eq(Route::getParentId, parentId));
+    }
 
     /**
      * 保存新菜单对应的路由数据

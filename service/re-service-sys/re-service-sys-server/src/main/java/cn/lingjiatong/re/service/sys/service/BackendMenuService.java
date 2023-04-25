@@ -5,13 +5,16 @@ import cn.lingjiatong.re.common.constant.MenuErrorMessageConstant;
 import cn.lingjiatong.re.common.constant.MenuRegexConstant;
 import cn.lingjiatong.re.common.constant.UserConstant;
 import cn.lingjiatong.re.common.entity.Menu;
+import cn.lingjiatong.re.common.entity.Route;
 import cn.lingjiatong.re.common.entity.User;
 import cn.lingjiatong.re.common.exception.*;
+import cn.lingjiatong.re.common.util.JSONUtil;
 import cn.lingjiatong.re.service.sys.api.dto.BackendMenuListDTO;
 import cn.lingjiatong.re.service.sys.api.dto.BackendMenuSaveDTO;
 import cn.lingjiatong.re.service.sys.api.vo.BackendBreadcrumbListVO;
 import cn.lingjiatong.re.service.sys.api.vo.BackendMenuListVO;
 import cn.lingjiatong.re.service.sys.api.vo.BackendMenuTreeVO;
+import cn.lingjiatong.re.service.sys.api.vo.BackendRouteListVO;
 import cn.lingjiatong.re.service.sys.mapper.MenuMapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.google.common.collect.Lists;
@@ -24,7 +27,9 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -47,7 +52,7 @@ public class BackendMenuService {
     /**
      * 新增菜单
      *
-     * @param dto 后台新增菜单DTO对象
+     * @param dto         后台新增菜单DTO对象
      * @param currentUser 当前登录用户
      */
     @Transactional(rollbackFor = Exception.class)
@@ -111,14 +116,31 @@ public class BackendMenuService {
      */
     @Transactional(readOnly = true)
     public List<BackendBreadcrumbListVO> findBreadcrumbList(User currentUser) {
-
-        return null;
+        List<Route> routeList = backendRouteService.findRouteListAll();
+        List<Long> parentIdList = routeList.stream()
+                .map(Route::getParentId)
+                .distinct()
+                .collect(Collectors.toList());
+        List<Route> realChildRouteList = routeList
+                .stream()
+                .filter(route -> !parentIdList.contains(route.getId()))
+                .collect(Collectors.toList());
+        List<BackendBreadcrumbListVO> result = Lists.newArrayList();
+        realChildRouteList.forEach(route -> {
+            BackendBreadcrumbListVO vo = new BackendBreadcrumbListVO();
+            vo.setRouteName(route.getName());
+            vo.setBreadcrumbList(Lists.newArrayList());
+            dfsRouteToGenerateBreadcrumb(route, vo.getBreadcrumbList());
+            vo.setBreadcrumbList(Lists.reverse(vo.getBreadcrumbList()));
+            result.add(vo);
+        });
+        return result;
     }
 
     /**
      * 分页获取菜单列表
      *
-     * @param dto 后台获取菜单列表DTO对象
+     * @param dto         后台获取菜单列表DTO对象
      * @param currentUser 当前登陆用户
      * @return 后台获取菜单列表VO对象列表
      */
@@ -185,6 +207,26 @@ public class BackendMenuService {
     }
 
     // ********************************私有函数********************************
+
+    /**
+     * 深度优先搜索生成面包屑导航
+     *
+     * @param route 当前路由实体
+     * @param breadcrumbList 面包屑导航列表
+     */
+    private void dfsRouteToGenerateBreadcrumb(Route route, List<String> breadcrumbList) {
+        if (Long.valueOf(1001L).equals(route.getId())) {
+            return;
+        }
+        Map map = JSONUtil.stringToObject(route.getMeta(), Map.class);
+        String title = (String) map.get("title");
+        breadcrumbList.add(title);
+
+        Route parentRoute = backendRouteService.findRouteById(route.getParentId());
+        if (parentRoute != null) {
+            dfsRouteToGenerateBreadcrumb(parentRoute, breadcrumbList);
+        }
+    }
 
     /**
      * 深度优先搜索生成菜单的子菜单
@@ -326,7 +368,7 @@ public class BackendMenuService {
         // 业务校验
 
         // 重复性校验
-        // 菜单名称和路径都不能与现有的重复
+        // TODO 菜单名称和路径都不能与现有的重复
 
 
         // 校验父菜单是否存在
@@ -341,9 +383,7 @@ public class BackendMenuService {
     }
 
 
-
     // ********************************公用函数********************************
-
 
 
 }
