@@ -303,7 +303,8 @@ spec:
                   fieldPath: metadata.name
             - name: OPERATOR_NAME
               value: "rocketmq-operator"
-
+            - name: ENABLE_ROCKETMQ_CONSOLE
+              value: "false"
 ---
 apiVersion: v1
 kind: ConfigMap
