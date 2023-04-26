@@ -8,6 +8,7 @@ import cn.lingjiatong.re.service.sys.api.vo.BackendSystemMonitorK8sNodeListVO;
 import cn.lingjiatong.re.service.sys.api.vo.BackendSystemMonitorNamespaceListVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -26,6 +27,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/systemMonitor")
+@Tag(name = "后台系统监控模块接口")
 public class SystemMonitorController {
 
     @Autowired

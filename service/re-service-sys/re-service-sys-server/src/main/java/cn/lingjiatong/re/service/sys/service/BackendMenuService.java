@@ -14,7 +14,6 @@ import cn.lingjiatong.re.service.sys.api.dto.BackendMenuSaveDTO;
 import cn.lingjiatong.re.service.sys.api.vo.BackendBreadcrumbListVO;
 import cn.lingjiatong.re.service.sys.api.vo.BackendMenuListVO;
 import cn.lingjiatong.re.service.sys.api.vo.BackendMenuTreeVO;
-import cn.lingjiatong.re.service.sys.api.vo.BackendRouteListVO;
 import cn.lingjiatong.re.service.sys.mapper.MenuMapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.google.common.collect.Lists;
@@ -27,7 +26,6 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;

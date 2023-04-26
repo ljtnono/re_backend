@@ -5,6 +5,7 @@ import cn.lingjiatong.re.common.annotation.PassToken;
 import cn.lingjiatong.re.service.sys.api.client.BackendRouteFeignClient;
 import cn.lingjiatong.re.service.sys.api.vo.BackendRouteListVO;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,6 +23,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/route")
+@Tag(name = "后台路由模块接口")
 public class RouteController {
 
     @Autowired
