@@ -9,6 +9,7 @@ import cn.lingjiatong.re.common.entity.Route;
 import cn.lingjiatong.re.common.entity.User;
 import cn.lingjiatong.re.common.exception.*;
 import cn.lingjiatong.re.common.util.JSONUtil;
+import cn.lingjiatong.re.common.util.SnowflakeIdWorkerUtil;
 import cn.lingjiatong.re.service.sys.api.dto.BackendMenuListDTO;
 import cn.lingjiatong.re.service.sys.api.dto.BackendMenuSaveDTO;
 import cn.lingjiatong.re.service.sys.api.vo.BackendBreadcrumbListVO;
@@ -44,6 +45,8 @@ public class BackendMenuService {
     private MenuMapper menuMapper;
     @Autowired
     private BackendRouteService backendRouteService;
+    @Autowired
+    private SnowflakeIdWorkerUtil snowflakeIdWorkerUtil;
 
     // ********************************新增类接口********************************
 
@@ -67,7 +70,7 @@ public class BackendMenuService {
         try {
             // 新增菜单
             Menu menu = new Menu();
-            menu.setId(generateNewMenuId(dto.getParentId()));
+            menu.setId(snowflakeIdWorkerUtil.nextId());
             menu.setParentId(dto.getParentId());
             menu.setIcon(dto.getIcon());
             menu.setRoutePath(dto.getRoutePath());
@@ -82,7 +85,6 @@ public class BackendMenuService {
             List<BackendMenuSaveDTO.MenuPermission> permissionList = dto.getPermissionList();
             if (!CollectionUtils.isEmpty(permissionList)) {
                 // TODO 自动生成新权限，新增菜单需要注意对权限去重
-
             }
         } catch (Exception e) {
             log.error(e.toString(), e);
@@ -209,7 +211,7 @@ public class BackendMenuService {
     /**
      * 深度优先搜索生成面包屑导航
      *
-     * @param route 当前路由实体
+     * @param route          当前路由实体
      * @param breadcrumbList 面包屑导航列表
      */
     private void dfsRouteToGenerateBreadcrumb(Route route, List<String> breadcrumbList) {
@@ -252,32 +254,6 @@ public class BackendMenuService {
             }
         }
     }
-
-    /**
-     * 生成新的菜单id
-     *
-     * @param parentId 菜单的父级菜单id
-     * @return 新的菜单id
-     */
-    private Long generateNewMenuId(Long parentId) {
-        Menu menu = menuMapper.selectOne(new LambdaQueryWrapper<Menu>()
-                .select(Menu::getId)
-                .eq(Menu::getParentId, parentId)
-                .orderByDesc(Menu::getId)
-                .last("LIMIT 1"));
-        if (menu == null) {
-            return 10000L;
-        } else {
-            if (Long.valueOf(-1L).equals(parentId)) {
-                // 如果新增的是父级菜单，查询最大的父级菜单，然后+100
-                return menu.getId() + 100;
-            } else {
-                // 如果新增的是子级菜单，查询该父级菜单下最大的子菜单id然后+1
-                return menu.getId() + 1;
-            }
-        }
-    }
-
 
     /**
      * 将角色菜单权限列表转换为角色菜单权限树对象列表
@@ -364,11 +340,6 @@ public class BackendMenuService {
         }
 
         // 业务校验
-
-        // 重复性校验
-        // TODO 菜单名称和路径都不能与现有的重复
-
-
         // 校验父菜单是否存在
         if (!Long.valueOf(-1L).equals(parentId)) {
             Menu menu = menuMapper.selectOne(new LambdaQueryWrapper<Menu>()
@@ -378,10 +349,46 @@ public class BackendMenuService {
                 throw new ResourceNotExistException(ErrorEnum.RESOURCE_NOT_EXIST_ERROR.getCode(), MenuErrorMessageConstant.MENU_PARENT_MENU_NOT_EXIST_ERROR_MESSAGE);
             }
         }
+        // 校验菜单是否重复，路由名称和路由路径都不能有重复的
+        if (isRouteNameDuplicate(routeName)) {
+            throw new ResourceAlreadyExistException(ErrorEnum.ROUTE_NAME_EXIST_ERROR_MESSAGE);
+        }
+        if (isRoutePathDuplicate(routePath)) {
+            throw new ResourceAlreadyExistException(ErrorEnum.ROUTE_PATH_EXIST_ERROR_MESSAGE);
+        }
+
+        // 新增菜单不用校验菜单的权限是否重复
+
     }
 
 
     // ********************************公用函数********************************
+
+    /**
+     * 菜单路由名称是否重复
+     *
+     * @param routeName 菜单路由名称
+     * @return 重复返回true，不重复返回false
+     */
+    public boolean isRouteNameDuplicate(String routeName) {
+        Menu menu = menuMapper.selectOne(new LambdaQueryWrapper<Menu>()
+                .select(Menu::getId)
+                .eq(Menu::getRouteName, routeName));
+        return menu != null;
+    }
+
+    /**
+     * 菜单路由路径是否重复
+     *
+     * @param routePath 菜单路由路径
+     * @return 重复返回true，不重复返回false
+     */
+    public boolean isRoutePathDuplicate(String routePath) {
+        Menu menu = menuMapper.selectOne(new LambdaQueryWrapper<Menu>()
+                .select(Menu::getId)
+                .eq(Menu::getRoutePath, routePath));
+        return menu != null;
+    }
 
 
 }

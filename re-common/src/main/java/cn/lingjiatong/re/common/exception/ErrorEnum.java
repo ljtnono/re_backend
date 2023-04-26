@@ -68,6 +68,8 @@ public enum ErrorEnum {
     ROLE_NAME_EXIST_ERROR_MESSAGE(600004, "角色名已存在"),
     ROLE_IS_RELATED_BY_USER_ERROR_MESSAGE(600005, "角色关联了用户，无法删除"),
     NAME_OCCUPY_BY_OTHER_ROLE_ERROR_MESSAGE(600006, "名称被其他角色占用"),
+    ROUTE_NAME_EXIST_ERROR_MESSAGE(600007, "菜单路由名称已存在"),
+    ROUTE_PATH_EXIST_ERROR_MESSAGE(600008, "菜单路由路径已存在"),
 
     //#################### 未知异常信息 ####################//
     UNKNOWN_ERROR(-1, "未知系统异常"),
