@@ -8,7 +8,9 @@ import cn.lingjiatong.re.common.entity.Menu;
 import cn.lingjiatong.re.common.entity.Route;
 import cn.lingjiatong.re.common.entity.User;
 import cn.lingjiatong.re.common.exception.*;
+import cn.lingjiatong.re.common.util.EncryptUtil;
 import cn.lingjiatong.re.common.util.JSONUtil;
+import cn.lingjiatong.re.common.util.RandomUtil;
 import cn.lingjiatong.re.common.util.SnowflakeIdWorkerUtil;
 import cn.lingjiatong.re.service.sys.api.dto.BackendMenuListDTO;
 import cn.lingjiatong.re.service.sys.api.dto.BackendMenuSaveDTO;
@@ -236,6 +238,7 @@ public class BackendMenuService {
     private void dfsGenerateMenuChildren(BackendMenuListVO menu) {
         Long id = Long.valueOf(menu.getId());
         List<BackendMenuListVO> cc = menu.getChildren();
+        menu.setHash(RandomUtil.getInstance().generateUUID());
         if (CollectionUtils.isEmpty(cc)) {
             cc = Lists.newArrayList();
             menu.setChildren(cc);
@@ -249,6 +252,7 @@ public class BackendMenuService {
                 BeanUtils.copyProperties(childMenu, childVO);
                 childVO.setId(String.valueOf(childMenu.getId()));
                 childVO.setParentId(String.valueOf(childMenu.getParentId()));
+                childVO.setHash(RandomUtil.getInstance().generateUUID());
                 cc.add(childVO);
                 dfsGenerateMenuChildren(childVO);
             }

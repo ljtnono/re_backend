@@ -34,6 +34,12 @@ public class BackendMenuListVO {
     private String projectName;
 
     /**
+     * 菜单唯一hash
+     */
+    @Schema(description = "菜单唯一hash")
+    private String hash;
+
+    /**
      * 菜单标题
      */
     @Schema(description = "菜单标题")
