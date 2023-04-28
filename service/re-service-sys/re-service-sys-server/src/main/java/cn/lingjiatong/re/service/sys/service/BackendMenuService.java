@@ -218,12 +218,12 @@ public class BackendMenuService {
                 .map(menu -> {
                     BackendMenuTreeVO vo = new BackendMenuTreeVO();
                     vo.setMenuTitle(menu.getTitle());
-                    vo.setMenuId(menu.getId());
-                    vo.setParentMenuId(menu.getParentId());
+                    vo.setMenuId(String.valueOf(menu.getId()));
+                    vo.setParentMenuId(String.valueOf(menu.getParentId()));
                     return vo;
                 }).collect(Collectors.toList());
 
-        return menuListToMenuTree(backendMenuTreeVOList, -1L);
+        return menuListToMenuTree(backendMenuTreeVOList, "-1");
     }
 
     // ********************************私有函数********************************
@@ -237,23 +237,24 @@ public class BackendMenuService {
     private void dfsDeleteMenu(Long menuId) {
         List<Menu> menus = menuMapper.selectList(new LambdaQueryWrapper<Menu>()
                 .eq(Menu::getParentId, menuId));
-        if (!CollectionUtils.isEmpty(menus)) {
-            menus.forEach(menu -> dfsDeleteMenu(menu.getId()));
-        } else {
-            // 删除菜单
-            menuMapper.delete(new LambdaQueryWrapper<Menu>()
-                    .eq(Menu::getId, menuId));
-            // 删除路由
-            backendRouteService.deleteByMenuId(menuId);
-            // 获取菜单对应的权限id列表
-            List<Long> permissionIdList = permissionService
-                    .findPermissionIdListByMenuIdCollectionAndProjectName(List.of(menuId), CommonConstant.PROJECT_NAME_BACKEND_PAGE);
+        // 删除菜单
+        menuMapper.delete(new LambdaQueryWrapper<Menu>()
+                .eq(Menu::getId, menuId));
+        // 删除路由
+        backendRouteService.deleteByMenuId(menuId);
+        // 获取菜单对应的权限id列表
+        List<Long> permissionIdList = permissionService
+                .findPermissionIdListByMenuIdCollectionAndProjectName(List.of(menuId), CommonConstant.PROJECT_NAME_BACKEND_PAGE);
+        if (!CollectionUtils.isEmpty(permissionIdList)) {
             // 删除权限
             permissionService.deleteBatchIds(permissionIdList);
-            // 删除角色菜单关联
-            trRoleMenuService.deleteByMenuId(menuId);
             // 删除角色权限关联
             trRolePermissionService.deleteByPermissionIdCollection(permissionIdList);
+        }
+        // 删除角色菜单关联
+        trRoleMenuService.deleteByMenuId(menuId);
+        if (!CollectionUtils.isEmpty(menus)) {
+            menus.forEach(menu -> dfsDeleteMenu(menu.getId()));
         }
     }
 
@@ -312,7 +313,7 @@ public class BackendMenuService {
      * @param menuList 菜单实体列表
      * @return 角色菜单权限树对象列表
      */
-    private List<BackendMenuTreeVO> menuListToMenuTree(List<BackendMenuTreeVO> menuList, Long parentId) {
+    private List<BackendMenuTreeVO> menuListToMenuTree(List<BackendMenuTreeVO> menuList, String parentId) {
         List<BackendMenuTreeVO> result = menuList
                 .stream()
                 // 过滤父节点

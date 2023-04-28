@@ -332,13 +332,13 @@ public class BackendRoleService {
                     .stream()
                     .map(menu -> {
                         BackendRoleMenuTreeVO.MenuTree menuTree = new BackendRoleMenuTreeVO.MenuTree();
-                        menuTree.setMenuId(menu.getId());
-                        menuTree.setParentMenuId(menu.getParentId());
+                        menuTree.setMenuId(String.valueOf(menu.getId()));
+                        menuTree.setParentMenuId(String.valueOf(menu.getParentId()));
                         menuTree.setMenuTitle(menu.getTitle());
                         return menuTree;
                     })
                     .collect(Collectors.toList());
-            List<BackendRoleMenuTreeVO.MenuTree> menuTreeList = menuListToMenuTree(roleMenuList, -1L);
+            List<BackendRoleMenuTreeVO.MenuTree> menuTreeList = menuListToMenuTree(roleMenuList, "-1");
             backendRoleMenuTreeVO.setMenuTree(menuTreeList);
             vo.setRoleMenuTree(backendRoleMenuTreeVO);
         });
@@ -372,13 +372,13 @@ public class BackendRoleService {
                 .stream()
                 .map(menu -> {
                     BackendRoleMenuTreeVO.MenuTree menuTree = new BackendRoleMenuTreeVO.MenuTree();
-                    menuTree.setMenuId(menu.getId());
-                    menuTree.setParentMenuId(menu.getParentId());
+                    menuTree.setMenuId(String.valueOf(menu.getId()));
+                    menuTree.setParentMenuId(String.valueOf(menu.getParentId()));
                     menuTree.setMenuTitle(menu.getTitle());
                     return menuTree;
                 })
                 .collect(Collectors.toList());
-        List<BackendRoleMenuTreeVO.MenuTree> menuTreeList = menuListToMenuTree(roleMenuList, -1L);
+        List<BackendRoleMenuTreeVO.MenuTree> menuTreeList = menuListToMenuTree(roleMenuList, "-1");
         backendRoleMenuTreeVO.setMenuTree(menuTreeList);
         return backendRoleMenuTreeVO;
     }
@@ -449,7 +449,7 @@ public class BackendRoleService {
      * @param menuList 菜单实体列表
      * @return 角色菜单权限树对象列表
      */
-    private List<BackendRoleMenuTreeVO.MenuTree> menuListToMenuTree(List<BackendRoleMenuTreeVO.MenuTree> menuList, Long parentId) {
+    private List<BackendRoleMenuTreeVO.MenuTree> menuListToMenuTree(List<BackendRoleMenuTreeVO.MenuTree> menuList, String parentId) {
         List<BackendRoleMenuTreeVO.MenuTree> result = menuList
                 .stream()
                 // 过滤父节点

@@ -41,13 +41,13 @@ public class BackendRoleMenuTreeVO {
          * 菜单id
          */
         @Schema(description = "菜单id")
-        private Long menuId;
+        private String menuId;
 
         /**
          * 父菜单id
          */
         @Schema(description = "父菜单id")
-        private Long parentMenuId;
+        private String parentMenuId;
 
         /**
          * 子菜单列表

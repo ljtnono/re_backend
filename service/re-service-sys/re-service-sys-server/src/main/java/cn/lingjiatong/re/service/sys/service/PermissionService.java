@@ -1,5 +1,6 @@
 package cn.lingjiatong.re.service.sys.service;
 
+import cn.lingjiatong.re.common.constant.CommonConstant;
 import cn.lingjiatong.re.common.entity.Permission;
 import cn.lingjiatong.re.common.exception.ErrorEnum;
 import cn.lingjiatong.re.common.exception.ResourceAlreadyExistException;
@@ -96,6 +97,7 @@ public class PermissionService {
                     permission.setMenuId(menuId);
                     permission.setName(p.getName());
                     permission.setExpression(p.getExpression());
+                    permission.setProjectName(CommonConstant.PROJECT_NAME_BACKEND_PAGE);
                     permission.setId(snowflakeIdWorkerUtil.nextId());
                     return permission;
                 }).collect(Collectors.toList());
