@@ -25,18 +25,7 @@ public class TrRolePermissionService {
     // ********************************新增类接口********************************
     // ********************************删除类接口********************************
 
-    /**
-     * 根据角色id集合删除角色权限对应关系
-     *
-     * @param roleIdCollection 角色id集合
-     */
-    @Transactional(rollbackFor = Exception.class)
-    public void deleteByRoleIdCollection(Collection<Long> roleIdCollection) {
-        if (CollectionUtils.isEmpty(roleIdCollection)) {
-            return;
-        }
-        trRolePermissionMapper.delete(new LambdaQueryWrapper<TrRolePermission>().in(TrRolePermission::getRoleId, roleIdCollection));
-    }
+
 
     // ********************************修改类接口********************************
     // ********************************查询类接口********************************
@@ -59,4 +48,27 @@ public class TrRolePermissionService {
 
     // ********************************私有函数********************************
     // ********************************公用函数********************************
+
+    /**
+     * 根据权限id集合删除角色和权限关联信息
+     *
+     * @param permissionIdCollection 权限id集合
+     */
+    @Transactional(readOnly = true)
+    public void deleteByPermissionIdCollection(Collection<Long> permissionIdCollection) {
+        trRolePermissionMapper.delete(new LambdaQueryWrapper<TrRolePermission>().in(TrRolePermission::getPermissionId, permissionIdCollection));
+    }
+
+    /**
+     * 根据角色id集合删除角色权限对应关系
+     *
+     * @param roleIdCollection 角色id集合
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public void deleteByRoleIdCollection(Collection<Long> roleIdCollection) {
+        if (CollectionUtils.isEmpty(roleIdCollection)) {
+            return;
+        }
+        trRolePermissionMapper.delete(new LambdaQueryWrapper<TrRolePermission>().in(TrRolePermission::getRoleId, roleIdCollection));
+    }
 }

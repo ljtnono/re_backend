@@ -10,9 +10,7 @@ import cn.lingjiatong.re.service.sys.api.vo.BackendMenuListVO;
 import cn.lingjiatong.re.service.sys.api.vo.BackendMenuTreeVO;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.cloud.openfeign.SpringQueryMap;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -38,6 +36,17 @@ public interface BackendMenuFeignClient {
     ResultVO<?> saveMenu(@RequestBody BackendMenuSaveDTO dto, @SpringQueryMap User currentUser);
 
     // ********************************删除类接口********************************
+
+    /**
+     * 删除菜单
+     *
+     * @param menuId 菜单id
+     * @param currentUser 当前用户
+     * @return 通用消息返回对象
+     */
+    @DeleteMapping("/backend/api/v1/menu/delete/{menuId}")
+    ResultVO<?> deleteMenu(@PathVariable("menuId") Long menuId, @SpringQueryMap User currentUser);
+
     // ********************************修改类接口********************************
     // ********************************查询类接口********************************
 

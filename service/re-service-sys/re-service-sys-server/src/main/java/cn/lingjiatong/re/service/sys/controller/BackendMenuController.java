@@ -10,10 +10,7 @@ import cn.lingjiatong.re.service.sys.api.vo.BackendMenuListVO;
 import cn.lingjiatong.re.service.sys.api.vo.BackendMenuTreeVO;
 import cn.lingjiatong.re.service.sys.service.BackendMenuService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -38,6 +35,8 @@ public class BackendMenuController implements BackendMenuFeignClient {
         return ResultVO.success();
     }
 
+
+
     @Override
     @GetMapping("/backend/api/v1/menu/breadcrumbList")
     public ResultVO<List<BackendBreadcrumbListVO>> findBreadcrumbList(User currentUser) {
@@ -45,6 +44,14 @@ public class BackendMenuController implements BackendMenuFeignClient {
     }
 
     // ********************************删除类接口********************************
+
+    @Override
+    @DeleteMapping("/backend/api/v1/menu/delete/{menuId}")
+    public ResultVO<?> deleteMenu(@PathVariable("menuId") Long menuId, User currentUser) {
+        backendMenuService.deleteMenu(menuId, currentUser);
+        return ResultVO.success();
+    }
+
     // ********************************修改类接口********************************
     // ********************************查询类接口********************************
 

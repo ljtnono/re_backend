@@ -47,11 +47,31 @@ public class MenuController {
     @PreAuthorize("isAuthenticated()")
     @Operation(description = "后台新增菜单", method = "POST")
     public ResultVO<?> saveMenu(@RequestBody BackendMenuSaveDTO dto, @Parameter(hidden = true) @CurrentUser User currentUser) {
+        log.info("==========后台新增菜单，参数：{}", dto);
         return backendMenuFeignClient.saveMenu(dto, currentUser);
     }
 
     // ********************************删除类接口********************************
+
+    /**
+     * 后台删除菜单
+     *
+     * @param menuId 菜单id
+     * @param currentUser 当前登录用户
+     * @return 通用消息返回对象
+     */
+    @DeleteMapping("/{menuId}")
+    @PreAuthorize("isAuthenticated()")
+    @Operation(description = "后台删除菜单", method = "DELETE")
+    public ResultVO<?> deleteMenu(@PathVariable Long menuId, @Parameter(hidden = true) @CurrentUser User currentUser) {
+        log.info("==========后台删除菜单：，参数：{}", menuId);
+        return backendMenuFeignClient.deleteMenu(menuId, currentUser);
+    }
+
     // ********************************修改类接口********************************
+
+
+
     // ********************************查询类接口********************************
 
     /**
@@ -64,6 +84,7 @@ public class MenuController {
     @GetMapping("/breadcrumbList")
     @Operation(description = "后台获取面包屑导航列表", method = "GET")
     public ResultVO<List<BackendBreadcrumbListVO>> findBreadcrumbList(@Parameter(hidden = true) @CurrentUser User currentUser) {
+        log.info("==========后台获取面包屑导航");
         return backendMenuFeignClient.findBreadcrumbList(currentUser);
     }
 

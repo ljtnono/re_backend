@@ -4,6 +4,7 @@ import cn.lingjiatong.re.common.constant.CommonConstant;
 import cn.lingjiatong.re.common.entity.Menu;
 import cn.lingjiatong.re.common.entity.Route;
 import cn.lingjiatong.re.common.util.JSONUtil;
+import cn.lingjiatong.re.common.util.SnowflakeIdWorkerUtil;
 import cn.lingjiatong.re.service.sys.api.vo.BackendRouteListVO;
 import cn.lingjiatong.re.service.sys.mapper.RouteMapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -30,7 +31,7 @@ public class BackendRouteService {
     @Autowired
     private RouteMapper routeMapper;
     @Autowired
-    private BackendMenuService backendMenuService;
+    private SnowflakeIdWorkerUtil snowflakeIdWorkerUtil;
 
     // ********************************新增类接口********************************
 
@@ -39,7 +40,6 @@ public class BackendRouteService {
      *
      * @param route 菜单路由实体
      */
-    @Transactional(rollbackFor = Exception.class)
     public void save(Route route) {
         routeMapper.insert(route);
     }
@@ -107,6 +107,15 @@ public class BackendRouteService {
     // ********************************公共函数********************************
 
     /**
+     * 根据菜单id删除路由实体
+     *
+     * @param menuId 菜单id
+     */
+    public void deleteByMenuId(Long menuId) {
+        routeMapper.delete(new LambdaQueryWrapper<Route>().eq(Route::getMenuId, menuId));
+    }
+
+    /**
      * 获取全部路由列表（非树结构）
      *
      * @return 全部路由列表
@@ -145,30 +154,33 @@ public class BackendRouteService {
      */
     public void saveNewMenuRoute(Menu menu) {
         Long menuParentId = menu.getParentId();
+        // 新增的为顶级菜单
+        Route route = new Route();
+        route.setId(snowflakeIdWorkerUtil.nextId());
+        route.setProjectName(CommonConstant.PROJECT_NAME_BACKEND_PAGE);
+        route.setPath(menu.getRoutePath());
+        route.setName(menu.getRouteName());
+        route.setComponent(menu.getComponentPath());
+        route.setRedirect(null);
+        route.setProps(null);
+        route.setAlias(null);
+        route.setBeforeEnter(null);
+        Map<String, Object> metaMap = new HashMap<>(2);
+        metaMap.put("title", menu.getTitle());
+        metaMap.put("hideInMenu", true);
+        route.setMeta(JSONUtil.objectToString(metaMap));
+        route.setCaseSensitive((byte) 1);
+        route.setPathToRegexOptions(null);
+        route.setMenuId(menu.getId());
         if (Long.valueOf(-1L).equals(menuParentId)) {
-            // 新增的为顶级菜单
-            Route route = new Route();
-            route.setProjectName(CommonConstant.PROJECT_NAME_BACKEND_PAGE);
-            route.setPath(menu.getRoutePath());
-            route.setName(menu.getRouteName());
-            route.setComponent(menu.getComponentPath());
-            route.setRedirect(null);
-            route.setProps(null);
-            route.setAlias(null);
-            route.setBeforeEnter(null);
-            Map<String, Object> metaMap = new HashMap<>(2);
-            metaMap.put("title", menu.getTitle());
-            metaMap.put("hideInMenu", true);
-            route.setMeta(JSONUtil.objectToString(metaMap));
-            route.setCaseSensitive((byte) 1);
-            route.setPathToRegexOptions(null);
             route.setParentId(1001L);
-            route.setMenuId(menu.getId());
-            this.save(route);
         } else {
-            // 新增的为子级菜单
-
+            // 根据菜单id查询路由id，这里因为一个菜单必定对应唯一的路由，所以可以直接根据菜单id查询路由信息
+            Route parentRoute = routeMapper.selectOne(new LambdaQueryWrapper<Route>()
+                    .eq(Route::getMenuId, menuParentId));
+            route.setParentId(parentRoute.getId());
         }
+        this.save(route);
     }
 
 }

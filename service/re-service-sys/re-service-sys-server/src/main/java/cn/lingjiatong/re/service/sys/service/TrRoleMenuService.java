@@ -38,19 +38,7 @@ public class TrRoleMenuService {
 
     // ********************************删除类接口********************************
 
-    /**
-     * 根据角色id集合批量删除角色菜单关联信息
-     *
-     * @param roleIdCollection 角色id集合
-     */
-    @Transactional(rollbackFor = Exception.class)
-    public void deleteByRoleIdCollection(Collection<Long> roleIdCollection) {
-        if (CollectionUtils.isEmpty(roleIdCollection)) {
-            return;
-        }
-        trRoleMenuMapper.delete(new LambdaQueryWrapper<TrRoleMenu>()
-                .in(TrRoleMenu::getRoleId, roleIdCollection));
-    }
+
 
     // ********************************修改类接口********************************
 
@@ -73,6 +61,34 @@ public class TrRoleMenuService {
                 .stream()
                 .map(TrRoleMenu::getMenuId)
                 .collect(Collectors.toList());
+    }
+
+    // ********************************私有函数********************************
+
+    // ********************************公共函数********************************
+
+    /**
+     * 根据菜单id删除角色菜单关联信息
+     *
+     * @param menuId 菜单id
+     */
+    @Transactional(readOnly = true)
+    public void deleteByMenuId(Long menuId) {
+        trRoleMenuMapper.delete(new LambdaQueryWrapper<TrRoleMenu>().eq(TrRoleMenu::getMenuId, menuId));
+    }
+
+    /**
+     * 根据角色id集合批量删除角色菜单关联信息
+     *
+     * @param roleIdCollection 角色id集合
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public void deleteByRoleIdCollection(Collection<Long> roleIdCollection) {
+        if (CollectionUtils.isEmpty(roleIdCollection)) {
+            return;
+        }
+        trRoleMenuMapper.delete(new LambdaQueryWrapper<TrRoleMenu>()
+                .in(TrRoleMenu::getRoleId, roleIdCollection));
     }
 
 }

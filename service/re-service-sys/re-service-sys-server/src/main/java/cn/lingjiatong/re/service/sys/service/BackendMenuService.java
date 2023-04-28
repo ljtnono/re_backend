@@ -8,7 +8,6 @@ import cn.lingjiatong.re.common.entity.Menu;
 import cn.lingjiatong.re.common.entity.Route;
 import cn.lingjiatong.re.common.entity.User;
 import cn.lingjiatong.re.common.exception.*;
-import cn.lingjiatong.re.common.util.EncryptUtil;
 import cn.lingjiatong.re.common.util.JSONUtil;
 import cn.lingjiatong.re.common.util.RandomUtil;
 import cn.lingjiatong.re.common.util.SnowflakeIdWorkerUtil;
@@ -49,6 +48,12 @@ public class BackendMenuService {
     private BackendRouteService backendRouteService;
     @Autowired
     private SnowflakeIdWorkerUtil snowflakeIdWorkerUtil;
+    @Autowired
+    private PermissionService permissionService;
+    @Autowired
+    private TrRolePermissionService trRolePermissionService;
+    @Autowired
+    private TrRoleMenuService trRoleMenuService;
 
     // ********************************新增类接口********************************
 
@@ -86,7 +91,7 @@ public class BackendMenuService {
             backendRouteService.saveNewMenuRoute(menu);
             List<BackendMenuSaveDTO.MenuPermission> permissionList = dto.getPermissionList();
             if (!CollectionUtils.isEmpty(permissionList)) {
-                // TODO 自动生成新权限，新增菜单需要注意对权限去重
+                permissionService.saveNewMenuPermission(menu.getId(), permissionList);
             }
         } catch (Exception e) {
             log.error(e.toString(), e);
@@ -96,15 +101,28 @@ public class BackendMenuService {
 
     // ********************************删除类接口********************************
 
+    /**
+     * 删除菜单
+     *
+     * @param menuId 菜单id
+     * @param currentUser 当前登录用户
+     */
     @Transactional(rollbackFor = Exception.class)
-    public void deleteMenu() {
-
+    public void deleteMenu(Long menuId, User currentUser) {
+        // 校验菜单是否存在
+        Menu menu = menuMapper.selectById(menuId);
+        if (menu == null) {
+            throw new ResourceNotExistException(ErrorEnum.RESOURCE_NOT_EXIST_ERROR);
+        }
+        //  递归删除
+        dfsDeleteMenu(menuId);
     }
 
     // ********************************修改类接口********************************
 
     @Transactional(rollbackFor = Exception.class)
     public void updateMenu() {
+
 
     }
 
@@ -209,6 +227,35 @@ public class BackendMenuService {
     }
 
     // ********************************私有函数********************************
+
+
+    /**
+     * 递归删除菜单
+     *
+     * @param menuId 菜单id
+     */
+    private void dfsDeleteMenu(Long menuId) {
+        List<Menu> menus = menuMapper.selectList(new LambdaQueryWrapper<Menu>()
+                .eq(Menu::getParentId, menuId));
+        if (!CollectionUtils.isEmpty(menus)) {
+            menus.forEach(menu -> dfsDeleteMenu(menu.getId()));
+        } else {
+            // 删除菜单
+            menuMapper.delete(new LambdaQueryWrapper<Menu>()
+                    .eq(Menu::getId, menuId));
+            // 删除路由
+            backendRouteService.deleteByMenuId(menuId);
+            // 获取菜单对应的权限id列表
+            List<Long> permissionIdList = permissionService
+                    .findPermissionIdListByMenuIdCollectionAndProjectName(List.of(menuId), CommonConstant.PROJECT_NAME_BACKEND_PAGE);
+            // 删除权限
+            permissionService.deleteBatchIds(permissionIdList);
+            // 删除角色菜单关联
+            trRoleMenuService.deleteByMenuId(menuId);
+            // 删除角色权限关联
+            trRolePermissionService.deleteByPermissionIdCollection(permissionIdList);
+        }
+    }
 
     /**
      * 深度优先搜索生成面包屑导航

@@ -70,6 +70,7 @@ public enum ErrorEnum {
     NAME_OCCUPY_BY_OTHER_ROLE_ERROR_MESSAGE(600006, "名称被其他角色占用"),
     ROUTE_NAME_EXIST_ERROR_MESSAGE(600007, "菜单路由名称已存在"),
     ROUTE_PATH_EXIST_ERROR_MESSAGE(600008, "菜单路由路径已存在"),
+    MENU_PERMISSION_EXIST_ERROR_MESSAGE(600009, "菜单权限已存在"),
 
     //#################### 未知异常信息 ####################//
     UNKNOWN_ERROR(-1, "未知系统异常"),

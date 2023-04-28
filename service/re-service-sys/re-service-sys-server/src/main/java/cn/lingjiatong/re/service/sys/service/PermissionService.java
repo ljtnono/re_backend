@@ -1,18 +1,20 @@
 package cn.lingjiatong.re.service.sys.service;
 
-import cn.lingjiatong.re.common.constant.CommonConstant;
-import cn.lingjiatong.re.common.entity.Menu;
 import cn.lingjiatong.re.common.entity.Permission;
+import cn.lingjiatong.re.common.exception.ErrorEnum;
+import cn.lingjiatong.re.common.exception.ResourceAlreadyExistException;
+import cn.lingjiatong.re.common.util.SnowflakeIdWorkerUtil;
+import cn.lingjiatong.re.service.sys.api.dto.BackendMenuSaveDTO;
 import cn.lingjiatong.re.service.sys.mapper.PermissionMapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.google.common.collect.Lists;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -23,11 +25,14 @@ import java.util.stream.Collectors;
  * @author Ling, Jiatong
  * Date: 3/25/23 10:23 PM
  */
+@Slf4j
 @Service
 public class PermissionService {
 
     @Autowired
     private PermissionMapper permissionMapper;
+    @Autowired
+    private SnowflakeIdWorkerUtil snowflakeIdWorkerUtil;
 
     // ********************************新增类接口********************************
 
@@ -66,35 +71,44 @@ public class PermissionService {
     // ********************************公共函数********************************
 
     /**
+     * 删除权限
+     *
+     * @param ids 权限id集合
+     */
+    public void deleteBatchIds(Collection<Long> ids) {
+        permissionMapper.deleteBatchIds(ids);
+    }
+
+    /**
      * 保存新菜单的读写权限
      *
-     * @param projectName 项目名称
-     * @param menu 菜单实体
+     * @param menuId 菜单id
+     * @param permissionList 菜单权限列表
      */
-    @Transactional(rollbackFor = Exception.class)
-    public void saveNewMenuPermission(Menu menu, String projectName) {
-//        Long menuParentId = menu.getParentId();
-//
-//        // 自动生成菜单的读写权限
-//        Permission permission = new Permission();
-//        permission.setProjectName(projectName);
-//        permission.setMenuId(menu.getId());
-//        permission.setCreateTime(LocalDateTime.now(ZoneId.of("Asia/Shanghai")));
-//        permission.setModifyTime(LocalDateTime.now(ZoneId.of("Asia/Shanghai")));
-//        permission.setDeleted(CommonConstant.ENTITY_NORMAL);
-//        permission.setName(menu.getTitle());
-//        permission.setType((byte) 1);
-//        permission.setId(snowflakeIdWorkerUtil.nextId());
-//        permission.setParentId();
-//        permission.setExpression(menu.getName().toLowerCase());
-//
-//
-//        // TODO 菜单权限
-//        permissionMapper.insert(permission);
-//        // TODO 菜单-读权限
-//        permissionMapper.insert(permission);
-//        // TODO 菜单-写权限
-//        permissionMapper.insert(permission);
+    public void saveNewMenuPermission(Long menuId, List<BackendMenuSaveDTO.MenuPermission> permissionList) {
+        if (CollectionUtils.isEmpty(permissionList)) {
+            return;
+        }
+        List<Permission> permissions = permissionList
+                .stream()
+                .map(p -> {
+                    Permission permission = new Permission();
+                    permission.setMenuId(menuId);
+                    permission.setName(p.getName());
+                    permission.setExpression(p.getExpression());
+                    permission.setId(snowflakeIdWorkerUtil.nextId());
+                    return permission;
+                }).collect(Collectors.toList());
+
+        // 这里因为是新插入数据，所以不需要校验权限的重复性
+        permissions.forEach(permission -> {
+            try {
+                permissionMapper.insert(permission);
+            } catch (DuplicateKeyException e) {
+                log.error(e.toString(), e);
+                throw new ResourceAlreadyExistException(ErrorEnum.MENU_PERMISSION_EXIST_ERROR_MESSAGE);
+            }
+        });
     }
 
 }
