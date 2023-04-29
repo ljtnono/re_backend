@@ -129,6 +129,21 @@ public class BackendMenuService {
     // ********************************查询类接口********************************
 
     /**
+     * 校验菜单路由名称是否重复
+     *
+     * @param routeName 菜单路由名称
+     * @param currentUser 当前登录用户
+     * @return 重复返回true，不重复返回false
+     */
+    public boolean checkRouteNameDuplicate(String routeName, User currentUser) {
+        if (!StringUtils.hasLength(routeName)) {
+            throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR);
+        }
+        return false;
+    }
+
+
+    /**
      * 后台获取面包屑导航
      *
      * @param currentUser 当前登陆用户
@@ -361,10 +376,10 @@ public class BackendMenuService {
         if (!MenuRegexConstant.MENU_ROUTE_PATH_REGEX.matcher(routePath).matches()) {
             throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR.getCode(), MenuErrorMessageConstant.MENU_ROUTE_PATH_FORMAT_ERROR_MESSAGE);
         }
-        if (!MenuRegexConstant.MENU_ROUTE_NAME.matcher(routeName).matches()) {
+        if (!MenuRegexConstant.MENU_ROUTE_NAME_REGEX.matcher(routeName).matches()) {
             throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR.getCode(), MenuErrorMessageConstant.MENU_ROUTE_NAME_FORMAT_ERROR_MESSAGE);
         }
-        if (!MenuRegexConstant.MENU_COMPONENT_PATH.matcher(componentPath).matches()) {
+        if (!MenuRegexConstant.MENU_COMPONENT_PATH_REGEX.matcher(componentPath).matches()) {
             throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR.getCode(), MenuErrorMessageConstant.MENU_COMPONENT_PATH_FORMAT_ERROR_MESSAGE);
         }
 
@@ -381,11 +396,11 @@ public class BackendMenuService {
                     throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR.getCode(), MenuErrorMessageConstant.MENU_PERMISSION_EXPRESSION_EMPTY_ERROR_MESSAGE);
                 }
                 // 权限正则校验
-                if (!MenuRegexConstant.MENU_PERMISSION_NAME.matcher(permissionName).matches()) {
+                if (!MenuRegexConstant.MENU_PERMISSION_NAME_REGEX.matcher(permissionName).matches()) {
                     throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR.getCode(), MenuErrorMessageConstant.MENU_PERMISSION_NAME_FORMAT_ERROR_MESSAGE);
                 }
                 // 权限正则校验
-                if (!MenuRegexConstant.MENU_PERMISSION_EXPRESSION.matcher(permissionExpression).matches()) {
+                if (!MenuRegexConstant.MENU_PERMISSION_EXPRESSION_REGEX.matcher(permissionExpression).matches()) {
                     throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR.getCode(), MenuErrorMessageConstant.MENU_PERMISSION_EXPRESSION_FORMAT_ERROR_MESSAGE);
                 }
             });
@@ -441,6 +456,5 @@ public class BackendMenuService {
                 .eq(Menu::getRoutePath, routePath));
         return menu != null;
     }
-
 
 }

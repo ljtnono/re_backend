@@ -8,8 +8,6 @@ package cn.lingjiatong.re.common.constant;
  */
 public interface MenuErrorMessageConstant {
 
-    // 不支持的项目名称
-    String ILLEGAL_PROJECT_NAME_ERROR_MESSAGE = "不支持的项目名称";
     // 请选择父级菜单
     String PARENT_ID_EMPTY_ERROR_MESSAGE = "请选择父级菜单或者作为顶层菜单";
     // 菜单标题不能为空

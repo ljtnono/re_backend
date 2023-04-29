@@ -52,9 +52,16 @@ public class BackendMenuController implements BackendMenuFeignClient {
         return ResultVO.success();
     }
 
+
+
     // ********************************修改类接口********************************
     // ********************************查询类接口********************************
 
+    @Override
+    @GetMapping("/backend/api/v1/menu/checkRouteNameDuplicate")
+    public ResultVO<Boolean> checkRouteNameDuplicate(String routeName, User currentUser) {
+        return ResultVO.success(backendMenuService.checkRouteNameDuplicate(routeName, currentUser));
+    }
 
     @Override
     @GetMapping("/backend/api/v1/menu/list")
@@ -67,5 +74,6 @@ public class BackendMenuController implements BackendMenuFeignClient {
     public ResultVO<List<BackendMenuTreeVO>> findBackendMenuTree(User currentUser) {
         return ResultVO.success(backendMenuService.findBackendMenuTree(currentUser));
     }
+
 
 }

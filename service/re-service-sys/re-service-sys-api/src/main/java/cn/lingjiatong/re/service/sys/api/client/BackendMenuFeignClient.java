@@ -51,6 +51,16 @@ public interface BackendMenuFeignClient {
     // ********************************查询类接口********************************
 
     /**
+     * 校验菜单路由名称是否重复
+     *
+     * @param routeName 路由名称
+     * @param currentUser 当前登录用户
+     * @return 重复返回true，不重复返回false
+     */
+    @GetMapping("/backend/api/v1/menu/checkRouteNameDuplicate")
+    ResultVO<Boolean> checkRouteNameDuplicate(String routeName, @SpringQueryMap User currentUser);
+
+    /**
      * 后台获取面包屑导航列表
      *
      * @param currentUser 当前登陆用户
