@@ -59,8 +59,16 @@ public class BackendMenuController implements BackendMenuFeignClient {
 
     @Override
     @GetMapping("/backend/api/v1/menu/checkRouteNameDuplicate")
-    public ResultVO<Boolean> checkRouteNameDuplicate(String routeName, User currentUser) {
+    public ResultVO<Boolean> checkRouteNameDuplicate(@RequestParam("routeName") String routeName, User currentUser) {
+        routeName = routeName.split(",")[0];
         return ResultVO.success(backendMenuService.checkRouteNameDuplicate(routeName, currentUser));
+    }
+
+    @Override
+    @GetMapping("/backend/api/v1/menu/checkRoutePathDuplicate")
+    public ResultVO<Boolean> checkRoutePathDuplicate(@RequestParam("routePath") String routePath, User currentUser) {
+        routePath = routePath.split(",")[0];
+        return ResultVO.success(backendMenuService.checkRoutePathDuplicate(routePath, currentUser));
     }
 
     @Override

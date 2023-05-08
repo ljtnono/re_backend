@@ -75,6 +75,36 @@ public class MenuController {
     // ********************************查询类接口********************************
 
     /**
+     * 后台校验路由名称是否重复
+     *
+     * @param routeName 路由名称
+     * @param currentUser 当前登录用户
+     * @return 重复返回true，不重复返回false
+     */
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/checkRouteNameDuplicate")
+    @Operation(description = "后台校验路由名称是否重复", method = "GET")
+    public ResultVO<Boolean> checkRouteNameDuplicate(String routeName, @Parameter(hidden = true) @CurrentUser User currentUser) {
+        log.info("===========后台校验路由名称是否重复，参数：{}", routeName);
+        return backendMenuFeignClient.checkRouteNameDuplicate(routeName, currentUser);
+    }
+
+    /**
+     * 后台校验路由路径是否重复
+     *
+     * @param routePath 路由路径
+     * @param currentUser 当前登录用户
+     * @return 重复返回true，不重复返回false
+     */
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/checkRoutePathDuplicate")
+    @Operation(description = "后台校验路由路径是否重复", method = "GET")
+    public ResultVO<Boolean> checkRoutePathDuplicate(String routePath, @Parameter(hidden = true) @CurrentUser User currentUser) {
+        log.info("===========后台校验路由路径是否重复，参数：{}", routePath);
+        return backendMenuFeignClient.checkRoutePathDuplicate(routePath, currentUser);
+    }
+
+    /**
      * 后台获取面包屑导航列表
      *
      * @param currentUser 当前登陆用户

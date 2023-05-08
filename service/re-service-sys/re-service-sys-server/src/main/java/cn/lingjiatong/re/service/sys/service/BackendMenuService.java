@@ -137,11 +137,30 @@ public class BackendMenuService {
      */
     public boolean checkRouteNameDuplicate(String routeName, User currentUser) {
         if (!StringUtils.hasLength(routeName)) {
-            throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR);
+            throw new ResourceAlreadyExistException(ErrorEnum.ROUTE_NAME_EXIST_ERROR_MESSAGE);
         }
-        return false;
+        Menu menu = menuMapper.selectOne(new LambdaQueryWrapper<Menu>()
+                .select(Menu::getId)
+                .eq(Menu::getRouteName, routeName));
+        return menu != null;
     }
 
+    /**
+     * 校验菜单路由路径是否重复
+     *
+     * @param routePath 路由路径
+     * @param currentUser 当前登录用户
+     * @return 重复返回true，不重复返回false
+     */
+    public boolean checkRoutePathDuplicate(String routePath, User currentUser) {
+        if (!StringUtils.hasLength(routePath)) {
+            throw new ResourceAlreadyExistException(ErrorEnum.ROUTE_PATH_EXIST_ERROR_MESSAGE);
+        }
+        Menu menu = menuMapper.selectOne(new LambdaQueryWrapper<Menu>()
+                .select(Menu::getId)
+                .eq(Menu::getRoutePath, routePath));
+        return menu != null;
+    }
 
     /**
      * 后台获取面包屑导航
