@@ -11,8 +11,10 @@ import cn.lingjiatong.re.common.exception.*;
 import cn.lingjiatong.re.common.util.JSONUtil;
 import cn.lingjiatong.re.common.util.RandomUtil;
 import cn.lingjiatong.re.common.util.SnowflakeIdWorkerUtil;
+import cn.lingjiatong.re.service.sys.api.dto.BackendMenuEditDTO;
 import cn.lingjiatong.re.service.sys.api.dto.BackendMenuListDTO;
 import cn.lingjiatong.re.service.sys.api.dto.BackendMenuSaveDTO;
+import cn.lingjiatong.re.service.sys.api.dto.common.BackendMenuPermission;
 import cn.lingjiatong.re.service.sys.api.vo.BackendBreadcrumbListVO;
 import cn.lingjiatong.re.service.sys.api.vo.BackendMenuListVO;
 import cn.lingjiatong.re.service.sys.api.vo.BackendMenuTreeVO;
@@ -89,7 +91,7 @@ public class BackendMenuService {
 
             // 生成新菜单的路由
             backendRouteService.saveNewMenuRoute(menu);
-            List<BackendMenuSaveDTO.MenuPermission> permissionList = dto.getPermissionList();
+            List<BackendMenuPermission> permissionList = dto.getPermissionList();
             if (!CollectionUtils.isEmpty(permissionList)) {
                 permissionService.saveNewMenuPermission(menu.getId(), permissionList);
             }
@@ -120,11 +122,53 @@ public class BackendMenuService {
 
     // ********************************修改类接口********************************
 
+    /**
+     * 编辑菜单
+     *
+     * @param dto 后台编辑菜单DTO对象
+     * @param currentUser 当前登录用户
+     */
     @Transactional(rollbackFor = Exception.class)
-    public void updateMenu() {
+    public void editMenu(BackendMenuEditDTO dto, User currentUser) {
+        // 校验是是否是超级管理员
+        Long userId = currentUser.getId();
+        if (!UserConstant.SUPER_ADMIN_USER_ID.equals(userId)) {
+            // 只允许lingjiatong账号修改菜单相关内容
+            throw new PermissionException(ErrorEnum.NO_PERMISSION_ERROR);
+        }
 
+        // 校验编辑菜单DTO对象
+        checkBackendMenuEditDTO(dto);
 
+        try {
+            // 修改菜单
+            Menu menu = new Menu();
+            menu.setId(dto.getMenuId());
+            menu.setParentId(dto.getParentId());
+            menu.setIcon(dto.getIcon());
+            menu.setRoutePath(dto.getRoutePath());
+            menu.setRouteName(dto.getRouteName());
+            menu.setComponentPath(dto.getComponentPath());
+            menu.setTitle(dto.getTitle());
+            menu.setProjectName(CommonConstant.PROJECT_NAME_BACKEND_PAGE);
+            menuMapper.updateById(menu);
+
+            // 先删除原来的路由，然后再插入新的路由信息
+            backendRouteService.deleteByMenuId(dto.getMenuId());
+            backendRouteService.saveNewMenuRoute(menu);
+
+            List<BackendMenuPermission> permissionList = dto.getPermissionList();
+            if (!CollectionUtils.isEmpty(permissionList)) {
+                // 先删除原来的权限，然后再插入新的权限
+                permissionService.deleteByMenuId(dto.getMenuId());
+                permissionService.saveNewMenuPermission(dto.getMenuId(), permissionList);
+            }
+        } catch (Exception e) {
+            log.error(e.toString(), e);
+            throw new ServerException(ErrorEnum.DATABASE_OPERATION_ERROR);
+        }
     }
+
 
     // ********************************查询类接口********************************
 
@@ -262,6 +306,96 @@ public class BackendMenuService {
 
     // ********************************私有函数********************************
 
+    /**
+     * 校验后台编辑菜单DTO对象
+     *
+     * @param dto 后台编辑菜单DTO对象
+     */
+    private void checkBackendMenuEditDTO(BackendMenuEditDTO dto) {
+        Long parentId = dto.getParentId();
+        String title = dto.getTitle();
+        String routePath = dto.getRoutePath();
+        String routeName = dto.getRouteName();
+        String componentPath = dto.getComponentPath();
+        List<BackendMenuPermission> permissionList = dto.getPermissionList();
+
+        // 校验被修改的菜单是否存在
+        boolean exist = isExistsByIdList(List.of(dto.getMenuId()));
+        if (!exist) {
+            throw new ResourceNotExistException(ErrorEnum.RESOURCE_NOT_EXIST_ERROR);
+        }
+
+        if (parentId == null) {
+            throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR.getCode(), MenuErrorMessageConstant.PARENT_ID_EMPTY_ERROR_MESSAGE);
+        }
+        if (!StringUtils.hasLength(title)) {
+            throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR.getCode(), MenuErrorMessageConstant.MENU_TITLE_EMPTY_ERROR_MESSAGE);
+        }
+        if (!StringUtils.hasLength(routePath)) {
+            throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR.getCode(), MenuErrorMessageConstant.MENU_ROUTE_PATH_EMPTY_ERROR_MESSAGE);
+        }
+        if (!StringUtils.hasLength(routeName)) {
+            throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR.getCode(), MenuErrorMessageConstant.MENU_ROUTE_NAME_EMPTY_ERROR_MESSAGE);
+        }
+        if (!StringUtils.hasLength(componentPath)) {
+            throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR.getCode(), MenuErrorMessageConstant.MENU_COMPONENT_PATH_EMPTY_ERROR_MESSAGE);
+        }
+
+        // 正则校验
+        if (!MenuRegexConstant.MENU_TITLE_REGEX.matcher(title).matches()) {
+            throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR.getCode(), MenuErrorMessageConstant.MENU_TITLE_FORMAT_ERROR_MESSAGE);
+        }
+        if (!MenuRegexConstant.MENU_ROUTE_PATH_REGEX.matcher(routePath).matches()) {
+            throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR.getCode(), MenuErrorMessageConstant.MENU_ROUTE_PATH_FORMAT_ERROR_MESSAGE);
+        }
+        if (!MenuRegexConstant.MENU_ROUTE_NAME_REGEX.matcher(routeName).matches()) {
+            throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR.getCode(), MenuErrorMessageConstant.MENU_ROUTE_NAME_FORMAT_ERROR_MESSAGE);
+        }
+        if (!MenuRegexConstant.MENU_COMPONENT_PATH_REGEX.matcher(componentPath).matches()) {
+            throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR.getCode(), MenuErrorMessageConstant.MENU_COMPONENT_PATH_FORMAT_ERROR_MESSAGE);
+        }
+
+        // 权限表达式校验
+        if (!CollectionUtils.isEmpty(permissionList)) {
+            permissionList.forEach(permission -> {
+                String permissionName = permission.getName();
+                String permissionExpression = permission.getExpression();
+                // 校验权限名称长度，校验权限表达式长度
+                if (!StringUtils.hasLength(permissionName)) {
+                    throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR.getCode(), MenuErrorMessageConstant.MENU_PERMISSION_NAME_EMPTY_ERROR_MESSAGE);
+                }
+                if (!StringUtils.hasLength(permissionExpression)) {
+                    throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR.getCode(), MenuErrorMessageConstant.MENU_PERMISSION_EXPRESSION_EMPTY_ERROR_MESSAGE);
+                }
+                // 权限名称正则校验
+                if (!MenuRegexConstant.MENU_PERMISSION_NAME_REGEX.matcher(permissionName).matches()) {
+                    throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR.getCode(), MenuErrorMessageConstant.MENU_PERMISSION_NAME_FORMAT_ERROR_MESSAGE);
+                }
+                // 权限表达式正则校验
+                if (!MenuRegexConstant.MENU_PERMISSION_EXPRESSION_REGEX.matcher(permissionExpression).matches()) {
+                    throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR.getCode(), MenuErrorMessageConstant.MENU_PERMISSION_EXPRESSION_FORMAT_ERROR_MESSAGE);
+                }
+            });
+        }
+
+        // 业务校验
+        // 校验父菜单是否存在
+        if (!Long.valueOf(-1L).equals(parentId)) {
+            Menu menu = menuMapper.selectOne(new LambdaQueryWrapper<Menu>()
+                    .select(Menu::getId)
+                    .eq(Menu::getId, parentId));
+            if (menu == null) {
+                throw new ResourceNotExistException(ErrorEnum.RESOURCE_NOT_EXIST_ERROR.getCode(), MenuErrorMessageConstant.MENU_PARENT_MENU_NOT_EXIST_ERROR_MESSAGE);
+            }
+        }
+        // 校验菜单是否重复，路由名称和路由路径都不能有重复的
+        if (isRouteNameDuplicate(routeName)) {
+            throw new ResourceAlreadyExistException(ErrorEnum.ROUTE_NAME_EXIST_ERROR_MESSAGE);
+        }
+        if (isRoutePathDuplicate(routePath)) {
+            throw new ResourceAlreadyExistException(ErrorEnum.ROUTE_PATH_EXIST_ERROR_MESSAGE);
+        }
+    }
 
     /**
      * 递归删除菜单
@@ -370,7 +504,7 @@ public class BackendMenuService {
         String routePath = dto.getRoutePath();
         String routeName = dto.getRouteName();
         String componentPath = dto.getComponentPath();
-        List<BackendMenuSaveDTO.MenuPermission> permissionList = dto.getPermissionList();
+        List<BackendMenuPermission> permissionList = dto.getPermissionList();
 
         if (parentId == null) {
             throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR.getCode(), MenuErrorMessageConstant.PARENT_ID_EMPTY_ERROR_MESSAGE);

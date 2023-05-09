@@ -7,14 +7,20 @@ import lombok.Data;
 import java.util.List;
 
 /**
- * 后台新增菜单DTO对象
+ * 后台菜单编辑DTO对象
  *
  * @author Ling, Jiatong
- * Date: 2023/4/14 09:59
+ * Date: 2023/5/9 10:54
  */
 @Data
-@Schema(name = "BackendMenuSaveDTO", description = "后台新增菜单DTO对象")
-public class BackendMenuSaveDTO {
+@Schema(name = "BackendEditDTO", description = "后台菜单编辑DTO对象")
+public class BackendMenuEditDTO {
+
+    /**
+     * 菜单id
+     */
+    @Schema(description = "菜单id")
+    private Long menuId;
 
     /**
      * 菜单标题
@@ -57,4 +63,5 @@ public class BackendMenuSaveDTO {
      */
     @Schema(description = "菜单权限列表")
     private List<BackendMenuPermission> permissionList;
+
 }

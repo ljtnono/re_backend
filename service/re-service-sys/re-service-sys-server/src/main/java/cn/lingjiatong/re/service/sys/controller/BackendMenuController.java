@@ -3,6 +3,7 @@ package cn.lingjiatong.re.service.sys.controller;
 import cn.lingjiatong.re.common.ResultVO;
 import cn.lingjiatong.re.common.entity.User;
 import cn.lingjiatong.re.service.sys.api.client.BackendMenuFeignClient;
+import cn.lingjiatong.re.service.sys.api.dto.BackendMenuEditDTO;
 import cn.lingjiatong.re.service.sys.api.dto.BackendMenuListDTO;
 import cn.lingjiatong.re.service.sys.api.dto.BackendMenuSaveDTO;
 import cn.lingjiatong.re.service.sys.api.vo.BackendBreadcrumbListVO;
@@ -55,6 +56,15 @@ public class BackendMenuController implements BackendMenuFeignClient {
 
 
     // ********************************修改类接口********************************
+
+    @Override
+    @PutMapping("/backend/api/v1/menu/editMenu")
+    public ResultVO<?> editMenu(@RequestBody BackendMenuEditDTO dto, User currentUser) {
+        backendMenuService.editMenu(dto, currentUser);
+        return ResultVO.success();
+    }
+
+
     // ********************************查询类接口********************************
 
     @Override

@@ -3,6 +3,7 @@ package cn.lingjiatong.re.service.sys.api.client;
 import cn.lingjiatong.re.common.ResultVO;
 import cn.lingjiatong.re.common.config.FeignBasicAuthRequestInterceptor;
 import cn.lingjiatong.re.common.entity.User;
+import cn.lingjiatong.re.service.sys.api.dto.BackendMenuEditDTO;
 import cn.lingjiatong.re.service.sys.api.dto.BackendMenuListDTO;
 import cn.lingjiatong.re.service.sys.api.dto.BackendMenuSaveDTO;
 import cn.lingjiatong.re.service.sys.api.vo.BackendBreadcrumbListVO;
@@ -48,6 +49,17 @@ public interface BackendMenuFeignClient {
     ResultVO<?> deleteMenu(@PathVariable("menuId") Long menuId, @SpringQueryMap User currentUser);
 
     // ********************************修改类接口********************************
+
+    /**
+     * 编辑菜单
+     *
+     * @param dto 后台编辑菜单DTO对象
+     * @param currentUser 当前登录用户
+     * @return 通用消息返回对象
+     */
+    @PutMapping("/backend/api/v1/menu/editMenu")
+    ResultVO<?> editMenu(@RequestBody BackendMenuEditDTO dto, @SpringQueryMap User currentUser);
+
     // ********************************查询类接口********************************
 
     /**

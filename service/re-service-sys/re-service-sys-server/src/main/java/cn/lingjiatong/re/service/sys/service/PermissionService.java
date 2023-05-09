@@ -6,6 +6,7 @@ import cn.lingjiatong.re.common.exception.ErrorEnum;
 import cn.lingjiatong.re.common.exception.ResourceAlreadyExistException;
 import cn.lingjiatong.re.common.util.SnowflakeIdWorkerUtil;
 import cn.lingjiatong.re.service.sys.api.dto.BackendMenuSaveDTO;
+import cn.lingjiatong.re.service.sys.api.dto.common.BackendMenuPermission;
 import cn.lingjiatong.re.service.sys.mapper.PermissionMapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.google.common.collect.Lists;
@@ -72,6 +73,31 @@ public class PermissionService {
     // ********************************公共函数********************************
 
     /**
+     * 根据菜单id删除菜单的权限
+     *
+     * @param menuId 菜单id
+     */
+    public void deleteByMenuId(Long menuId) {
+        permissionMapper.delete(new LambdaQueryWrapper<Permission>()
+                .eq(Permission::getMenuId, menuId));
+    }
+
+    /**
+     * 菜单权限是否已经存在
+     *
+     * @param menuId 菜单id
+     * @param name 权限名称
+     * @param expression 权限表达式
+     * @return 存在返回true，不存在返回false
+     */
+    public boolean isMenuPermissionExist(Long menuId, String name, String expression) {
+        return permissionMapper.selectOne(new LambdaQueryWrapper<Permission>()
+                        .eq(Permission::getName, name)
+                        .eq(Permission::getExpression, expression)
+                .eq(Permission::getMenuId, menuId)) != null;
+    }
+
+    /**
      * 删除权限
      *
      * @param ids 权限id集合
@@ -86,7 +112,7 @@ public class PermissionService {
      * @param menuId 菜单id
      * @param permissionList 菜单权限列表
      */
-    public void saveNewMenuPermission(Long menuId, List<BackendMenuSaveDTO.MenuPermission> permissionList) {
+    public void saveNewMenuPermission(Long menuId, List<BackendMenuPermission> permissionList) {
         if (CollectionUtils.isEmpty(permissionList)) {
             return;
         }

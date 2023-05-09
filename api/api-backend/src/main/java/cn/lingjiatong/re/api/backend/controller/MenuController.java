@@ -4,6 +4,7 @@ import cn.lingjiatong.re.common.ResultVO;
 import cn.lingjiatong.re.common.annotation.CurrentUser;
 import cn.lingjiatong.re.common.entity.User;
 import cn.lingjiatong.re.service.sys.api.client.BackendMenuFeignClient;
+import cn.lingjiatong.re.service.sys.api.dto.BackendMenuEditDTO;
 import cn.lingjiatong.re.service.sys.api.dto.BackendMenuListDTO;
 import cn.lingjiatong.re.service.sys.api.dto.BackendMenuSaveDTO;
 import cn.lingjiatong.re.service.sys.api.vo.BackendBreadcrumbListVO;
@@ -70,7 +71,20 @@ public class MenuController {
 
     // ********************************修改类接口********************************
 
-
+    /**
+     * 后台修改菜单
+     *
+     * @param dto 后台修改菜单DTO对象
+     * @param currentUser 当前登陆用户
+     * @return 通用消息返回对象
+     */
+    @PutMapping("/editMenu")
+    @PreAuthorize("isAuthenticated()")
+    @Operation(description = "后台修改菜单", method = "POST")
+    public ResultVO<?> saveMenu(@RequestBody BackendMenuEditDTO dto, @Parameter(hidden = true) @CurrentUser User currentUser) {
+        log.info("==========后台修改菜单，参数：{}", dto);
+        return backendMenuFeignClient.editMenu(dto, currentUser);
+    }
 
     // ********************************查询类接口********************************
 

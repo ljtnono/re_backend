@@ -1,5 +1,7 @@
 package cn.lingjiatong.re.common.entity;
 
+import com.baomidou.mybatisplus.annotation.FieldStrategy;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
@@ -38,6 +40,7 @@ public class Menu {
     /**
      * 菜单用的icon的class值
      */
+    @TableField(updateStrategy = FieldStrategy.IGNORED)
     private String icon;
 
     /**
