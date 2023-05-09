@@ -162,6 +162,8 @@ public class BackendMenuService {
                 // 先删除原来的权限，然后再插入新的权限
                 permissionService.deleteByMenuId(Long.valueOf(dto.getId()));
                 permissionService.saveNewMenuPermission(Long.valueOf(dto.getId()), permissionList);
+            } else {
+                permissionService.deleteByMenuId(Long.valueOf(dto.getId()));
             }
         } catch (Exception e) {
             log.error(e.toString(), e);
@@ -323,9 +325,9 @@ public class BackendMenuService {
         String routeName = dto.getRouteName();
         String componentPath = dto.getComponentPath();
         List<BackendMenuPermission> permissionList = dto.getPermissionList();
-
+        Long menuId = Long.valueOf(dto.getId());
         // 校验被修改的菜单是否存在
-        boolean exist = isExistsByIdList(List.of(Long.valueOf(dto.getId())));
+        boolean exist = isExistsByIdList(List.of(menuId));
         if (!exist) {
             throw new ResourceNotExistException(ErrorEnum.RESOURCE_NOT_EXIST_ERROR);
         }
@@ -394,10 +396,10 @@ public class BackendMenuService {
             }
         }
         // 校验菜单是否重复，路由名称和路由路径都不能有重复的
-        if (isRouteNameDuplicate(routeName)) {
+        if (!isRouteNameAvailableToEdit(menuId, routeName)) {
             throw new ResourceAlreadyExistException(ErrorEnum.ROUTE_NAME_EXIST_ERROR_MESSAGE);
         }
-        if (isRoutePathDuplicate(routePath)) {
+        if (!isRoutePathAvailableToEdit(menuId, routePath)) {
             throw new ResourceAlreadyExistException(ErrorEnum.ROUTE_PATH_EXIST_ERROR_MESSAGE);
         }
     }
@@ -591,6 +593,37 @@ public class BackendMenuService {
 
 
     // ********************************公用函数********************************
+
+    /**
+     * 菜单路由名称是否可用于修改
+     *
+     * @param menuId 菜单id
+     * @param routeName 菜单路由名称
+     * @return 可用返回true，不可用返回false
+     */
+    public boolean isRouteNameAvailableToEdit(Long menuId, String routeName) {
+        Menu menu = menuMapper.selectOne(new LambdaQueryWrapper<Menu>()
+                .select(Menu::getId)
+                .eq(Menu::getRouteName, routeName)
+                .ne(Menu::getId, menuId));
+        return menu == null;
+    }
+
+    /**
+     * 菜单路由路径是否可用于修改
+     *
+     * @param menuId 菜单id
+     * @param routePath 菜单路由路径
+     * @return 可用返回true，不可用返回false
+     */
+    public boolean isRoutePathAvailableToEdit(Long menuId, String routePath) {
+        Menu menu = menuMapper.selectOne(new LambdaQueryWrapper<Menu>()
+                .select(Menu::getId)
+                .eq(Menu::getRoutePath, routePath)
+                .ne(Menu::getId, menuId));
+        return menu == null;
+    }
+
 
     /**
      * 菜单路由名称是否重复
