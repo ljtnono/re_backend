@@ -20,7 +20,7 @@ public class BackendMenuEditDTO {
      * 菜单id
      */
     @Schema(description = "菜单id")
-    private Long menuId;
+    private String menuId;
 
     /**
      * 菜单标题

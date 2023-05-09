@@ -143,7 +143,7 @@ public class BackendMenuService {
         try {
             // 修改菜单
             Menu menu = new Menu();
-            menu.setId(dto.getMenuId());
+            menu.setId(Long.valueOf(dto.getMenuId()));
             menu.setParentId(dto.getParentId());
             menu.setIcon(dto.getIcon());
             menu.setRoutePath(dto.getRoutePath());
@@ -154,14 +154,14 @@ public class BackendMenuService {
             menuMapper.updateById(menu);
 
             // 先删除原来的路由，然后再插入新的路由信息
-            backendRouteService.deleteByMenuId(dto.getMenuId());
+            backendRouteService.deleteByMenuId(Long.valueOf(dto.getMenuId()));
             backendRouteService.saveNewMenuRoute(menu);
 
             List<BackendMenuPermission> permissionList = dto.getPermissionList();
             if (!CollectionUtils.isEmpty(permissionList)) {
                 // 先删除原来的权限，然后再插入新的权限
-                permissionService.deleteByMenuId(dto.getMenuId());
-                permissionService.saveNewMenuPermission(dto.getMenuId(), permissionList);
+                permissionService.deleteByMenuId(Long.valueOf(dto.getMenuId()));
+                permissionService.saveNewMenuPermission(Long.valueOf(dto.getMenuId()), permissionList);
             }
         } catch (Exception e) {
             log.error(e.toString(), e);
@@ -320,7 +320,7 @@ public class BackendMenuService {
         List<BackendMenuPermission> permissionList = dto.getPermissionList();
 
         // 校验被修改的菜单是否存在
-        boolean exist = isExistsByIdList(List.of(dto.getMenuId()));
+        boolean exist = isExistsByIdList(List.of(Long.valueOf(dto.getMenuId())));
         if (!exist) {
             throw new ResourceNotExistException(ErrorEnum.RESOURCE_NOT_EXIST_ERROR);
         }
