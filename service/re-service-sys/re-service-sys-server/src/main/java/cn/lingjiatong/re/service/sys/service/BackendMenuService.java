@@ -470,10 +470,13 @@ public class BackendMenuService {
         if (!CollectionUtils.isEmpty(childMenuList)) {
             for (Menu childMenu : childMenuList) {
                 BackendMenuListVO childVO = new BackendMenuListVO();
+                // 查询每个子菜单的权限
+                List<BackendMenuPermission> menuPermissionList = permissionService.findMenuPermissionList(childMenu.getId());
                 BeanUtils.copyProperties(childMenu, childVO);
                 childVO.setId(String.valueOf(childMenu.getId()));
                 childVO.setParentId(String.valueOf(childMenu.getParentId()));
                 childVO.setHash(RandomUtil.getInstance().generateUUID());
+                childVO.setPermissionList(menuPermissionList);
                 cc.add(childVO);
                 dfsGenerateMenuChildren(childVO);
             }
