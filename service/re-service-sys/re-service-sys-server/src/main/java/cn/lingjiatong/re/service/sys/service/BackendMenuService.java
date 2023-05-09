@@ -14,7 +14,7 @@ import cn.lingjiatong.re.common.util.SnowflakeIdWorkerUtil;
 import cn.lingjiatong.re.service.sys.api.dto.BackendMenuEditDTO;
 import cn.lingjiatong.re.service.sys.api.dto.BackendMenuListDTO;
 import cn.lingjiatong.re.service.sys.api.dto.BackendMenuSaveDTO;
-import cn.lingjiatong.re.service.sys.api.dto.common.BackendMenuPermission;
+import cn.lingjiatong.re.service.sys.api.common.BackendMenuPermission;
 import cn.lingjiatong.re.service.sys.api.vo.BackendBreadcrumbListVO;
 import cn.lingjiatong.re.service.sys.api.vo.BackendMenuListVO;
 import cn.lingjiatong.re.service.sys.api.vo.BackendMenuTreeVO;
@@ -143,7 +143,7 @@ public class BackendMenuService {
         try {
             // 修改菜单
             Menu menu = new Menu();
-            menu.setId(Long.valueOf(dto.getMenuId()));
+            menu.setId(Long.valueOf(dto.getId()));
             menu.setParentId(dto.getParentId());
             menu.setIcon(dto.getIcon());
             menu.setRoutePath(dto.getRoutePath());
@@ -154,14 +154,14 @@ public class BackendMenuService {
             menuMapper.updateById(menu);
 
             // 先删除原来的路由，然后再插入新的路由信息
-            backendRouteService.deleteByMenuId(Long.valueOf(dto.getMenuId()));
+            backendRouteService.deleteByMenuId(Long.valueOf(dto.getId()));
             backendRouteService.saveNewMenuRoute(menu);
 
             List<BackendMenuPermission> permissionList = dto.getPermissionList();
             if (!CollectionUtils.isEmpty(permissionList)) {
                 // 先删除原来的权限，然后再插入新的权限
-                permissionService.deleteByMenuId(Long.valueOf(dto.getMenuId()));
-                permissionService.saveNewMenuPermission(Long.valueOf(dto.getMenuId()), permissionList);
+                permissionService.deleteByMenuId(Long.valueOf(dto.getId()));
+                permissionService.saveNewMenuPermission(Long.valueOf(dto.getId()), permissionList);
             }
         } catch (Exception e) {
             log.error(e.toString(), e);
@@ -245,6 +245,11 @@ public class BackendMenuService {
     @Transactional(readOnly = true)
     public List<BackendMenuListVO> findMenuList(BackendMenuListDTO dto, User currentUser) {
         List<BackendMenuListVO> menuList = menuMapper.findMenuList(dto);
+        menuList.forEach(menu -> {
+            // 获取每个菜单的权限列表
+            List<BackendMenuPermission> menuPermissionList = permissionService.findMenuPermissionList(Long.valueOf(menu.getId()));
+            menu.setPermissionList(menuPermissionList);
+        });
         menuList.forEach(this::dfsGenerateMenuChildren);
         return menuList;
     }
@@ -320,7 +325,7 @@ public class BackendMenuService {
         List<BackendMenuPermission> permissionList = dto.getPermissionList();
 
         // 校验被修改的菜单是否存在
-        boolean exist = isExistsByIdList(List.of(Long.valueOf(dto.getMenuId())));
+        boolean exist = isExistsByIdList(List.of(Long.valueOf(dto.getId())));
         if (!exist) {
             throw new ResourceNotExistException(ErrorEnum.RESOURCE_NOT_EXIST_ERROR);
         }

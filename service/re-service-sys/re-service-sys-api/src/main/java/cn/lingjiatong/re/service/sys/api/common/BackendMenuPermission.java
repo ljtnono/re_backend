@@ -1,4 +1,4 @@
-package cn.lingjiatong.re.service.sys.api.dto.common;
+package cn.lingjiatong.re.service.sys.api.common;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;

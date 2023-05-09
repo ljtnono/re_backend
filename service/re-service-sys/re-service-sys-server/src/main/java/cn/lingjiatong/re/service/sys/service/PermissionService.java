@@ -5,12 +5,12 @@ import cn.lingjiatong.re.common.entity.Permission;
 import cn.lingjiatong.re.common.exception.ErrorEnum;
 import cn.lingjiatong.re.common.exception.ResourceAlreadyExistException;
 import cn.lingjiatong.re.common.util.SnowflakeIdWorkerUtil;
-import cn.lingjiatong.re.service.sys.api.dto.BackendMenuSaveDTO;
-import cn.lingjiatong.re.service.sys.api.dto.common.BackendMenuPermission;
+import cn.lingjiatong.re.service.sys.api.common.BackendMenuPermission;
 import cn.lingjiatong.re.service.sys.mapper.PermissionMapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
@@ -71,6 +71,28 @@ public class PermissionService {
 
     // ********************************私有函数********************************
     // ********************************公共函数********************************
+
+    /**
+     * 获取菜单权限列表
+     *
+     * @param menuId 菜单id
+     * @return 后台菜单权限列表
+     */
+    public List<BackendMenuPermission> findMenuPermissionList(Long menuId) {
+        List<Permission> permissionList = permissionMapper.selectList(new LambdaQueryWrapper<Permission>()
+                .eq(Permission::getMenuId, menuId));
+        if (CollectionUtils.isEmpty(permissionList)) {
+           return Lists.newArrayList();
+        }
+        return permissionList
+                .stream()
+                .map(permission -> {
+                    BackendMenuPermission backendMenuPermission = new BackendMenuPermission();
+                    BeanUtils.copyProperties(permission, backendMenuPermission);
+                    return backendMenuPermission;
+                })
+                .collect(Collectors.toList());
+    }
 
     /**
      * 根据菜单id删除菜单的权限

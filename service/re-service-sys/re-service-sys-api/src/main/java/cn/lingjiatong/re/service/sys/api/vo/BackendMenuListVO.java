@@ -1,5 +1,6 @@
 package cn.lingjiatong.re.service.sys.api.vo;
 
+import cn.lingjiatong.re.service.sys.api.common.BackendMenuPermission;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -74,4 +75,10 @@ public class BackendMenuListVO {
      */
     @Schema(description = "子菜单列表")
     private List<BackendMenuListVO> children;
+
+    /**
+     * 菜单权限列表
+     */
+    @Schema(description = "菜单权限列表")
+    private List<BackendMenuPermission> permissionList;
 }

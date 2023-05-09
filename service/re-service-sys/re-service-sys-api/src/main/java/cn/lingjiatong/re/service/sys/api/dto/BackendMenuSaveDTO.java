@@ -1,6 +1,6 @@
 package cn.lingjiatong.re.service.sys.api.dto;
 
-import cn.lingjiatong.re.service.sys.api.dto.common.BackendMenuPermission;
+import cn.lingjiatong.re.service.sys.api.common.BackendMenuPermission;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
