@@ -82,6 +82,20 @@ public class BackendMenuController implements BackendMenuFeignClient {
     }
 
     @Override
+    public ResultVO<Boolean> checkRouteNameAvailableEdit(@RequestParam("menuId") String menuId, @RequestParam("routePath") String routeName, User currentUser) {
+        menuId = menuId.split(",")[0];
+        routeName = routeName.split(",")[0];
+        return ResultVO.success(backendMenuService.checkRouteNameAvailableEdit(Long.valueOf(menuId), routeName, currentUser));
+    }
+
+    @Override
+    public ResultVO<Boolean> checkRoutePathAvailableEdit(@RequestParam("menuId") String menuId, @RequestParam("routePath") String routePath, User currentUser) {
+        menuId = menuId.split(",")[0];
+        routePath = routePath.split(",")[0];
+        return ResultVO.success(backendMenuService.checkRoutePathAvailableEdit(Long.valueOf(menuId), routePath, currentUser));
+    }
+
+    @Override
     @GetMapping("/backend/api/v1/menu/list")
     public ResultVO<List<BackendMenuListVO>> findMenuList(BackendMenuListDTO dto, User currentUser) {
         return ResultVO.success(backendMenuService.findMenuList(dto, currentUser));

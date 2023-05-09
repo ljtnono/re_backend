@@ -119,6 +119,38 @@ public class MenuController {
     }
 
     /**
+     * 校验菜单路由名称在编辑时是否可用
+     *
+     * @param menuId 菜单id
+     * @param routeName 路由名称
+     * @param currentUser 当前登录用户
+     * @return 可用返回true，不可用返回false
+     */
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/checkRoutNameAvailableEdit")
+    @Operation(description = "校验菜单路由名称在编辑时是否可用", method = "GET")
+    public ResultVO<Boolean> checkRouteNameAvailableEdit(String menuId, String routeName, @Parameter(hidden = true) @CurrentUser User currentUser) {
+        log.info("===========校验菜单路由名称在编辑时是否可用，参数：{}，{}", menuId, routeName);
+        return backendMenuFeignClient.checkRouteNameAvailableEdit(menuId, routeName, currentUser);
+    }
+
+    /**
+     * 校验菜单路由路径在编辑时是否可用
+     *
+     * @param menuId 菜单id
+     * @param routePath 路由路径
+     * @param currentUser 当前登录用户
+     * @return 可用返回true，不可用返回false
+     */
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/checkRoutePathAvailableEdit")
+    @Operation(description = "校验菜单路由路径在编辑时是否可用", method = "GET")
+    public ResultVO<Boolean> checkRoutePathAvailableEdit(String menuId, String routePath, @Parameter(hidden = true) @CurrentUser User currentUser) {
+        log.info("===========校验菜单路由路径在编辑时是否可用，参数：{}，{}", menuId, routePath);
+        return backendMenuFeignClient.checkRoutePathAvailableEdit(menuId, routePath, currentUser);
+    }
+
+    /**
      * 后台获取面包屑导航列表
      *
      * @param currentUser 当前登陆用户

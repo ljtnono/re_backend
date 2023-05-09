@@ -209,6 +209,29 @@ public class BackendMenuService {
     }
 
     /**
+     * 校验路由名称在编辑时是否可用
+     *
+     * @param routeName 路由名称
+     * @param currentUser 当前登录用户
+     * @return 可用返回true，不可用返回false
+     */
+    public boolean checkRouteNameAvailableEdit(Long menuId, String routeName, User currentUser) {
+        return isRouteNameAvailableToEdit(menuId, routeName);
+    }
+
+    /**
+     * 校验路由路径在编辑时是否可用
+     *
+     * @param menuId 菜单id
+     * @param routePath 路由路径
+     * @param currentUser 当前登录用户
+     * @return 可用返回true，不可用返回false
+     */
+    public boolean checkRoutePathAvailableEdit(Long menuId, String routePath, User currentUser) {
+        return isRoutePathAvailableToEdit(menuId, routePath);
+    }
+
+    /**
      * 后台获取面包屑导航
      *
      * @param currentUser 当前登陆用户

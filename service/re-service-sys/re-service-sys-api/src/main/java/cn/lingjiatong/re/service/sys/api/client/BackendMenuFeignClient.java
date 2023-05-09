@@ -83,6 +83,28 @@ public interface BackendMenuFeignClient {
     ResultVO<Boolean> checkRoutePathDuplicate(@RequestParam("routePath") String routePath, @SpringQueryMap User currentUser);
 
     /**
+     * 校验路由名称在编辑时是否可用
+     *
+     * @param menuId 菜单id
+     * @param routeName 路由名称
+     * @param currentUser 当前登录用户
+     * @return 可用返回true，不可用返回false
+     */
+    @GetMapping("/backend/api/v1/menu/checkRouteNameAvailableEdit")
+    ResultVO<Boolean> checkRouteNameAvailableEdit(@RequestParam("menuId") String menuId, @RequestParam("routeName") String routeName, @SpringQueryMap User currentUser);
+
+    /**
+     * 校验路由路径在编辑时是否可用
+     *
+     * @param menuId 菜单id
+     * @param routePath 路由路径
+     * @param currentUser 当前登录用户
+     * @return 可用返回true，不可用返回false
+     */
+    @GetMapping("/backend/api/v1/menu/checkRoutePathAvailableEdit")
+    ResultVO<Boolean> checkRoutePathAvailableEdit(@RequestParam("menuId") String menuId, @RequestParam("routePath") String routePath, @SpringQueryMap User currentUser);
+
+    /**
      * 后台获取面包屑导航列表
      *
      * @param currentUser 当前登陆用户
