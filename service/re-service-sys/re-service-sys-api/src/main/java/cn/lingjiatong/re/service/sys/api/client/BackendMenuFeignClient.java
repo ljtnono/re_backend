@@ -3,9 +3,7 @@ package cn.lingjiatong.re.service.sys.api.client;
 import cn.lingjiatong.re.common.ResultVO;
 import cn.lingjiatong.re.common.config.FeignBasicAuthRequestInterceptor;
 import cn.lingjiatong.re.common.entity.User;
-import cn.lingjiatong.re.service.sys.api.dto.BackendMenuEditDTO;
-import cn.lingjiatong.re.service.sys.api.dto.BackendMenuListDTO;
-import cn.lingjiatong.re.service.sys.api.dto.BackendMenuSaveDTO;
+import cn.lingjiatong.re.service.sys.api.dto.*;
 import cn.lingjiatong.re.service.sys.api.vo.BackendBreadcrumbListVO;
 import cn.lingjiatong.re.service.sys.api.vo.BackendMenuListVO;
 import cn.lingjiatong.re.service.sys.api.vo.BackendMenuTreeVO;
@@ -85,24 +83,22 @@ public interface BackendMenuFeignClient {
     /**
      * 校验路由名称在编辑时是否可用
      *
-     * @param menuId 菜单id
-     * @param routeName 路由名称
+     * @param dto 后台校验菜单路由名称在编辑时是否可用DTO对象
      * @param currentUser 当前登录用户
      * @return 可用返回true，不可用返回false
      */
     @GetMapping("/backend/api/v1/menu/checkRouteNameAvailableEdit")
-    ResultVO<Boolean> checkRouteNameAvailableEdit(@RequestParam("menuId") String menuId, @RequestParam("routeName") String routeName, @SpringQueryMap User currentUser);
+    ResultVO<Boolean> checkRouteNameAvailableEdit(@SpringQueryMap BackendCheckMenuRouteNameAvailableEditDTO dto, @SpringQueryMap User currentUser);
 
     /**
      * 校验路由路径在编辑时是否可用
      *
-     * @param menuId 菜单id
-     * @param routePath 路由路径
+     * @param dto 后台校验菜单路由路径在编辑时是否可用DTO对象
      * @param currentUser 当前登录用户
      * @return 可用返回true，不可用返回false
      */
     @GetMapping("/backend/api/v1/menu/checkRoutePathAvailableEdit")
-    ResultVO<Boolean> checkRoutePathAvailableEdit(@RequestParam("menuId") String menuId, @RequestParam("routePath") String routePath, @SpringQueryMap User currentUser);
+    ResultVO<Boolean> checkRoutePathAvailableEdit(@SpringQueryMap BackendCheckMenuRoutePathAvailableEditDTO dto, @SpringQueryMap User currentUser);
 
     /**
      * 后台获取面包屑导航列表

@@ -3,9 +3,7 @@ package cn.lingjiatong.re.service.sys.controller;
 import cn.lingjiatong.re.common.ResultVO;
 import cn.lingjiatong.re.common.entity.User;
 import cn.lingjiatong.re.service.sys.api.client.BackendMenuFeignClient;
-import cn.lingjiatong.re.service.sys.api.dto.BackendMenuEditDTO;
-import cn.lingjiatong.re.service.sys.api.dto.BackendMenuListDTO;
-import cn.lingjiatong.re.service.sys.api.dto.BackendMenuSaveDTO;
+import cn.lingjiatong.re.service.sys.api.dto.*;
 import cn.lingjiatong.re.service.sys.api.vo.BackendBreadcrumbListVO;
 import cn.lingjiatong.re.service.sys.api.vo.BackendMenuListVO;
 import cn.lingjiatong.re.service.sys.api.vo.BackendMenuTreeVO;
@@ -82,17 +80,15 @@ public class BackendMenuController implements BackendMenuFeignClient {
     }
 
     @Override
-    public ResultVO<Boolean> checkRouteNameAvailableEdit(@RequestParam("menuId") String menuId, @RequestParam("routePath") String routeName, User currentUser) {
-        menuId = menuId.split(",")[0];
-        routeName = routeName.split(",")[0];
-        return ResultVO.success(backendMenuService.checkRouteNameAvailableEdit(Long.valueOf(menuId), routeName, currentUser));
+    @GetMapping("/backend/api/v1/menu/checkRouteNameAvailableEdit")
+    public ResultVO<Boolean> checkRouteNameAvailableEdit(BackendCheckMenuRouteNameAvailableEditDTO dto, User currentUser) {
+        return ResultVO.success(backendMenuService.checkRouteNameAvailableEdit(dto, currentUser));
     }
 
     @Override
-    public ResultVO<Boolean> checkRoutePathAvailableEdit(@RequestParam("menuId") String menuId, @RequestParam("routePath") String routePath, User currentUser) {
-        menuId = menuId.split(",")[0];
-        routePath = routePath.split(",")[0];
-        return ResultVO.success(backendMenuService.checkRoutePathAvailableEdit(Long.valueOf(menuId), routePath, currentUser));
+    @GetMapping("/backend/api/v1/menu/checkRoutePathAvailableEdit")
+    public ResultVO<Boolean> checkRoutePathAvailableEdit(BackendCheckMenuRoutePathAvailableEditDTO dto, User currentUser) {
+        return ResultVO.success(backendMenuService.checkRoutePathAvailableEdit(dto, currentUser));
     }
 
     @Override

@@ -4,9 +4,7 @@ import cn.lingjiatong.re.common.ResultVO;
 import cn.lingjiatong.re.common.annotation.CurrentUser;
 import cn.lingjiatong.re.common.entity.User;
 import cn.lingjiatong.re.service.sys.api.client.BackendMenuFeignClient;
-import cn.lingjiatong.re.service.sys.api.dto.BackendMenuEditDTO;
-import cn.lingjiatong.re.service.sys.api.dto.BackendMenuListDTO;
-import cn.lingjiatong.re.service.sys.api.dto.BackendMenuSaveDTO;
+import cn.lingjiatong.re.service.sys.api.dto.*;
 import cn.lingjiatong.re.service.sys.api.vo.BackendBreadcrumbListVO;
 import cn.lingjiatong.re.service.sys.api.vo.BackendMenuListVO;
 import cn.lingjiatong.re.service.sys.api.vo.BackendMenuTreeVO;
@@ -121,33 +119,31 @@ public class MenuController {
     /**
      * 校验菜单路由名称在编辑时是否可用
      *
-     * @param menuId 菜单id
-     * @param routeName 路由名称
+     * @param dto 后台校验菜单路由名称在编辑时是否可用DTO对象
      * @param currentUser 当前登录用户
      * @return 可用返回true，不可用返回false
      */
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/checkRoutNameAvailableEdit")
     @Operation(description = "校验菜单路由名称在编辑时是否可用", method = "GET")
-    public ResultVO<Boolean> checkRouteNameAvailableEdit(String menuId, String routeName, @Parameter(hidden = true) @CurrentUser User currentUser) {
-        log.info("===========校验菜单路由名称在编辑时是否可用，参数：{}，{}", menuId, routeName);
-        return backendMenuFeignClient.checkRouteNameAvailableEdit(menuId, routeName, currentUser);
+    public ResultVO<Boolean> checkRouteNameAvailableEdit(BackendCheckMenuRouteNameAvailableEditDTO dto, @Parameter(hidden = true) @CurrentUser User currentUser) {
+        log.info("===========校验菜单路由名称在编辑时是否可用，参数：{}", dto);
+        return backendMenuFeignClient.checkRouteNameAvailableEdit(dto, currentUser);
     }
 
     /**
      * 校验菜单路由路径在编辑时是否可用
      *
-     * @param menuId 菜单id
-     * @param routePath 路由路径
+     * @param dto 后台校验菜单路由路径在编辑时是否可用DTO对象
      * @param currentUser 当前登录用户
      * @return 可用返回true，不可用返回false
      */
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/checkRoutePathAvailableEdit")
     @Operation(description = "校验菜单路由路径在编辑时是否可用", method = "GET")
-    public ResultVO<Boolean> checkRoutePathAvailableEdit(String menuId, String routePath, @Parameter(hidden = true) @CurrentUser User currentUser) {
-        log.info("===========校验菜单路由路径在编辑时是否可用，参数：{}，{}", menuId, routePath);
-        return backendMenuFeignClient.checkRoutePathAvailableEdit(menuId, routePath, currentUser);
+    public ResultVO<Boolean> checkRoutePathAvailableEdit(BackendCheckMenuRoutePathAvailableEditDTO dto, @Parameter(hidden = true) @CurrentUser User currentUser) {
+        log.info("===========校验菜单路由路径在编辑时是否可用，参数：{}", dto);
+        return backendMenuFeignClient.checkRoutePathAvailableEdit(dto, currentUser);
     }
 
     /**

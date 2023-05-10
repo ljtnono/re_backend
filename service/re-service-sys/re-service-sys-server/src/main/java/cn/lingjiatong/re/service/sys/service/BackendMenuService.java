@@ -11,9 +11,7 @@ import cn.lingjiatong.re.common.exception.*;
 import cn.lingjiatong.re.common.util.JSONUtil;
 import cn.lingjiatong.re.common.util.RandomUtil;
 import cn.lingjiatong.re.common.util.SnowflakeIdWorkerUtil;
-import cn.lingjiatong.re.service.sys.api.dto.BackendMenuEditDTO;
-import cn.lingjiatong.re.service.sys.api.dto.BackendMenuListDTO;
-import cn.lingjiatong.re.service.sys.api.dto.BackendMenuSaveDTO;
+import cn.lingjiatong.re.service.sys.api.dto.*;
 import cn.lingjiatong.re.service.sys.api.common.BackendMenuPermission;
 import cn.lingjiatong.re.service.sys.api.vo.BackendBreadcrumbListVO;
 import cn.lingjiatong.re.service.sys.api.vo.BackendMenuListVO;
@@ -32,6 +30,7 @@ import org.springframework.util.StringUtils;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -211,24 +210,45 @@ public class BackendMenuService {
     /**
      * 校验路由名称在编辑时是否可用
      *
-     * @param routeName 路由名称
+     * @param dto 后台校验菜单路由名称在编辑时是否可用DTO对象
      * @param currentUser 当前登录用户
      * @return 可用返回true，不可用返回false
      */
-    public boolean checkRouteNameAvailableEdit(Long menuId, String routeName, User currentUser) {
-        return isRouteNameAvailableToEdit(menuId, routeName);
+    public boolean checkRouteNameAvailableEdit(BackendCheckMenuRouteNameAvailableEditDTO dto, User currentUser) {
+        Optional.ofNullable(dto)
+                .orElseThrow(() -> new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR));
+        String menuId = dto.getMenuId();
+        String routeName = dto.getRouteName();
+        if (!StringUtils.hasLength(menuId) || !StringUtils.hasLength(routeName)) {
+            throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR);
+        }
+        try {
+            return isRouteNameAvailableToEdit(Long.valueOf(menuId), routeName);
+        } catch (NumberFormatException e) {
+            throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR);
+        }
     }
 
     /**
      * 校验路由路径在编辑时是否可用
      *
-     * @param menuId 菜单id
-     * @param routePath 路由路径
+     * @param dto 后台校验菜单路由路径在编辑时是否可用DTO对象
      * @param currentUser 当前登录用户
      * @return 可用返回true，不可用返回false
      */
-    public boolean checkRoutePathAvailableEdit(Long menuId, String routePath, User currentUser) {
-        return isRoutePathAvailableToEdit(menuId, routePath);
+    public boolean checkRoutePathAvailableEdit(BackendCheckMenuRoutePathAvailableEditDTO dto, User currentUser) {
+        Optional.ofNullable(dto)
+                .orElseThrow(() -> new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR));
+        String menuId = dto.getMenuId();
+        String routePath = dto.getRoutePath();
+        if (!StringUtils.hasLength(menuId) || !StringUtils.hasLength(routePath)) {
+            throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR);
+        }
+        try {
+            return isRoutePathAvailableToEdit(Long.valueOf(menuId), routePath);
+        } catch (NumberFormatException e) {
+            throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR);
+        }
     }
 
     /**
