@@ -12,8 +12,13 @@ import cn.lingjiatong.re.service.sys.mapper.SpToutiaoRbMapper;
 import cn.lingjiatong.re.service.sys.mapper.SysNoticeMapper;
 import com.alibaba.nacos.shaded.com.google.common.collect.Lists;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.enums.SqlMethod;
+import com.baomidou.mybatisplus.extension.toolkit.SqlHelper;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.ibatis.logging.Log;
+import org.apache.ibatis.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -21,6 +26,7 @@ import org.springframework.util.CollectionUtils;
 import javax.annotation.Resource;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 
 import static cn.lingjiatong.re.service.sys.constant.SysNoticeConstant.NO_NOTICE_MESSAGE_DEFAULT_NEWS_ITEM_COUNT;
 
@@ -40,7 +46,9 @@ public class FrontendNoticeService {
     private SpToutiaoRbMapper spToutiaoRbMapper;
     @Autowired
     private SnowflakeIdWorkerUtil snowflakeIdWorkerUtil;
-
+    @Autowired
+    @Qualifier("commonThreadPool")
+    private ExecutorService commonThreadPool;
     // ********************************新增类接口********************************
 
 
@@ -59,6 +67,7 @@ public class FrontendNoticeService {
         // 首先获取当前区段显示的消息列表
         String nowTimeStr = DateUtil.getNowString("yyyy-MM-dd HH:mm:ss");
         List<SysNotice> noticeByDateTime = sysNoticeMapper.findNoticeByDateTime(nowTimeStr);
+        List<FrontendNoticeListVO> result = Lists.newArrayList();
 
         // 当消息不存在时，返回 10 条今天的热榜消息
         FrontendNoticeListVO noNoticeMessageVO = new FrontendNoticeListVO();
@@ -72,16 +81,16 @@ public class FrontendNoticeService {
                     .last("LIMIT " + NO_NOTICE_MESSAGE_DEFAULT_NEWS_ITEM_COUNT)
             );
 
-            // 将这些新闻消息插入sys_notice表，
-            List<FrontendNoticeListVO> resultVOList =  Lists.newArrayList();
-            spToutiaoRbList.forEach(rb -> {
+
+            List<SysNotice> noticeToInsertList = Lists.newArrayList();
+            spToutiaoRbList.parallelStream().forEach(rb -> {
                 FrontendNoticeListVO v = new FrontendNoticeListVO();
                 SysNotice sysNotice = new SysNotice();
                 v.setTitle(rb.getTitle());
                 v.setLink(rb.getLink());
                 v.setNewsDate(LocalDate.from(rb.getCreateTime()));
                 v.setNewsState(rb.getState());
-                resultVOList.add(v);
+                result.add(v);
 
                 sysNotice.setId(snowflakeIdWorkerUtil.nextId());
                 sysNotice.setLink(rb.getLink());
@@ -97,19 +106,23 @@ public class FrontendNoticeService {
                 sysNotice.setModifyTime(DateUtil.getLocalDateTimeNow());
                 // 默认为系统操作用户
                 sysNotice.setOptUser(UserConstant.SYSTEM_USER);
+                noticeToInsertList.add(sysNotice);
+            });
+            commonThreadPool.execute(() -> {
                 try {
-                    sysNoticeMapper.insert(sysNotice);
+                    Log mybatisLog = LogFactory.getLog(this.getClass());
+                    String sqlStatement = SqlHelper.getSqlStatement(SysNoticeMapper.class, SqlMethod.INSERT_ONE);
+                    SqlHelper.executeBatch(SysNotice.class, mybatisLog, noticeToInsertList, 500, (sqlSession, entity) -> sqlSession.insert(sqlStatement, entity));
                 } catch (DuplicateKeyException e) {
-                    log.error("==========重复的通知，不插入");
+                    log.warn("==========重复的通知，不插入");
+                } catch (Throwable e) {
+                    log.error(e.toString(), e);
                 }
             });
-
-            resultVOList.add(noNoticeMessageVO);
-            return resultVOList;
+            return result;
         }
 
-        List<FrontendNoticeListVO> result = Lists.newArrayList();
-        noticeByDateTime.forEach(notice -> {
+        noticeByDateTime.parallelStream().forEach(notice -> {
             // 消息已经按照重要程度排序了
             FrontendNoticeListVO frontendNoticeListVO = new FrontendNoticeListVO();
             frontendNoticeListVO.setLink(notice.getLink());
