@@ -36,11 +36,11 @@ spec:
             - name: ENABLE_LEADER_ELECTION
               value: "True"
             - name: NFS_SERVER
-              value: 192.168.8.136
+              value: 192.168.8.148
             - name: NFS_PATH
               value: /home/nfs/dynamic
       volumes:
         - name: nfs-client-root
           nfs:
-            server: 192.168.8.136
+            server: 192.168.8.148
             path: /home/nfs/dynamic
