@@ -32,7 +32,7 @@ public class Role {
     /**
      * 角色描述
      */
-    @TableField(updateStrategy = FieldStrategy.IGNORED)
+    @TableField(updateStrategy = FieldStrategy.ALWAYS)
     private String description;
 
     /**

@@ -17,7 +17,7 @@ import java.util.List;
  * Date: 2022/10/20 20:55
  */
 @Data
-@Document(indexName = "article", shards = 1, replicas = 1)
+@Document(indexName = "article")
 public class ESArticle {
 
     /**

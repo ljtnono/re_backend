@@ -11,7 +11,6 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -46,7 +45,7 @@ public class SystemMonitorController {
      */
     @GetMapping("/k8sNodeList")
     @Operation(summary = "获取k8s节点列表", method = "GET")
-    @PreAuthorize("hasAnyAuthority('system:monitor')")
+//    @PreAuthorize("hasAnyAuthority('system:monitor')")
     public ResultVO<List<BackendSystemMonitorK8sNodeListVO>> findK8sNodeList(@Parameter(hidden = true) @CurrentUser User currentUser) {
         log.info("==========获取k8s节点列表");
         return backendSystemMonitorFeignClient.findK8sNodeList(currentUser);
@@ -60,7 +59,7 @@ public class SystemMonitorController {
      */
     @GetMapping("/k8sNamespaceList")
     @Operation(summary = "获取k8s名称空间列表", method = "GET")
-    @PreAuthorize("hasAnyAuthority('system:monitor')")
+//    @PreAuthorize("hasAnyAuthority('system:monitor')")
     public ResultVO<List<BackendSystemMonitorNamespaceListVO>> findK8sNamespaceList(@Parameter(hidden = true) @CurrentUser User currentUser) {
         log.info("==========获取k8s名称空间列表");
         return backendSystemMonitorFeignClient.findNamespaceList(currentUser);

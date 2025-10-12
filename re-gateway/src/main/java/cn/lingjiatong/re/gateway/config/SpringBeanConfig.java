@@ -1,6 +1,5 @@
 package cn.lingjiatong.re.gateway.config;
 
-import cn.lingjiatong.re.common.constant.CommonConstant;
 import cn.lingjiatong.re.common.util.RedisUtil;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -15,14 +14,11 @@ import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
-import org.springframework.security.oauth2.provider.token.store.KeyStoreKeyFactory;
 
-import java.security.KeyPair;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -37,16 +33,6 @@ import java.util.TimeZone;
  */
 @Configuration
 public class SpringBeanConfig {
-
-    /**
-     * 从classpath下的密钥库中获取密钥对(公钥+私钥)
-     */
-    @Bean
-    public KeyPair keyPair() {
-        KeyStoreKeyFactory factory = new KeyStoreKeyFactory(new ClassPathResource(CommonConstant.TOKEN_SECRET_KEY_NAME), CommonConstant.TOKEN_SECRET_KEY_PASSWORD.toCharArray());
-        KeyPair keyPair = factory.getKeyPair(CommonConstant.TOKEN_SECRET_KEY_ALIAS, CommonConstant.TOKEN_SECRET_KEY_PASSWORD.toCharArray());
-        return keyPair;
-    }
 
     /**
      * 配置 Jackson2JsonRedisSerializer 序列化器，在配置 redisTemplate需要用来做k,v的

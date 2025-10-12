@@ -6,7 +6,6 @@ import io.minio.messages.Bucket;
 import io.minio.messages.DeleteObject;
 import io.minio.messages.Item;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.util.Base64Utils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -239,7 +238,7 @@ public class MinioUtil {
     private static InputStream base64ToInputStream(String base64) {
         ByteArrayInputStream stream = null;
         try {
-            byte[] bytes = Base64Utils.decodeFromString(base64.trim());
+            byte[] bytes = Base64.getDecoder().decode(base64.trim());
             stream = new ByteArrayInputStream(bytes);
         } catch (Exception e) {
             log.error("==========转换base64文件流失败，异常：{}", e.getMessage());

@@ -10,7 +10,6 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -45,7 +44,7 @@ public class TagController {
      */
     @GetMapping("/list")
     @Operation(summary = "后端获取文章标签列表", method = "GET")
-    @PreAuthorize("isAuthenticated()")
+//    @PreAuthorize("isAuthenticated()")
     public ResultVO<List<BackendTagListVO>> findTagList(@Parameter(hidden = true) @CurrentUser User currentUser) {
         log.info("==========后端获取文章标签列表");
         return backendTagFeignClient.findBackendTagList(currentUser);

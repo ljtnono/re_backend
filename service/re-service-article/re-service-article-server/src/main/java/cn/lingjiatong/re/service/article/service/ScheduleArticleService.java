@@ -15,7 +15,6 @@ import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
@@ -40,8 +39,8 @@ public class ScheduleArticleService {
     private ArticleMapper articleMapper;
     @Autowired
     private TagMapper tagMapper;
-    @Autowired
-    private ElasticsearchRestTemplate elasticsearchRestTemplate;
+//    @Autowired
+//    private ElasticsearchRestTemplate elasticsearchRestTemplate;
     @Autowired
     private RedissonClient redissonClient;
 
@@ -97,18 +96,18 @@ public class ScheduleArticleService {
                 });
 
                 log.info("==========开始同步es数据，共{}条", articleList.size());
-                // 同步数据
-                articleList.forEach(article -> {
-                    ESArticle esArticle = new ESArticle();
-                    BeanUtils.copyProperties(article, esArticle);
-                    esArticle.setTagList(articleIdTagNameListMap.get(article.getId()));
-                    ESArticle exist = elasticsearchRestTemplate.get(String.valueOf(article.getId()), ESArticle.class);
-                    if (exist != null) {
-                        // 先删除后保存
-                        elasticsearchRestTemplate.delete(String.valueOf(article.getId()), ESArticle.class);
-                    }
-                    elasticsearchRestTemplate.save(esArticle);
-                });
+//                // 同步数据
+//                articleList.forEach(article -> {
+//                    ESArticle esArticle = new ESArticle();
+//                    BeanUtils.copyProperties(article, esArticle);
+//                    esArticle.setTagList(articleIdTagNameListMap.get(article.getId()));
+//                    ESArticle exist = elasticsearchRestTemplate.get(String.valueOf(article.getId()), ESArticle.class);
+//                    if (exist != null) {
+//                        // 先删除后保存
+//                        elasticsearchRestTemplate.delete(String.valueOf(article.getId()), ESArticle.class);
+//                    }
+//                    elasticsearchRestTemplate.save(esArticle);
+//                });
                 log.info("==========结束同步es数据");
                 return ResultVO.success(DistributedTaskStatusEnum.FINISHED.getCode());
             } catch (Exception e) {

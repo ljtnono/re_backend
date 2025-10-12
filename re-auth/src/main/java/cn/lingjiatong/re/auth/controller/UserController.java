@@ -13,10 +13,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.oauth2.common.exceptions.OAuth2Exception;
-import org.springframework.security.oauth2.provider.ClientRegistrationException;
-import org.springframework.security.oauth2.provider.endpoint.TokenEndpoint;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,8 +34,7 @@ public class UserController {
 
     @Autowired
     private UserService userService;
-    @Autowired
-    private TokenEndpoint tokenEndpoint;
+
 
     // ********************************新增类接口********************************
     // ********************************删除类接口********************************
@@ -67,7 +62,7 @@ public class UserController {
     @PostMapping(value = "/login", consumes = {MediaType.APPLICATION_FORM_URLENCODED_VALUE})
     public ResultVO<UserLoginVO> login(@Parameter(hidden = true) Principal principal, @Parameter(hidden = true) @RequestParam Map<String, String> parameters) throws HttpRequestMethodNotSupportedException {
         log.info("==========用户登录，参数：{}，{}", principal, parameters);
-        return ResultVO.success(userService.login(principal, parameters, tokenEndpoint));
+        return ResultVO.success(userService.login(principal, parameters));
     }
 
 
@@ -97,27 +92,5 @@ public class UserController {
         return ResultVO.success(userService.refreshVerifyCode(verifyCodeKey));
     }
 
-
-    // ********************************复写oauth2异常处理器********************************
-
-    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
-    public ResponseEntity<OAuth2Exception> handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException e) throws Exception {
-        return tokenEndpoint.handleHttpRequestMethodNotSupportedException(e);
-    }
-
-    @ExceptionHandler(ClientRegistrationException.class)
-    public ResponseEntity<OAuth2Exception> handleClientRegistrationException(Exception e) throws Exception {
-        return tokenEndpoint.handleClientRegistrationException(e);
-    }
-
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<OAuth2Exception> handleException(Exception e) throws Exception {
-        return tokenEndpoint.handleException(e);
-    }
-
-    @ExceptionHandler(OAuth2Exception.class)
-    public ResponseEntity<OAuth2Exception> handleException(OAuth2Exception e) throws Exception {
-        return tokenEndpoint.handleException(e);
-    }
 
 }

@@ -1,10 +1,10 @@
 package cn.lingjiatong.re.auth.service;
 
 import cn.lingjiatong.re.auth.mapper.TrUserRoleMapper;
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
 
 /**
  * 用户角色关联模块service层

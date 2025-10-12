@@ -6,6 +6,7 @@ import cn.lingjiatong.re.common.constant.CommonConstant;
 import cn.lingjiatong.re.common.constant.RedisCacheKeyEnum;
 import cn.lingjiatong.re.common.entity.User;
 import cn.lingjiatong.re.common.entity.cache.DraftCache;
+import cn.lingjiatong.re.common.entity.es.ESArticle;
 import cn.lingjiatong.re.common.exception.BusinessException;
 import cn.lingjiatong.re.common.exception.ErrorEnum;
 import cn.lingjiatong.re.common.exception.ParamErrorException;
@@ -20,7 +21,6 @@ import cn.lingjiatong.re.service.article.api.vo.BackendDraftDetailVO;
 import cn.lingjiatong.re.service.article.api.vo.BackendDraftListVO;
 import cn.lingjiatong.re.service.article.constant.BackendArticleErrorMessageConstant;
 import cn.lingjiatong.re.service.article.entity.Article;
-import cn.lingjiatong.re.common.entity.es.ESArticle;
 import cn.lingjiatong.re.service.article.mapper.ArticleMapper;
 import cn.lingjiatong.re.service.sys.api.client.BackendUserFeignClient;
 import cn.lingjiatong.re.service.sys.api.vo.BackendUserListVO;
@@ -28,22 +28,18 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
-import org.elasticsearch.index.query.QueryBuilders;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
 import org.springframework.data.elasticsearch.core.document.Document;
-import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
-import org.springframework.data.elasticsearch.core.query.NativeSearchQuery;
 import org.springframework.data.elasticsearch.core.query.UpdateQuery;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
-import javax.annotation.Resource;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
@@ -65,8 +61,6 @@ public class BackendArticleService {
     private ArticleMapper articleMapper;
     @Autowired
     private RedisUtil redisUtil;
-    @Autowired
-    private ElasticsearchRestTemplate elasticsearchRestTemplate;
     @Autowired
     private BackendCategoryService backendCategoryService;
     @Autowired
@@ -142,7 +136,7 @@ public class BackendArticleService {
             ESArticle esArticle = new ESArticle();
             BeanUtils.copyProperties(article, esArticle);
             esArticle.setTagList(tagList);
-            elasticsearchRestTemplate.save(esArticle);
+//            elasticsearchRestTemplate.save(esArticle);
             // 删除草稿
             redisUtil.deleteObject(RedisCacheKeyEnum.ARTICLE_DRAFT.getValue()
                     .replaceAll("username", currentUser.getUsername())
@@ -241,9 +235,9 @@ public class BackendArticleService {
             // 删除文章标签
             backendTagService.deleteTrArticleTagBatch(articleIdList);
             // 删除es数据
-            String[] articleIds = articleIdStrList.toArray(String[]::new);
-            NativeSearchQuery nativeSearchQuery = new NativeSearchQuery(QueryBuilders.idsQuery().addIds(articleIds));
-            elasticsearchRestTemplate.delete(nativeSearchQuery, ESArticle.class, IndexCoordinates.of("article"));
+//            String[] articleIds = articleIdStrList.toArray(String[]::new);
+//            NativeSearchQuery nativeSearchQuery = new NativeSearchQuery(QueryBuilders.idsQuery().addIds(articleIds));
+//            elasticsearchRestTemplate.delete(nativeSearchQuery, ESArticle.class, IndexCoordinates.of("article"));
         } catch (Exception e) {
             log.error(e.toString(), e);
             throw new BusinessException(ErrorEnum.COMMON_SERVER_ERROR);
@@ -344,7 +338,7 @@ public class BackendArticleService {
                 updateQueryList.add(updateQuery);
             });
             //  更新es
-            elasticsearchRestTemplate.bulkUpdate(updateQueryList, IndexCoordinates.of("article"));
+//            elasticsearchRestTemplate.bulkUpdate(updateQueryList, IndexCoordinates.of("article"));
 
             // TODO 重新计算分类的总浏览量和总喜欢数，这个可以异步执行（消息队列方式）
         } catch (Exception e) {

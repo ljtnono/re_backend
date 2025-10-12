@@ -3,11 +3,11 @@ package cn.lingjiatong.re.auth.service;
 import cn.lingjiatong.re.auth.mapper.TrRoleMenuMapper;
 import cn.lingjiatong.re.common.entity.TrRoleMenu;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.Resource;
 import java.util.List;
 import java.util.stream.Collectors;
 

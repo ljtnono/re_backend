@@ -2,10 +2,10 @@ package cn.lingjiatong.re.service.article.service;
 
 import cn.lingjiatong.re.service.article.api.vo.FrontendTagListVO;
 import cn.lingjiatong.re.service.article.mapper.TagMapper;
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
 import java.util.List;
 
 /**

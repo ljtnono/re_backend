@@ -2,10 +2,10 @@ package cn.lingjiatong.re.auth.service;
 
 import cn.lingjiatong.re.auth.mapper.PermissionMapper;
 import cn.lingjiatong.re.common.entity.Permission;
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
 import java.util.List;
 
 /**

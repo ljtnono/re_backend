@@ -1,10 +1,6 @@
 package cn.lingjiatong.re.job.config;
 
 import cn.lingjiatong.re.common.util.SnowflakeIdWorkerUtil;
-import org.apache.http.HttpHost;
-import org.elasticsearch.client.RestClient;
-import org.elasticsearch.client.RestClientBuilder;
-import org.elasticsearch.client.RestHighLevelClient;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -16,9 +12,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 
-import java.time.Duration;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Level;
 
 /**
@@ -35,18 +28,18 @@ public class SpringBeanConfig {
     @Value("${spring.elasticsearch.rest.port}")
     private Integer elasticsearchPort;
 
-    @Bean
-    public RestHighLevelClient elasticsearchClient() {
-        // 设置elasticsearch
-        List<HttpHost> httpHostsList = new ArrayList<>();
-        httpHostsList.add(new HttpHost(elasticsearchUri, elasticsearchPort));
-        HttpHost[] httpHostsArray = new HttpHost[httpHostsList.size()];
-        httpHostsArray = httpHostsList.toArray(httpHostsArray);
-        RestClientBuilder builder = RestClient.builder(httpHostsArray);
-        // 设置5分钟保持活跃
-        builder.setHttpClientConfigCallback(httpClientBuilder -> httpClientBuilder.setKeepAliveStrategy((response, context) -> Duration.ofMinutes(5).toMillis()));
-        return new RestHighLevelClient(builder);
-    }
+//    @Bean
+//    public RestHighLevelClient elasticsearchClient() {
+//        // 设置elasticsearch
+//        List<HttpHost> httpHostsList = new ArrayList<>();
+//        httpHostsList.add(new HttpHost(elasticsearchUri, elasticsearchPort));
+//        HttpHost[] httpHostsArray = new HttpHost[httpHostsList.size()];
+//        httpHostsArray = httpHostsList.toArray(httpHostsArray);
+//        RestClientBuilder builder = RestClient.builder(httpHostsArray);
+//        // 设置5分钟保持活跃
+//        builder.setHttpClientConfigCallback(httpClientBuilder -> httpClientBuilder.setKeepAliveStrategy((response, context) -> Duration.ofMinutes(5).toMillis()));
+//        return new RestHighLevelClient(builder);
+//    }
 
     // 浏览器
     @Lazy
@@ -64,9 +57,9 @@ public class SpringBeanConfig {
             // 启用所有类型的日志并收集所有日志
             LoggingPreferences logPrefs = new LoggingPreferences();
             logPrefs.enable(LogType.PERFORMANCE, Level.ALL);
-            logPrefs.enable(LogType.BROWSER, Level.ALL);
-            chromeOptions.setCapability(CapabilityType.LOGGING_PREFS, logPrefs);
-            chromeOptions.setCapability(CapabilityType.SUPPORTS_JAVASCRIPT, true);
+//            logPrefs.enable(LogType.BROWSER, Level.ALL);
+//            chromeOptions.setCapability(CapabilityType.LOGGING_PREFS, logPrefs);
+//            chromeOptions.setCapability(CapabilityType.SUPPORTS_JAVASCRIPT, true);
             // 不加载图片
 //            chromeOptions.addArguments("blink-settings=imagesEnabled=false");
             // 生成浏览器
@@ -84,7 +77,7 @@ public class SpringBeanConfig {
             options.addArguments("--whitelisted-ips=\"\"");
             options.addArguments("--disable-dev-shm-usage");
             // 无界面模式 在Linux中一定是不能唤起浏览器的（很重要）
-            options.setHeadless(Boolean.TRUE);
+//            options.setHeadless(Boolean.TRUE);
             webDriver = new ChromeDriver(options);
         }
         return webDriver;

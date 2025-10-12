@@ -40,7 +40,7 @@ public class Menu {
     /**
      * 菜单用的icon的class值
      */
-    @TableField(updateStrategy = FieldStrategy.IGNORED)
+    @TableField(updateStrategy = FieldStrategy.ALWAYS)
     private String icon;
 
     /**

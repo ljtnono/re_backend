@@ -10,6 +10,7 @@ import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.util.Base64;
 
 /**
  * 加解密工具
@@ -113,7 +114,7 @@ public class EncryptUtil {
             // 加密
             byte[] result = cipher.doFinal(byteContent);
             //通过Base64转码返回
-            return new String(Base64Utils.encode(result));
+            return new String(Base64.getEncoder().encode(result));
         } catch (Exception ex) {
             log.error(ex.toString(), ex);
         }
@@ -134,7 +135,7 @@ public class EncryptUtil {
             //使用密钥初始化，设置为解密模式
             cipher.init(Cipher.DECRYPT_MODE, getAESSecretKey(password));
             //执行操作
-            byte[] decode = Base64Utils.decode(content.getBytes(StandardCharsets.UTF_8));
+            byte[] decode = Base64.getDecoder().decode(content.getBytes(StandardCharsets.UTF_8));
             byte[] result = cipher.doFinal(decode);
             return new String(result, StandardCharsets.UTF_8);
         } catch (Exception ex) {

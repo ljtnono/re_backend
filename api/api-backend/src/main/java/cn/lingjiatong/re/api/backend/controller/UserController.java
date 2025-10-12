@@ -12,7 +12,6 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -40,7 +39,7 @@ public class UserController {
      * @return 通用消息返回对象
      */
     @PostMapping
-    @PreAuthorize("hasAuthority('system:user:write')")
+//    @PreAuthorize("hasAuthority('system:user:write')")
     @Operation(summary = "新增用户", method = "POST")
     public ResultVO<?> saveUser(@RequestBody BackendUserSaveDTO dto, @Parameter(hidden = true) @CurrentUser User currentUser) {
         log.info("==========新增用户，参数：{}", dto);
@@ -50,7 +49,7 @@ public class UserController {
     // ********************************删除类接口********************************
 
     @DeleteMapping("/deleteUserBatch")
-    @PreAuthorize("hasAuthority('system:user:write')")
+//    @PreAuthorize("hasAuthority('system:user:write')")
     @Operation(summary = "批量删除用户", method = "DELETE")
     public ResultVO<?> deleteUserBatch(@RequestBody BackendUserPhysicDeleteBatchDTO dto, @Parameter(hidden = true) @CurrentUser User currentUser) {
         log.info("==========批量删除用户，参数：{}", dto);
@@ -67,7 +66,7 @@ public class UserController {
      * @return 通用消息返回对象
      */
     @PutMapping("/updateUserDeleteStatusBatch")
-    @PreAuthorize("hasAuthority('system:user:write')")
+//    @PreAuthorize("hasAuthority('system:user:write')")
     @Operation(summary = "批量更新用户删除状态", method = "PUT")
     public ResultVO<?> updateUserDeleteStatusBatch(@RequestBody BackendUserUpdateDeleteStatusBatchDTO dto, @Parameter(hidden = true) @CurrentUser User currentUser) {
         log.info("==========批量更新用户删除状态，参数：{}", dto);
@@ -83,7 +82,7 @@ public class UserController {
      * @return 通用消息返回对象
      */
     @PutMapping("/adminEditUser")
-    @PreAuthorize("hasAuthority('system:user:write')")
+//    @PreAuthorize("hasAuthority('system:user:write')")
     @Operation(summary = "超级管理员编辑用户信息", method = "PUT")
     public ResultVO<?> adminEditUser(@RequestBody BackendAdminUpdateUserDTO dto, @Parameter(hidden = true) @CurrentUser User currentUser) {
         log.info("==========超级管理员编辑用户信息，参数：{}", dto);
@@ -100,7 +99,7 @@ public class UserController {
      */
     @GetMapping("/list")
     @Operation(summary = "后端获取用户列表", method = "GET")
-    @PreAuthorize("hasAuthority('system:user') || hasAuthority('system:user:read')")
+//    @PreAuthorize("hasAuthority('system:user') || hasAuthority('system:user:read')")
     public ResultVO<Page<BackendUserListVO>> findTagList(BackendUserListDTO dto, @Parameter(hidden = true) @CurrentUser User currentUser) {
         log.info("==========后端获取文章标签列表");
         return backendUserFeignClient.findUserList(dto, currentUser);
@@ -115,7 +114,7 @@ public class UserController {
      */
     @GetMapping("/testUsernameDuplicate")
     @Operation(summary = "校验用户名是否重复", method = "GET")
-    @PreAuthorize("hasAuthority('system:user') || hasAuthority('system:user:read')")
+//    @PreAuthorize("hasAuthority('system:user') || hasAuthority('system:user:read')")
     public ResultVO<Boolean> testUsernameDuplicate(String username, @Parameter(hidden = true) @CurrentUser User currentUser) {
         log.info("==========校验用户名是否重复，参数：{}", username);
         return backendUserFeignClient.testUsernameDuplicate(username, currentUser);
@@ -130,7 +129,7 @@ public class UserController {
      */
     @GetMapping("/testEmailDuplicate")
     @Operation(summary = "测试邮箱是否重复", method = "GET")
-    @PreAuthorize("hasAuthority('system:user') || hasAuthority('system:user:read')")
+//    @PreAuthorize("hasAuthority('system:user') || hasAuthority('system:user:read')")
     public ResultVO<Boolean> testEmailDuplicate(String email, @Parameter(hidden = true) @CurrentUser User currentUser) {
         log.info("==========测试邮箱是否重复，参数：{}", email);
         return backendUserFeignClient.testEmailDuplicate(email, currentUser);
@@ -145,7 +144,7 @@ public class UserController {
      */
     @GetMapping("/adminEditUserTestEmailAvailability")
     @Operation(summary = "管理员编辑用户表单测试邮箱是否可用接口", method = "GET")
-    @PreAuthorize("hasAuthority('system:user') || hasAuthority('system:user:read')")
+//    @PreAuthorize("hasAuthority('system:user') || hasAuthority('system:user:read')")
     public ResultVO<Boolean> adminEditUserTestEmailAvailability(BackendAdminEditUserEmailTestAvailabilityDTO dto, @Parameter(hidden = true) @CurrentUser User currentUser) {
         log.info("==========管理员编辑用户表单测试邮箱是否可用接口，参数：{}", dto);
         return backendUserFeignClient.adminEditUserTestEmailAvailability(dto, currentUser);

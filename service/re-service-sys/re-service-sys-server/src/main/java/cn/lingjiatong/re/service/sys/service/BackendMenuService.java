@@ -323,9 +323,9 @@ public class BackendMenuService {
         if (CollectionUtils.isEmpty(menuIdCollection)) {
             return false;
         }
-        Integer count = menuMapper.selectCount(new LambdaQueryWrapper<Menu>()
+        Long count = menuMapper.selectCount(new LambdaQueryWrapper<Menu>()
                 .in(Menu::getId, menuIdCollection));
-        return count.equals(menuIdCollection.size());
+        return count.equals((long) menuIdCollection.size());
     }
 
 

@@ -7,6 +7,7 @@ import cn.lingjiatong.re.common.util.UrlUtil;
 import cn.lingjiatong.re.job.bo.BaiduImageSpiderSearchConditionBO;
 import cn.lingjiatong.re.job.entity.SpBaiduImg;
 import cn.lingjiatong.re.job.mapper.SpBaiduImgMapper;
+import jakarta.annotation.Resource;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +21,6 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import javax.annotation.Resource;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;

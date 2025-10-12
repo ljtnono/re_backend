@@ -13,7 +13,6 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -43,7 +42,7 @@ public class MenuController {
      * @return 通用消息返回对象
      */
     @PostMapping
-    @PreAuthorize("isAuthenticated()")
+//    @PreAuthorize("isAuthenticated()")
     @Operation(description = "后台新增菜单", method = "POST")
     public ResultVO<?> saveMenu(@RequestBody BackendMenuSaveDTO dto, @Parameter(hidden = true) @CurrentUser User currentUser) {
         log.info("==========后台新增菜单，参数：{}", dto);
@@ -60,7 +59,7 @@ public class MenuController {
      * @return 通用消息返回对象
      */
     @DeleteMapping("/{menuId}")
-    @PreAuthorize("isAuthenticated()")
+//    @PreAuthorize("isAuthenticated()")
     @Operation(description = "后台删除菜单", method = "DELETE")
     public ResultVO<?> deleteMenu(@PathVariable Long menuId, @Parameter(hidden = true) @CurrentUser User currentUser) {
         log.info("==========后台删除菜单：，参数：{}", menuId);
@@ -77,7 +76,7 @@ public class MenuController {
      * @return 通用消息返回对象
      */
     @PutMapping("/editMenu")
-    @PreAuthorize("isAuthenticated()")
+//    @PreAuthorize("isAuthenticated()")
     @Operation(description = "后台修改菜单", method = "POST")
     public ResultVO<?> saveMenu(@RequestBody BackendMenuEditDTO dto, @Parameter(hidden = true) @CurrentUser User currentUser) {
         log.info("==========后台修改菜单，参数：{}", dto);
@@ -93,7 +92,7 @@ public class MenuController {
      * @param currentUser 当前登录用户
      * @return 重复返回true，不重复返回false
      */
-    @PreAuthorize("isAuthenticated()")
+//    @PreAuthorize("isAuthenticated()")
     @GetMapping("/checkRouteNameDuplicate")
     @Operation(description = "后台校验路由名称是否重复", method = "GET")
     public ResultVO<Boolean> checkRouteNameDuplicate(String routeName, @Parameter(hidden = true) @CurrentUser User currentUser) {
@@ -108,7 +107,7 @@ public class MenuController {
      * @param currentUser 当前登录用户
      * @return 重复返回true，不重复返回false
      */
-    @PreAuthorize("isAuthenticated()")
+//    @PreAuthorize("isAuthenticated()")
     @GetMapping("/checkRoutePathDuplicate")
     @Operation(description = "后台校验路由路径是否重复", method = "GET")
     public ResultVO<Boolean> checkRoutePathDuplicate(String routePath, @Parameter(hidden = true) @CurrentUser User currentUser) {
@@ -123,7 +122,7 @@ public class MenuController {
      * @param currentUser 当前登录用户
      * @return 可用返回true，不可用返回false
      */
-    @PreAuthorize("isAuthenticated()")
+//    @PreAuthorize("isAuthenticated()")
     @GetMapping("/checkRoutNameAvailableEdit")
     @Operation(description = "校验菜单路由名称在编辑时是否可用", method = "GET")
     public ResultVO<Boolean> checkRouteNameAvailableEdit(BackendCheckMenuRouteNameAvailableEditDTO dto, @Parameter(hidden = true) @CurrentUser User currentUser) {
@@ -138,7 +137,7 @@ public class MenuController {
      * @param currentUser 当前登录用户
      * @return 可用返回true，不可用返回false
      */
-    @PreAuthorize("isAuthenticated()")
+//    @PreAuthorize("isAuthenticated()")
     @GetMapping("/checkRoutePathAvailableEdit")
     @Operation(description = "校验菜单路由路径在编辑时是否可用", method = "GET")
     public ResultVO<Boolean> checkRoutePathAvailableEdit(BackendCheckMenuRoutePathAvailableEditDTO dto, @Parameter(hidden = true) @CurrentUser User currentUser) {
@@ -152,7 +151,7 @@ public class MenuController {
      * @param currentUser 当前登陆用户
      * @return 面包屑导航VO对象列表
      */
-    @PreAuthorize("isAuthenticated()")
+//    @PreAuthorize("isAuthenticated()")
     @GetMapping("/breadcrumbList")
     @Operation(description = "后台获取面包屑导航列表", method = "GET")
     public ResultVO<List<BackendBreadcrumbListVO>> findBreadcrumbList(@Parameter(hidden = true) @CurrentUser User currentUser) {
@@ -169,7 +168,7 @@ public class MenuController {
      */
     @GetMapping("/tree")
     @Operation(description = "后台获取菜单树", method = "GET")
-    @PreAuthorize("isAuthenticated()")
+//    @PreAuthorize("isAuthenticated()")
     public ResultVO<List<BackendMenuTreeVO>> findMenuTree(@Parameter(hidden = true) @CurrentUser User currentUser) {
         log.info("==========后台获取菜单树");
         return backendMenuFeignClient.findBackendMenuTree(currentUser);
@@ -183,7 +182,7 @@ public class MenuController {
      * @return 后台分页获取菜单列表VO对象
      */
     @GetMapping("/list")
-    @PreAuthorize("isAuthenticated()")
+//    @PreAuthorize("isAuthenticated()")
     @Operation(description = "后台获取菜单列表", method = "GET")
     public ResultVO<List<BackendMenuListVO>> findMenuList(BackendMenuListDTO dto, @Parameter(hidden = true) @CurrentUser User currentUser) {
         log.info("==========后台获取菜单列表，参数：{}", dto);

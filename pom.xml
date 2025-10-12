@@ -21,21 +21,21 @@
 	<description>根元素博客网站后端</description>
 	<!-- 全局版本管理 -->
 	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <re-version>v0.3.5</re-version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<java.version>11</java.version>
-		<maven.compiler.source>11</maven.compiler.source>
-		<maven.compiler.target>11</maven.compiler.target>
-		<re-version>v0.3.5</re-version>
-		<spring-cloud.version>Hoxton.SR12</spring-cloud.version>
-		<spring-cloud-alibaba.version>2.2.9.RELEASE</spring-cloud-alibaba.version>
-		<spring-cloud-gateway.version>2.2.9.RELEASE</spring-cloud-gateway.version>
+		<java.version>17</java.version>
+		<maven.compiler.source>17</maven.compiler.source>
+		<maven.compiler.target>17</maven.compiler.target>
+		<spring-cloud.version>2023.0.3</spring-cloud.version>
+		<spring-cloud-alibaba.version>2023.0.3.2</spring-cloud-alibaba.version>
+        <spring-cloud-gateway.version>4.1.5</spring-cloud-gateway.version>
 		<spring-boot-maven-plugin.version>2.3.12.RELEASE</spring-boot-maven-plugin.version>
-		<springboot.version>2.3.12.RELEASE</springboot.version>
-		<lombok.version>1.18.12</lombok.version>
+		<springboot.version>3.3.4</springboot.version>
+		<lombok.version>1.18.42</lombok.version>
 		<guava.version>30.1.1-jre</guava.version>
 		<springdoc.version>1.6.14</springdoc.version>
-		<mybatis-plus.version>3.4.3</mybatis-plus.version>
+		<mybatis-plus.version>3.5.14</mybatis-plus.version>
 		<mysql-connector.version>8.0.26</mysql-connector.version>
 		<xxl-job.version>2.3.0</xxl-job.version>
 		<webmagic.version>0.7.5</webmagic.version>
@@ -84,6 +84,14 @@
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
+            <!-- mybatis-plus -->
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>mybatis-plus-bom</artifactId>
+                <version>${mybatis-plus.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
 			<!-- lombok -->
 			<dependency>
 				<groupId>org.projectlombok</groupId>
@@ -102,12 +110,6 @@
 				<artifactId>spring-boot-devtools</artifactId>
 				<version>${springboot.version}</version>
 				<optional>true</optional>
-			</dependency>
-			<!-- mybatis-plus -->
-			<dependency>
-				<groupId>com.baomidou</groupId>
-				<artifactId>mybatis-plus-boot-starter</artifactId>
-				<version>${mybatis-plus.version}</version>
 			</dependency>
 			<!-- springdoc -->
 			<dependency>
@@ -217,12 +219,12 @@
 				<artifactId>client-java</artifactId>
 				<version>${k8s-client.version}</version>
 			</dependency>
-			<!-- mybatis多数据源 -->
-			<dependency>
-				<groupId>com.baomidou</groupId>
-				<artifactId>dynamic-datasource-spring-boot-starter</artifactId>
-				<version>${dynamic-datasource.version}</version>
-			</dependency>
+<!--			&lt;!&ndash; mybatis多数据源 &ndash;&gt;-->
+<!--			<dependency>-->
+<!--				<groupId>com.baomidou</groupId>-->
+<!--				<artifactId>dynamic-datasource-spring-boot-starter</artifactId>-->
+<!--				<version>${dynamic-datasource.version}</version>-->
+<!--			</dependency>-->
 			<!-- redission分布式锁 -->
 			<dependency>
 				<groupId>org.redisson</groupId>

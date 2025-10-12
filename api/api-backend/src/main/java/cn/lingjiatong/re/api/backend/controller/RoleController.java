@@ -2,7 +2,6 @@ package cn.lingjiatong.re.api.backend.controller;
 
 import cn.lingjiatong.re.common.ResultVO;
 import cn.lingjiatong.re.common.annotation.CurrentUser;
-import cn.lingjiatong.re.common.annotation.PassToken;
 import cn.lingjiatong.re.common.entity.User;
 import cn.lingjiatong.re.service.sys.api.client.BackendRoleFeignClient;
 import cn.lingjiatong.re.service.sys.api.dto.*;
@@ -14,7 +13,6 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -45,7 +43,7 @@ public class RoleController {
      */
     @PostMapping
     @Operation(summary = "后台新增角色", method = "POST")
-    @PreAuthorize("hasAuthority('system:role:write')")
+//    @PreAuthorize("hasAuthority('system:role:write')")
     public ResultVO<?> saveRole(@RequestBody BackendRoleSaveDTO dto, @Parameter(hidden = true) @CurrentUser User currentUser) {
         log.info("==========后台新增角色，参数：{}", dto);
         return backendRoleFeignClient.saveRole(dto, currentUser);
@@ -62,7 +60,7 @@ public class RoleController {
      */
     @DeleteMapping("/deleteBatch")
     @Operation(summary = "后台批量删除角色", method = "DELETE")
-    @PreAuthorize("hasAuthority('system:role:write')")
+//    @PreAuthorize("hasAuthority('system:role:write')")
     public ResultVO<?> deleteRoleBatch(@RequestBody BackendRoleDeleteBatchDTO dto, @Parameter(hidden = true) @CurrentUser User currentUser) {
         log.info("==========后台批量删除角色，参数：{}", dto);
         return backendRoleFeignClient.deleteRoleBatch(dto, currentUser);
@@ -80,7 +78,7 @@ public class RoleController {
      */
     @PutMapping
     @Operation(summary = "后台修改角色", method = "PUT")
-    @PreAuthorize("hasAuthority('system:role:write')")
+//    @PreAuthorize("hasAuthority('system:role:write')")
     public ResultVO<?> updateRole(@RequestBody BackendRoleUpdateDTO dto, @Parameter(hidden = true) @CurrentUser User currentUser) {
         log.info("==========后台修改角色，参数：{}", dto);
         return backendRoleFeignClient.updateRole(dto, currentUser);
@@ -98,7 +96,7 @@ public class RoleController {
      */
     @GetMapping("/addFormRoleNameCheck")
     @Operation(summary = "新增角色表单名称校验", method = "GET")
-    @PreAuthorize("hasAuthority('system:role') || hasAuthority('system:role:read')")
+//    @PreAuthorize("hasAuthority('system:role') || hasAuthority('system:role:read')")
     public ResultVO<Boolean> addFormRoleNameCheck(String roleName, @Parameter(hidden = true) @CurrentUser User currentUser) {
         log.info("==========新增角色表单名称校验，参数：{}", roleName);
         return backendRoleFeignClient.addFormRoleNameCheck(roleName, currentUser);
@@ -113,7 +111,7 @@ public class RoleController {
      */
     @GetMapping("/editFormRoleNameCheck")
     @Operation(summary = "编辑角色表单角色名称校验", method = "GET")
-    @PreAuthorize("hasAuthority('system:role') || hasAuthority('system:role:read')")
+//    @PreAuthorize("hasAuthority('system:role') || hasAuthority('system:role:read')")
     public ResultVO<Boolean> editFormRoleNameCheck(BackendRoleNameCheckDTO dto, @Parameter(hidden = true) @CurrentUser User currentUser) {
         log.info("==========编辑角色表单名称校验，参数：{}", dto);
         return backendRoleFeignClient.editFormRoleNameCheck(dto, currentUser);
@@ -128,7 +126,7 @@ public class RoleController {
      */
     @GetMapping("/list")
     @Operation(summary = "后台获取角色列表", method = "GET")
-    @PreAuthorize("isAuthenticated()")
+//    @PreAuthorize("isAuthenticated()")
     public ResultVO<List<BackendRoleListVO>> findRoleList(@Parameter(hidden = true) @CurrentUser User currentUser) {
         log.info("==========获取角色列表");
         return backendRoleFeignClient.findRoleList(currentUser);
@@ -143,7 +141,7 @@ public class RoleController {
      */
     @GetMapping("/pageList")
     @Operation(summary = "后台分页获取角色列表", method = "GET")
-    @PreAuthorize("hasAuthority('system:role') || hasAuthority('system:role:read')")
+//    @PreAuthorize("hasAuthority('system:role') || hasAuthority('system:role:read')")
 //    @PassToken
     public ResultVO<Page<BackendRoleListVO>> findRoleList(BackendRolePageListDTO dto, @Parameter(hidden = true) @CurrentUser User currentUser) {
         log.info("==========后台分页获取角色列表，参数：{}", dto);
@@ -159,7 +157,7 @@ public class RoleController {
      */
     @GetMapping("/menuTree/{roleId}")
     @Operation(summary = "后台获取角色菜单树", method = "GET")
-    @PreAuthorize("hasAuthority('system:role') || hasAuthority('system:role:read')")
+//    @PreAuthorize("hasAuthority('system:role') || hasAuthority('system:role:read')")
     public ResultVO<BackendRoleMenuTreeVO> findRoleMenuTree(@PathVariable("roleId") Long roleId, @Parameter(hidden = true) @CurrentUser User currentUser) {
         log.info("==========后台获取角色菜单树，参数：{}", roleId);
         return backendRoleFeignClient.findRoleMenuTree(roleId, currentUser);

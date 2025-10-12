@@ -4,6 +4,7 @@ import cn.lingjiatong.re.common.constant.CommonConstant;
 import cn.lingjiatong.re.common.constant.ProfileEnum;
 import cn.lingjiatong.re.common.util.RedisUtil;
 import cn.lingjiatong.re.common.util.SnowflakeIdWorkerUtil;
+import com.baomidou.mybatisplus.annotation.DbType;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
@@ -22,10 +23,6 @@ import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
-import org.apache.http.HttpHost;
-import org.elasticsearch.client.RestClient;
-import org.elasticsearch.client.RestClientBuilder;
-import org.elasticsearch.client.RestHighLevelClient;
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
 import org.redisson.config.Config;
@@ -42,13 +39,10 @@ import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 import java.io.IOException;
-import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.TimeZone;
 import java.util.concurrent.*;
 
@@ -70,18 +64,18 @@ public class SpringBeanConfig {
     @Value("${spring.profiles.active}")
     private String profile;
 
-    @Bean
-    public RestHighLevelClient elasticsearchClient() {
-        // 设置elasticsearch
-        List<HttpHost> httpHostsList = new ArrayList<>();
-        httpHostsList.add(new HttpHost(elasticsearchUri, elasticsearchPort));
-        HttpHost[] httpHostsArray = new HttpHost[httpHostsList.size()];
-        httpHostsArray = httpHostsList.toArray(httpHostsArray);
-        RestClientBuilder builder = RestClient.builder(httpHostsArray);
-        // 设置5分钟保持活跃
-        builder.setHttpClientConfigCallback(httpClientBuilder -> httpClientBuilder.setKeepAliveStrategy((response, context) -> Duration.ofMinutes(5).toMillis()));
-        return new RestHighLevelClient(builder);
-    }
+//    @Bean
+//    public RestHighLevelClient elasticsearchClient() {
+//        // 设置elasticsearch
+//        List<HttpHost> httpHostsList = new ArrayList<>();
+//        httpHostsList.add(new HttpHost(elasticsearchUri, elasticsearchPort));
+//        HttpHost[] httpHostsArray = new HttpHost[httpHostsList.size()];
+//        httpHostsArray = httpHostsList.toArray(httpHostsArray);
+//        RestClientBuilder builder = RestClient.builder(httpHostsArray);
+//        // 设置5分钟保持活跃
+//        builder.setHttpClientConfigCallback(httpClientBuilder -> httpClientBuilder.setKeepAliveStrategy((response, context) -> Duration.ofMinutes(5).toMillis()));
+//        return new RestHighLevelClient(builder);
+//    }
 
     @Bean
     public OpenAPI docket() {
@@ -112,12 +106,11 @@ public class SpringBeanConfig {
     @Bean
     @Lazy
     public MybatisPlusInterceptor paginationInterceptor() {
-        MybatisPlusInterceptor mybatisPlusInterceptor = new MybatisPlusInterceptor();
-        PaginationInnerInterceptor paginationInnerInterceptor = new PaginationInnerInterceptor();
-        paginationInnerInterceptor.setOptimizeJoin(true);
-        paginationInnerInterceptor.setOverflow(true);
-        mybatisPlusInterceptor.addInnerInterceptor(paginationInnerInterceptor);
-        return mybatisPlusInterceptor;
+        MybatisPlusInterceptor interceptor = new MybatisPlusInterceptor();
+        // 如果配置多个插件, 切记分页最后添加
+        interceptor.addInnerInterceptor(new PaginationInnerInterceptor(DbType.MYSQL));
+        // 如果有多数据源可以不配具体类型, 否则都建议配上具体的 DbType
+        return interceptor;
     }
 
 

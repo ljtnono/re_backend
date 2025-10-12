@@ -11,7 +11,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -42,7 +41,7 @@ public class FileController {
      * @param currentUser 当前用户
      */
     @PostMapping(value = "/uploadFile", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    @PreAuthorize("isAuthenticated()")
+//    @PreAuthorize("isAuthenticated()")
     @Operation(summary = "后端上传文件接口", method = "POST")
     public ResultVO<String> uploadFile(@RequestParam("file") @Parameter(style = ParameterStyle.FORM) MultipartFile file, @Parameter(hidden = true) @CurrentUser User currentUser) {
         log.info("==========上传图片，参数：{}", file);

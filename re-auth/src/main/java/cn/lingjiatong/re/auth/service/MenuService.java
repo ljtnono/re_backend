@@ -5,11 +5,11 @@ import cn.lingjiatong.re.common.constant.CommonConstant;
 import cn.lingjiatong.re.common.entity.Menu;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.google.common.collect.Lists;
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import javax.annotation.Resource;
 import java.util.Arrays;
 import java.util.List;
 

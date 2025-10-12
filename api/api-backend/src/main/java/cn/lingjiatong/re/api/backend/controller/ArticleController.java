@@ -14,7 +14,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
+//import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -45,7 +45,7 @@ public class ArticleController {
      */
     @PostMapping("/publishArticle")
     @Operation(summary = "发布文章", method = "POST")
-    @PreAuthorize("hasAuthority('blog:article') && hasAuthority('blog:article:write')")
+//    @PreAuthorize("hasAuthority('blog:article') && hasAuthority('blog:article:write')")
     public ResultVO<?> publishArticle(@RequestBody BackendArticlePublishDTO dto, @Parameter(hidden = true) @CurrentUser User currentUser) {
         log.info("==========发布文章，草稿id：{}", dto.getDraftId());
         return backendArticleFeignClient.publishArticle(dto, currentUser);
@@ -62,7 +62,7 @@ public class ArticleController {
      */
     @DeleteMapping("/deleteDraft/{draftId}")
     @Operation(summary = "删除草稿", method = "DELETE")
-    @PreAuthorize("isAuthenticated()")
+//    @PreAuthorize("isAuthenticated()")
     public ResultVO<?> deleteDraft(@PathVariable("draftId") String draftId, @Parameter(hidden = true) @CurrentUser User currentUser) {
         log.info("==========删除草稿，参数：{}", draftId);
         return backendArticleFeignClient.deleteDraft(draftId, currentUser);
@@ -77,7 +77,7 @@ public class ArticleController {
      */
     @DeleteMapping("/deleteBatch")
     @Operation(summary = "批量删除文章", method = "DELETE")
-    @PreAuthorize("hasAuthority('blog:article') && hasAuthority('blog:article:write')")
+//    @PreAuthorize("hasAuthority('blog:article') && hasAuthority('blog:article:write')")
     public ResultVO<?> deleteArticleBatch(@RequestBody BackendArticleDeleteBatchDTO dto, @Parameter(hidden = true) @CurrentUser User currentUser) {
         log.info("==========批量删除文章，参数：{}", dto);
         return backendArticleFeignClient.deleteArticleBatch(dto, currentUser);
@@ -92,7 +92,7 @@ public class ArticleController {
      * @param currentUser 当前用户
      * @return 通用消息返回对象
      */
-    @PreAuthorize("isAuthenticated()")
+//    @PreAuthorize("isAuthenticated()")
     @PostMapping("/saveOrUpdateDraft")
     @Operation(summary = "保存或更新草稿", method = "POST")
     public ResultVO<?> saveOrUpdateDraft(@RequestBody BackendDraftSaveOrUpdateDTO dto, @Parameter(hidden = true) @CurrentUser User currentUser) {
@@ -109,7 +109,7 @@ public class ArticleController {
      */
     @PutMapping("/updateArticleRecommendBatch")
     @Operation(summary = "批量更新文章推荐状态", method = "PUT")
-    @PreAuthorize("hasAuthority('blog:article') && hasAuthority('blog:article:write')")
+//    @PreAuthorize("hasAuthority('blog:article') && hasAuthority('blog:article:write')")
     public ResultVO<?> updateArticleRecommendBatch(@RequestBody BackendArticleUpdateRecommendBatchDTO dto, @Parameter(hidden = true) @CurrentUser User currentUser) {
         log.info("==========批量更新文章推荐状态，参数：{}", dto);
         return backendArticleFeignClient.updateArticleRecommendBatch(dto, currentUser);
@@ -124,7 +124,7 @@ public class ArticleController {
      */
     @PutMapping("/updateArticleTopBatch")
     @Operation(summary = "批量更新文章置顶状态", method = "PUT")
-    @PreAuthorize("hasAuthority('blog:article') && hasAuthority('blog:article:write')")
+//    @PreAuthorize("hasAuthority('blog:article') && hasAuthority('blog:article:write')")
     public ResultVO<?> updateArticleTopBatch(@RequestBody BackendArticleUpdateTopBatchDTO dto, @Parameter(hidden = true) @CurrentUser User currentUser) {
         log.info("==========批量更新文章置顶状态，参数：{}", dto);
         return backendArticleFeignClient.updateArticleTopBatch(dto, currentUser);
@@ -139,7 +139,7 @@ public class ArticleController {
      */
     @PutMapping("/updateArticleDeleteBatch")
     @Operation(summary = "批量更新文章删除状态", method = "PUT")
-    @PreAuthorize("hasAuthority('blog:article') && hasAuthority('blog:article:write')")
+//    @PreAuthorize("hasAuthority('blog:article') && hasAuthority('blog:article:write')")
     public ResultVO<?> updateArticleTopBatch(@RequestBody BackendArticleUpdateDeleteBatchDTO dto, @Parameter(hidden = true) @CurrentUser User currentUser) {
         log.info("==========批量更新文章删除状态，参数：{}", dto);
         return backendArticleFeignClient.updateArticleDeleteBatch(dto, currentUser);
@@ -157,7 +157,7 @@ public class ArticleController {
      */
     @GetMapping("/list")
     @Operation(summary = "分页获取文章列表", method = "GET")
-    @PreAuthorize("hasAuthority('blog:article') || hasAuthority('blog:article:read')")
+//    @PreAuthorize("hasAuthority('blog:article') || hasAuthority('blog:article:read')")
     public ResultVO<Page<BackendArticleListVO>> findArticleList(BackendArticleListDTO dto, @Parameter(hidden = true) @CurrentUser User currentUser) {
         log.info("==========分页获取文章列表，参数：{}", dto);
         return backendArticleFeignClient.findArticleList(dto, currentUser);
@@ -173,7 +173,7 @@ public class ArticleController {
      */
     @GetMapping("/draft/{draftId}")
     @Operation(summary = "后端获取草稿详情", method = "GET")
-    @PreAuthorize("isAuthenticated()")
+//    @PreAuthorize("isAuthenticated()")
     public ResultVO<BackendDraftDetailVO> getDraftDetail(@PathVariable("draftId") String draftId, @Parameter(hidden = true) @CurrentUser User currentUser) {
         log.info("==========后端获取草稿详情，参数：{}", draftId);
         return backendArticleFeignClient.getDraftDetail(draftId, currentUser);
@@ -187,7 +187,7 @@ public class ArticleController {
      */
     @GetMapping("/draftList")
     @Operation(summary = "获取当前用户的草稿列表", method = "GET")
-    @PreAuthorize("isAuthenticated()")
+//    @PreAuthorize("isAuthenticated()")
     public ResultVO<List<BackendDraftListVO>> getDraftList(@CurrentUser @Parameter(hidden = true) User currentUser) {
         log.info("==========获取当前用户的草稿列表");
         return backendArticleFeignClient.getDraftList(currentUser);

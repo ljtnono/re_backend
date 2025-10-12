@@ -270,10 +270,10 @@ public class BackendRoleService {
         if (StringUtils.hasLength(roleName) && !RoleRegexConstant.ROLE_SAVE_NAME_REGEX.matcher(roleName).matches()) {
             throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR.getCode(), RoleErrorMessageConstant.ROLE_NAME_FORMAT_ERROR_MESSAGE);
         }
-        Integer count = roleMapper.selectCount(new LambdaQueryWrapper<Role>()
+        Long count = roleMapper.selectCount(new LambdaQueryWrapper<Role>()
                 .eq(Role::getName, roleName)
                 .ne(Role::getId, roleId));
-        return count.equals(0);
+        return count.equals(0L);
     }
 
     /**
@@ -416,10 +416,10 @@ public class BackendRoleService {
             throw new ResourceNotExistException(ErrorEnum.RESOURCE_NOT_EXIST_ERROR.getCode(), RoleErrorMessageConstant.ROLE_NOT_EXIST_ERROR_MESSAGE);
         }
         // 校验角色名是否重复
-        Integer count = roleMapper.selectCount(new LambdaQueryWrapper<Role>()
+        Long count = roleMapper.selectCount(new LambdaQueryWrapper<Role>()
                 .eq(Role::getName, name)
                 .ne(Role::getId, id));
-        if (count > 0) {
+        if (count > 0L) {
             throw new BusinessException(ErrorEnum.NAME_OCCUPY_BY_OTHER_ROLE_ERROR_MESSAGE);
         }
 
@@ -520,9 +520,9 @@ public class BackendRoleService {
         if (CollectionUtils.isEmpty(roleIdCollection)) {
             return false;
         }
-        Integer count = roleMapper.selectCount(new LambdaQueryWrapper<Role>()
+        Long count = roleMapper.selectCount(new LambdaQueryWrapper<Role>()
                 .in(Role::getId, roleIdCollection));
-        return count.equals(roleIdCollection.size());
+        return count.equals((long) roleIdCollection.size());
     }
 
     /**
