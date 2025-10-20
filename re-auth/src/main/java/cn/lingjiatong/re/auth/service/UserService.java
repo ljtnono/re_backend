@@ -4,33 +4,35 @@ import cn.lingjiatong.re.auth.mapper.UserMapper;
 import cn.lingjiatong.re.auth.vo.UserLoginVO;
 import cn.lingjiatong.re.common.constant.CommonConstant;
 import cn.lingjiatong.re.common.constant.RedisCacheKeyEnum;
-import cn.lingjiatong.re.common.entity.User;
+import cn.lingjiatong.re.common.entity.*;
 import cn.lingjiatong.re.common.entity.cache.LoginVerifyCodeCache;
+import cn.lingjiatong.re.common.entity.cache.UserInfoCache;
 import cn.lingjiatong.re.common.exception.ErrorEnum;
 import cn.lingjiatong.re.common.exception.ResourceNotExistException;
-import cn.lingjiatong.re.common.util.RedisUtil;
-import cn.lingjiatong.re.common.util.SnowflakeIdWorkerUtil;
-import cn.lingjiatong.re.common.util.VerifyCodeUtil;
+import cn.lingjiatong.re.common.util.*;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.security.Principal;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Base64;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 /**
  * 用户模块service层
@@ -40,7 +42,7 @@ import java.util.concurrent.TimeUnit;
  */
 @Slf4j
 @Service
-public class UserService implements UserDetailsService {
+public class UserService {
 
     @Resource
     private UserMapper userMapper;
@@ -77,13 +79,82 @@ public class UserService implements UserDetailsService {
     /**
      * 用户登录
      *
-     * @param principal principal
-     * @param parameters 参数列表
      * @return 用户登录VO对象
      */
     @Transactional(rollbackFor = Exception.class)
-    public UserLoginVO login(Principal principal, Map<String, String> parameters) {
+    public UserLoginVO login(String username, String password, String verifyCodeKey, String verifyCode) {
         UserLoginVO result = new UserLoginVO();
+        // 获取用户信息
+//        UserLoginVO.UserInfo userInfo = getUserInfoByUsername(username);
+//        List<Long> roleIdList = roleService.findRoleListByUserId(userInfo.getId())
+//                .stream()
+//                .map(Role::getId)
+//                .distinct()
+//                .collect(Collectors.toList());
+//        // 获取权限列表
+//        List<Permission> permissionList = permissionService.findPermissionListByRoleIdList(roleIdList, CommonConstant.PROJECT_NAME_BACKEND_PAGE);
+//        List<Long> permissionIdList = permissionList
+//                .stream()
+//                .map(Permission::getId)
+//                .distinct()
+//                .collect(Collectors.toList());
+//        userInfo.setPermissionIdList(permissionIdList);
+//
+//        // 获取菜单列表
+//        List<Long> menuIdList = trRoleMenuService.findMenuIdListByRoleIdList(roleIdList);
+//        List<Menu> menuList = menuService.getMenuListByIdListAndProjectName(menuIdList, CommonConstant.PROJECT_NAME_BACKEND_PAGE);
+//        for (Menu menu : menuList) {
+//            UserLoginVO.MenuInfo menuInfo = new UserLoginVO.MenuInfo();
+//            BeanUtils.copyProperties(menu, menuInfo);
+//            menus.add(menuInfo);
+//        }
+//        Map<Long, List<UserLoginVO.MenuInfo>> collect = menus.stream().filter(menu -> !menu.getParentId().equals(-1L)).collect(Collectors.groupingBy(UserLoginVO.MenuInfo::getParentId));
+//        menus.forEach(menu -> menu.setChildren(collect.get(menu.getId())));
+//        menus = menus.stream().filter(menu -> menu.getParentId().equals(-1L)).collect(Collectors.toList());
+//
+//        // 生成登录日志实体并设置到数据库中去
+//        HttpServletRequest currentRequest = SpringBeanUtil.getCurrentReq();
+//        String ua = currentRequest.getHeader("User-Agent");
+//        if (!StringUtils.hasLength(ua)) {
+//            ua = null;
+//        }
+//        String ipAddr = IpUtil.getIpAddr(currentRequest);
+//        UserLoginLog userLoginLog = new UserLoginLog();
+//        userLoginLog.setId(snowflakeIdWorkerUtil.nextId());
+//        userLoginLog.setUsername(userInfo.getUsername());
+//        userLoginLog.setUserId(userInfo.getId());
+//        userLoginLog.setUa(ua);
+//        userLoginLog.setIp(ipAddr);
+//        userLoginLog.setLoginTime(LocalDateTime.now(ZoneId.of("Asia/Shanghai")));
+//        userLoginLog.setCreateTime(LocalDateTime.now(ZoneId.of("Asia/Shanghai")));
+//        userLoginLog.setModifyTime(LocalDateTime.now(ZoneId.of("Asia/Shanghai")));
+//        userLoginLogService.insert(userLoginLog);
+//
+//        // 将用户信息设置到redis中去
+//        UserInfoCache userInfoCache = new UserInfoCache();
+//        userInfoCache.setId(userInfo.getId());
+//        userInfoCache.setUsername(username);
+//        userInfoCache.setEmail(userInfo.getEmail());
+//        userInfoCache.setPhone(userInfo.getPhone());
+//        userInfoCache.setAccessToken(tokenBody.getValue());
+//        userInfoCache.setTokenType(tokenBody.getTokenType());
+//        userInfoCache.setExpiresIn(tokenBody.getExpiresIn());
+//        userInfoCache.setScope(tokenBody.getScope());
+//        userInfoCache.setRefreshToken(tokenBody.getRefreshToken().getValue());
+//        userInfoCache.setJti((String) tokenBody.getAdditionalInformation().get("jti"));
+//        userInfoCache.setLoginDate(LocalDateTime.now(ZoneId.of("Asia/Shanghai")));
+//        userInfoCache.setRoleIdList(roleIdList);
+//        userInfoCache.setPermissionIdList(permissionIdList);
+//        String userInfoCacheKey = RedisCacheKeyEnum.USER_INFO.getValue() + username;
+//        redisUtil.setCacheObject(userInfoCacheKey, userInfoCache, tokenBody.getExpiresIn(), TimeUnit.SECONDS);
+//
+//        // 删除验证码缓存
+//        String verifyCodeKey = parameters.get("verifyCodeKey");
+//        if (!"DEV-TEST".equalsIgnoreCase(verifyCodeKey)) {
+//            redisUtil.deleteObject(RedisCacheKeyEnum.LOGIN_VERIFY_CODE.getValue() + verifyCodeKey);
+//        }
+
+
         return result;
 //        UserLoginVO.UserInfo userInfo;
 //        UserLoginVO.TokenInfo tokenInfo = new UserLoginVO.TokenInfo();
@@ -175,9 +246,9 @@ public class UserService implements UserDetailsService {
 //        return result;
     }
 
-    @Override
-    @Transactional(readOnly = true)
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+//    @Override
+//    @Transactional(readOnly = true)
+//    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 //        // 根据用户名查询用户信息，包括权限信息
 //        User user = userMapper.selectOne(new LambdaQueryWrapper<User>()
 //                .select(User::getId, User::getUsername, User::getPassword, User::getEmail, User::getPhone)
@@ -198,9 +269,9 @@ public class UserService implements UserDetailsService {
 //        user.setRoles(roles);
 //        user.setPermissions(finalPermissions);
 //        return user;
-
-        return null;
-    }
+//
+//        return null;
+//    }
 
     /**
      * 刷新登录验证码
@@ -243,8 +314,6 @@ public class UserService implements UserDetailsService {
         BeanUtils.copyProperties(user, userInfo);
         return userInfo;
     }
-
-
 
 
     // ********************************公用函数********************************

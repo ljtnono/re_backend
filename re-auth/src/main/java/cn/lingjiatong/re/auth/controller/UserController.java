@@ -44,25 +44,19 @@ public class UserController {
     /**
      * 用户登录
      *
-     * @param principal  principal
-     * @param parameters 参数列表
      * @return 通用消息返回对象
      */
-    @Operation(
-            summary = "用户登录", method = "POST", requestBody = @RequestBody(content = {@Content(mediaType = MediaType.APPLICATION_FORM_URLENCODED_VALUE, schema = @Schema(type = "object"), schemaProperties = {
-            @SchemaProperty(name = "grant_type", schema = @Schema(type = "string", description = "oauth2定义的验证类型", example = "verify_code")),
-            @SchemaProperty(name = "client_id", schema = @Schema(type = "string", description = "oauth2定义的客户端id", example = "re_admin")),
-            @SchemaProperty(name = "client_secret", schema = @Schema(type = "string", description = "oauth2定义的客户端密钥", example = "re_admin")),
-            @SchemaProperty(name = "scope", schema = @Schema(type = "string", description = "oauth2定义的访问范围", example = "all")),
-            @SchemaProperty(name = "verifyCodeKey", schema = @Schema(type = "string", description = "验证码key", example = "DEV-TEST")),
-            @SchemaProperty(name = "verifyCode", schema = @Schema(type = "string", description = "验证码值", example = "Tonb")),
-            @SchemaProperty(name = "username", schema = @Schema(type = "string", description = "用户名", example = "lingjiatong")),
-            @SchemaProperty(name = "password", schema = @Schema(type = "string", description = "密码", example = "ljtLJT715336"))}
-    )}))
+//    @Operation(
+//            summary = "用户登录", method = "POST", requestBody = @RequestBody(content = {@Content(mediaType = MediaType.APPLICATION_FORM_URLENCODED_VALUE, schema = @Schema(type = "object"), schemaProperties = {
+//            @SchemaProperty(name = "verifyCodeKey", schema = @Schema(type = "string", description = "验证码key", example = "DEV-TEST")),
+//            @SchemaProperty(name = "verifyCode", schema = @Schema(type = "string", description = "验证码值", example = "Tonb")),
+//            @SchemaProperty(name = "username", schema = @Schema(type = "string", description = "用户名", example = "lingjiatong")),
+//            @SchemaProperty(name = "password", schema = @Schema(type = "string", description = "密码", example = "ljtLJT715336"))}
+//    )}))
     @PostMapping(value = "/login", consumes = {MediaType.APPLICATION_FORM_URLENCODED_VALUE})
-    public ResultVO<UserLoginVO> login(@Parameter(hidden = true) Principal principal, @Parameter(hidden = true) @RequestParam Map<String, String> parameters) throws HttpRequestMethodNotSupportedException {
-        log.info("==========用户登录，参数：{}，{}", principal, parameters);
-        return ResultVO.success(userService.login(principal, parameters));
+    public ResultVO<UserLoginVO> login(String username, String password, String verifyCodeKey, String verifyCode) {
+        log.info("==========用户登录，参数：{}，{}, {}, {}", username, password, verifyCodeKey, verifyCode);
+        return ResultVO.success(userService.login(username, password, verifyCodeKey, verifyCode));
     }
 
 
@@ -82,7 +76,7 @@ public class UserController {
     /**
      * 刷新登录验证码
      *
-     * @param verifyCodeKey       前端传递过来的验证码随机值
+     * @param verifyCodeKey 前端传递过来的验证码随机值
      * @return 验证码图片base64字符串
      */
     @GetMapping("/refreshVerifyCode")

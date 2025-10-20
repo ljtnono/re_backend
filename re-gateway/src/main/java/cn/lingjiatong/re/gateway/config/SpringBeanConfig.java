@@ -1,6 +1,11 @@
 package cn.lingjiatong.re.gateway.config;
 
 import cn.dev33.satoken.reactor.filter.SaReactorFilter;
+import cn.dev33.satoken.router.SaRouter;
+import cn.dev33.satoken.stp.StpUtil;
+import cn.dev33.satoken.util.SaResult;
+import cn.lingjiatong.re.common.ResultVO;
+import cn.lingjiatong.re.common.exception.ErrorEnum;
 import cn.lingjiatong.re.common.util.RedisUtil;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -96,7 +101,13 @@ public class SpringBeanConfig {
                 .addExclude(
                         "/re-auth/user/refreshVerifyCode",
                         "/re-auth/user/login"
-                );
+                ).setAuth(obj -> {
+                    StpUtil.checkLogin();
+                })
+                .setError(e -> {
+                    // 异常处理方法：每次setAuth函数出现异常时进入
+                    return ResultVO.error(ErrorEnum.USER_NOT_AUTHENTICATE_ERROR);
+                });
     }
 
 }
