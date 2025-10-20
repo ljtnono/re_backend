@@ -97,6 +97,11 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-configuration-processor</artifactId>
         </dependency>
+        <!-- Sa-Token 权限认证（Reactor响应式集成）, 在线文档：https://sa-token.cc -->
+        <dependency>
+            <groupId>cn.dev33</groupId>
+            <artifactId>sa-token-reactor-spring-boot3-starter</artifactId>
+        </dependency>
     </dependencies>
 
     <profiles>
@@ -139,12 +144,10 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>${spring-boot-maven-plugin.version}</version>
                 <configuration>
                     <!-- 指定全局唯一入口 -->
                     <mainClass>cn.lingjiatong.re.gateway.ReGatewayApplication</mainClass>
                     <layout>ZIP</layout>
-                    <fork>true</fork>
                 </configuration>
                 <executions>
                     <execution>
@@ -154,6 +157,10 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
             </plugin>
         </plugins>
     </build>

@@ -1,89 +1,90 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<groupId>cn.lingjiatong</groupId>
-	<artifactId>re_backend</artifactId>
-	<packaging>pom</packaging>
-	<version>${re-version}</version>
-	<modules>
-		<module>re-common</module>
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>cn.lingjiatong</groupId>
+    <artifactId>re_backend</artifactId>
+    <packaging>pom</packaging>
+    <version>${re-version}</version>
+    <modules>
+        <module>re-common</module>
         <module>re-job</module>
         <module>re-auth</module>
-		<module>re-gateway</module>
-		<module>api/api-frontend</module>
-		<module>api/api-backend</module>
-		<module>api/api-file</module>
-		<module>service/re-service-sys</module>
-		<module>service/re-service-article</module>
+        <module>re-gateway</module>
+        <module>api/api-frontend</module>
+        <module>api/api-backend</module>
+        <module>api/api-file</module>
+        <module>service/re-service-sys</module>
+        <module>service/re-service-article</module>
     </modules>
-	<name>re_backend</name>
-	<description>根元素博客网站后端</description>
-	<!-- 全局版本管理 -->
-	<properties>
+    <name>re_backend</name>
+    <description>根元素博客网站后端</description>
+    <!-- 全局版本管理 -->
+    <properties>
         <re-version>v0.3.5</re-version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<java.version>21</java.version>
-		<maven.compiler.source>21</maven.compiler.source>
-		<maven.compiler.target>21</maven.compiler.target>
-		<spring-cloud.version>2023.0.3</spring-cloud.version>
-		<spring-cloud-alibaba.version>2023.0.3.2</spring-cloud-alibaba.version>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <java.version>21</java.version>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
+        <spring-cloud.version>2023.0.3</spring-cloud.version>
+        <spring-cloud-alibaba.version>2023.0.3.2</spring-cloud-alibaba.version>
         <spring-cloud-gateway.version>4.1.5</spring-cloud-gateway.version>
-		<spring-boot-maven-plugin.version>2.3.12.RELEASE</spring-boot-maven-plugin.version>
-		<springboot.version>3.3.4</springboot.version>
-		<lombok.version>1.18.42</lombok.version>
-		<guava.version>30.1.1-jre</guava.version>
-		<springdoc.version>1.6.14</springdoc.version>
-		<mybatis-plus.version>3.5.14</mybatis-plus.version>
-		<mysql-connector.version>8.0.26</mysql-connector.version>
-		<xxl-job.version>2.3.0</xxl-job.version>
-		<webmagic.version>0.7.5</webmagic.version>
-		<minio.version>8.2.2</minio.version>
-		<jjwt.version>0.9.1</jjwt.version>
-		<selenium-java.version>3.141.59</selenium-java.version>
-		<kaptcha.version>2.3.2</kaptcha.version>
-		<k8s-client.version>16.0.2</k8s-client.version>
-		<dynamic-datasource.version>3.6.1</dynamic-datasource.version>
-		<redission.version>3.16.8</redission.version>
-		<jsch.version>0.1.54</jsch.version>
-		<oshi.version>5.8.2</oshi.version>
-		<rokcetmq-starter.version>2.2.3</rokcetmq-starter.version>
-		<!-- nacos配置 -->
-		<nacos-server-addr>www.lingjiatong.cn:30048</nacos-server-addr>
-		<!-- 各模块端口配置 -->
-<!--		<re-gateway.port>8001</re-gateway.port>-->
-<!--		<re-api-backend.port>8002</re-api-backend.port>-->
-<!--		<re-api-frontend.port>8003</re-api-frontend.port>-->
-<!--		<re-service-blog.port>8004</re-service-blog.port>-->
-	</properties>
+        <springboot.version>3.3.4</springboot.version>
+        <lombok.version>1.18.42</lombok.version>
+        <guava.version>30.1.1-jre</guava.version>
+        <springdoc.version>1.6.14</springdoc.version>
+        <mybatis-plus.version>3.5.14</mybatis-plus.version>
+        <mysql-connector.version>8.0.26</mysql-connector.version>
+        <xxl-job.version>2.3.0</xxl-job.version>
+        <webmagic.version>0.7.5</webmagic.version>
+        <minio.version>8.2.2</minio.version>
+        <jjwt.version>0.9.1</jjwt.version>
+        <selenium-java.version>3.141.59</selenium-java.version>
+        <kaptcha.version>2.3.2</kaptcha.version>
+        <k8s-client.version>16.0.2</k8s-client.version>
+        <dynamic-datasource.version>3.6.1</dynamic-datasource.version>
+        <redission.version>3.16.8</redission.version>
+        <jsch.version>0.1.54</jsch.version>
+        <oshi.version>5.8.2</oshi.version>
+        <sa-token.version>1.44.0</sa-token.version>
+        <commons-pool2.version>2.12.0</commons-pool2.version>
+        <rokcetmq-starter.version>2.2.3</rokcetmq-starter.version>
+        <!-- nacos配置 -->
+        <nacos-server-addr>www.lingjiatong.cn:30048</nacos-server-addr>
+        <!-- 各模块端口配置 -->
+        <!--		<re-gateway.port>8001</re-gateway.port>-->
+        <!--		<re-api-backend.port>8002</re-api-backend.port>-->
+        <!--		<re-api-frontend.port>8003</re-api-frontend.port>-->
+        <!--		<re-service-blog.port>8004</re-service-blog.port>-->
+    </properties>
 
-	<dependencyManagement>
-		<dependencies>
-			<!-- spring cloud alibaba -->
-			<dependency>
-				<groupId>com.alibaba.cloud</groupId>
-				<artifactId>spring-cloud-alibaba-dependencies</artifactId>
-				<version>${spring-cloud-alibaba.version}</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
-			<!-- spring cloud -->
-			<dependency>
-				<groupId>org.springframework.cloud</groupId>
-				<artifactId>spring-cloud-dependencies</artifactId>
-				<version>${spring-cloud.version}</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
-			<!-- springboot -->
-			<dependency>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-dependencies</artifactId>
-				<version>${springboot.version}</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
+    <dependencyManagement>
+        <dependencies>
+            <!-- spring cloud alibaba -->
+            <dependency>
+                <groupId>com.alibaba.cloud</groupId>
+                <artifactId>spring-cloud-alibaba-dependencies</artifactId>
+                <version>${spring-cloud-alibaba.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <!-- spring cloud -->
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>${spring-cloud.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <!-- springboot -->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${springboot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
             <!-- mybatis-plus -->
             <dependency>
                 <groupId>com.baomidou</groupId>
@@ -92,164 +93,201 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
-			<!-- lombok -->
-			<dependency>
-				<groupId>org.projectlombok</groupId>
-				<artifactId>lombok</artifactId>
-				<version>${lombok.version}</version>
-			</dependency>
-			<!-- guava -->
-			<dependency>
-				<groupId>com.google.guava</groupId>
-				<artifactId>guava</artifactId>
-				<version>${guava.version}</version>
-			</dependency>
-			<!--热部署依赖-->
-			<dependency>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-devtools</artifactId>
-				<version>${springboot.version}</version>
-				<optional>true</optional>
-			</dependency>
-			<!-- springdoc -->
-			<dependency>
-				<groupId>org.springdoc</groupId>
-				<artifactId>springdoc-openapi-ui</artifactId>
-				<version>${springdoc.version}</version>
-			</dependency>
-			<!-- nacos服务发现 -->
-			<dependency>
-				<groupId>com.alibaba.cloud</groupId>
-				<artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
-				<version>${spring-cloud-alibaba.version}</version>
-			</dependency>
-			<!-- nacos配置中心 -->
-			<dependency>
-				<groupId>com.alibaba.cloud</groupId>
-				<artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
-				<version>${spring-cloud-alibaba.version}</version>
-			</dependency>
-			<!-- 健康监控 -->
-			<dependency>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-starter-actuator</artifactId>
-				<version>${springboot.version}</version>
-			</dependency>
-			<!-- web -->
-			<dependency>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-starter-web</artifactId>
-				<version>${springboot.version}</version>
-			</dependency>
-			<!-- aop -->
-			<dependency>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-starter-aop</artifactId>
-				<version>${springboot.version}</version>
-			</dependency>
-			<!-- mysql-connect -->
-			<dependency>
-				<groupId>mysql</groupId>
-				<artifactId>mysql-connector-java</artifactId>
-				<version>${mysql-connector.version}</version>
-			</dependency>
-			<!-- spring cloud gateway -->
-			<dependency>
-				<groupId>org.springframework.cloud</groupId>
-				<artifactId>spring-cloud-starter-gateway</artifactId>
-				<version>${spring-cloud-gateway.version}</version>
-			</dependency>
-			<!-- webmagic-core -->
-			<dependency>
-				<groupId>us.codecraft</groupId>
-				<artifactId>webmagic-core</artifactId>
-				<version>${webmagic.version}</version>
-			</dependency>
-			<!-- webmagic-extension -->
-			<dependency>
-				<groupId>us.codecraft</groupId>
-				<artifactId>webmagic-extension</artifactId>
-				<version>${webmagic.version}</version>
-			</dependency>
-			<!-- elasticsearch -->
-			<dependency>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-starter-data-elasticsearch</artifactId>
-				<version>${springboot.version}</version>
-			</dependency>
-			<!-- minio -->
-			<dependency>
-				<groupId>io.minio</groupId>
-				<artifactId>minio</artifactId>
-				<version>${minio.version}</version>
-			</dependency>
-			<!-- selenium-java -->
-			<dependency>
-				<groupId>org.seleniumhq.selenium</groupId>
-				<artifactId>selenium-java</artifactId>
-				<version>${selenium-java.version}</version>
-			</dependency>
-			<!-- jwt -->
-			<dependency>
-				<groupId>io.jsonwebtoken</groupId>
-				<artifactId>jjwt</artifactId>
-				<version>${jjwt.version}</version>
-			</dependency>
-			<!-- spring-boot-configuration-processor -->
-			<dependency>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-configuration-processor</artifactId>
-				<version>${springboot.version}</version>
-			</dependency>
-			<!-- kaptcha -->
-			<dependency>
-				<groupId>com.github.penggle</groupId>
-				<artifactId>kaptcha</artifactId>
-				<version>${kaptcha.version}</version>
-			</dependency>
-			<!-- xxl-job-core -->
-			<dependency>
-				<groupId>com.xuxueli</groupId>
-				<artifactId>xxl-job-core</artifactId>
-				<version>${xxl-job.version}</version>
-			</dependency>
-			<!-- k8s-client -->
-			<dependency>
-				<groupId>io.kubernetes</groupId>
-				<artifactId>client-java</artifactId>
-				<version>${k8s-client.version}</version>
-			</dependency>
-<!--			&lt;!&ndash; mybatis多数据源 &ndash;&gt;-->
-<!--			<dependency>-->
-<!--				<groupId>com.baomidou</groupId>-->
-<!--				<artifactId>dynamic-datasource-spring-boot-starter</artifactId>-->
-<!--				<version>${dynamic-datasource.version}</version>-->
-<!--			</dependency>-->
-			<!-- redission分布式锁 -->
-			<dependency>
-				<groupId>org.redisson</groupId>
-				<artifactId>redisson</artifactId>
-				<version>${redission.version}</version>
-			</dependency>
-			<!-- jsch -->
-			<dependency>
-				<groupId>com.jcraft</groupId>
-				<artifactId>jsch</artifactId>
-				<version>${jsch.version}</version>
-			</dependency>
-			<!-- oshi -->
-			<dependency>
-				<groupId>com.github.oshi</groupId>
-				<artifactId>oshi-core</artifactId>
-				<version>${oshi.version}</version>
-			</dependency>
-			<!-- rocketmq -->
-			<dependency>
-				<groupId>org.apache.rocketmq</groupId>
-				<artifactId>rocketmq-spring-boot-starter</artifactId>
-				<version>${rokcetmq-starter.version}</version>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
+            <!-- lombok -->
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>${lombok.version}</version>
+            </dependency>
+            <!-- guava -->
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>${guava.version}</version>
+            </dependency>
+            <!--热部署依赖-->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-devtools</artifactId>
+                <version>${springboot.version}</version>
+                <optional>true</optional>
+            </dependency>
+            <!-- springdoc -->
+            <dependency>
+                <groupId>org.springdoc</groupId>
+                <artifactId>springdoc-openapi-ui</artifactId>
+                <version>${springdoc.version}</version>
+            </dependency>
+            <!-- nacos服务发现 -->
+            <dependency>
+                <groupId>com.alibaba.cloud</groupId>
+                <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
+                <version>${spring-cloud-alibaba.version}</version>
+            </dependency>
+            <!-- nacos配置中心 -->
+            <dependency>
+                <groupId>com.alibaba.cloud</groupId>
+                <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
+                <version>${spring-cloud-alibaba.version}</version>
+            </dependency>
+            <!-- 健康监控 -->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-actuator</artifactId>
+                <version>${springboot.version}</version>
+            </dependency>
+            <!-- web -->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-web</artifactId>
+                <version>${springboot.version}</version>
+            </dependency>
+            <!-- aop -->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-aop</artifactId>
+                <version>${springboot.version}</version>
+            </dependency>
+            <!-- mysql-connect -->
+            <dependency>
+                <groupId>mysql</groupId>
+                <artifactId>mysql-connector-java</artifactId>
+                <version>${mysql-connector.version}</version>
+            </dependency>
+            <!-- spring cloud gateway -->
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-starter-gateway</artifactId>
+                <version>${spring-cloud-gateway.version}</version>
+            </dependency>
+            <!-- webmagic-core -->
+            <dependency>
+                <groupId>us.codecraft</groupId>
+                <artifactId>webmagic-core</artifactId>
+                <version>${webmagic.version}</version>
+            </dependency>
+            <!-- webmagic-extension -->
+            <dependency>
+                <groupId>us.codecraft</groupId>
+                <artifactId>webmagic-extension</artifactId>
+                <version>${webmagic.version}</version>
+            </dependency>
+            <!-- elasticsearch -->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-data-elasticsearch</artifactId>
+                <version>${springboot.version}</version>
+            </dependency>
+            <!-- minio -->
+            <dependency>
+                <groupId>io.minio</groupId>
+                <artifactId>minio</artifactId>
+                <version>${minio.version}</version>
+            </dependency>
+            <!-- selenium-java -->
+            <dependency>
+                <groupId>org.seleniumhq.selenium</groupId>
+                <artifactId>selenium-java</artifactId>
+                <version>${selenium-java.version}</version>
+            </dependency>
+            <!-- jwt -->
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt</artifactId>
+                <version>${jjwt.version}</version>
+            </dependency>
+            <!-- spring-boot-configuration-processor -->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-configuration-processor</artifactId>
+                <version>${springboot.version}</version>
+            </dependency>
+            <!-- kaptcha -->
+            <dependency>
+                <groupId>com.github.penggle</groupId>
+                <artifactId>kaptcha</artifactId>
+                <version>${kaptcha.version}</version>
+            </dependency>
+            <!-- xxl-job-core -->
+            <dependency>
+                <groupId>com.xuxueli</groupId>
+                <artifactId>xxl-job-core</artifactId>
+                <version>${xxl-job.version}</version>
+            </dependency>
+            <!-- k8s-client -->
+            <dependency>
+                <groupId>io.kubernetes</groupId>
+                <artifactId>client-java</artifactId>
+                <version>${k8s-client.version}</version>
+            </dependency>
+            <!--			&lt;!&ndash; mybatis多数据源 &ndash;&gt;-->
+            <!--			<dependency>-->
+            <!--				<groupId>com.baomidou</groupId>-->
+            <!--				<artifactId>dynamic-datasource-spring-boot-starter</artifactId>-->
+            <!--				<version>${dynamic-datasource.version}</version>-->
+            <!--			</dependency>-->
+            <!-- redission分布式锁 -->
+            <dependency>
+                <groupId>org.redisson</groupId>
+                <artifactId>redisson</artifactId>
+                <version>${redission.version}</version>
+            </dependency>
+            <!-- jsch -->
+            <dependency>
+                <groupId>com.jcraft</groupId>
+                <artifactId>jsch</artifactId>
+                <version>${jsch.version}</version>
+            </dependency>
+            <!-- oshi -->
+            <dependency>
+                <groupId>com.github.oshi</groupId>
+                <artifactId>oshi-core</artifactId>
+                <version>${oshi.version}</version>
+            </dependency>
+            <!-- rocketmq -->
+            <dependency>
+                <groupId>org.apache.rocketmq</groupId>
+                <artifactId>rocketmq-spring-boot-starter</artifactId>
+                <version>${rokcetmq-starter.version}</version>
+            </dependency>
+            <!-- Sa-Token 权限认证（Reactor响应式集成）, 在线文档：https://sa-token.cc -->
+            <dependency>
+                <groupId>cn.dev33</groupId>
+                <artifactId>sa-token-reactor-spring-boot3-starter</artifactId>
+                <version>${sa-token.version}</version>
+            </dependency>
+            <!-- Sa-Token 整合 Redis （使用 jackson 序列化方式） -->
+            <dependency>
+                <groupId>cn.dev33</groupId>
+                <artifactId>sa-token-redis-jackson</artifactId>
+                <version>${sa-token.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-pool2</artifactId>
+                <version>${commons-pool2.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <!-- 打包配置 -->
+                <plugin>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-maven-plugin</artifactId>
+                    <version>${springboot.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <configuration>
+                        <parameters>true</parameters>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
 
 </project>

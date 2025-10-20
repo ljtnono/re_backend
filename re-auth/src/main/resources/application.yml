@@ -3,6 +3,19 @@ spring:
     name: re-auth
   profiles:
     active: @profiles.active@
+  data:
+    redis:
+      lettuce:
+        pool:
+          max-active: 1000
+          max-idle: 8
+          min-idle: 5
+          max-wait: -1
+          timeout: 60000
+      host: www.lingjiatong.cn
+      database: 0
+      port: 30079
+      password: re#redis2022
 feign:
   client:
     config:

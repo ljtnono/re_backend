@@ -122,12 +122,10 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>${spring-boot-maven-plugin.version}</version>
                 <configuration>
                     <!-- 指定全局唯一入口 -->
                     <mainClass>cn.lingjiatong.re.service.article.ReArticleServiceServerApplication</mainClass>
                     <layout>ZIP</layout>
-                    <fork>true</fork>
                 </configuration>
                 <executions>
                     <execution>
@@ -137,6 +135,10 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
             </plugin>
         </plugins>
     </build>

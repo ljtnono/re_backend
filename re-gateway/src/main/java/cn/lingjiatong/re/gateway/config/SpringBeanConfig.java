@@ -1,5 +1,6 @@
 package cn.lingjiatong.re.gateway.config;
 
+import cn.dev33.satoken.reactor.filter.SaReactorFilter;
 import cn.lingjiatong.re.common.util.RedisUtil;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -38,11 +39,11 @@ public class SpringBeanConfig {
      * 配置 Jackson2JsonRedisSerializer 序列化器，在配置 redisTemplate需要用来做k,v的
      * 序列化器
      */
-    private Jackson2JsonRedisSerializer<Object> getJackson2JsonRedisSerializer(){
+    private Jackson2JsonRedisSerializer<Object> getJackson2JsonRedisSerializer() {
         Jackson2JsonRedisSerializer<Object> jackson2JsonRedisSerializer = new Jackson2JsonRedisSerializer<>(Object.class);
         ObjectMapper om = new ObjectMapper();
         om.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
-        om.activateDefaultTyping(LaissezFaireSubTypeValidator.instance ,
+        om.activateDefaultTyping(LaissezFaireSubTypeValidator.instance,
                 ObjectMapper.DefaultTyping.NON_FINAL, JsonTypeInfo.As.PROPERTY);
 
         // 处理redis不能序列化LocalDate和LocalDateTime的问题
@@ -61,7 +62,7 @@ public class SpringBeanConfig {
 
     @Bean(name = "defaultRedisTemplate")
     public RedisTemplate<String, Object> redisTemplate(LettuceConnectionFactory lettuceConnectionFactory) {
-        RedisTemplate<String,Object> redisTemplate = new RedisTemplate<>();
+        RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
         redisTemplate.setConnectionFactory(lettuceConnectionFactory);
         Jackson2JsonRedisSerializer<Object> jackson2JsonRedisSerializer = getJackson2JsonRedisSerializer();
 
@@ -83,6 +84,19 @@ public class SpringBeanConfig {
     public RedisUtil redisUtil(@Autowired RedisTemplate<String, Object> redisTemplate) {
         RedisUtil redisUtil = new RedisUtil(redisTemplate);
         return redisUtil;
+    }
+
+    // 注册 Sa-Token全局过滤器
+    @Bean
+    public SaReactorFilter getSaReactorFilter() {
+        return new SaReactorFilter()
+                // 拦截地址
+                .addInclude("/**")
+                // 开放地址
+                .addExclude(
+                        "/re-auth/user/refreshVerifyCode",
+                        "/re-auth/user/login"
+                );
     }
 
 }
