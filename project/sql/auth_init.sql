@@ -235,29 +235,3 @@ INSERT INTO tr_role_menu(id, role_id, menu_id) VALUES
 (1008, 1, 10104)
 ;
 
-
--- oauth 认证表
-
--- auto-generated definition
-DROP TABLE IF EXISTS oauth_client_details;
-CREATE TABLE oauth_client_details
-(
-    client_id               VARCHAR(256) CHARSET utf8  NOT NULL PRIMARY KEY,
-    resource_ids            VARCHAR(256) CHARSET utf8  NULL,
-    client_secret           VARCHAR(256) CHARSET utf8  NULL,
-    scope                   VARCHAR(256) CHARSET utf8  NULL,
-    authorized_grant_types  VARCHAR(256) CHARSET utf8  NULL,
-    web_server_redirect_uri VARCHAR(256) CHARSET utf8  NULL,
-    authorities             VARCHAR(256) CHARSET utf8  NULL,
-    access_token_validity   INT                        NULL,
-    refresh_token_validity  INT                        NULL,
-    additional_information  VARCHAR(4096) CHARSET utf8 NULL,
-    autoapprove             VARCHAR(256) CHARSET utf8  NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT 'oauth2客户端表';
-
-INSERT INTO oauth_client_details(client_id, resource_ids, client_secret, scope, authorized_grant_types, web_server_redirect_uri, authorities, access_token_validity, refresh_token_validity, additional_information, autoapprove)
-VALUES
-('re_admin', NULL, 'e10adc3949ba59abbe56e057f20f883e', 'all', 'password,refresh_token,verify_code', '', NULL, NULL, NULL, NULL, NULL)
-;
-
-

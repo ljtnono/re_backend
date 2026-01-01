@@ -81,39 +81,4 @@ public class User {
     @JsonIgnore
     @TableField(exist = false)
     private Collection<Permission> permissions;
-
-
-//    @Override
-//    public Collection<? extends GrantedAuthority> getAuthorities() {
-//        // 获取权限列表
-//        if (CollectionUtils.isEmpty(permissions)) {
-//            return Lists.newArrayList();
-//        }
-//        // 这里的权限在spring security中代表的是角色，spring security会将角色名加上前缀ROLE_
-//        return permissions.stream().map(permission -> new SimpleGrantedAuthority(permission.getExpression())).collect(Collectors.toList());
-//    }
-//
-//    // 用户账户是否没有过期
-//    @Override
-//    public boolean isAccountNonExpired() {
-//        return true;
-//    }
-//
-//    // 用户凭证是否被锁定
-//    @Override
-//    public boolean isAccountNonLocked() {
-//        return true;
-//    }
-//
-//    // 用户凭证是否没有过期
-//    @Override
-//    public boolean isCredentialsNonExpired() {
-//        return true;
-//    }
-//
-//    // 是否启用用户
-//    @Override
-//    public boolean isEnabled() {
-//        return true;
-//    }
 }

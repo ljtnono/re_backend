@@ -81,23 +81,6 @@
         </dependency>
     </dependencies>
 
-    <profiles>
-        <profile>
-            <id>dev</id>
-            <properties>
-                <profiles.active>dev</profiles.active>
-            </properties>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-        </profile>
-        <profile>
-            <id>prd</id>
-            <properties>
-                <profiles.active>prd</profiles.active>
-            </properties>
-        </profile>
-    </profiles>
     <build>
         <finalName>re-service-sys-server</finalName>
         <resources>

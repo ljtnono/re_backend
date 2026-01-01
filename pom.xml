@@ -51,7 +51,8 @@
         <commons-pool2.version>2.12.0</commons-pool2.version>
         <rokcetmq-starter.version>2.2.3</rokcetmq-starter.version>
         <!-- nacos配置 -->
-        <nacos-server-addr>www.lingjiatong.cn:30048</nacos-server-addr>
+<!--        <nacos-server-addr>www.lingjiatong.cn:30048</nacos-server-addr>-->
+        <nacos-server-addr>localhost:30603</nacos-server-addr>
         <!-- 各模块端口配置 -->
         <!--		<re-gateway.port>8001</re-gateway.port>-->
         <!--		<re-api-backend.port>8002</re-api-backend.port>-->
@@ -220,12 +221,12 @@
                 <artifactId>client-java</artifactId>
                 <version>${k8s-client.version}</version>
             </dependency>
-            <!--			&lt;!&ndash; mybatis多数据源 &ndash;&gt;-->
-            <!--			<dependency>-->
-            <!--				<groupId>com.baomidou</groupId>-->
-            <!--				<artifactId>dynamic-datasource-spring-boot-starter</artifactId>-->
-            <!--				<version>${dynamic-datasource.version}</version>-->
-            <!--			</dependency>-->
+            <!-- mybatis多数据源 -->
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>dynamic-datasource-spring-boot-starter</artifactId>
+                <version>${dynamic-datasource.version}</version>
+            </dependency>
             <!-- redission分布式锁 -->
             <dependency>
                 <groupId>org.redisson</groupId>
@@ -279,6 +280,30 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
+
+    <profiles>
+        <profile>
+            <id>dev</id>
+            <properties>
+                <profiles.active>dev</profiles.active>
+            </properties>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+        </profile>
+        <profile>
+            <id>prod</id>
+            <properties>
+                <profiles.active>prod</profiles.active>
+            </properties>
+        </profile>
+        <profile>
+            <id>local</id>
+            <properties>
+                <profiles.active>local</profiles.active>
+            </properties>
+        </profile>
+    </profiles>
 
     <build>
         <pluginManagement>

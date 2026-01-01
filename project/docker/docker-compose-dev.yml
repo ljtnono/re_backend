@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8
+    container_name: re-mysql
+    ports:
+      - "30601:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: 're#mysql2022'
+      TZ: Asia/Shanghai
+    command:
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_unicode_ci
+    networks:
+      - re-network
+    restart: always
+
+  redis:
+    image: redis:8.4
+    container_name: re-redis
+    ports:
+      - "30602:6379"
+    command: redis-server --appendonly yes
+    networks:
+      - re-network
+    restart: always
+
+  nacos:
+    image: nacos/nacos-server:v3.1.1
+    container_name: re-nacos
+    ports:
+      - "30603:8848"
+      - "31603:9848"
+      - "30605:8080"
+    environment:
+      - PREFER_HOST_MODE=hostname
+      - MODE=standalone
+      - NACOS_AUTH_IDENTITY_KEY=re-nacos
+      - NACOS_AUTH_IDENTITY_VALUE=re-nacos
+      # re#nacos2022 base64 6 times
+      - NACOS_AUTH_TOKEN=VmpGU1NtVkdXblJTYmxKVVlteEtWRmxzYUVOalJsSlZVVmhvVDFac1NsZFdWM1IzWWtaV1ZVMUVhejA9
+    networks:
+      - re-network
+    restart: always
+
+networks:
+  re-network:
+    driver: bridge

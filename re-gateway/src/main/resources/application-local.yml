@@ -1,0 +1,29 @@
+server:
+  port: 9100
+spring:
+  cloud:
+    nacos:
+      config:
+        namespace: ee7675c4-d2cc-48ab-8c8f-bd4461099886
+        server-addr: @nacos-server-addr@
+        file-extension: yaml
+      discovery:
+        namespace: ee7675c4-d2cc-48ab-8c8f-bd4461099886
+        server-addr: @nacos-server-addr@
+    gateway:
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOriginPatterns: "*"
+            allowedMethods: "*"
+            allowedHeaders: "*"
+            allowCredentials: true
+      routes:
+        - id: re-auth
+          uri: lb://re-auth
+          predicates:
+            - Path=/re-auth/**
+  config:
+    import:
+      - optional:nacos:${spring.application.name}.${spring.cloud.nacos.config.file-extension}
+      - optional:nacos:${spring.application.name}-${spring.profiles.active}.${spring.cloud.nacos.config.file-extension}
