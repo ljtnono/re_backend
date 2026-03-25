@@ -14,3 +14,9 @@ spring:
     import:
       - optional:nacos:${spring.application.name}.${spring.cloud.nacos.config.file-extension}
       - optional:nacos:${spring.application.name}-${spring.profiles.active}.${spring.cloud.nacos.config.file-extension}
+
+minio:
+  endpoint: http://localhost:30606
+  accessKey: re-minio
+  secretKey: re#minio2022
+  bucketName: re

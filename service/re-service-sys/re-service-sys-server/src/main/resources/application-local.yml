@@ -1,5 +1,7 @@
 server:
   port: 9111
+  servlet:
+    context-path: /sys
 spring:
   cloud:
     nacos:
@@ -14,3 +16,38 @@ spring:
     import:
       - optional:nacos:${spring.application.name}.${spring.cloud.nacos.config.file-extension}
       - optional:nacos:${spring.application.name}-${spring.profiles.active}.${spring.cloud.nacos.config.file-extension}
+  datasource:
+    dynamic:
+      primary: master
+      datasource:
+        master:
+          url: jdbc:mysql://localhost:30601/re_sys
+          username: root
+          password: re#mysql2022
+          driver-class-name: com.mysql.cj.jdbc.Driver
+          type: com.zaxxer.hikari.HikariDataSource
+          hikari:
+            maximum-pool-size: 20
+            min-idle: 10
+            idle-timeout: 500000
+            max-lifetime: 540000
+            connection-timeout: 60000
+            connection-test-query: SELECT 1
+  data:
+    redis:
+      host: localhost
+      port: 30602
+      database: 0
+      lettuce:
+        pool:
+          max-idle: 16
+          max-active: 32
+          min-idle: 8
+mybatis-plus:
+  mapper-locations: classpath:/mapper/**.xml
+
+minio:
+  endpoint: http://localhost:30606
+  accessKey: re-minio
+  secretKey: re#minio2022
+  bucketName: re

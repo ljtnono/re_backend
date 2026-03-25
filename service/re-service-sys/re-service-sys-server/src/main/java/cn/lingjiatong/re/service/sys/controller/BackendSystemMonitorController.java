@@ -33,11 +33,11 @@ public class BackendSystemMonitorController implements BackendSystemMonitorFeign
     // ********************************修改类接口********************************
     // ********************************查询类接口********************************
 
-    @Override
-    @GetMapping("/backend/api/v1/systemMonitor/namespaceList")
-    public ResultVO<List<BackendSystemMonitorNamespaceListVO>> findNamespaceList(User currentUser) {
-        return ResultVO.success(backendSystemMonitorService.findNamespaceList());
-    }
+//    @Override
+//    @GetMapping("/backend/api/v1/systemMonitor/namespaceList")
+//    public ResultVO<List<BackendSystemMonitorNamespaceListVO>> findNamespaceList(User currentUser) {
+//        return ResultVO.success(backendSystemMonitorService.findNamespaceList());
+//    }
 
     @Override
     @GetMapping("/backend/api/v1/systemMonitor/hardDiskInfo")
@@ -51,11 +51,11 @@ public class BackendSystemMonitorController implements BackendSystemMonitorFeign
         return ResultVO.success(backendSystemMonitorService.findHardDiskInfo(ipAddr, node.getSshPort(), node.getSshUsername(), node.getSshPassword()));
     }
 
-    @Override
-    @GetMapping("/backend/api/v1/systemMonitor/k8sNodeList")
-    public ResultVO<List<BackendSystemMonitorK8sNodeListVO>> findK8sNodeList(User currentUser) {
-        return ResultVO.success(backendSystemMonitorService.findK8sNodeList());
-    }
+//    @Override
+//    @GetMapping("/backend/api/v1/systemMonitor/k8sNodeList")
+//    public ResultVO<List<BackendSystemMonitorK8sNodeListVO>> findK8sNodeList(User currentUser) {
+//        return ResultVO.success(backendSystemMonitorService.findK8sNodeList());
+//    }
 
     @Override
     @GetMapping("/backend/api/v1/systemMonitor/cpuInfo")
@@ -81,13 +81,13 @@ public class BackendSystemMonitorController implements BackendSystemMonitorFeign
         return ResultVO.success(backendSystemMonitorService.findMemoryInfo(ipAddr, node.getSshPort(), node.getSshUsername(), node.getSshPassword()));
     }
 
-    @Override
-    @GetMapping("/backend/api/v1/systemMonitor/k8sPodList")
-    @PassToken
-    public ResultVO<List<BackendSystemMonitorPodListVO>> findK8sPodList(@RequestParam("namespace") String namespace, User currentUser) {
-        namespace = namespace.split(",")[0];
-        return ResultVO.success(backendSystemMonitorService.findK8sPodList(namespace));
-    }
+//    @Override
+//    @GetMapping("/backend/api/v1/systemMonitor/k8sPodList")
+//    @PassToken
+//    public ResultVO<List<BackendSystemMonitorPodListVO>> findK8sPodList(@RequestParam("namespace") String namespace, User currentUser) {
+//        namespace = namespace.split(",")[0];
+//        return ResultVO.success(backendSystemMonitorService.findK8sPodList(namespace));
+//    }
 
     // ********************************私有函数********************************
     // ********************************公用函数********************************

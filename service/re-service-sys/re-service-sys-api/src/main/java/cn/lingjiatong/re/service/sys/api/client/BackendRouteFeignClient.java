@@ -2,10 +2,8 @@ package cn.lingjiatong.re.service.sys.api.client;
 
 import cn.lingjiatong.re.common.ResultVO;
 import cn.lingjiatong.re.common.config.FeignBasicAuthRequestInterceptor;
-import cn.lingjiatong.re.common.entity.User;
 import cn.lingjiatong.re.service.sys.api.vo.BackendRouteListVO;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.cloud.openfeign.SpringQueryMap;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import java.util.List;

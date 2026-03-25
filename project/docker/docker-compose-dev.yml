@@ -44,6 +44,21 @@ services:
       - re-network
     restart: always
 
+  minio:
+    image: minio/minio:latest
+    container_name: re-minio
+    ports:
+      - "30606:9000"
+      - "30607:9001"
+    environment:
+      - MINIO_ROOT_USER=re-minio
+      - MINIO_ROOT_PASSWORD=re#minio2022
+      - TZ=Asia/Shanghai
+    command: server /data --console-address ":9001"
+    networks:
+      - re-network
+    restart: always
+
 networks:
   re-network:
     driver: bridge

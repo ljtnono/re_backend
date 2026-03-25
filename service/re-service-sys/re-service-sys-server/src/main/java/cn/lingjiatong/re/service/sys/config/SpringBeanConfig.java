@@ -56,10 +56,10 @@ public class SpringBeanConfig {
     @Autowired
     private SwaggerProperties swaggerProperties;
 
-    @Value("${k8sConfig.accessToken}")
-    private String k8sAccessToken;
-    @Value("${k8sConfig.endPoint}")
-    private String k8sEndPoint;
+//    @Value("${k8sConfig.accessToken}")
+//    private String k8sAccessToken;
+//    @Value("${k8sConfig.endPoint}")
+//    private String k8sEndPoint;
 
     @Bean
     public OpenAPI docket() {
@@ -175,16 +175,16 @@ public class SpringBeanConfig {
         return executorService;
     }
 
-    @Bean
-    public ApiClient apiClient() {
-        ApiClient client = new ClientBuilder()
-                .setBasePath(k8sEndPoint)
-                .setVerifyingSsl(false)
-                .setAuthentication(new AccessTokenAuthentication(k8sAccessToken))
-                .setPingInterval(Duration.ofMinutes(1))
-                .setReadTimeout(Duration.ofMinutes(10))
-                .build();
-        io.kubernetes.client.openapi.Configuration.setDefaultApiClient(client);
-        return client;
-    }
+//    @Bean
+//    public ApiClient apiClient() {
+//        ApiClient client = new ClientBuilder()
+//                .setBasePath(k8sEndPoint)
+//                .setVerifyingSsl(false)
+//                .setAuthentication(new AccessTokenAuthentication(k8sAccessToken))
+//                .setPingInterval(Duration.ofMinutes(1))
+//                .setReadTimeout(Duration.ofMinutes(10))
+//                .build();
+//        io.kubernetes.client.openapi.Configuration.setDefaultApiClient(client);
+//        return client;
+//    }
 }

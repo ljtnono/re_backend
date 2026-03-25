@@ -45,3 +45,7 @@ spring:
           min-idle: 8
 mybatis-plus:
   mapper-locations: classpath:/mapper/**.xml
+
+sa-token:
+  # jwt秘钥
+  jwt-secret-key: asdasdasifhueuiwyurfewbfjsdafjk

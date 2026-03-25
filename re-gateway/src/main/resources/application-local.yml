@@ -12,17 +12,26 @@ spring:
         server-addr: @nacos-server-addr@
     gateway:
       globalcors:
-        cors-configurations:
+        corsConfigurations:
           '[/**]':
             allowedOriginPatterns: "*"
             allowedMethods: "*"
             allowedHeaders: "*"
             allowCredentials: true
+            exposedHeaders: "Content-Disposition,Content-Type,Cache-Control"
       routes:
         - id: re-auth
           uri: lb://re-auth
           predicates:
             - Path=/re-auth/**
+        - id: re-service-sys-server
+          uri: lb://re-service-sys-server
+          predicates:
+            - Path=/sys/**
+        - id: api-backend
+          uri: lb://api-backend
+          predicates:
+            - Path=/api-backend/**
   config:
     import:
       - optional:nacos:${spring.application.name}.${spring.cloud.nacos.config.file-extension}

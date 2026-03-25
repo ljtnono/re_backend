@@ -25,14 +25,14 @@ public interface BackendSystemMonitorFeignClient {
     // ********************************修改类接口********************************
     // ********************************查询类接口********************************
 
-    /**
-     * 获取k8s集群名称空间列表
-     *
-     * @param currentUser 当前登陆用户
-     * @return 后台系统监控获取k8s集群名称空间列表VO对象列表
-     */
-    @GetMapping("/backend/api/v1/systemMonitor/namespaceList")
-    ResultVO<List<BackendSystemMonitorNamespaceListVO>> findNamespaceList(@SpringQueryMap User currentUser);
+//    /**
+//     * 获取k8s集群名称空间列表
+//     *
+//     * @param currentUser 当前登陆用户
+//     * @return 后台系统监控获取k8s集群名称空间列表VO对象列表
+//     */
+//    @GetMapping("/backend/api/v1/systemMonitor/namespaceList")
+//    ResultVO<List<BackendSystemMonitorNamespaceListVO>> findNamespaceList(@SpringQueryMap User currentUser);
 
     /**
      * 获取系统硬盘信息
@@ -44,14 +44,14 @@ public interface BackendSystemMonitorFeignClient {
     @GetMapping("/backend/api/v1/systemMonitor/hardDiskInfo")
     ResultVO<List<BackendSystemMonitorHardDiskVO>> findHardDiskInfo(@RequestParam("ipAddr") String ipAddr, @SpringQueryMap User currentUser);
 
-    /**
-     * 获取k8s集群节点列表
-     *
-     * @param currentUser 当前登录用户
-     * @return 后台系统监控k8s节点列表
-     */
-    @GetMapping("/backend/api/v1/systemMonitor/k8sNodeList")
-    ResultVO<List<BackendSystemMonitorK8sNodeListVO>> findK8sNodeList(@SpringQueryMap User currentUser);
+//    /**
+//     * 获取k8s集群节点列表
+//     *
+//     * @param currentUser 当前登录用户
+//     * @return 后台系统监控k8s节点列表
+//     */
+//    @GetMapping("/backend/api/v1/systemMonitor/k8sNodeList")
+//    ResultVO<List<BackendSystemMonitorK8sNodeListVO>> findK8sNodeList(@SpringQueryMap User currentUser);
 
     /**
      * 获取主机cpu信息
@@ -73,15 +73,15 @@ public interface BackendSystemMonitorFeignClient {
     @GetMapping("/backend/api/v1/systemMonitor/memoryInfo")
     ResultVO<BackendSystemMonitorMemoryVO> findMemoryInfo(@RequestParam("ipAddr") String ipAddr, @SpringQueryMap User currentUser);
 
-    /**
-     * 获取k8s集群pod列表
-     *
-     * @param namespace k8s集群名称空间
-     * @param currentUser 当前登录用户
-     * @return 后台系统监控k8s集群pod列表VO对象列表
-     */
-    @GetMapping("/backend/api/v1/systemMonitor/k8sPodList")
-    ResultVO<List<BackendSystemMonitorPodListVO>> findK8sPodList(@RequestParam("namespace") String namespace, @SpringQueryMap User currentUser);
+//    /**
+//     * 获取k8s集群pod列表
+//     *
+//     * @param namespace k8s集群名称空间
+//     * @param currentUser 当前登录用户
+//     * @return 后台系统监控k8s集群pod列表VO对象列表
+//     */
+//    @GetMapping("/backend/api/v1/systemMonitor/k8sPodList")
+//    ResultVO<List<BackendSystemMonitorPodListVO>> findK8sPodList(@RequestParam("namespace") String namespace, @SpringQueryMap User currentUser);
 
     // ********************************私有函数********************************
     // ********************************公用函数********************************

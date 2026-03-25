@@ -1,5 +1,7 @@
 server:
   port: 9101
+  servlet:
+    context-path: /api-backend
 spring:
   cloud:
     nacos:
@@ -14,3 +16,18 @@ spring:
     import:
       - optional:nacos:${spring.application.name}.${spring.cloud.nacos.config.file-extension}
       - optional:nacos:${spring.application.name}-${spring.profiles.active}.${spring.cloud.nacos.config.file-extension}
+  data:
+    redis:
+      host: localhost
+      port: 30602
+      database: 0
+      lettuce:
+        pool:
+          max-idle: 16
+          max-active: 32
+          min-idle: 8
+minio:
+  endpoint: http://localhost:30606
+  accessKey: re-minio
+  secretKey: re#minio2022
+  bucketName: re

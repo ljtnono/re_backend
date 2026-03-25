@@ -1,21 +1,29 @@
 package cn.lingjiatong.re.auth.service;
 
+import cn.dev33.satoken.stp.StpUtil;
 import cn.lingjiatong.re.auth.mapper.UserMapper;
 import cn.lingjiatong.re.auth.vo.UserLoginVO;
 import cn.lingjiatong.re.common.constant.CommonConstant;
 import cn.lingjiatong.re.common.constant.RedisCacheKeyEnum;
-import cn.lingjiatong.re.common.entity.*;
+import cn.lingjiatong.re.common.entity.Menu;
+import cn.lingjiatong.re.common.entity.Permission;
+import cn.lingjiatong.re.common.entity.Role;
+import cn.lingjiatong.re.common.entity.User;
+import cn.lingjiatong.re.common.entity.UserLoginLog;
 import cn.lingjiatong.re.common.entity.cache.LoginVerifyCodeCache;
-import cn.lingjiatong.re.common.entity.cache.UserInfoCache;
 import cn.lingjiatong.re.common.exception.ErrorEnum;
 import cn.lingjiatong.re.common.exception.ResourceNotExistException;
-import cn.lingjiatong.re.common.util.*;
+import cn.lingjiatong.re.common.util.IpUtil;
+import cn.lingjiatong.re.common.util.RedisUtil;
+import cn.lingjiatong.re.common.util.SnowflakeIdWorkerUtil;
+import cn.lingjiatong.re.common.util.SpringBeanUtil;
+import cn.lingjiatong.re.common.util.VerifyCodeUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import jakarta.annotation.Resource;
+import com.google.common.collect.Lists;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -24,7 +32,6 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.security.Principal;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Base64;
@@ -42,24 +49,17 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class UserService {
 
-    @Resource
-    private UserMapper userMapper;
-    @Autowired
-    private PermissionService permissionService;
-    @Autowired
-    private RoleService roleService;
-    @Autowired
-    private MenuService menuService;
-    @Autowired
-    private RedisUtil redisUtil;
-    @Autowired
-    private SnowflakeIdWorkerUtil snowflakeIdWorkerUtil;
-    @Autowired
-    private UserLoginLogService userLoginLogService;
-    @Autowired
-    private TrRoleMenuService trRoleMenuService;
+    private final UserMapper userMapper;
+    private final PermissionService permissionService;
+    private final RoleService roleService;
+    private final MenuService menuService;
+    private final RedisUtil redisUtil;
+    private final SnowflakeIdWorkerUtil snowflakeIdWorkerUtil;
+    private final UserLoginLogService userLoginLogService;
+    private final TrRoleMenuService trRoleMenuService;
 
     // ********************************新增类接口********************************
     // ********************************删除类接口********************************
@@ -85,165 +85,67 @@ public class UserService {
     public UserLoginVO login(String username, String password, String verifyCodeKey, String verifyCode) {
         UserLoginVO result = new UserLoginVO();
         // 获取用户信息
-//        UserLoginVO.UserInfo userInfo = getUserInfoByUsername(username);
-//        List<Long> roleIdList = roleService.findRoleListByUserId(userInfo.getId())
-//                .stream()
-//                .map(Role::getId)
-//                .distinct()
-//                .collect(Collectors.toList());
-//        // 获取权限列表
-//        List<Permission> permissionList = permissionService.findPermissionListByRoleIdList(roleIdList, CommonConstant.PROJECT_NAME_BACKEND_PAGE);
-//        List<Long> permissionIdList = permissionList
-//                .stream()
-//                .map(Permission::getId)
-//                .distinct()
-//                .collect(Collectors.toList());
-//        userInfo.setPermissionIdList(permissionIdList);
-//
-//        // 获取菜单列表
-//        List<Long> menuIdList = trRoleMenuService.findMenuIdListByRoleIdList(roleIdList);
-//        List<Menu> menuList = menuService.getMenuListByIdListAndProjectName(menuIdList, CommonConstant.PROJECT_NAME_BACKEND_PAGE);
-//        for (Menu menu : menuList) {
-//            UserLoginVO.MenuInfo menuInfo = new UserLoginVO.MenuInfo();
-//            BeanUtils.copyProperties(menu, menuInfo);
-//            menus.add(menuInfo);
-//        }
-//        Map<Long, List<UserLoginVO.MenuInfo>> collect = menus.stream().filter(menu -> !menu.getParentId().equals(-1L)).collect(Collectors.groupingBy(UserLoginVO.MenuInfo::getParentId));
-//        menus.forEach(menu -> menu.setChildren(collect.get(menu.getId())));
-//        menus = menus.stream().filter(menu -> menu.getParentId().equals(-1L)).collect(Collectors.toList());
-//
-//        // 生成登录日志实体并设置到数据库中去
-//        HttpServletRequest currentRequest = SpringBeanUtil.getCurrentReq();
-//        String ua = currentRequest.getHeader("User-Agent");
-//        if (!StringUtils.hasLength(ua)) {
-//            ua = null;
-//        }
-//        String ipAddr = IpUtil.getIpAddr(currentRequest);
-//        UserLoginLog userLoginLog = new UserLoginLog();
-//        userLoginLog.setId(snowflakeIdWorkerUtil.nextId());
-//        userLoginLog.setUsername(userInfo.getUsername());
-//        userLoginLog.setUserId(userInfo.getId());
-//        userLoginLog.setUa(ua);
-//        userLoginLog.setIp(ipAddr);
-//        userLoginLog.setLoginTime(LocalDateTime.now(ZoneId.of("Asia/Shanghai")));
-//        userLoginLog.setCreateTime(LocalDateTime.now(ZoneId.of("Asia/Shanghai")));
-//        userLoginLog.setModifyTime(LocalDateTime.now(ZoneId.of("Asia/Shanghai")));
-//        userLoginLogService.insert(userLoginLog);
-//
-//        // 将用户信息设置到redis中去
-//        UserInfoCache userInfoCache = new UserInfoCache();
-//        userInfoCache.setId(userInfo.getId());
-//        userInfoCache.setUsername(username);
-//        userInfoCache.setEmail(userInfo.getEmail());
-//        userInfoCache.setPhone(userInfo.getPhone());
-//        userInfoCache.setAccessToken(tokenBody.getValue());
-//        userInfoCache.setTokenType(tokenBody.getTokenType());
-//        userInfoCache.setExpiresIn(tokenBody.getExpiresIn());
-//        userInfoCache.setScope(tokenBody.getScope());
-//        userInfoCache.setRefreshToken(tokenBody.getRefreshToken().getValue());
-//        userInfoCache.setJti((String) tokenBody.getAdditionalInformation().get("jti"));
-//        userInfoCache.setLoginDate(LocalDateTime.now(ZoneId.of("Asia/Shanghai")));
-//        userInfoCache.setRoleIdList(roleIdList);
-//        userInfoCache.setPermissionIdList(permissionIdList);
-//        String userInfoCacheKey = RedisCacheKeyEnum.USER_INFO.getValue() + username;
-//        redisUtil.setCacheObject(userInfoCacheKey, userInfoCache, tokenBody.getExpiresIn(), TimeUnit.SECONDS);
-//
-//        // 删除验证码缓存
-//        String verifyCodeKey = parameters.get("verifyCodeKey");
-//        if (!"DEV-TEST".equalsIgnoreCase(verifyCodeKey)) {
-//            redisUtil.deleteObject(RedisCacheKeyEnum.LOGIN_VERIFY_CODE.getValue() + verifyCodeKey);
-//        }
+        User user = userMapper.selectOne(new LambdaQueryWrapper<User>()
+                .select(User::getUsername, User::getEmail, User::getPhone, User::getAvatarUrl, User::getId)
+                .eq(User::getDeleted, CommonConstant.ENTITY_NORMAL)
+                .eq(User::getUsername, username));
+        Optional.ofNullable(user)
+                .orElseThrow(() -> new ResourceNotExistException(ErrorEnum.USERNAME_OR_PASSWORD_ERROR.getCode(), "用户不存在"));
+        UserLoginVO.UserInfo userInfo = new UserLoginVO.UserInfo();
+        BeanUtils.copyProperties(user, userInfo);
+        if (!"ljtLJT715336".equalsIgnoreCase(password)) {
+            throw new ResourceNotExistException(ErrorEnum.USERNAME_OR_PASSWORD_ERROR.getCode(), "密码错误");
+        }
+        StpUtil.login(username);
+        List<Long> roleIdList = roleService.findRoleListByUserId(userInfo.getId())
+                .stream()
+                .map(Role::getId)
+                .distinct()
+                .toList();
+        // 获取权限列表
+        List<Permission> permissionList = permissionService.findPermissionListByRoleIdList(roleIdList, CommonConstant.PROJECT_NAME_BACKEND_PAGE);
+        List<Long> permissionIdList = permissionList
+                .stream()
+                .map(Permission::getId)
+                .distinct()
+                .toList();
+        userInfo.setPermissionIdList(permissionIdList);
 
+        List<UserLoginVO.MenuInfo> menus = Lists.newArrayList();
+        // 获取菜单列表
+        List<Long> menuIdList = trRoleMenuService.findMenuIdListByRoleIdList(roleIdList);
+        List<Menu> menuList = menuService.getMenuListByIdListAndProjectName(menuIdList, CommonConstant.PROJECT_NAME_BACKEND_PAGE);
+        for (Menu menu : menuList) {
+            UserLoginVO.MenuInfo menuInfo = new UserLoginVO.MenuInfo();
+            BeanUtils.copyProperties(menu, menuInfo);
+            menus.add(menuInfo);
+        }
+        Map<Long, List<UserLoginVO.MenuInfo>> collect = menus.stream().filter(menu -> !menu.getParentId().equals(-1L)).collect(Collectors.groupingBy(UserLoginVO.MenuInfo::getParentId));
+        menus.forEach(menu -> menu.setChildren(collect.get(menu.getId())));
+        menus = menus.stream().filter(menu -> menu.getParentId().equals(-1L)).collect(Collectors.toList());
 
+        // 生成登录日志实体并设置到数据库中去
+        HttpServletRequest currentRequest = SpringBeanUtil.getCurrentReq();
+        String ua = currentRequest.getHeader("User-Agent");
+        if (!StringUtils.hasLength(ua)) {
+            ua = null;
+        }
+        String ipAddr = IpUtil.getIpAddr(currentRequest);
+        UserLoginLog userLoginLog = new UserLoginLog();
+        userLoginLog.setId(snowflakeIdWorkerUtil.nextId());
+        userLoginLog.setUsername(userInfo.getUsername());
+        userLoginLog.setUserId(userInfo.getId());
+        userLoginLog.setUa(ua);
+        userLoginLog.setIp(ipAddr);
+        userLoginLog.setLoginTime(LocalDateTime.now(ZoneId.of("Asia/Shanghai")));
+        userLoginLog.setCreateTime(LocalDateTime.now(ZoneId.of("Asia/Shanghai")));
+        userLoginLog.setModifyTime(LocalDateTime.now(ZoneId.of("Asia/Shanghai")));
+        userLoginLogService.insert(userLoginLog);
+        // 删除验证码缓存
+        if (!"DEV-TEST".equalsIgnoreCase(verifyCodeKey)) {
+            redisUtil.deleteObject(RedisCacheKeyEnum.LOGIN_VERIFY_CODE.getValue() + verifyCodeKey);
+        }
         return result;
-//        UserLoginVO.UserInfo userInfo;
-//        UserLoginVO.TokenInfo tokenInfo = new UserLoginVO.TokenInfo();
-//        List<UserLoginVO.MenuInfo> menus = Lists.newArrayList();
-//        // 获取token信息
-//        ResponseEntity<OAuth2AccessToken> token = tokenEndpoint.postAccessToken(principal, parameters);
-//        OAuth2AccessToken tokenBody = token.getBody();
-//        tokenInfo.setAccessToken(tokenBody.getValue());
-//        tokenInfo.setTokenType(tokenBody.getTokenType());
-//        tokenInfo.setExpiresIn(tokenBody.getExpiresIn());
-//        tokenInfo.setScope(tokenBody.getScope());
-//        tokenInfo.setRefreshToken(tokenBody.getRefreshToken().getValue());
-//        tokenInfo.setJti((String) tokenBody.getAdditionalInformation().get("jti"));
-//
-//        // 获取用户信息
-//        String username = parameters.get("username");
-//        userInfo = getUserInfoByUsername(username);
-//        List<Long> roleIdList = roleService.findRoleListByUserId(userInfo.getId())
-//                .stream()
-//                .map(Role::getId)
-//                .distinct()
-//                .collect(Collectors.toList());
-//        // 获取权限列表
-//        List<Permission> permissionList = permissionService.findPermissionListByRoleIdList(roleIdList, CommonConstant.PROJECT_NAME_BACKEND_PAGE);
-//        List<Long> permissionIdList = permissionList
-//                .stream()
-//                .map(Permission::getId)
-//                .distinct()
-//                .collect(Collectors.toList());
-//        userInfo.setPermissionIdList(permissionIdList);
-//
-//        // 获取菜单列表
-//        List<Long> menuIdList = trRoleMenuService.findMenuIdListByRoleIdList(roleIdList);
-//        List<Menu> menuList = menuService.getMenuListByIdListAndProjectName(menuIdList, CommonConstant.PROJECT_NAME_BACKEND_PAGE);
-//        for (Menu menu : menuList) {
-//            UserLoginVO.MenuInfo menuInfo = new UserLoginVO.MenuInfo();
-//            BeanUtils.copyProperties(menu,menuInfo);
-//            menus.add(menuInfo);
-//        }
-//        Map<Long, List<UserLoginVO.MenuInfo>> collect = menus.stream().filter(menu -> !menu.getParentId().equals(-1L)).collect(Collectors.groupingBy(UserLoginVO.MenuInfo::getParentId));
-//        menus.forEach(menu -> menu.setChildren(collect.get(menu.getId())));
-//        menus = menus.stream().filter(menu -> menu.getParentId().equals(-1L)).collect(Collectors.toList());
-//
-//        // 生成登录日志实体并设置到数据库中去
-//        HttpServletRequest currentRequest = SpringBeanUtil.getCurrentReq();
-//        String ua = currentRequest.getHeader("User-Agent");
-//        if (!StringUtils.hasLength(ua)) {
-//            ua = null;
-//        }
-//        String ipAddr = IpUtil.getIpAddr(currentRequest);
-//        UserLoginLog userLoginLog = new UserLoginLog();
-//        userLoginLog.setId(snowflakeIdWorkerUtil.nextId());
-//        userLoginLog.setUsername(userInfo.getUsername());
-//        userLoginLog.setUserId(userInfo.getId());
-//        userLoginLog.setUa(ua);
-//        userLoginLog.setIp(ipAddr);
-//        userLoginLog.setLoginTime(LocalDateTime.now(ZoneId.of("Asia/Shanghai")));
-//        userLoginLog.setCreateTime(LocalDateTime.now(ZoneId.of("Asia/Shanghai")));
-//        userLoginLog.setModifyTime(LocalDateTime.now(ZoneId.of("Asia/Shanghai")));
-//        userLoginLogService.insert(userLoginLog);
-//
-//        // 将用户信息设置到redis中去
-//        UserInfoCache userInfoCache = new UserInfoCache();
-//        userInfoCache.setId(userInfo.getId());
-//        userInfoCache.setUsername(username);
-//        userInfoCache.setEmail(userInfo.getEmail());
-//        userInfoCache.setPhone(userInfo.getPhone());
-//        userInfoCache.setAccessToken(tokenBody.getValue());
-//        userInfoCache.setTokenType(tokenBody.getTokenType());
-//        userInfoCache.setExpiresIn(tokenBody.getExpiresIn());
-//        userInfoCache.setScope(tokenBody.getScope());
-//        userInfoCache.setRefreshToken(tokenBody.getRefreshToken().getValue());
-//        userInfoCache.setJti((String) tokenBody.getAdditionalInformation().get("jti"));
-//        userInfoCache.setLoginDate(LocalDateTime.now(ZoneId.of("Asia/Shanghai")));
-//        userInfoCache.setRoleIdList(roleIdList);
-//        userInfoCache.setPermissionIdList(permissionIdList);
-//        String userInfoCacheKey = RedisCacheKeyEnum.USER_INFO.getValue() + username;
-//        redisUtil.setCacheObject(userInfoCacheKey, userInfoCache, tokenBody.getExpiresIn(), TimeUnit.SECONDS);
-//
-//        // 删除验证码缓存
-//        String verifyCodeKey = parameters.get("verifyCodeKey");
-//        if (!"DEV-TEST".equalsIgnoreCase(verifyCodeKey)) {
-//            redisUtil.deleteObject(RedisCacheKeyEnum.LOGIN_VERIFY_CODE.getValue() + verifyCodeKey);
-//        }
-//
-//        result.setUserInfo(userInfo);
-//        result.setMenus(menus);
-//        result.setTokenInfo(tokenInfo);
-//        return result;
     }
 
 //    @Override
@@ -296,24 +198,6 @@ public class UserService {
     }
 
     // ********************************私有函数********************************
-
-    /**
-     * 根据用户名获取用户信息
-     *
-     * @param username 用户名
-     * @return 用户信息对象
-     */
-    private UserLoginVO.UserInfo getUserInfoByUsername(String username) {
-        User user = userMapper.selectOne(new LambdaQueryWrapper<User>()
-                .select(User::getUsername, User::getEmail, User::getPhone, User::getAvatarUrl, User::getId)
-                .eq(User::getDeleted, CommonConstant.ENTITY_NORMAL)
-                .eq(User::getUsername, username));
-        Optional.ofNullable(user)
-                .orElseThrow(() -> new ResourceNotExistException(ErrorEnum.USERNAME_OR_PASSWORD_ERROR));
-        UserLoginVO.UserInfo userInfo = new UserLoginVO.UserInfo();
-        BeanUtils.copyProperties(user, userInfo);
-        return userInfo;
-    }
 
 
     // ********************************公用函数********************************

@@ -5,7 +5,7 @@ import cn.lingjiatong.re.common.exception.ErrorEnum;
 import cn.lingjiatong.re.common.exception.ParamErrorException;
 import cn.lingjiatong.re.service.sys.api.vo.*;
 import cn.lingjiatong.re.service.sys.properties.KubernetesProperties;
-import cn.lingjiatong.re.service.sys.util.KubernetesUtil;
+//import cn.lingjiatong.re.service.sys.util.KubernetesUtil;
 import com.google.common.collect.Lists;
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSch;
@@ -50,30 +50,30 @@ public class BackendSystemMonitorService {
     // ********************************修改类接口********************************
     // ********************************查询类接口********************************
 
-    /**
-     * 获取k8s集群名称空间列表
-     *
-     * @return 后台系统监控k8s集群名称空间列表VO对象列表
-     */
-    public List<BackendSystemMonitorNamespaceListVO> findNamespaceList() {
-        List<BackendSystemMonitorNamespaceListVO> result = Lists.newArrayList();
-        try {
-            V1NamespaceList namespaceList = KubernetesUtil.getInstance().getNamespaceList();
-            List<V1Namespace> n = namespaceList.getItems();
-            if (!CollectionUtils.isEmpty(n)) {
-                for (V1Namespace v1Namespace : n) {
-                    String name = v1Namespace.getMetadata().getName();
-                    BackendSystemMonitorNamespaceListVO vo = new BackendSystemMonitorNamespaceListVO();
-                    vo.setName(name);
-                    result.add(vo);
-                }
-            }
-        } catch (ApiException e) {
-            log.error(e.toString(), e);
-            throw new BusinessException(ErrorEnum.SYSTEM_MONITOR_ERROR);
-        }
-        return result;
-    }
+//    /**
+//     * 获取k8s集群名称空间列表
+//     *
+//     * @return 后台系统监控k8s集群名称空间列表VO对象列表
+//     */
+//    public List<BackendSystemMonitorNamespaceListVO> findNamespaceList() {
+//        List<BackendSystemMonitorNamespaceListVO> result = Lists.newArrayList();
+//        try {
+//            V1NamespaceList namespaceList = KubernetesUtil.getInstance().getNamespaceList();
+//            List<V1Namespace> n = namespaceList.getItems();
+//            if (!CollectionUtils.isEmpty(n)) {
+//                for (V1Namespace v1Namespace : n) {
+//                    String name = v1Namespace.getMetadata().getName();
+//                    BackendSystemMonitorNamespaceListVO vo = new BackendSystemMonitorNamespaceListVO();
+//                    vo.setName(name);
+//                    result.add(vo);
+//                }
+//            }
+//        } catch (ApiException e) {
+//            log.error(e.toString(), e);
+//            throw new BusinessException(ErrorEnum.SYSTEM_MONITOR_ERROR);
+//        }
+//        return result;
+//    }
 
     /**
      * 获取系统监控硬盘信息
@@ -145,38 +145,38 @@ public class BackendSystemMonitorService {
         return result;
     }
 
-    /**
-     * 获取k8s节点列表
-     *
-     * @return 后台获取k8s节点列表VO对象列表
-     */
-    public List<BackendSystemMonitorK8sNodeListVO> findK8sNodeList() {
-        KubernetesUtil k8sUtil = KubernetesUtil.getInstance();
-        List<BackendSystemMonitorK8sNodeListVO> result = Lists.newArrayList();
-        try {
-            V1NodeList nodeList = k8sUtil.getNodeList();
-            List<V1Node> itemList = nodeList.getItems();
-            itemList.forEach(item -> {
-                BackendSystemMonitorK8sNodeListVO vo = new BackendSystemMonitorK8sNodeListVO();
-                V1NodeStatus status = item.getStatus();
-                List<V1NodeAddress> addresses = status.getAddresses();
-                addresses.forEach(address -> {
-                    String type = address.getType();
-                    String addr = address.getAddress();
-                    if ("InternalIP".equals(type)) {
-                        vo.setNodeIPAddr(addr);
-                    } else if ("Hostname".equals(type)) {
-                        vo.setNodeHostname(addr);
-                    }
-                });
-                result.add(vo);
-            });
-        } catch (ApiException e) {
-            log.error(e.toString(), e);
-            throw new BusinessException(ErrorEnum.SYSTEM_MONITOR_ERROR);
-        }
-        return result;
-    }
+//    /**
+//     * 获取k8s节点列表
+//     *
+//     * @return 后台获取k8s节点列表VO对象列表
+//     */
+//    public List<BackendSystemMonitorK8sNodeListVO> findK8sNodeList() {
+//        KubernetesUtil k8sUtil = KubernetesUtil.getInstance();
+//        List<BackendSystemMonitorK8sNodeListVO> result = Lists.newArrayList();
+//        try {
+//            V1NodeList nodeList = k8sUtil.getNodeList();
+//            List<V1Node> itemList = nodeList.getItems();
+//            itemList.forEach(item -> {
+//                BackendSystemMonitorK8sNodeListVO vo = new BackendSystemMonitorK8sNodeListVO();
+//                V1NodeStatus status = item.getStatus();
+//                List<V1NodeAddress> addresses = status.getAddresses();
+//                addresses.forEach(address -> {
+//                    String type = address.getType();
+//                    String addr = address.getAddress();
+//                    if ("InternalIP".equals(type)) {
+//                        vo.setNodeIPAddr(addr);
+//                    } else if ("Hostname".equals(type)) {
+//                        vo.setNodeHostname(addr);
+//                    }
+//                });
+//                result.add(vo);
+//            });
+//        } catch (ApiException e) {
+//            log.error(e.toString(), e);
+//            throw new BusinessException(ErrorEnum.SYSTEM_MONITOR_ERROR);
+//        }
+//        return result;
+//    }
 
     /**
      * 获取主机CPU信息
@@ -358,129 +358,129 @@ public class BackendSystemMonitorService {
         return vo;
     }
 
-    /**
-     * 获取k8s集群的pod列表
-     *
-     * @param namespace 名称空间
-     * @return 后台系统监控获取k8s集群的pod列表VO对象列表
-     */
-    public List<BackendSystemMonitorPodListVO> findK8sPodList(String namespace) {
-        if (!StringUtils.hasLength(namespace)) {
-            throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR);
-        }
-
-        V1PodList v1PodList;
-        try {
-            v1PodList = KubernetesUtil.getInstance().getPodList(namespace);
-        } catch (ApiException e) {
-            log.error(e.toString(), e);
-            throw new BusinessException(ErrorEnum.SYSTEM_MONITOR_ERROR);
-        }
-
-        List<BackendSystemMonitorPodListVO> result = Lists.newArrayList();
-        List<V1Pod> items = v1PodList.getItems();
-        if (CollectionUtils.isEmpty(items)) {
-            return result;
-        }
-
-        items.forEach(item -> {
-            String name = "<none>";
-            String ready = "<none>";
-            String status = "<none>";
-            String restarts = "<none>";
-            String age = "<none>";
-            String ip = "<none>";
-            String node = "<none>";
-            String nominatedNode = "<none>";
-            String readinessGates = "<none>";
-
-            // name
-            V1ObjectMeta metadata = item.getMetadata();
-            if (metadata != null) {
-                name = metadata.getName();
-            }
-
-            V1PodStatus v1PodStatus = item.getStatus();
-            if (v1PodStatus != null) {
-                // ready
-                List<V1ContainerStatus> containerStatusList = v1PodStatus.getContainerStatuses();
-                if (!CollectionUtils.isEmpty(containerStatusList)) {
-                    int readyCount = 0;
-                    int totalCount = containerStatusList.size();
-                    for (V1ContainerStatus containerStatus : containerStatusList) {
-                        if (containerStatus.getReady()) {
-                            readyCount++;
-                        }
-                    }
-                    ready = readyCount + "/" + totalCount;
-                }
-                // status
-                status = item.getStatus().getPhase();
-
-                OffsetDateTime lastRestartTime = v1PodStatus.getStartTime();
-                if (lastRestartTime != null) {
-                    // restarts
-                    if (!CollectionUtils.isEmpty(containerStatusList)) {
-                        V1ContainerStatus firstContainerStatus = v1PodStatus.getContainerStatuses().get(0);
-                        Duration lastRestartTimeduration = Duration.between(lastRestartTime, OffsetDateTime.now());
-                        StringBuilder restartStringBuilder = new StringBuilder(String.valueOf(firstContainerStatus.getRestartCount()));
-                        if (lastRestartTimeduration.toMinutes() < 60) {
-                            restartStringBuilder.append(" (").append(lastRestartTimeduration.toMinutes()).append("m ago)");
-                        } else if (lastRestartTimeduration.toHours() < 24) {
-                            restartStringBuilder.append(" (").append(lastRestartTimeduration.toHours()).append("h ago)");
-                        } else {
-                            restartStringBuilder.append(" (").append(lastRestartTimeduration.toDays()).append("d ago)");
-                        }
-                        restarts = restartStringBuilder.toString();
-                    }
-
-                    // age
-                    Duration duration = Duration.between(lastRestartTime, OffsetDateTime.now(ZoneOffset.UTC));
-                    long totalSeconds = duration.getSeconds();
-                    long days = totalSeconds / (60 * 60 * 24);
-                    long hours = (totalSeconds % (60 * 60 * 24)) / (60 * 60);
-                    age = days + "d" + hours + "h";
-                }
-
-                // ip
-                ip = v1PodStatus.getPodIP();
-
-                // nominatedNodeName
-                if (StringUtils.hasLength(v1PodStatus.getNominatedNodeName())) {
-                    nominatedNode = v1PodStatus.getNominatedNodeName();
-                }
-            }
-
-            V1PodSpec spec = item.getSpec();
-            if (spec != null) {
-                // node
-                node = spec.getNodeName();
-
-                // readinessGates
-                List<V1PodReadinessGate> readinessGateList = spec.getReadinessGates();
-                if (!CollectionUtils.isEmpty(readinessGateList)) {
-                    readinessGates = readinessGateList
-                            .stream()
-                            .map(V1PodReadinessGate::getConditionType)
-                            .collect(Collectors.joining(","));
-                }
-            }
-
-            BackendSystemMonitorPodListVO vo = new BackendSystemMonitorPodListVO();
-            vo.setName(name);
-            vo.setReady(ready);
-            vo.setStatus(status);
-            vo.setRestarts(restarts);
-            vo.setAge(age);
-            vo.setIp(ip);
-            vo.setNode(node);
-            vo.setNominatedNode(nominatedNode);
-            vo.setReadinessGates(readinessGates);
-            result.add(vo);
-        });
-
-        return result;
-    }
+//    /**
+//     * 获取k8s集群的pod列表
+//     *
+//     * @param namespace 名称空间
+//     * @return 后台系统监控获取k8s集群的pod列表VO对象列表
+//     */
+//    public List<BackendSystemMonitorPodListVO> findK8sPodList(String namespace) {
+//        if (!StringUtils.hasLength(namespace)) {
+//            throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR);
+//        }
+//
+//        V1PodList v1PodList;
+//        try {
+//            v1PodList = KubernetesUtil.getInstance().getPodList(namespace);
+//        } catch (ApiException e) {
+//            log.error(e.toString(), e);
+//            throw new BusinessException(ErrorEnum.SYSTEM_MONITOR_ERROR);
+//        }
+//
+//        List<BackendSystemMonitorPodListVO> result = Lists.newArrayList();
+//        List<V1Pod> items = v1PodList.getItems();
+//        if (CollectionUtils.isEmpty(items)) {
+//            return result;
+//        }
+//
+//        items.forEach(item -> {
+//            String name = "<none>";
+//            String ready = "<none>";
+//            String status = "<none>";
+//            String restarts = "<none>";
+//            String age = "<none>";
+//            String ip = "<none>";
+//            String node = "<none>";
+//            String nominatedNode = "<none>";
+//            String readinessGates = "<none>";
+//
+//            // name
+//            V1ObjectMeta metadata = item.getMetadata();
+//            if (metadata != null) {
+//                name = metadata.getName();
+//            }
+//
+//            V1PodStatus v1PodStatus = item.getStatus();
+//            if (v1PodStatus != null) {
+//                // ready
+//                List<V1ContainerStatus> containerStatusList = v1PodStatus.getContainerStatuses();
+//                if (!CollectionUtils.isEmpty(containerStatusList)) {
+//                    int readyCount = 0;
+//                    int totalCount = containerStatusList.size();
+//                    for (V1ContainerStatus containerStatus : containerStatusList) {
+//                        if (containerStatus.getReady()) {
+//                            readyCount++;
+//                        }
+//                    }
+//                    ready = readyCount + "/" + totalCount;
+//                }
+//                // status
+//                status = item.getStatus().getPhase();
+//
+//                OffsetDateTime lastRestartTime = v1PodStatus.getStartTime();
+//                if (lastRestartTime != null) {
+//                    // restarts
+//                    if (!CollectionUtils.isEmpty(containerStatusList)) {
+//                        V1ContainerStatus firstContainerStatus = v1PodStatus.getContainerStatuses().get(0);
+//                        Duration lastRestartTimeduration = Duration.between(lastRestartTime, OffsetDateTime.now());
+//                        StringBuilder restartStringBuilder = new StringBuilder(String.valueOf(firstContainerStatus.getRestartCount()));
+//                        if (lastRestartTimeduration.toMinutes() < 60) {
+//                            restartStringBuilder.append(" (").append(lastRestartTimeduration.toMinutes()).append("m ago)");
+//                        } else if (lastRestartTimeduration.toHours() < 24) {
+//                            restartStringBuilder.append(" (").append(lastRestartTimeduration.toHours()).append("h ago)");
+//                        } else {
+//                            restartStringBuilder.append(" (").append(lastRestartTimeduration.toDays()).append("d ago)");
+//                        }
+//                        restarts = restartStringBuilder.toString();
+//                    }
+//
+//                    // age
+//                    Duration duration = Duration.between(lastRestartTime, OffsetDateTime.now(ZoneOffset.UTC));
+//                    long totalSeconds = duration.getSeconds();
+//                    long days = totalSeconds / (60 * 60 * 24);
+//                    long hours = (totalSeconds % (60 * 60 * 24)) / (60 * 60);
+//                    age = days + "d" + hours + "h";
+//                }
+//
+//                // ip
+//                ip = v1PodStatus.getPodIP();
+//
+//                // nominatedNodeName
+//                if (StringUtils.hasLength(v1PodStatus.getNominatedNodeName())) {
+//                    nominatedNode = v1PodStatus.getNominatedNodeName();
+//                }
+//            }
+//
+//            V1PodSpec spec = item.getSpec();
+//            if (spec != null) {
+//                // node
+//                node = spec.getNodeName();
+//
+//                // readinessGates
+//                List<V1PodReadinessGate> readinessGateList = spec.getReadinessGates();
+//                if (!CollectionUtils.isEmpty(readinessGateList)) {
+//                    readinessGates = readinessGateList
+//                            .stream()
+//                            .map(V1PodReadinessGate::getConditionType)
+//                            .collect(Collectors.joining(","));
+//                }
+//            }
+//
+//            BackendSystemMonitorPodListVO vo = new BackendSystemMonitorPodListVO();
+//            vo.setName(name);
+//            vo.setReady(ready);
+//            vo.setStatus(status);
+//            vo.setRestarts(restarts);
+//            vo.setAge(age);
+//            vo.setIp(ip);
+//            vo.setNode(node);
+//            vo.setNominatedNode(nominatedNode);
+//            vo.setReadinessGates(readinessGates);
+//            result.add(vo);
+//        });
+//
+//        return result;
+//    }
 
     // ********************************私有函数********************************
 

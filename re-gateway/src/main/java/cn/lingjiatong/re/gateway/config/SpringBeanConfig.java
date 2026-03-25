@@ -101,6 +101,7 @@ public class SpringBeanConfig {
                 .addExclude(
                         "/re-auth/user/refreshVerifyCode",
                         "/re-auth/user/login"
+//                        "/api-backend/route/list"
                 ).setAuth(obj -> {
                     StpUtil.checkLogin();
                 })

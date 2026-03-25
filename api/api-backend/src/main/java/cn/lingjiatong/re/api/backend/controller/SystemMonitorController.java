@@ -37,33 +37,33 @@ public class SystemMonitorController {
     // ********************************修改类接口********************************
     // ********************************查询类接口********************************
 
-    /**
-     * 获取k8s节点列表
-     *
-     * @param currentUser 当前登录用户
-     * @return 后台系统监控获取k8s节点列表VO对象列表对象
-     */
-    @GetMapping("/k8sNodeList")
-    @Operation(summary = "获取k8s节点列表", method = "GET")
-//    @PreAuthorize("hasAnyAuthority('system:monitor')")
-    public ResultVO<List<BackendSystemMonitorK8sNodeListVO>> findK8sNodeList(@Parameter(hidden = true) @CurrentUser User currentUser) {
-        log.info("==========获取k8s节点列表");
-        return backendSystemMonitorFeignClient.findK8sNodeList(currentUser);
-    }
-
-    /**
-     * 获取k8s名称空间列表
-     *
-     * @param currentUser 当前登录用户
-     * @return 后台系统监控k8s名称空间列表VO对象列表
-     */
-    @GetMapping("/k8sNamespaceList")
-    @Operation(summary = "获取k8s名称空间列表", method = "GET")
-//    @PreAuthorize("hasAnyAuthority('system:monitor')")
-    public ResultVO<List<BackendSystemMonitorNamespaceListVO>> findK8sNamespaceList(@Parameter(hidden = true) @CurrentUser User currentUser) {
-        log.info("==========获取k8s名称空间列表");
-        return backendSystemMonitorFeignClient.findNamespaceList(currentUser);
-    }
+//    /**
+//     * 获取k8s节点列表
+//     *
+//     * @param currentUser 当前登录用户
+//     * @return 后台系统监控获取k8s节点列表VO对象列表对象
+//     */
+//    @GetMapping("/k8sNodeList")
+//    @Operation(summary = "获取k8s节点列表", method = "GET")
+////    @PreAuthorize("hasAnyAuthority('system:monitor')")
+//    public ResultVO<List<BackendSystemMonitorK8sNodeListVO>> findK8sNodeList(@Parameter(hidden = true) @CurrentUser User currentUser) {
+//        log.info("==========获取k8s节点列表");
+//        return backendSystemMonitorFeignClient.findK8sNodeList(currentUser);
+//    }
+//
+//    /**
+//     * 获取k8s名称空间列表
+//     *
+//     * @param currentUser 当前登录用户
+//     * @return 后台系统监控k8s名称空间列表VO对象列表
+//     */
+//    @GetMapping("/k8sNamespaceList")
+//    @Operation(summary = "获取k8s名称空间列表", method = "GET")
+////    @PreAuthorize("hasAnyAuthority('system:monitor')")
+//    public ResultVO<List<BackendSystemMonitorNamespaceListVO>> findK8sNamespaceList(@Parameter(hidden = true) @CurrentUser User currentUser) {
+//        log.info("==========获取k8s名称空间列表");
+//        return backendSystemMonitorFeignClient.findNamespaceList(currentUser);
+//    }
 
     // ********************************私有函数********************************
     // ********************************公用函数********************************

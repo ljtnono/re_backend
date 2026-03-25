@@ -1,4 +1,5 @@
--- MySQL dump 10.13  Distrib 8.0.27, for Linux (x86_64)
+-- MySQL dump 10.13  Distrib 8.0.27, for Linux (x86_64      # re#nacos2022 base64 6 times
+)
 
 CREATE DATABASE xxl_job;
 USE xxl_job;
