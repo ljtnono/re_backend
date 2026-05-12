@@ -86,5 +86,16 @@ public class UserController {
         return ResultVO.success(userService.refreshVerifyCode(verifyCodeKey));
     }
 
+    /**
+     * 获取当前登录用户信息
+     *
+     * @return 当前登录用户信息
+     */
+    @GetMapping("/currentUser")
+    @Operation(summary = "获取当前登录用户信息", method = "GET")
+    public ResultVO<UserLoginVO.UserInfo> getCurrentUser() {
+        log.info("==========获取当前登录用户信息");
+        return ResultVO.success(userService.getCurrentUser());
+    }
 
 }

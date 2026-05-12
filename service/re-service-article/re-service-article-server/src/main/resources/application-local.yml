@@ -20,3 +20,8 @@ minio:
   accessKey: re-minio
   secretKey: re#minio2022
   bucketName: re
+
+sa-token:
+  same-token:
+    token: re-same-token-secret-2025
+    timeout: 86400

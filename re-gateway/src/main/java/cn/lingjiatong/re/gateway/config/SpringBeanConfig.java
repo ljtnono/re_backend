@@ -3,7 +3,6 @@ package cn.lingjiatong.re.gateway.config;
 import cn.dev33.satoken.reactor.filter.SaReactorFilter;
 import cn.dev33.satoken.router.SaRouter;
 import cn.dev33.satoken.stp.StpUtil;
-import cn.dev33.satoken.util.SaResult;
 import cn.lingjiatong.re.common.ResultVO;
 import cn.lingjiatong.re.common.exception.ErrorEnum;
 import cn.lingjiatong.re.common.util.RedisUtil;
@@ -97,16 +96,36 @@ public class SpringBeanConfig {
         return new SaReactorFilter()
                 // 拦截地址
                 .addInclude("/**")
-                // 开放地址
+                // 开放地址 - 白名单路径
                 .addExclude(
+                        // 认证模块
                         "/re-auth/user/refreshVerifyCode",
-                        "/re-auth/user/login"
-//                        "/api-backend/route/list"
-                ).setAuth(obj -> {
-                    StpUtil.checkLogin();
+                        "/re-auth/user/login",
+                        // Swagger文档相关
+                        "/swagger-ui/**",
+                        "/swagger-ui.html",
+                        "/v3/api-docs/**",
+                        "/swagger-resources/**",
+                        "/webjars/**",
+                        // Actuator监控
+                        "/actuator/**",
+                        "/actuator",
+                        // 前端API（不需要登录）
+                        "/api-frontend/**",
+                        // 文件服务公开接口
+                        "/api-file/**",
+                        // favicon
+                        "/favicon.ico"
+                )
+                // 认证函数：每次请求执行
+                .setAuth(obj -> {
+                    // 获取当前请求路径
+                    // 校验登录状态
+                    SaRouter.match("/**", StpUtil::checkLogin);
                 })
+                // 异常处理函数：每次认证函数发生异常时执行
                 .setError(e -> {
-                    // 异常处理方法：每次setAuth函数出现异常时进入
+                    // 返回标准ResultVO格式的错误信息
                     return ResultVO.error(ErrorEnum.USER_NOT_AUTHENTICATE_ERROR);
                 });
     }

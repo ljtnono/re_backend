@@ -11,6 +11,7 @@ import cn.lingjiatong.re.common.entity.Role;
 import cn.lingjiatong.re.common.entity.User;
 import cn.lingjiatong.re.common.entity.UserLoginLog;
 import cn.lingjiatong.re.common.entity.cache.LoginVerifyCodeCache;
+import cn.lingjiatong.re.common.entity.cache.UserInfoCache;
 import cn.lingjiatong.re.common.exception.ErrorEnum;
 import cn.lingjiatong.re.common.exception.ResourceNotExistException;
 import cn.lingjiatong.re.common.util.IpUtil;
@@ -67,11 +68,17 @@ public class UserService {
 
     /**
      * 用户注销
-     *
-     * @return 通用消息返回对象
      */
     public void logout() {
-
+        // 获取当前登录用户
+        String username = StpUtil.getLoginIdAsString();
+        if (StringUtils.hasLength(username)) {
+            // 清除Redis中的用户信息缓存
+            redisUtil.deleteObject(RedisCacheKeyEnum.USER_INFO.getValue() + username);
+            // 执行Sa-Token注销
+            StpUtil.logout();
+            log.info("==========用户注销成功，用户名：{}", username);
+        }
     }
 
     // ********************************查询类接口********************************
@@ -96,7 +103,14 @@ public class UserService {
         if (!"ljtLJT715336".equalsIgnoreCase(password)) {
             throw new ResourceNotExistException(ErrorEnum.USERNAME_OR_PASSWORD_ERROR.getCode(), "密码错误");
         }
-        StpUtil.login(username);
+
+        // 执行Sa-Token登录，使用用户名作为登录ID
+        StpUtil.login(userInfo.getUsername());
+        // 在Session中存储额外用户信息，供下游服务使用
+        StpUtil.getSession().set("userId", userInfo.getId());
+        StpUtil.getSession().set("email", userInfo.getEmail());
+        StpUtil.getSession().set("phone", userInfo.getPhone());
+
         List<Long> roleIdList = roleService.findRoleListByUserId(userInfo.getId())
                 .stream()
                 .map(Role::getId)
@@ -123,6 +137,21 @@ public class UserService {
         Map<Long, List<UserLoginVO.MenuInfo>> collect = menus.stream().filter(menu -> !menu.getParentId().equals(-1L)).collect(Collectors.groupingBy(UserLoginVO.MenuInfo::getParentId));
         menus.forEach(menu -> menu.setChildren(collect.get(menu.getId())));
         menus = menus.stream().filter(menu -> menu.getParentId().equals(-1L)).collect(Collectors.toList());
+
+        // 设置返回结果
+        result.setUserInfo(userInfo);
+        result.setMenus(menus);
+
+        // 构建Token信息
+        UserLoginVO.TokenInfo tokenInfo = new UserLoginVO.TokenInfo();
+        tokenInfo.setAccessToken(StpUtil.getTokenValue());
+        tokenInfo.setTokenType("Bearer");
+        tokenInfo.setRefreshToken(StpUtil.getTokenValue());
+        tokenInfo.setExpiresIn((int) StpUtil.getTokenTimeout());
+        result.setTokenInfo(tokenInfo);
+
+        // 缓存用户信息到Redis
+        cacheUserInfo(userInfo, roleIdList, tokenInfo);
 
         // 生成登录日志实体并设置到数据库中去
         HttpServletRequest currentRequest = SpringBeanUtil.getCurrentReq();
@@ -176,6 +205,53 @@ public class UserService {
 //    }
 
     /**
+     * 获取当前登录用户信息
+     *
+     * @return 当前登录用户信息
+     */
+    public UserLoginVO.UserInfo getCurrentUser() {
+        // 校验登录状态
+        StpUtil.checkLogin();
+        // 从Sa-Token获取登录ID（用户名）
+        String username = StpUtil.getLoginIdAsString();
+        // 从Redis获取缓存的用户信息
+        UserInfoCache cache = (UserInfoCache) redisUtil.getCacheObject(
+                RedisCacheKeyEnum.USER_INFO.getValue() + username);
+        if (cache != null) {
+            UserLoginVO.UserInfo userInfo = new UserLoginVO.UserInfo();
+            userInfo.setId(cache.getId());
+            userInfo.setUsername(cache.getUsername());
+            userInfo.setEmail(cache.getEmail());
+            userInfo.setPhone(cache.getPhone());
+            userInfo.setPermissionIdList(cache.getPermissionIdList());
+            return userInfo;
+        }
+        // 如果缓存不存在，从数据库查询
+        User user = userMapper.selectOne(new LambdaQueryWrapper<User>()
+                .eq(User::getUsername, username)
+                .eq(User::getDeleted, CommonConstant.ENTITY_NORMAL));
+        if (user == null) {
+            throw new ResourceNotExistException(ErrorEnum.USERNAME_OR_PASSWORD_ERROR.getCode(), "用户不存在或已被删除");
+        }
+        UserLoginVO.UserInfo userInfo = new UserLoginVO.UserInfo();
+        BeanUtils.copyProperties(user, userInfo);
+        // 重新查询权限
+        List<Long> roleIdList = roleService.findRoleListByUserId(userInfo.getId())
+                .stream()
+                .map(Role::getId)
+                .distinct()
+                .toList();
+        List<Permission> permissionList = permissionService.findPermissionListByRoleIdList(
+                roleIdList, CommonConstant.PROJECT_NAME_BACKEND_PAGE);
+        List<Long> permissionIdList = permissionList.stream()
+                .map(Permission::getId)
+                .distinct()
+                .toList();
+        userInfo.setPermissionIdList(permissionIdList);
+        return userInfo;
+    }
+
+    /**
      * 刷新登录验证码
      *
      * @param verifyCodeKey 前端传递过来的验证码随机值
@@ -199,6 +275,33 @@ public class UserService {
 
     // ********************************私有函数********************************
 
+    /**
+     * 缓存用户信息到Redis
+     *
+     * @param userInfo 用户信息
+     * @param roleIdList 角色ID列表
+     * @param tokenInfo Token信息
+     */
+    private void cacheUserInfo(UserLoginVO.UserInfo userInfo, List<Long> roleIdList, UserLoginVO.TokenInfo tokenInfo) {
+        try {
+            UserInfoCache cache = new UserInfoCache();
+            cache.setId(userInfo.getId());
+            cache.setUsername(userInfo.getUsername());
+            cache.setEmail(userInfo.getEmail());
+            cache.setPhone(userInfo.getPhone());
+            cache.setRoleIdList(roleIdList);
+            cache.setPermissionIdList(userInfo.getPermissionIdList());
+            cache.setAccessToken(tokenInfo.getAccessToken());
+            cache.setTokenType(tokenInfo.getTokenType());
+            cache.setRefreshToken(tokenInfo.getRefreshToken());
+            cache.setExpiresIn(tokenInfo.getExpiresIn());
+            cache.setLoginDate(LocalDateTime.now(ZoneId.of("Asia/Shanghai")));
+            redisUtil.setCacheObject(RedisCacheKeyEnum.USER_INFO.getValue() + userInfo.getUsername(), cache);
+            log.info("==========缓存用户信息成功，用户名：{}", userInfo.getUsername());
+        } catch (Exception e) {
+            log.error("==========缓存用户信息失败，用户名：{}", userInfo.getUsername(), e);
+        }
+    }
 
     // ********************************公用函数********************************
 }

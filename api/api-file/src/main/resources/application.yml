@@ -3,3 +3,7 @@ spring:
     name: api-file
   profiles:
     active: @profiles.active@
+
+sa-token:
+  same-token:
+    token: re-same-token-secret-2025
