@@ -11,7 +11,9 @@ public enum ProfileEnum {
     // 生产环境
     PRD("prd"),
     // 开发环境
-    DEV("dev")
+    DEV("dev"),
+    // 本地环境
+    LOCAL("local")
     ;
 
     private final String name;

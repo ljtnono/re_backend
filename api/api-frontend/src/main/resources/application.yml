@@ -9,8 +9,3 @@ feign:
       default:
         connectTimeout: 60000
         readTimeout: 600000
-
-# Sa-Token Same-Token 配置
-sa-token:
-  same-token:
-    token: re-same-token-secret-2025

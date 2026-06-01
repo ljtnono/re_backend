@@ -1,5 +1,7 @@
 server:
-  port: 9100
+  port: 9103
+  servlet:
+    context-path: /api-file
 spring:
   cloud:
     nacos:
@@ -10,36 +12,6 @@ spring:
       discovery:
         namespace: ee7675c4-d2cc-48ab-8c8f-bd4461099886
         server-addr: @nacos-server-addr@
-    gateway:
-      globalcors:
-        corsConfigurations:
-          '[/**]':
-            allowedOriginPatterns: "*"
-            allowedMethods: "*"
-            allowedHeaders: "*"
-            allowCredentials: true
-            exposedHeaders: "Content-Disposition,Content-Type,Cache-Control"
-      routes:
-        - id: re-auth
-          uri: lb://re-auth
-          predicates:
-            - Path=/re-auth/**
-        - id: re-service-sys-server
-          uri: lb://re-service-sys-server
-          predicates:
-            - Path=/sys/**
-        - id: re-service-article-server
-          uri: lb://re-service-sys-server
-          predicates:
-            - Path=/article/**
-        - id: api-backend
-          uri: lb://api-backend
-          predicates:
-            - Path=/api-backend/**
-        - id: api-frontend
-          uri: lb://api-frontend
-          predicates:
-            - Path=/api-frontend/**
   config:
     import:
       - optional:nacos:${spring.application.name}.${spring.cloud.nacos.config.file-extension}
@@ -54,6 +26,12 @@ spring:
           max-idle: 16
           max-active: 32
           min-idle: 8
+minio:
+  endpoint: http://localhost:30606
+  accessKey: re-minio
+  secretKey: re#minio2022
+  bucketName: re
+
 # Sa-Token配置
 sa-token:
   # token名称（同时也是cookie名称）

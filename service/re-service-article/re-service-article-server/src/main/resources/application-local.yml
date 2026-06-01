@@ -1,5 +1,7 @@
 server:
-  port: 9100
+  port: 9112
+  servlet:
+    context-path: /article
 spring:
   cloud:
     nacos:
@@ -14,6 +16,39 @@ spring:
     import:
       - optional:nacos:${spring.application.name}.${spring.cloud.nacos.config.file-extension}
       - optional:nacos:${spring.application.name}-${spring.profiles.active}.${spring.cloud.nacos.config.file-extension}
+  datasource:
+    dynamic:
+      primary: master
+      datasource:
+        master:
+          url: jdbc:mysql://localhost:30601/re_sys
+          username: root
+          password: re#mysql2022
+          driver-class-name: com.mysql.cj.jdbc.Driver
+          type: com.zaxxer.hikari.HikariDataSource
+          hikari:
+            maximum-pool-size: 20
+            min-idle: 10
+            idle-timeout: 500000
+            max-lifetime: 540000
+            connection-timeout: 60000
+            connection-test-query: SELECT 1
+  data:
+    redis:
+      host: localhost
+      port: 30602
+      database: 0
+      lettuce:
+        pool:
+          max-idle: 16
+          max-active: 32
+          min-idle: 8
+  elasticsearch:
+    rest:
+      uris: localhost
+      port: 30608
+mybatis-plus:
+  mapper-locations: classpath:/mapper/**.xml
 
 minio:
   endpoint: http://localhost:30606
@@ -21,7 +56,19 @@ minio:
   secretKey: re#minio2022
   bucketName: re
 
+# Sa-Token配置
 sa-token:
-  same-token:
-    token: re-same-token-secret-2025
-    timeout: 86400
+  # token名称（同时也是cookie名称）
+  token-name: Authorization
+  # token前缀
+  token-prefix: Bearer
+  # jwt秘钥
+  jwt-secret-key: asdasdasifhueuiwyurfewbfjsdafjk
+  # token有效期，单位秒（默认30天，这里设置为7天）
+  timeout: 604800
+  # token临时有效期（指定时间内无操作就视为token过期）单位：秒
+  activity-timeout: -1
+  # 是否允许同一账号并发登录
+  is-concurrent: true
+  # 在多人登录同一账号时，是否共用一个token
+  is-share: false
