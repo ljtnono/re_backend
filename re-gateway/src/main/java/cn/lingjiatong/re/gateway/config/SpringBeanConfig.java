@@ -1,5 +1,7 @@
 package cn.lingjiatong.re.gateway.config;
 
+import cn.dev33.satoken.SaManager;
+import cn.dev33.satoken.jwt.StpLogicJwtForStateless;
 import cn.dev33.satoken.reactor.filter.SaReactorFilter;
 import cn.dev33.satoken.router.SaRouter;
 import cn.dev33.satoken.stp.StpUtil;
@@ -16,6 +18,7 @@ import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -36,6 +39,7 @@ import java.util.TimeZone;
  * @author Ling, Jiatong
  * Date: 2022/11/2 20:41
  */
+@Slf4j
 @Configuration
 public class SpringBeanConfig {
 

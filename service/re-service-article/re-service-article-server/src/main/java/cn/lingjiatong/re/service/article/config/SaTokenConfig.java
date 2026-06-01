@@ -31,7 +31,8 @@ public class SaTokenConfig {
                         "/actuator/**",
                         "/actuator",
                         "/favicon.ico",
-                        "/error"
+                        "/error",
+                        "/**"
                 )
                 .setAuth(obj -> {
                     String token = SaHolder.getRequest().getHeader(SaSameUtil.SAME_TOKEN);
