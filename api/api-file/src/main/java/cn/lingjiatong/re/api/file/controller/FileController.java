@@ -2,11 +2,7 @@ package cn.lingjiatong.re.api.file.controller;
 
 import cn.lingjiatong.re.api.file.service.FileService;
 import cn.lingjiatong.re.common.ResultVO;
-import cn.lingjiatong.re.common.annotation.CurrentUser;
-import cn.lingjiatong.re.common.entity.User;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.enums.ParameterStyle;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,12 +34,10 @@ public class FileController {
      * 上传文件
      *
      * @param file 文件
-     * @param currentUser 当前用户
      */
     @PostMapping(value = "/uploadFile", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-//    @PreAuthorize("isAuthenticated()")
     @Operation(summary = "后端上传文件接口", method = "POST")
-    public ResultVO<String> uploadFile(@RequestParam("file") @Parameter(style = ParameterStyle.FORM) MultipartFile file, @Parameter(hidden = true) @CurrentUser User currentUser) {
+    public ResultVO<String> uploadFile(@RequestParam("file") MultipartFile file) {
         log.info("==========上传图片，参数：{}", file);
         return ResultVO.success(fileService.uploadFile(file));
     }

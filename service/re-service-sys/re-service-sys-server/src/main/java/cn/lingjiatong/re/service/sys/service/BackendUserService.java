@@ -1,21 +1,19 @@
 package cn.lingjiatong.re.service.sys.service;
 
 import cn.lingjiatong.re.common.constant.*;
-import cn.lingjiatong.re.common.entity.Role;
-import cn.lingjiatong.re.common.entity.TrUserRole;
-import cn.lingjiatong.re.common.entity.User;
-import cn.lingjiatong.re.common.entity.UserLoginLog;
+import cn.lingjiatong.re.common.entity.*;
 import cn.lingjiatong.re.common.exception.*;
 import cn.lingjiatong.re.common.util.EncryptUtil;
 import cn.lingjiatong.re.common.util.RedisUtil;
 import cn.lingjiatong.re.common.util.SnowflakeIdWorkerUtil;
 import cn.lingjiatong.re.service.sys.api.dto.*;
 import cn.lingjiatong.re.service.sys.api.vo.BackendUserListVO;
-import cn.lingjiatong.re.service.sys.mapper.UserMapper;
+import cn.lingjiatong.re.service.sys.mapper.*;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +26,7 @@ import org.springframework.util.StringUtils;
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -60,6 +59,14 @@ public class BackendUserService {
     @Autowired
     @Qualifier("commonThreadPool")
     private ExecutorService commonThreadPool;
+    @Autowired
+    private RoleMapper roleMapper;
+    @Autowired
+    private TrRolePermissionMapper trRolePermissionMapper;
+    @Autowired
+    private PermissionMapper permissionMapper;
+    @Autowired
+    private TrUserRoleMapper trUserRoleMapper;
 
 
 
@@ -501,6 +508,52 @@ public class BackendUserService {
                 .select(User::getId)
                 .eq(User::getId, userId));
         return user != null;
+    }
+
+    /**
+     * 根据用户名查询用户完整信息（内部调用，供CurrentUser解析器使用）
+     *
+     * @param username 用户名
+     * @return 用户实体（含角色和权限，密码已置空）
+     */
+    @Transactional(readOnly = true)
+    public User getCurrentUserByUsername(String username) {
+        User user = userMapper.selectOne(new LambdaQueryWrapper<User>()
+                .eq(User::getUsername, username)
+                .eq(User::getDeleted, CommonConstant.ENTITY_NORMAL));
+        if (user == null) {
+            return null;
+        }
+        user.setPassword(null);
+
+        // 查询用户角色
+        List<TrUserRole> trUserRoleList = trUserRoleMapper.selectList(new LambdaQueryWrapper<TrUserRole>()
+                .eq(TrUserRole::getUserId, user.getId()));
+        if (!CollectionUtils.isEmpty(trUserRoleList)) {
+            List<Long> roleIdList = trUserRoleList.stream()
+                    .map(TrUserRole::getRoleId)
+                    .distinct()
+                    .collect(Collectors.toList());
+            List<Role> roles = roleMapper.selectList(new LambdaQueryWrapper<Role>()
+                    .in(Role::getId, roleIdList));
+            user.setRoles(roles);
+
+            // 查询角色关联的权限
+            List<TrRolePermission> trRolePermissionList = trRolePermissionMapper.selectList(new LambdaQueryWrapper<TrRolePermission>()
+                    .in(TrRolePermission::getRoleId, roleIdList));
+            if (!CollectionUtils.isEmpty(trRolePermissionList)) {
+                List<Long> permissionIdList = trRolePermissionList.stream()
+                        .map(TrRolePermission::getPermissionId)
+                        .distinct()
+                        .collect(Collectors.toList());
+                List<Permission> permissions = permissionMapper.selectList(new LambdaQueryWrapper<Permission>()
+                        .in(Permission::getId, permissionIdList)
+                        .eq(Permission::getProjectName, CommonConstant.PROJECT_NAME_BACKEND_PAGE));
+                user.setPermissions(permissions);
+            }
+        }
+
+        return user;
     }
 
 }

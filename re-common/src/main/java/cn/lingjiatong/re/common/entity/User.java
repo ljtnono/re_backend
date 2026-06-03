@@ -3,7 +3,6 @@ package cn.lingjiatong.re.common.entity;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -78,7 +77,6 @@ public class User {
     /**
      * 权限列表
      */
-    @JsonIgnore
     @TableField(exist = false)
     private Collection<Permission> permissions;
 }

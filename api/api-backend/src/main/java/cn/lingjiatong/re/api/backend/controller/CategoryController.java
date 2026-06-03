@@ -1,12 +1,11 @@
 package cn.lingjiatong.re.api.backend.controller;
 
 import cn.lingjiatong.re.common.ResultVO;
-import cn.lingjiatong.re.common.annotation.CurrentUser;
 import cn.lingjiatong.re.common.entity.User;
+import cn.lingjiatong.re.common.util.SaUserUtils;
 import cn.lingjiatong.re.service.article.api.client.BackendCategoryFeignClient;
 import cn.lingjiatong.re.service.article.api.vo.BackendCategoryListVO;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,14 +38,13 @@ public class CategoryController {
     /**
      * 后端获取文章分类列表
      *
-     * @param currentUser 当前登录用户
      * @return 后端获取文章分类列表VO对象列表
      */
     @GetMapping("/list")
     @Operation(summary = "后端获取文章分类列表", method = "GET")
 //    @PreAuthorize("isAuthenticated()")
-    public ResultVO<List<BackendCategoryListVO>> findCategoryList(@Parameter(hidden = true) @CurrentUser User currentUser) {
+    public ResultVO<List<BackendCategoryListVO>> findCategoryList() {
         log.info("==========后端获取文章分类列表");
-        return backendCategoryFeignClient.findCategoryList(currentUser);
+        return backendCategoryFeignClient.findCategoryList();
     }
 }

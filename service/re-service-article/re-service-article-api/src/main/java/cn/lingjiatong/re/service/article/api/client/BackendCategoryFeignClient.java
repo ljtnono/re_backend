@@ -2,10 +2,8 @@ package cn.lingjiatong.re.service.article.api.client;
 
 import cn.lingjiatong.re.common.ResultVO;
 import cn.lingjiatong.re.common.config.FeignBasicAuthRequestInterceptor;
-import cn.lingjiatong.re.common.entity.User;
 import cn.lingjiatong.re.service.article.api.vo.BackendCategoryListVO;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.cloud.openfeign.SpringQueryMap;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import java.util.List;
@@ -27,10 +25,9 @@ public interface BackendCategoryFeignClient {
     /**
      * 后端获取文章分类列表
      *
-     * @param currentUser 当前登录用户
      * @return 后端获取文章分类列表VO对象列表
      */
     @GetMapping("/backend/api/v1/category/list")
-    ResultVO<List<BackendCategoryListVO>> findCategoryList(@SpringQueryMap User currentUser);
+    ResultVO<List<BackendCategoryListVO>> findCategoryList();
 
 }

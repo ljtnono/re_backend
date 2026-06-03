@@ -2,7 +2,6 @@ package cn.lingjiatong.re.service.sys.controller;
 
 import cn.lingjiatong.re.common.ResultVO;
 import cn.lingjiatong.re.common.annotation.PassToken;
-import cn.lingjiatong.re.common.entity.User;
 import cn.lingjiatong.re.common.exception.ErrorEnum;
 import cn.lingjiatong.re.common.exception.ParamErrorException;
 import cn.lingjiatong.re.service.sys.api.client.BackendSystemMonitorFeignClient;
@@ -42,7 +41,7 @@ public class BackendSystemMonitorController implements BackendSystemMonitorFeign
     @Override
     @GetMapping("/backend/api/v1/systemMonitor/hardDiskInfo")
     @PassToken
-    public ResultVO<List<BackendSystemMonitorHardDiskVO>> findHardDiskInfo(@RequestParam("ipAddr") String ipAddr, User currentUser) {
+    public ResultVO<List<BackendSystemMonitorHardDiskVO>> findHardDiskInfo(@RequestParam("ipAddr") String ipAddr) {
         ipAddr = ipAddr.split(",")[0];
         KubernetesProperties.KubernetesNode node = backendSystemMonitorService.findK8sNodeInfoByIpAddr(ipAddr);
         if (node == null) {
@@ -60,7 +59,7 @@ public class BackendSystemMonitorController implements BackendSystemMonitorFeign
     @Override
     @GetMapping("/backend/api/v1/systemMonitor/cpuInfo")
     @PassToken
-    public ResultVO<BackendSystemMonitorCPUVO> findCPUInfo(@RequestParam("ipAddr") String ipAddr, User currentUser) {
+    public ResultVO<BackendSystemMonitorCPUVO> findCPUInfo(@RequestParam("ipAddr") String ipAddr) {
         ipAddr = ipAddr.split(",")[0];
         KubernetesProperties.KubernetesNode node = backendSystemMonitorService.findK8sNodeInfoByIpAddr(ipAddr);
         if (node == null) {
@@ -72,7 +71,7 @@ public class BackendSystemMonitorController implements BackendSystemMonitorFeign
     @Override
     @GetMapping("/backend/api/v1/systemMonitor/memoryInfo")
     @PassToken
-    public ResultVO<BackendSystemMonitorMemoryVO> findMemoryInfo(@RequestParam("ipAddr") String ipAddr, User currentUser) {
+    public ResultVO<BackendSystemMonitorMemoryVO> findMemoryInfo(@RequestParam("ipAddr") String ipAddr) {
         ipAddr = ipAddr.split(",")[0];
         KubernetesProperties.KubernetesNode node = backendSystemMonitorService.findK8sNodeInfoByIpAddr(ipAddr);
         if (node == null) {

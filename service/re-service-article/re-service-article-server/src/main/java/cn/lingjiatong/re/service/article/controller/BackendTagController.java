@@ -1,7 +1,6 @@
 package cn.lingjiatong.re.service.article.controller;
 
 import cn.lingjiatong.re.common.ResultVO;
-import cn.lingjiatong.re.common.entity.User;
 import cn.lingjiatong.re.service.article.api.client.BackendTagFeignClient;
 import cn.lingjiatong.re.service.article.api.vo.BackendTagListVO;
 import cn.lingjiatong.re.service.article.entity.Tag;
@@ -31,7 +30,7 @@ public class BackendTagController implements BackendTagFeignClient {
 
     @Override
     @GetMapping("/backend/api/v1/tag/list")
-    public ResultVO<List<BackendTagListVO>> findBackendTagList(User currentUser) {
+    public ResultVO<List<BackendTagListVO>> findBackendTagList() {
         return ResultVO.success(backendTagService.findTagList(Tag::getId, Tag::getName));
     }
 

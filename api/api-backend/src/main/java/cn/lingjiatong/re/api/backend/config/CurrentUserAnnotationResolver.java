@@ -1,9 +1,14 @@
 package cn.lingjiatong.re.api.backend.config;
 
+import cn.dev33.satoken.stp.StpUtil;
+import cn.lingjiatong.re.common.ResultVO;
 import cn.lingjiatong.re.common.annotation.CurrentUser;
+import cn.lingjiatong.re.common.constant.CommonConstant;
 import cn.lingjiatong.re.common.entity.User;
+import cn.lingjiatong.re.service.sys.api.client.BackendUserFeignClient;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -15,8 +20,8 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 /**
  * CurrentUser注解处理类
  *
- * 从 Gateway 转发的自定义请求头中读取当前登录用户信息，
- * 无需下游服务重复解析 JWT token。
+ * 从请求头 Authorization 中读取 JWT token，通过 Sa-Token 解析出用户名，
+ * 再通过 Feign 查询数据库获取完整用户信息
  *
  * @author Ling, Jiatong
  * Date: 2020/7/10 9:22 上午
@@ -24,6 +29,9 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 @Slf4j
 @Component
 public class CurrentUserAnnotationResolver implements HandlerMethodArgumentResolver {
+
+    @Autowired
+    private BackendUserFeignClient backendUserFeignClient;
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
@@ -39,22 +47,20 @@ public class CurrentUserAnnotationResolver implements HandlerMethodArgumentResol
             if (request == null) {
                 return null;
             }
-            // 从 Gateway 转发的自定义请求头中获取用户信息
-            String username = request.getHeader("X-User-Username");
-            String userIdStr = request.getHeader("X-User-Id");
-            if (!StringUtils.hasLength(username)) {
+            String authHeader = request.getHeader(CommonConstant.TOKE_HTTP_HEADER);
+            if (!StringUtils.hasLength(authHeader)) {
                 return null;
             }
-            User user = new User();
-            user.setUsername(username);
-            if (StringUtils.hasLength(userIdStr)) {
-                try {
-                    user.setId(Long.valueOf(userIdStr));
-                } catch (NumberFormatException e) {
-                    log.debug("解析 X-User-Id 失败: {}", userIdStr);
-                }
+            String token = authHeader;
+            if (authHeader.startsWith(CommonConstant.TOKEN_PREFIX)) {
+                token = authHeader.substring(CommonConstant.TOKEN_PREFIX.length());
             }
-            return user;
+            Object loginId = StpUtil.getLoginIdByToken(token);
+            if (loginId == null) {
+                return null;
+            }
+            String username = loginId.toString();
+            return backendUserFeignClient.getCurrentUserByUsername(username);
         } catch (Exception e) {
             log.error("解析当前用户信息失败: {}", e.getMessage());
             return null;

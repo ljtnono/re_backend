@@ -1,7 +1,6 @@
 package cn.lingjiatong.re.service.article.controller;
 
 import cn.lingjiatong.re.common.ResultVO;
-import cn.lingjiatong.re.common.entity.User;
 import cn.lingjiatong.re.service.article.api.client.BackendCategoryFeignClient;
 import cn.lingjiatong.re.service.article.api.vo.BackendCategoryListVO;
 import cn.lingjiatong.re.service.article.entity.Category;
@@ -31,7 +30,7 @@ public class BackendCategoryController implements BackendCategoryFeignClient {
 
     @Override
     @GetMapping("/backend/api/v1/category/list")
-    public ResultVO<List<BackendCategoryListVO>> findCategoryList(User currentUser) {
+    public ResultVO<List<BackendCategoryListVO>> findCategoryList() {
         return ResultVO.success(backendCategoryService.findCategoryList(Category::getId, Category::getName));
     }
 }

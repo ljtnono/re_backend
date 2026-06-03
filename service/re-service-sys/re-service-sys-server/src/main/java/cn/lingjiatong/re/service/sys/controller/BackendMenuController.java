@@ -2,6 +2,7 @@ package cn.lingjiatong.re.service.sys.controller;
 
 import cn.lingjiatong.re.common.ResultVO;
 import cn.lingjiatong.re.common.entity.User;
+import cn.lingjiatong.re.common.util.SaUserUtils;
 import cn.lingjiatong.re.service.sys.api.client.BackendMenuFeignClient;
 import cn.lingjiatong.re.service.sys.api.dto.*;
 import cn.lingjiatong.re.service.sys.api.vo.BackendBreadcrumbListVO;
@@ -29,7 +30,8 @@ public class BackendMenuController implements BackendMenuFeignClient {
 
     @Override
     @PostMapping("/backend/api/v1/menu/save")
-    public ResultVO<?> saveMenu(@RequestBody BackendMenuSaveDTO dto, User currentUser) {
+    public ResultVO<?> saveMenu(@RequestBody BackendMenuSaveDTO dto) {
+        User currentUser = SaUserUtils.getCurrentUser();
         backendMenuService.saveMenu(dto, currentUser);
         return ResultVO.success();
     }
@@ -38,7 +40,8 @@ public class BackendMenuController implements BackendMenuFeignClient {
 
     @Override
     @GetMapping("/backend/api/v1/menu/breadcrumbList")
-    public ResultVO<List<BackendBreadcrumbListVO>> findBreadcrumbList(User currentUser) {
+    public ResultVO<List<BackendBreadcrumbListVO>> findBreadcrumbList() {
+        User currentUser = SaUserUtils.getCurrentUser();
         return ResultVO.success(backendMenuService.findBreadcrumbList(currentUser));
     }
 
@@ -46,7 +49,8 @@ public class BackendMenuController implements BackendMenuFeignClient {
 
     @Override
     @DeleteMapping("/backend/api/v1/menu/delete/{menuId}")
-    public ResultVO<?> deleteMenu(@PathVariable("menuId") Long menuId, User currentUser) {
+    public ResultVO<?> deleteMenu(@PathVariable("menuId") Long menuId) {
+        User currentUser = SaUserUtils.getCurrentUser();
         backendMenuService.deleteMenu(menuId, currentUser);
         return ResultVO.success();
     }
@@ -57,7 +61,8 @@ public class BackendMenuController implements BackendMenuFeignClient {
 
     @Override
     @PutMapping("/backend/api/v1/menu/editMenu")
-    public ResultVO<?> editMenu(@RequestBody BackendMenuEditDTO dto, User currentUser) {
+    public ResultVO<?> editMenu(@RequestBody BackendMenuEditDTO dto) {
+        User currentUser = SaUserUtils.getCurrentUser();
         backendMenuService.editMenu(dto, currentUser);
         return ResultVO.success();
     }
@@ -67,39 +72,45 @@ public class BackendMenuController implements BackendMenuFeignClient {
 
     @Override
     @GetMapping("/backend/api/v1/menu/checkRouteNameDuplicate")
-    public ResultVO<Boolean> checkRouteNameDuplicate(@RequestParam("routeName") String routeName, User currentUser) {
+    public ResultVO<Boolean> checkRouteNameDuplicate(@RequestParam("routeName") String routeName) {
+        User currentUser = SaUserUtils.getCurrentUser();
         routeName = routeName.split(",")[0];
         return ResultVO.success(backendMenuService.checkRouteNameDuplicate(routeName, currentUser));
     }
 
     @Override
     @GetMapping("/backend/api/v1/menu/checkRoutePathDuplicate")
-    public ResultVO<Boolean> checkRoutePathDuplicate(@RequestParam("routePath") String routePath, User currentUser) {
+    public ResultVO<Boolean> checkRoutePathDuplicate(@RequestParam("routePath") String routePath) {
+        User currentUser = SaUserUtils.getCurrentUser();
         routePath = routePath.split(",")[0];
         return ResultVO.success(backendMenuService.checkRoutePathDuplicate(routePath, currentUser));
     }
 
     @Override
     @GetMapping("/backend/api/v1/menu/checkRouteNameAvailableEdit")
-    public ResultVO<Boolean> checkRouteNameAvailableEdit(BackendCheckMenuRouteNameAvailableEditDTO dto, User currentUser) {
+    public ResultVO<Boolean> checkRouteNameAvailableEdit(BackendCheckMenuRouteNameAvailableEditDTO dto) {
+        User currentUser = SaUserUtils.getCurrentUser();
         return ResultVO.success(backendMenuService.checkRouteNameAvailableEdit(dto, currentUser));
     }
 
     @Override
     @GetMapping("/backend/api/v1/menu/checkRoutePathAvailableEdit")
-    public ResultVO<Boolean> checkRoutePathAvailableEdit(BackendCheckMenuRoutePathAvailableEditDTO dto, User currentUser) {
+    public ResultVO<Boolean> checkRoutePathAvailableEdit(BackendCheckMenuRoutePathAvailableEditDTO dto) {
+        User currentUser = SaUserUtils.getCurrentUser();
         return ResultVO.success(backendMenuService.checkRoutePathAvailableEdit(dto, currentUser));
     }
 
     @Override
     @GetMapping("/backend/api/v1/menu/list")
-    public ResultVO<List<BackendMenuListVO>> findMenuList(BackendMenuListDTO dto, User currentUser) {
+    public ResultVO<List<BackendMenuListVO>> findMenuList(BackendMenuListDTO dto) {
+        User currentUser = SaUserUtils.getCurrentUser();
         return ResultVO.success(backendMenuService.findMenuList(dto, currentUser));
     }
 
     @Override
     @GetMapping("/backend/api/v1/menu/tree")
-    public ResultVO<List<BackendMenuTreeVO>> findBackendMenuTree(User currentUser) {
+    public ResultVO<List<BackendMenuTreeVO>> findBackendMenuTree() {
+        User currentUser = SaUserUtils.getCurrentUser();
         return ResultVO.success(backendMenuService.findBackendMenuTree(currentUser));
     }
 

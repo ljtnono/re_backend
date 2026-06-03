@@ -2,6 +2,7 @@ package cn.lingjiatong.re.service.sys.controller;
 
 import cn.lingjiatong.re.common.ResultVO;
 import cn.lingjiatong.re.common.entity.User;
+import cn.lingjiatong.re.common.util.SaUserUtils;
 import cn.lingjiatong.re.service.sys.api.client.BackendUserFeignClient;
 import cn.lingjiatong.re.service.sys.api.dto.*;
 import cn.lingjiatong.re.service.sys.api.vo.BackendUserListVO;
@@ -29,7 +30,8 @@ public class BackendUserController implements BackendUserFeignClient {
 
     @Override
     @PostMapping("/backend/api/v1/user/save")
-    public ResultVO<?> saveUser(@RequestBody BackendUserSaveDTO dto, User currentUser) {
+    public ResultVO<?> saveUser(@RequestBody BackendUserSaveDTO dto) {
+        User currentUser = SaUserUtils.getCurrentUser();
         backendUserService.saveUser(dto, currentUser);
         return ResultVO.success();
     }
@@ -38,7 +40,8 @@ public class BackendUserController implements BackendUserFeignClient {
 
     @Override
     @DeleteMapping("/backend/api/v1/user/deleteBatch")
-    public ResultVO<?> deleteUserBatch(@RequestBody BackendUserPhysicDeleteBatchDTO dto, User currentUser) {
+    public ResultVO<?> deleteUserBatch(@RequestBody BackendUserPhysicDeleteBatchDTO dto) {
+        User currentUser = SaUserUtils.getCurrentUser();
         backendUserService.physicDeleteUserBatch(dto, currentUser);
         return ResultVO.success();
     }
@@ -47,21 +50,24 @@ public class BackendUserController implements BackendUserFeignClient {
 
     @Override
     @PutMapping("/backend/api/v1/user/updateDeleteStatusBatch")
-    public ResultVO<?> updateUserDeleteStatusBatch(@RequestBody BackendUserUpdateDeleteStatusBatchDTO dto, User currentUser) {
+    public ResultVO<?> updateUserDeleteStatusBatch(@RequestBody BackendUserUpdateDeleteStatusBatchDTO dto) {
+        User currentUser = SaUserUtils.getCurrentUser();
         backendUserService.updateUserDeleteStatusBatch(dto, currentUser);
         return ResultVO.success();
     }
 
     @Override
     @PutMapping("/backend/api/v1/user/adminEditUser")
-    public ResultVO<?> adminEditUser(@RequestBody BackendAdminUpdateUserDTO dto, User currentUser) {
+    public ResultVO<?> adminEditUser(@RequestBody BackendAdminUpdateUserDTO dto) {
+        User currentUser = SaUserUtils.getCurrentUser();
         backendUserService.adminEditUser(dto, currentUser);
         return ResultVO.success();
     }
 
     @Override
     @PutMapping("/backend/api/v1/user")
-    public ResultVO<?> updateUser(@RequestBody BackendAdminUpdateUserDTO dto, User currentUser) {
+    public ResultVO<?> updateUser(@RequestBody BackendAdminUpdateUserDTO dto) {
+        User currentUser = SaUserUtils.getCurrentUser();
         backendUserService.updateUser(dto, currentUser);
         return ResultVO.success();
     }
@@ -70,13 +76,15 @@ public class BackendUserController implements BackendUserFeignClient {
 
     @Override
     @GetMapping("/backend/api/v1/user/list")
-    public ResultVO<Page<BackendUserListVO>> findUserList(BackendUserListDTO dto, User currentUser) {
+    public ResultVO<Page<BackendUserListVO>> findUserList(BackendUserListDTO dto) {
+        User currentUser = SaUserUtils.getCurrentUser();
         return ResultVO.success(backendUserService.findUserList(dto, currentUser));
     }
 
     @Override
     @GetMapping("/backend/api/v1/user/testUsernameDuplicate")
-    public ResultVO<Boolean> testUsernameDuplicate(@RequestParam("username") String username, User currentUser) {
+    public ResultVO<Boolean> testUsernameDuplicate(@RequestParam("username") String username) {
+        User currentUser = SaUserUtils.getCurrentUser();
         // 由于这里openfeign会将用户名封装为map,这里的username参数获取到会变为两个用逗号隔开的值，值是一模一样的，任意取其中一个都行
         username = username.split(",")[0];
         return ResultVO.success(backendUserService.testUsernameDuplicate(username, currentUser));
@@ -84,7 +92,8 @@ public class BackendUserController implements BackendUserFeignClient {
 
     @Override
     @GetMapping("/backend/api/v1/user/testEmailDuplicate")
-    public ResultVO<Boolean> testEmailDuplicate(@RequestParam("email") String email, User currentUser) {
+    public ResultVO<Boolean> testEmailDuplicate(@RequestParam("email") String email) {
+        User currentUser = SaUserUtils.getCurrentUser();
         // 由于这里openfeign会将用户名封装为map,这里的email参数获取到会变为两个用逗号隔开的值，值是一模一样的，任意取其中一个都行
         email = email.split(",")[0];
         return ResultVO.success(backendUserService.testEmailDuplicate(email, currentUser));
@@ -92,7 +101,8 @@ public class BackendUserController implements BackendUserFeignClient {
 
     @Override
     @GetMapping("/backend/api/v1/user/adminEditUserTestEmailAvailability")
-    public ResultVO<Boolean> adminEditUserTestEmailAvailability(BackendAdminEditUserEmailTestAvailabilityDTO dto, User currentUser) {
+    public ResultVO<Boolean> adminEditUserTestEmailAvailability(BackendAdminEditUserEmailTestAvailabilityDTO dto) {
+        User currentUser = SaUserUtils.getCurrentUser();
         return ResultVO.success(backendUserService.adminEditUserTestEmailAvailability(dto, currentUser));
     }
 
@@ -102,6 +112,12 @@ public class BackendUserController implements BackendUserFeignClient {
     @GetMapping("/backend/api/v1/user/findUserByUserIdList")
     public ResultVO<List<BackendUserListVO>> findUserListByUserIdList(@RequestParam("userIdList") List<Long> userIdList) {
         return ResultVO.success(backendUserService.findUserListByUserIdList(userIdList));
+    }
+
+    @Override
+    @GetMapping("/backend/api/v1/user/getCurrentUserByUsername")
+    public ResultVO<User> getCurrentUserByUsername(@RequestParam("username") String username) {
+        return ResultVO.success(backendUserService.getCurrentUserByUsername(username));
     }
 
 }

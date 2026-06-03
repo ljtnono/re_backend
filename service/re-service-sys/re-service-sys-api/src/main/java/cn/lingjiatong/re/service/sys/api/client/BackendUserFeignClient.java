@@ -27,11 +27,10 @@ public interface BackendUserFeignClient {
      * 后台保存用户信息
      *
      * @param dto 后台保存用户DTO对象
-     * @param currentUser 当前登录用户
      * @return 通用消息返回对象
      */
     @PostMapping("/backend/api/v1/user/save")
-    ResultVO<?> saveUser(@RequestBody BackendUserSaveDTO dto, @SpringQueryMap User currentUser);
+    ResultVO<?> saveUser(@RequestBody BackendUserSaveDTO dto);
 
 
     // ********************************删除类接口********************************
@@ -40,11 +39,10 @@ public interface BackendUserFeignClient {
      * 批量删除用户列表
      *
      * @param dto 后台批量物理删除用户DTO对象
-     * @param currentUser 当前登陆用户
      * @return 通用消息返回对象
      */
     @DeleteMapping("/backend/api/v1/user/deleteBatch")
-    ResultVO<?> deleteUserBatch(@RequestBody BackendUserPhysicDeleteBatchDTO dto, @SpringQueryMap User currentUser);
+    ResultVO<?> deleteUserBatch(@RequestBody BackendUserPhysicDeleteBatchDTO dto);
 
     // ********************************修改类接口********************************
 
@@ -53,32 +51,29 @@ public interface BackendUserFeignClient {
      * 此方法只有管理员能调用
      *
      * @param dto 后台批量更改用户删除状态DTO对象
-     * @param currentUser 当前用户
      * @return 通用消息返回对象
      */
     @PutMapping("/backend/api/v1/user/updateDeleteStatusBatch")
-    ResultVO<?> updateUserDeleteStatusBatch(@RequestBody BackendUserUpdateDeleteStatusBatchDTO dto, @SpringQueryMap User currentUser);
+    ResultVO<?> updateUserDeleteStatusBatch(@RequestBody BackendUserUpdateDeleteStatusBatchDTO dto);
 
     /**
      * 更改用户信息-管理员
      * 此方法只有管理员能够调用
      *
      * @param dto 后台编辑用户信息DTO对象
-     * @param currentUser 当前登陆用户
      * @return 通用消息返回对象
      */
     @PutMapping("/backend/api/v1/user/adminEditUser")
-    ResultVO<?> adminEditUser(@RequestBody BackendAdminUpdateUserDTO dto, @SpringQueryMap User currentUser);
+    ResultVO<?> adminEditUser(@RequestBody BackendAdminUpdateUserDTO dto);
 
     /**
      * 更改用户信息-个人
      *
      * @param dto 后台编辑用户信息DTO对象
-     * @param currentUser 当前登录用户
      * @return 通用消息返回对象
      */
     @PutMapping("/backend/api/v1/user")
-    ResultVO<?> updateUser(@RequestBody BackendAdminUpdateUserDTO dto, @SpringQueryMap User currentUser);
+    ResultVO<?> updateUser(@RequestBody BackendAdminUpdateUserDTO dto);
 
     // ********************************查询类接口********************************
 
@@ -89,37 +84,34 @@ public interface BackendUserFeignClient {
      * @return 后台获取用户列表VO对象分页对象
      */
     @GetMapping("/backend/api/v1/user/list")
-    ResultVO<Page<BackendUserListVO>> findUserList(@SpringQueryMap BackendUserListDTO dto, @SpringQueryMap User currentUser);
+    ResultVO<Page<BackendUserListVO>> findUserList(@SpringQueryMap BackendUserListDTO dto);
 
     /**
      * 校验用户名是否重复
      *
      * @param username 用户名
-     * @param currentUser 当前用户
      * @return 重复返回true，不重复返回false
      */
     @GetMapping("/backend/api/v1/user/testUsernameDuplicate")
-    ResultVO<Boolean> testUsernameDuplicate(@RequestParam("username") String username, @SpringQueryMap User currentUser);
+    ResultVO<Boolean> testUsernameDuplicate(@RequestParam("username") String username);
 
     /**
      * 测试邮箱是否重复
      *
      * @param email 邮箱
-     * @param currentUser 当前登陆用户
      * @return 重复返回true, 不重复返回false
      */
     @GetMapping("/backend/api/v1/user/testEmailDuplicate")
-    ResultVO<Boolean> testEmailDuplicate(@RequestParam("email") String email, @SpringQueryMap User currentUser);
+    ResultVO<Boolean> testEmailDuplicate(@RequestParam("email") String email);
 
     /**
      * 管理员编辑用户表单测试邮箱是否可用接口
      *
      * @param dto 后台管理员用户编辑用户信息表单测试邮箱是否可用DTO对象
-     * @param currentUser 当前登陆用户
      * @return 可用返回true，不可用返回false
      */
     @GetMapping("/backend/api/v1/user/adminEditUserTestEmailAvailability")
-    ResultVO<Boolean> adminEditUserTestEmailAvailability(@SpringQueryMap BackendAdminEditUserEmailTestAvailabilityDTO dto, @SpringQueryMap User currentUser);
+    ResultVO<Boolean> adminEditUserTestEmailAvailability(@SpringQueryMap BackendAdminEditUserEmailTestAvailabilityDTO dto);
 
 
     // ********************************其他微服务调用********************************
@@ -133,5 +125,14 @@ public interface BackendUserFeignClient {
      */
     @GetMapping("/backend/api/v1/user/findUserByUserIdList")
     ResultVO<List<BackendUserListVO>> findUserListByUserIdList(@RequestParam("userIdList") List<Long> userIdList);
+
+    /**
+     * 根据用户名获取当前登录用户完整信息
+     *
+     * @param username 用户名
+     * @return User实体
+     */
+    @GetMapping("/backend/api/v1/user/getCurrentUserByUsername")
+    ResultVO<User> getCurrentUserByUsername(@RequestParam("username") String username);
 
 }

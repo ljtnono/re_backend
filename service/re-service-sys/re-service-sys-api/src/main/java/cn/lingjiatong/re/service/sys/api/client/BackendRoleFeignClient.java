@@ -2,7 +2,6 @@ package cn.lingjiatong.re.service.sys.api.client;
 
 import cn.lingjiatong.re.common.ResultVO;
 import cn.lingjiatong.re.common.config.FeignBasicAuthRequestInterceptor;
-import cn.lingjiatong.re.common.entity.User;
 import cn.lingjiatong.re.service.sys.api.dto.*;
 import cn.lingjiatong.re.service.sys.api.vo.BackendRoleListVO;
 import cn.lingjiatong.re.service.sys.api.vo.BackendRoleMenuTreeVO;
@@ -28,11 +27,10 @@ public interface BackendRoleFeignClient {
      * 保存角色
      *
      * @param dto 后台保存角色DTO对象
-     * @param currentUser 当前登陆用户
      * @return 通用消息返回对象
      */
     @PostMapping("/backend/api/v1/role/save")
-    ResultVO<?> saveRole(@RequestBody BackendRoleSaveDTO dto, @SpringQueryMap User currentUser);
+    ResultVO<?> saveRole(@RequestBody BackendRoleSaveDTO dto);
 
     // ********************************删除类接口********************************
 
@@ -40,11 +38,10 @@ public interface BackendRoleFeignClient {
      * 批量删除角色
      *
      * @param dto 后台批量删除角色DTO对象
-     * @param currentUser 当前登陆用户
      * @return 通用消息返回对象
      */
     @DeleteMapping("/backend/api/v1/role/deleteBatch")
-    ResultVO<?> deleteRoleBatch(@RequestBody BackendRoleDeleteBatchDTO dto, @SpringQueryMap User currentUser);
+    ResultVO<?> deleteRoleBatch(@RequestBody BackendRoleDeleteBatchDTO dto);
 
 
     // ********************************修改类接口********************************
@@ -53,11 +50,10 @@ public interface BackendRoleFeignClient {
      * 更新角色
      *
      * @param dto 后台更新角色DTO对象
-     * @param currentUser 当前登录用户
      * @return 通用消息返回对象
      */
     @PutMapping("/backend/api/v1/role/update")
-    ResultVO<?> updateRole(@RequestBody BackendRoleUpdateDTO dto, @SpringQueryMap User currentUser);
+    ResultVO<?> updateRole(@RequestBody BackendRoleUpdateDTO dto);
 
     // ********************************查询类接口********************************
 
@@ -65,51 +61,46 @@ public interface BackendRoleFeignClient {
      * 编辑角色表单角色名称校验
      *
      * @param dto 后台角色名称DTO对象
-     * @param currentUser 当前登录用户
      * @return 可用返回true，不可用返回false
      */
     @GetMapping("/backend/api/v1/role/editFormRoleNameCheck")
-    ResultVO<Boolean> editFormRoleNameCheck(@SpringQueryMap BackendRoleNameCheckDTO dto, @SpringQueryMap User currentUser);
+    ResultVO<Boolean> editFormRoleNameCheck(@SpringQueryMap BackendRoleNameCheckDTO dto);
 
     /**
      * 新增角色表单角色名称校验
      *
      * @param roleName 角色名称
-     * @param currentUser 当前登陆用户
      * @return 可用返回true，不可用返回false
      */
     @GetMapping("/backend/api/v1/role/addFormRoleNameCheck")
-    ResultVO<Boolean> addFormRoleNameCheck(@RequestParam("roleName") String roleName, @SpringQueryMap User currentUser);
+    ResultVO<Boolean> addFormRoleNameCheck(@RequestParam("roleName") String roleName);
 
     /**
      * 后台获取角色列表
      *
-     * @param currentUser 当前用户
      * @return 后台角色列表VO对象列表
      */
     @GetMapping("/backend/api/v1/role/list")
-    ResultVO<List<BackendRoleListVO>> findRoleList(@SpringQueryMap User currentUser);
+    ResultVO<List<BackendRoleListVO>> findRoleList();
 
 
     /**
      * 后台分页获取角色列表
      *
      * @param dto 后台分页获取角色列表DTO对象
-     * @param currentUser 当前登陆用户
      * @return 后台获取角色列表VO对象分页对象
      */
     @GetMapping("/backend/api/v1/role/pageList")
-    ResultVO<Page<BackendRoleListVO>> findRolePageList(@SpringQueryMap BackendRolePageListDTO dto, @SpringQueryMap User currentUser);
+    ResultVO<Page<BackendRoleListVO>> findRolePageList(@SpringQueryMap BackendRolePageListDTO dto);
 
     /**
      * 后台获取角色的菜单树
      *
      * @param roleId 角色id
-     * @param currentUser 当前登陆角色
      * @return 角色菜单树VO对象
      */
     @GetMapping("/backend/api/v1/role/menuTree/{roleId}")
-    ResultVO<BackendRoleMenuTreeVO> findRoleMenuTree(@PathVariable("roleId") Long roleId, @SpringQueryMap User currentUser);
+    ResultVO<BackendRoleMenuTreeVO> findRoleMenuTree(@PathVariable("roleId") Long roleId);
 
 
 

@@ -3,6 +3,8 @@ spring:
     name: api-backend
   profiles:
     active: @profiles.active@
+  main:
+    allow-circular-references: true
 feign:
   client:
     config:

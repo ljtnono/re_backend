@@ -1,13 +1,10 @@
 package cn.lingjiatong.re.api.backend.controller;
 
 import cn.lingjiatong.re.common.ResultVO;
-import cn.lingjiatong.re.common.annotation.CurrentUser;
-import cn.lingjiatong.re.common.entity.User;
 import cn.lingjiatong.re.service.sys.api.client.BackendSystemMonitorFeignClient;
 import cn.lingjiatong.re.service.sys.api.vo.BackendSystemMonitorK8sNodeListVO;
 import cn.lingjiatong.re.service.sys.api.vo.BackendSystemMonitorNamespaceListVO;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

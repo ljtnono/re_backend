@@ -2,6 +2,7 @@ package cn.lingjiatong.re.service.sys.controller;
 
 import cn.lingjiatong.re.common.ResultVO;
 import cn.lingjiatong.re.common.entity.User;
+import cn.lingjiatong.re.common.util.SaUserUtils;
 import cn.lingjiatong.re.service.sys.api.client.BackendRoleFeignClient;
 import cn.lingjiatong.re.service.sys.api.dto.*;
 import cn.lingjiatong.re.service.sys.api.vo.BackendRoleListVO;
@@ -29,7 +30,8 @@ public class BackendRoleController implements BackendRoleFeignClient {
 
     @Override
     @PostMapping("/backend/api/v1/role/save")
-    public ResultVO<?> saveRole(@RequestBody BackendRoleSaveDTO dto, User currentUser) {
+    public ResultVO<?> saveRole(@RequestBody BackendRoleSaveDTO dto) {
+        User currentUser = SaUserUtils.getCurrentUser();
         backendRoleService.saveRole(dto, currentUser);
         return ResultVO.success();
     }
@@ -39,7 +41,8 @@ public class BackendRoleController implements BackendRoleFeignClient {
 
     @Override
     @DeleteMapping("/backend/api/v1/role/deleteBatch")
-    public ResultVO<?> deleteRoleBatch(@RequestBody BackendRoleDeleteBatchDTO dto, User currentUser) {
+    public ResultVO<?> deleteRoleBatch(@RequestBody BackendRoleDeleteBatchDTO dto) {
+        User currentUser = SaUserUtils.getCurrentUser();
         backendRoleService.deleteRoleBatch(dto, currentUser);
         return ResultVO.success();
     }
@@ -50,7 +53,8 @@ public class BackendRoleController implements BackendRoleFeignClient {
 
     @Override
     @PutMapping("/backend/api/v1/role/update")
-    public ResultVO<?> updateRole(@RequestBody BackendRoleUpdateDTO dto, User currentUser) {
+    public ResultVO<?> updateRole(@RequestBody BackendRoleUpdateDTO dto) {
+        User currentUser = SaUserUtils.getCurrentUser();
         backendRoleService.updateRole(dto, currentUser);
         return ResultVO.success();
     }
@@ -60,32 +64,37 @@ public class BackendRoleController implements BackendRoleFeignClient {
 
     @Override
     @GetMapping("/backend/api/v1/role/editFormRoleNameCheck")
-    public ResultVO<Boolean> editFormRoleNameCheck(BackendRoleNameCheckDTO dto, User currentUser) {
+    public ResultVO<Boolean> editFormRoleNameCheck(BackendRoleNameCheckDTO dto) {
+        User currentUser = SaUserUtils.getCurrentUser();
         return ResultVO.success(backendRoleService.editFormRoleNameCheck(dto, currentUser));
     }
 
     @Override
     @GetMapping("/backend/api/v1/role/addFormRoleNameCheck")
-    public ResultVO<Boolean> addFormRoleNameCheck(@RequestParam("roleName") String roleName, User currentUser) {
+    public ResultVO<Boolean> addFormRoleNameCheck(@RequestParam("roleName") String roleName) {
+        User currentUser = SaUserUtils.getCurrentUser();
         roleName = roleName.split(",")[0];
         return ResultVO.success(backendRoleService.addFormRoleNameCheck(roleName, currentUser));
     }
 
     @Override
     @GetMapping("/backend/api/v1/role/list")
-    public ResultVO<List<BackendRoleListVO>> findRoleList(User currentUser) {
+    public ResultVO<List<BackendRoleListVO>> findRoleList() {
+        User currentUser = SaUserUtils.getCurrentUser();
         return ResultVO.success(backendRoleService.findRoleList(currentUser));
     }
 
     @Override
     @GetMapping("/backend/api/v1/role/pageList")
-    public ResultVO<Page<BackendRoleListVO>> findRolePageList(BackendRolePageListDTO dto, User currentUser) {
+    public ResultVO<Page<BackendRoleListVO>> findRolePageList(BackendRolePageListDTO dto) {
+        User currentUser = SaUserUtils.getCurrentUser();
         return ResultVO.success(backendRoleService.findRolePageList(dto, currentUser));
     }
 
     @Override
     @GetMapping("/backend/api/v1/role/menuTree/{roleId}")
-    public ResultVO<BackendRoleMenuTreeVO> findRoleMenuTree(@PathVariable("roleId") Long roleId, User currentUser) {
+    public ResultVO<BackendRoleMenuTreeVO> findRoleMenuTree(@PathVariable("roleId") Long roleId) {
+        User currentUser = SaUserUtils.getCurrentUser();
         return ResultVO.success(backendRoleService.findRoleMenuTree(roleId, currentUser));
     }
 

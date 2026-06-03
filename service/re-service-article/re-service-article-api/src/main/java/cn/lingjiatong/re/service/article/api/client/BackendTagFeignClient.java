@@ -2,10 +2,8 @@ package cn.lingjiatong.re.service.article.api.client;
 
 import cn.lingjiatong.re.common.ResultVO;
 import cn.lingjiatong.re.common.config.FeignBasicAuthRequestInterceptor;
-import cn.lingjiatong.re.common.entity.User;
 import cn.lingjiatong.re.service.article.api.vo.BackendTagListVO;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.cloud.openfeign.SpringQueryMap;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import java.util.List;
@@ -27,9 +25,9 @@ public interface BackendTagFeignClient {
     /**
      * 后端获取文章标签列表
      *
-     * @param currentUser 当前登录用户
      * @return 后端获取文章标签列表VO对象列表
      */
     @GetMapping("/backend/api/v1/tag/list")
-    ResultVO<List<BackendTagListVO>> findBackendTagList(@SpringQueryMap User currentUser);
+    ResultVO<List<BackendTagListVO>> findBackendTagList();
+
 }
