@@ -42,10 +42,8 @@
         <jjwt.version>0.9.1</jjwt.version>
         <selenium-java.version>3.141.59</selenium-java.version>
         <kaptcha.version>2.3.2</kaptcha.version>
-        <k8s-client.version>16.0.2</k8s-client.version>
         <dynamic-datasource.version>3.6.1</dynamic-datasource.version>
         <redission.version>3.16.8</redission.version>
-        <jsch.version>0.1.54</jsch.version>
         <oshi.version>5.8.2</oshi.version>
         <sa-token.version>1.44.0</sa-token.version>
         <commons-pool2.version>2.12.0</commons-pool2.version>
@@ -215,12 +213,6 @@
                 <artifactId>xxl-job-core</artifactId>
                 <version>${xxl-job.version}</version>
             </dependency>
-            <!-- k8s-client -->
-            <dependency>
-                <groupId>io.kubernetes</groupId>
-                <artifactId>client-java</artifactId>
-                <version>${k8s-client.version}</version>
-            </dependency>
             <!-- mybatis多数据源 -->
             <dependency>
                 <groupId>com.baomidou</groupId>
@@ -232,12 +224,6 @@
                 <groupId>org.redisson</groupId>
                 <artifactId>redisson</artifactId>
                 <version>${redission.version}</version>
-            </dependency>
-            <!-- jsch -->
-            <dependency>
-                <groupId>com.jcraft</groupId>
-                <artifactId>jsch</artifactId>
-                <version>${jsch.version}</version>
             </dependency>
             <!-- oshi -->
             <dependency>

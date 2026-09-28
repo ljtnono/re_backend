@@ -73,6 +73,7 @@ public class BackendRoleService {
         role.setId(snowflakeIdWorkerUtil.nextId());
         role.setName(dto.getName());
         role.setDescription(dto.getDescription());
+        role.setRemark(dto.getRemark());
         role.setCreateTime(LocalDateTime.now(ZoneId.of("Asia/Shanghai")));
         role.setModifyTime(LocalDateTime.now(ZoneId.of("Asia/Shanghai")));
 
@@ -182,6 +183,7 @@ public class BackendRoleService {
             roleMapper.update(null, new LambdaUpdateWrapper<Role>()
                     .set(Role::getName, dto.getName())
                     .set(Role::getDescription, dto.getDescription())
+                    .set(Role::getRemark, dto.getRemark())
                     .set(Role::getModifyTime, LocalDateTime.now(ZoneId.of("Asia/Shanghai")))
                     .eq(Role::getId, dto.getId()));
             // 更新角色关联菜单信息，先删除原来的菜单关联信息
@@ -343,44 +345,6 @@ public class BackendRoleService {
             vo.setRoleMenuTree(backendRoleMenuTreeVO);
         });
         return rolePageList;
-    }
-
-    /**
-     * 获取角色的菜单树
-     *
-     * @param roleId      角色id
-     * @param currentUser 当前登陆用户
-     * @return 角色菜单树VO对象
-     */
-    @Transactional(readOnly = true)
-    public BackendRoleMenuTreeVO findRoleMenuTree(Long roleId, User currentUser) {
-        BackendRoleMenuTreeVO backendRoleMenuTreeVO = new BackendRoleMenuTreeVO();
-        backendRoleMenuTreeVO.setRoleId(roleId);
-        // 判断角色是否存在
-        if (!isRoleExist(roleId)) {
-            throw new ResourceNotExistException(ErrorEnum.RESOURCE_NOT_EXIST_ERROR);
-        }
-        // 获取角色的所有菜单id列表
-        List<Long> menuIdList = trRoleMenuService.findMenuIdListByRoleId(roleId);
-        if (CollectionUtils.isEmpty(menuIdList)) {
-            backendRoleMenuTreeVO.setMenuTree(Lists.newArrayList());
-            return backendRoleMenuTreeVO;
-        }
-        List<Menu> menuList = backendMenuService.findMenuListByIdList(menuIdList);
-
-        List<BackendRoleMenuTreeVO.MenuTree> roleMenuList = menuList
-                .stream()
-                .map(menu -> {
-                    BackendRoleMenuTreeVO.MenuTree menuTree = new BackendRoleMenuTreeVO.MenuTree();
-                    menuTree.setMenuId(String.valueOf(menu.getId()));
-                    menuTree.setParentMenuId(String.valueOf(menu.getParentId()));
-                    menuTree.setMenuTitle(menu.getTitle());
-                    return menuTree;
-                })
-                .collect(Collectors.toList());
-        List<BackendRoleMenuTreeVO.MenuTree> menuTreeList = menuListToMenuTree(roleMenuList, "-1");
-        backendRoleMenuTreeVO.setMenuTree(menuTreeList);
-        return backendRoleMenuTreeVO;
     }
 
     // ********************************私有函数********************************

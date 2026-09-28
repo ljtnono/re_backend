@@ -8,7 +8,6 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.util.Enumeration;
-import java.util.List;
 
 /**
  * openfeign请求拦截器，用于处理一些openfeign调用丢失token等问题
@@ -19,19 +18,11 @@ import java.util.List;
 @Slf4j
 public class FeignBasicAuthRequestInterceptor implements RequestInterceptor {
 
-    private static final List<String> NOT_HTTP_CALL_PATH = List.of(
-            "/schedule",
-            "/backend/api/v1/systemMonitor/cpuInfo",
-            "/backend/api/v1/systemMonitor/hardDiskInfo",
-            "/backend/api/v1/systemMonitor/memoryInfo",
-            "/backend/api/v1/systemMonitor/k8sPodList"
-    );
-
     @Override
     public void apply(RequestTemplate requestTemplate) {
         // 放行re-job相关的请求
         String path = requestTemplate.path();
-        if (path.contains("/schedule") || NOT_HTTP_CALL_PATH.contains(path)) {
+        if (path.contains("/schedule")) {
             // 定时任务属于非web调用，所以直接跳过
             return;
         }

@@ -3,7 +3,7 @@ package cn.lingjiatong.re.service.sys.service;
 import cn.lingjiatong.re.common.entity.Menu;
 import cn.lingjiatong.re.service.sys.mapper.MenuMapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import org.apache.commons.compress.utils.Lists;
+import com.google.common.collect.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;

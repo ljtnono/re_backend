@@ -37,4 +37,22 @@ public class BackendSystemMonitorCPUVO {
      */
     @Schema(description = "当前空闲率")
     private String freePercent;
+
+    /**
+     * 1分钟负载
+     */
+    @Schema(description = "1分钟负载")
+    private String loadAverage1;
+
+    /**
+     * 5分钟负载
+     */
+    @Schema(description = "5分钟负载")
+    private String loadAverage5;
+
+    /**
+     * 15分钟负载
+     */
+    @Schema(description = "15分钟负载")
+    private String loadAverage15;
 }

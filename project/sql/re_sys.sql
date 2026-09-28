@@ -119,6 +119,7 @@ CREATE TABLE `role` (
   `id` bigint NOT NULL COMMENT '主键id，雪花算法',
   `name` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '角色名',
   `description` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '角色描述',
+  `remark` longtext COMMENT '备注',
   `create_time` datetime NOT NULL COMMENT '创建时间',
   `modify_time` datetime NOT NULL COMMENT '最后修改时间',
   PRIMARY KEY (`id`),
@@ -132,7 +133,7 @@ CREATE TABLE `role` (
 
 LOCK TABLES `role` WRITE;
 /*!40000 ALTER TABLE `role` DISABLE KEYS */;
-INSERT INTO `role` VALUES (1,'超级管理员','拥有所有权限','2020-08-24 00:30:21','2020-08-24 00:30:21'),(1091489754601734144,'系统管理员','拥有系统模块的所有权限','2023-03-31 22:30:36','2024-12-23 14:02:17'),(1320757112710778880,'测试111',NULL,'2024-12-23 14:17:14','2024-12-23 14:17:14');
+INSERT INTO `role` VALUES (1,'超级管理员','拥有所有权限',NULL,'2020-08-24 00:30:21','2020-08-24 00:30:21'),(1091489754601734144,'系统管理员','拥有系统模块的所有权限',NULL,'2023-03-31 22:30:36','2024-12-23 14:02:17'),(1320757112710778880,'测试111',NULL,NULL,'2024-12-23 14:17:14','2024-12-23 14:17:14');
 /*!40000 ALTER TABLE `role` ENABLE KEYS */;
 UNLOCK TABLES;
 

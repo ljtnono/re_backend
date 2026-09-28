@@ -15,6 +15,7 @@
             r.id,
             r.name,
             r.description,
+            r.remark,
             r.create_time,
             r.modify_time
         FROM re_sys.role r

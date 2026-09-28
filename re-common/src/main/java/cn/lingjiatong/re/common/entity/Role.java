@@ -36,6 +36,12 @@ public class Role {
     private String description;
 
     /**
+     * 备注
+     */
+    @TableField(updateStrategy = FieldStrategy.ALWAYS)
+    private String remark;
+
+    /**
      * 创建时间
      */
     private LocalDateTime createTime;

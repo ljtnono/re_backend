@@ -1,0 +1,13 @@
+- generic [ref=f1e4]:
+  - generic [ref=f1e5]: 欢迎登录
+  - generic [ref=f1e8]:
+    - generic [ref=f1e11]:
+      - textbox "请输入用户名" [ref=f1e12]
+      - generic [ref=f1e13]: 
+    - generic [ref=f1e17]:
+      - textbox "请输入密码" [ref=f1e18]
+      - generic [ref=f1e19]: 
+    - generic [ref=f1e22]:
+      - textbox "请输入验证码" [ref=f1e24]
+      - img [ref=f1e25] [cursor=pointer]
+    - button "登录" [ref=f1e28] [cursor=pointer]

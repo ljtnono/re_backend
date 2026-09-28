@@ -138,20 +138,6 @@ public class RoleController {
         return backendRoleFeignClient.findRolePageList(dto);
     }
 
-    /**
-     * 后台获取角色菜单树
-     *
-     * @param roleId 角色id
-     * @return 角色菜单树VO对象
-     */
-    @GetMapping("/menuTree/{roleId}")
-    @Operation(summary = "后台获取角色菜单树", method = "GET")
-//    @PreAuthorize("hasAuthority('system:role') || hasAuthority('system:role:read')")
-    public ResultVO<BackendRoleMenuTreeVO> findRoleMenuTree(@PathVariable("roleId") Long roleId) {
-        log.info("==========后台获取角色菜单树，参数：{}", roleId);
-        return backendRoleFeignClient.findRoleMenuTree(roleId);
-    }
-
     // ********************************私有函数********************************
     // ********************************公用函数********************************
 }

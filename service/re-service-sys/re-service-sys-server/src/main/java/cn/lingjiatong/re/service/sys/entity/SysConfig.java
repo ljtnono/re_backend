@@ -2,8 +2,7 @@ package cn.lingjiatong.re.service.sys.entity;
 
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.ToString;
 
@@ -16,31 +15,31 @@ import lombok.ToString;
 @Data
 @ToString(callSuper = true)
 @TableName(value = "sys_config", schema = "re_sys")
-@ApiModel(description = "系统配置实体类")
+@Schema(description = "系统配置实体类")
 public class SysConfig {
 
     /**
      * 主键id，自增
      */
     @TableId
-    @ApiModelProperty("主键id")
+    @Schema(description = "主键id")
     private Long id;
 
     /**
      * 配置描述
      */
-    @ApiModelProperty("配置描述")
+    @Schema(description = "配置描述")
     private String description;
 
     /**
      * 配置项的key
      */
-    @ApiModelProperty("配置项的key")
+    @Schema(description = "配置项的key")
     private String key;
 
     /**
      * 配置项的值
      */
-    @ApiModelProperty("配置项的值")
+    @Schema(description = "配置项的值")
     private String value;
 }

@@ -2,8 +2,10 @@ package cn.lingjiatong.re.api.backend.controller;
 
 import cn.lingjiatong.re.common.ResultVO;
 import cn.lingjiatong.re.service.sys.api.client.BackendSystemMonitorFeignClient;
-import cn.lingjiatong.re.service.sys.api.vo.BackendSystemMonitorK8sNodeListVO;
-import cn.lingjiatong.re.service.sys.api.vo.BackendSystemMonitorNamespaceListVO;
+import cn.lingjiatong.re.service.sys.api.vo.BackendSystemMonitorCPUVO;
+import cn.lingjiatong.re.service.sys.api.vo.BackendSystemMonitorHardDiskVO;
+import cn.lingjiatong.re.service.sys.api.vo.BackendSystemMonitorIOVO;
+import cn.lingjiatong.re.service.sys.api.vo.BackendSystemMonitorMemoryVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
@@ -34,33 +36,53 @@ public class SystemMonitorController {
     // ********************************修改类接口********************************
     // ********************************查询类接口********************************
 
-//    /**
-//     * 获取k8s节点列表
-//     *
-//     * @param currentUser 当前登录用户
-//     * @return 后台系统监控获取k8s节点列表VO对象列表对象
-//     */
-//    @GetMapping("/k8sNodeList")
-//    @Operation(summary = "获取k8s节点列表", method = "GET")
-////    @PreAuthorize("hasAnyAuthority('system:monitor')")
-//    public ResultVO<List<BackendSystemMonitorK8sNodeListVO>> findK8sNodeList(@Parameter(hidden = true) @CurrentUser User currentUser) {
-//        log.info("==========获取k8s节点列表");
-//        return backendSystemMonitorFeignClient.findK8sNodeList(currentUser);
-//    }
-//
-//    /**
-//     * 获取k8s名称空间列表
-//     *
-//     * @param currentUser 当前登录用户
-//     * @return 后台系统监控k8s名称空间列表VO对象列表
-//     */
-//    @GetMapping("/k8sNamespaceList")
-//    @Operation(summary = "获取k8s名称空间列表", method = "GET")
-////    @PreAuthorize("hasAnyAuthority('system:monitor')")
-//    public ResultVO<List<BackendSystemMonitorNamespaceListVO>> findK8sNamespaceList(@Parameter(hidden = true) @CurrentUser User currentUser) {
-//        log.info("==========获取k8s名称空间列表");
-//        return backendSystemMonitorFeignClient.findNamespaceList(currentUser);
-//    }
+    /**
+     * 获取本机cpu信息
+     *
+     * @return 后台系统监控cpu VO对象
+     */
+    @GetMapping("/cpuInfo")
+    @Operation(summary = "获取本机cpu信息", method = "GET")
+    public ResultVO<BackendSystemMonitorCPUVO> findCPUInfo() {
+        log.info("==========获取本机cpu信息");
+        return backendSystemMonitorFeignClient.findCPUInfo();
+    }
+
+    /**
+     * 获取本机内存信息
+     *
+     * @return 后台系统监控内存 VO对象
+     */
+    @GetMapping("/memoryInfo")
+    @Operation(summary = "获取本机内存信息", method = "GET")
+    public ResultVO<BackendSystemMonitorMemoryVO> findMemoryInfo() {
+        log.info("==========获取本机内存信息");
+        return backendSystemMonitorFeignClient.findMemoryInfo();
+    }
+
+    /**
+     * 获取本机硬盘信息
+     *
+     * @return 后台系统监控硬盘信息VO对象列表
+     */
+    @GetMapping("/hardDiskInfo")
+    @Operation(summary = "获取本机硬盘信息", method = "GET")
+    public ResultVO<List<BackendSystemMonitorHardDiskVO>> findHardDiskInfo() {
+        log.info("==========获取本机硬盘信息");
+        return backendSystemMonitorFeignClient.findHardDiskInfo();
+    }
+
+    /**
+     * 获取本机磁盘、网络IO速率
+     *
+     * @return 后台系统监控磁盘网络IO VO对象
+     */
+    @GetMapping("/ioInfo")
+    @Operation(summary = "获取本机磁盘、网络IO速率", method = "GET")
+    public ResultVO<BackendSystemMonitorIOVO> findIOInfo() {
+        log.info("==========获取本机磁盘、网络IO速率");
+        return backendSystemMonitorFeignClient.findIOInfo();
+    }
 
     // ********************************私有函数********************************
     // ********************************公用函数********************************

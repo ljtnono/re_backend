@@ -2,10 +2,12 @@ package cn.lingjiatong.re.service.sys.api.client;
 
 import cn.lingjiatong.re.common.ResultVO;
 import cn.lingjiatong.re.common.config.FeignBasicAuthRequestInterceptor;
-import cn.lingjiatong.re.service.sys.api.vo.*;
+import cn.lingjiatong.re.service.sys.api.vo.BackendSystemMonitorCPUVO;
+import cn.lingjiatong.re.service.sys.api.vo.BackendSystemMonitorHardDiskVO;
+import cn.lingjiatong.re.service.sys.api.vo.BackendSystemMonitorIOVO;
+import cn.lingjiatong.re.service.sys.api.vo.BackendSystemMonitorMemoryVO;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -23,60 +25,37 @@ public interface BackendSystemMonitorFeignClient {
     // ********************************修改类接口********************************
     // ********************************查询类接口********************************
 
-//    /**
-//     * 获取k8s集群名称空间列表
-//     *
-//     * @param currentUser 当前登陆用户
-//     * @return 后台系统监控获取k8s集群名称空间列表VO对象列表
-//     */
-//    @GetMapping("/backend/api/v1/systemMonitor/namespaceList")
-//    ResultVO<List<BackendSystemMonitorNamespaceListVO>> findNamespaceList();
-
     /**
-     * 获取系统硬盘信息
+     * 获取本机cpu信息
      *
-     * @param ipAddr 主机ip地址
-     * @return 后台系统监控硬盘信息VO对象列表
-     */
-    @GetMapping("/backend/api/v1/systemMonitor/hardDiskInfo")
-    ResultVO<List<BackendSystemMonitorHardDiskVO>> findHardDiskInfo(@RequestParam("ipAddr") String ipAddr);
-
-//    /**
-//     * 获取k8s集群节点列表
-//     *
-//     * @param currentUser 当前登录用户
-//     * @return 后台系统监控k8s节点列表
-//     */
-//    @GetMapping("/backend/api/v1/systemMonitor/k8sNodeList")
-//    ResultVO<List<BackendSystemMonitorK8sNodeListVO>> findK8sNodeList();
-
-    /**
-     * 获取主机cpu信息
-     *
-     * @param ipAddr 主机ip地址
      * @return 后台系统监控cpu VO对象
      */
     @GetMapping("/backend/api/v1/systemMonitor/cpuInfo")
-    ResultVO<BackendSystemMonitorCPUVO> findCPUInfo(@RequestParam("ipAddr") String ipAddr);
+    ResultVO<BackendSystemMonitorCPUVO> findCPUInfo();
 
     /**
-     * 获取主机内存信息
+     * 获取本机内存信息
      *
-     * @param ipAddr 主机ip地址
      * @return 后台系统监控内存 VO对象
      */
     @GetMapping("/backend/api/v1/systemMonitor/memoryInfo")
-    ResultVO<BackendSystemMonitorMemoryVO> findMemoryInfo(@RequestParam("ipAddr") String ipAddr);
+    ResultVO<BackendSystemMonitorMemoryVO> findMemoryInfo();
 
-//    /**
-//     * 获取k8s集群pod列表
-//     *
-//     * @param namespace k8s集群名称空间
-//     * @param currentUser 当前登录用户
-//     * @return 后台系统监控k8s集群pod列表VO对象列表
-//     */
-//    @GetMapping("/backend/api/v1/systemMonitor/k8sPodList")
-//    ResultVO<List<BackendSystemMonitorPodListVO>> findK8sPodList(@RequestParam("namespace") String namespace);
+    /**
+     * 获取本机硬盘信息
+     *
+     * @return 后台系统监控硬盘信息VO对象列表
+     */
+    @GetMapping("/backend/api/v1/systemMonitor/hardDiskInfo")
+    ResultVO<List<BackendSystemMonitorHardDiskVO>> findHardDiskInfo();
+
+    /**
+     * 获取本机磁盘、网络IO速率
+     *
+     * @return 后台系统监控磁盘网络IO VO对象
+     */
+    @GetMapping("/backend/api/v1/systemMonitor/ioInfo")
+    ResultVO<BackendSystemMonitorIOVO> findIOInfo();
 
     // ********************************私有函数********************************
     // ********************************公用函数********************************

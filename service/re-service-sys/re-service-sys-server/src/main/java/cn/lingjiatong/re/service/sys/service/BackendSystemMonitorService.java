@@ -2,38 +2,32 @@ package cn.lingjiatong.re.service.sys.service;
 
 import cn.lingjiatong.re.common.exception.BusinessException;
 import cn.lingjiatong.re.common.exception.ErrorEnum;
-import cn.lingjiatong.re.common.exception.ParamErrorException;
-import cn.lingjiatong.re.service.sys.api.vo.*;
-import cn.lingjiatong.re.service.sys.properties.KubernetesProperties;
-//import cn.lingjiatong.re.service.sys.util.KubernetesUtil;
+import cn.lingjiatong.re.service.sys.api.vo.BackendSystemMonitorCPUVO;
+import cn.lingjiatong.re.service.sys.api.vo.BackendSystemMonitorHardDiskVO;
+import cn.lingjiatong.re.service.sys.api.vo.BackendSystemMonitorIOVO;
+import cn.lingjiatong.re.service.sys.api.vo.BackendSystemMonitorMemoryVO;
 import com.google.common.collect.Lists;
-import com.jcraft.jsch.ChannelExec;
-import com.jcraft.jsch.JSch;
-import com.jcraft.jsch.JSchException;
-import com.jcraft.jsch.Session;
-import io.kubernetes.client.openapi.ApiException;
-import io.kubernetes.client.openapi.models.*;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import oshi.SystemInfo;
+import oshi.hardware.CentralProcessor;
+import oshi.hardware.GlobalMemory;
+import oshi.hardware.HWDiskStore;
+import oshi.hardware.HardwareAbstractionLayer;
+import oshi.hardware.NetworkIF;
+import oshi.software.os.FileSystem;
+import oshi.software.os.OSFileStore;
+import oshi.software.os.OperatingSystem;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.nio.charset.StandardCharsets;
-import java.time.Duration;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
+import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * 后台系统监控service层
+ * <p>
+ * 采集当前运行主机的CPU、内存、硬盘信息（依赖oshi）
  *
  * @author Ling, Jiatong
  * Date: 4/3/23 8:53 PM
@@ -42,465 +36,239 @@ import java.util.stream.Collectors;
 @Service
 public class BackendSystemMonitorService {
 
-    @Autowired
-    private KubernetesProperties kubernetesProperties;
+    private final SystemInfo systemInfo = new SystemInfo();
+
+    // 上次磁盘、网络IO采样快照，用于计算速率
+    private long prevDiskReadBytes = -1;
+    private long prevDiskWriteBytes = -1;
+    private long prevNetworkRecvBytes = -1;
+    private long prevNetworkSendBytes = -1;
+    private long prevIOSampleTime = -1;
 
     // ********************************新增类接口********************************
     // ********************************删除类接口********************************
     // ********************************修改类接口********************************
     // ********************************查询类接口********************************
 
-//    /**
-//     * 获取k8s集群名称空间列表
-//     *
-//     * @return 后台系统监控k8s集群名称空间列表VO对象列表
-//     */
-//    public List<BackendSystemMonitorNamespaceListVO> findNamespaceList() {
-//        List<BackendSystemMonitorNamespaceListVO> result = Lists.newArrayList();
-//        try {
-//            V1NamespaceList namespaceList = KubernetesUtil.getInstance().getNamespaceList();
-//            List<V1Namespace> n = namespaceList.getItems();
-//            if (!CollectionUtils.isEmpty(n)) {
-//                for (V1Namespace v1Namespace : n) {
-//                    String name = v1Namespace.getMetadata().getName();
-//                    BackendSystemMonitorNamespaceListVO vo = new BackendSystemMonitorNamespaceListVO();
-//                    vo.setName(name);
-//                    result.add(vo);
-//                }
-//            }
-//        } catch (ApiException e) {
-//            log.error(e.toString(), e);
-//            throw new BusinessException(ErrorEnum.SYSTEM_MONITOR_ERROR);
-//        }
-//        return result;
-//    }
-
     /**
-     * 获取系统监控硬盘信息
+     * 获取本机CPU信息
      *
-     * @param ipAddr 主机ip地址
-     * @param port 主机ssh端口号
-     * @param username ssh用户名
-     * @param password ssh密码
-     * @return 后台系统监控硬盘VO对象列表
-     */
-    public List<BackendSystemMonitorHardDiskVO> findHardDiskInfo(String ipAddr, int port, String username, String password) {
-        if (!StringUtils.hasLength(ipAddr)) {
-            throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR);
-        }
-        // 创建 JSch 对象
-        JSch jsch = new JSch();
-        Session session;
-        ChannelExec channel;
-        try {
-            // 创建session并链接服务器
-            session = jsch.getSession(username, ipAddr, port);
-            session.setPassword(password);
-            session.setConfig("StrictHostKeyChecking", "no");
-            session.setConfig("PreferredAuthentications", "publickey,keyboard-interactive,password");
-            session.connect();
-        } catch (JSchException e) {
-            log.error(e.toString(), e);
-            throw new BusinessException(ErrorEnum.SYSTEM_MONITOR_ERROR);
-        }
-
-        String command = "df -h";
-        List<BackendSystemMonitorHardDiskVO> result = Lists.newArrayList();
-        try {
-            channel = (ChannelExec) session.openChannel("exec");
-            channel.setCommand(command);
-            channel.connect();
-            // 读取输出
-            InputStream in = channel.getInputStream();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-            String line;
-            while ((line = reader.readLine()) != null) {
-                if (!line.startsWith("Filesystem")) {
-                    String[] fields = line.split("\\s+");
-                    String filesystem = fields[0];
-                    String totalSize = fields[1];
-                    String usedSize = fields[2];
-                    String availableSize = fields[3];
-                    String usedPercent = fields[4];
-                    String mountPoint = fields[5];
-
-                    BackendSystemMonitorHardDiskVO vo = new BackendSystemMonitorHardDiskVO();
-                    vo.setMountPoint(mountPoint);
-                    vo.setFileSystem(filesystem);
-                    vo.setTotalSize(totalSize);
-                    vo.setAvailableSize(availableSize);
-                    vo.setUsedSize(usedSize);
-                    vo.setUsedPercent(usedPercent);
-                    result.add(vo);
-                }
-            }
-            // 关闭通道
-            channel.disconnect();
-            session.disconnect();
-        } catch (JSchException | IOException e) {
-            log.error(e.toString(), e);
-            throw new BusinessException(ErrorEnum.SYSTEM_MONITOR_ERROR);
-        }
-
-        return result;
-    }
-
-//    /**
-//     * 获取k8s节点列表
-//     *
-//     * @return 后台获取k8s节点列表VO对象列表
-//     */
-//    public List<BackendSystemMonitorK8sNodeListVO> findK8sNodeList() {
-//        KubernetesUtil k8sUtil = KubernetesUtil.getInstance();
-//        List<BackendSystemMonitorK8sNodeListVO> result = Lists.newArrayList();
-//        try {
-//            V1NodeList nodeList = k8sUtil.getNodeList();
-//            List<V1Node> itemList = nodeList.getItems();
-//            itemList.forEach(item -> {
-//                BackendSystemMonitorK8sNodeListVO vo = new BackendSystemMonitorK8sNodeListVO();
-//                V1NodeStatus status = item.getStatus();
-//                List<V1NodeAddress> addresses = status.getAddresses();
-//                addresses.forEach(address -> {
-//                    String type = address.getType();
-//                    String addr = address.getAddress();
-//                    if ("InternalIP".equals(type)) {
-//                        vo.setNodeIPAddr(addr);
-//                    } else if ("Hostname".equals(type)) {
-//                        vo.setNodeHostname(addr);
-//                    }
-//                });
-//                result.add(vo);
-//            });
-//        } catch (ApiException e) {
-//            log.error(e.toString(), e);
-//            throw new BusinessException(ErrorEnum.SYSTEM_MONITOR_ERROR);
-//        }
-//        return result;
-//    }
-
-    /**
-     * 获取主机CPU信息
-     *
-     * @param ipAddr 主机ip地址
-     * @param port 主机ssh端口号
-     * @param username ssh用户名
-     * @param password ssh密码
      * @return 后台系统监控CPU VO对象
      */
-    public BackendSystemMonitorCPUVO findCPUInfo(String ipAddr, int port, String username, String password) {
-        if (!StringUtils.hasLength(ipAddr)) {
-            throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR);
-        }
-        // 创建 JSch 对象
-        JSch jsch = new JSch();
-        Session session;
-        ChannelExec channel;
-        try {
-            // 创建session并链接服务器
-            session = jsch.getSession(username, ipAddr, port);
-            session.setPassword(password);
-            session.setConfig("StrictHostKeyChecking", "no");
-            session.setConfig("PreferredAuthentications", "publickey,keyboard-interactive,password");
-            session.connect();
-        } catch (JSchException e) {
-            log.error(e.toString(), e);
-            throw new BusinessException(ErrorEnum.SYSTEM_MONITOR_ERROR);
-        }
-
-        String cpuCountCommand = "grep -c processor /proc/cpuinfo";
-        String cpuUsedInfoCommand = "top -b -n1 | grep 'Cpu(s)'";
-        StringBuilder cpuInfoResultStringBuilder = new StringBuilder();
-        StringBuilder cpuCountResultStringBuilder = new StringBuilder();
-        try {
-            // 创建执行命令的通道
-            channel = (ChannelExec) session.openChannel("exec");
-            channel.setCommand(cpuUsedInfoCommand);
-            channel.connect();
-            // 读取输出
-            byte[] buffer = new byte[1024];
-            InputStream inputStream = channel.getInputStream();
-            while (inputStream.read(buffer, 0, buffer.length) != -1) {
-                cpuInfoResultStringBuilder.append(new String(buffer, StandardCharsets.UTF_8));
+    public BackendSystemMonitorCPUVO findCPUInfo() {
+        HardwareAbstractionLayer hal = systemInfo.getHardware();
+        CentralProcessor processor = hal.getProcessor();
+        long[] prevTicks = processor.getSystemCpuLoadTicks();
+        // 间隔一段时间后再取一次tick值，计算两次采样之间各类型的cpu占用率
+        // oshi读取/proc/stat存在短暂缓存，循环采样直到tick发生变化（最多等待2s）
+        long[] ticks = null;
+        long deadline = System.currentTimeMillis() + 2000;
+        while (System.currentTimeMillis() < deadline) {
+            try {
+                Thread.sleep(200);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                log.error(e.toString(), e);
+                throw new BusinessException(ErrorEnum.SYSTEM_MONITOR_ERROR);
             }
-            // 关闭通道
-            channel.disconnect();
-
-            // 创建执行命令的通道
-            channel = (ChannelExec) session.openChannel("exec");
-            channel.setCommand(cpuCountCommand);
-            channel.connect();
-            InputStream in = channel.getInputStream();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-            String line;
-            while ((line = reader.readLine()) != null) {
-                cpuCountResultStringBuilder.append(line);
+            long[] current = processor.getSystemCpuLoadTicks();
+            if (!Arrays.equals(current, prevTicks)) {
+                ticks = current;
+                break;
             }
-            channel.disconnect();
-            session.disconnect();
-        } catch (JSchException | IOException e) {
-            log.error(e.toString(), e);
+        }
+        if (ticks == null) {
+            log.error("cpu占用信息获取异常");
             throw new BusinessException(ErrorEnum.SYSTEM_MONITOR_ERROR);
         }
 
-        String cpuUsedInfo = cpuInfoResultStringBuilder.toString().trim();
-        String cpuCountInfo = cpuCountResultStringBuilder.toString().trim();
-        if (!StringUtils.hasLength(cpuUsedInfo) || !cpuUsedInfo.startsWith("%Cpu(s)")) {
-            log.error("cpu占用信息解析异常");
-            throw new BusinessException(ErrorEnum.SYSTEM_MONITOR_ERROR);
+        // tick数组下标对应 CentralProcessor.TickType 的顺序：
+        // 0 USER、1 NICE、2 SYSTEM、3 IDLE、4 IOWAIT、5 IRQ、6 SOFTIRQ、7 STEAL
+        long total = 0;
+        long[] delta = new long[prevTicks.length];
+        for (int i = 0; i < prevTicks.length; i++) {
+            delta[i] = ticks[i] - prevTicks[i];
+            total += delta[i];
         }
-        if (!StringUtils.hasLength(cpuCountInfo)) {
-            log.error("cpu核心数解析异常");
+        if (total <= 0) {
+            log.error("cpu占用信息获取异常");
             throw new BusinessException(ErrorEnum.SYSTEM_MONITOR_ERROR);
         }
 
-        // 解析输出
-        String[] fields = cpuUsedInfo.split("\\s+");
-        double userUsedPercent = BigDecimal.valueOf(Double.parseDouble(fields[1]))
-                .setScale(2, RoundingMode.HALF_UP)
-                .doubleValue();
-        double systemUsedPercent = BigDecimal.valueOf(Double.parseDouble(fields[3]))
-                .setScale(2, RoundingMode.HALF_UP)
-                .doubleValue();
-        double idlePercent = BigDecimal.valueOf(Double.parseDouble(fields[7]))
-                .setScale(2, RoundingMode.HALF_UP)
-                .doubleValue();
-        int cpuCount = Integer.valueOf(cpuCountInfo);
+        double userUsedPercent = scale2(delta[CentralProcessor.TickType.USER.getIndex()] * 100.0 / total);
+        double systemUsedPercent = scale2((delta[CentralProcessor.TickType.SYSTEM.getIndex()]
+                + delta[CentralProcessor.TickType.IRQ.getIndex()]
+                + delta[CentralProcessor.TickType.SOFTIRQ.getIndex()]) * 100.0 / total);
+        double freePercent = scale2(delta[CentralProcessor.TickType.IDLE.getIndex()] * 100.0 / total);
 
         BackendSystemMonitorCPUVO vo = new BackendSystemMonitorCPUVO();
-        vo.setCpuCoreNum(cpuCount);
+        vo.setCpuCoreNum(processor.getLogicalProcessorCount());
         vo.setUserUsedPercent(userUsedPercent + "%");
         vo.setSystemUsedPercent(systemUsedPercent + "%");
-        vo.setFreePercent(idlePercent + "%");
+        vo.setFreePercent(freePercent + "%");
+
+        // 1/5/15分钟负载（Linux下取自/proc/loadavg，不可用时为负数）
+        double[] loadAverage = processor.getSystemLoadAverage(3);
+        if (loadAverage != null && loadAverage.length == 3) {
+            vo.setLoadAverage1(loadAverage[0] >= 0 ? String.valueOf(scale2(loadAverage[0])) : null);
+            vo.setLoadAverage5(loadAverage[1] >= 0 ? String.valueOf(scale2(loadAverage[1])) : null);
+            vo.setLoadAverage15(loadAverage[2] >= 0 ? String.valueOf(scale2(loadAverage[2])) : null);
+        }
         return vo;
     }
 
     /**
-     * 获取主机内存信息
+     * 获取本机内存信息
      *
-     * @param ipAddr 主机ip地址
-     * @param port 主机ssh端口号
-     * @param username ssh用户名
-     * @param password ssh密码
      * @return 后台系统监控内存VO对象
      */
-    public BackendSystemMonitorMemoryVO findMemoryInfo(String ipAddr, int port, String username, String password) {
-        if (!StringUtils.hasLength(ipAddr)) {
-            throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR);
-        }
-
-        JSch jsch = new JSch();
-        Session session;
-        ChannelExec channel;
-        try {
-            session = jsch.getSession(username, ipAddr, port);
-            session.setPassword(password);
-            session.setConfig("StrictHostKeyChecking", "no");
-            session.setConfig("PreferredAuthentications", "publickey,keyboard-interactive,password");
-            session.connect();
-        } catch (JSchException e) {
-            log.error(e.toString(), e);
+    public BackendSystemMonitorMemoryVO findMemoryInfo() {
+        GlobalMemory memory = systemInfo.getHardware().getMemory();
+        long total = memory.getTotal();
+        long available = memory.getAvailable();
+        long used = total - available;
+        if (total <= 0) {
+            log.error("内存信息获取异常");
             throw new BusinessException(ErrorEnum.SYSTEM_MONITOR_ERROR);
         }
 
-        String command = "free";
-        StringBuilder memoryInfoResultStringBuilder = new StringBuilder();
-        try {
-            channel = (ChannelExec) session.openChannel("exec");
-            channel.setCommand(command);
-            channel.connect();
-            // 读取输出
-            byte[] buffer = new byte[1024];
-            InputStream inputStream = channel.getInputStream();
-            while (inputStream.read(buffer, 0, buffer.length) != -1) {
-                memoryInfoResultStringBuilder.append(new String(buffer, StandardCharsets.UTF_8));
-            }
-            // 关闭通道
-            channel.disconnect();
-            session.disconnect();
-        } catch (JSchException | IOException e) {
-            log.error(e.toString(), e);
-            throw new BusinessException(ErrorEnum.SYSTEM_MONITOR_ERROR);
-        }
-
-        String memoryInfo = memoryInfoResultStringBuilder.toString().trim();
-        if (!StringUtils.hasLength(memoryInfo)) {
-            log.error("内存占用信息解析异常");
-            throw new BusinessException(ErrorEnum.SYSTEM_MONITOR_ERROR);
-        }
+        double totalMemory = scale2(total / 1024.0 / 1024 / 1024);
+        double usedMemory = scale2(used / 1024.0 / 1024 / 1024);
+        double availableMemory = scale2(available / 1024.0 / 1024 / 1024);
+        double memoryUsedPercent = scale2(used * 100.0 / total);
 
         BackendSystemMonitorMemoryVO vo = new BackendSystemMonitorMemoryVO();
-        String[] lines = memoryInfo.split("\n");
-        String[] memoryData = lines[1].split("\\s+");
-        double totalMemory = BigDecimal.valueOf(Double.parseDouble(memoryData[1]))
-                .setScale(2, RoundingMode.HALF_UP)
-                .divide(BigDecimal.valueOf(1024), RoundingMode.HALF_UP)
-                .divide(BigDecimal.valueOf(1024), RoundingMode.HALF_UP)
-                .doubleValue();
-        double usedMemory = BigDecimal.valueOf(Double.parseDouble(memoryData[2]))
-                .setScale(2, RoundingMode.HALF_UP)
-                .divide(BigDecimal.valueOf(1024), RoundingMode.HALF_UP)
-                .divide(BigDecimal.valueOf(1024), RoundingMode.HALF_UP)
-                .doubleValue();
-        double availableMemory = BigDecimal.valueOf(Double.parseDouble(memoryData[6]))
-                .setScale(2, RoundingMode.HALF_UP)
-                .divide(BigDecimal.valueOf(1024), RoundingMode.HALF_UP)
-                .divide(BigDecimal.valueOf(1024), RoundingMode.HALF_UP)
-                .doubleValue();
-        double memoryUsage = BigDecimal.valueOf(usedMemory)
-                .setScale(2, RoundingMode.HALF_UP)
-                .divide(BigDecimal.valueOf(totalMemory), RoundingMode.HALF_UP)
-                .doubleValue();
-
         vo.setTotalMemory(totalMemory + "GB");
         vo.setUsedMemory(usedMemory + "GB");
         vo.setAvailableMemory(availableMemory + "GB");
-        vo.setMemoryUsedPercent(memoryUsage * 100 + "%");
+        vo.setMemoryUsedPercent(memoryUsedPercent + "%");
         return vo;
     }
 
-//    /**
-//     * 获取k8s集群的pod列表
-//     *
-//     * @param namespace 名称空间
-//     * @return 后台系统监控获取k8s集群的pod列表VO对象列表
-//     */
-//    public List<BackendSystemMonitorPodListVO> findK8sPodList(String namespace) {
-//        if (!StringUtils.hasLength(namespace)) {
-//            throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR);
-//        }
-//
-//        V1PodList v1PodList;
-//        try {
-//            v1PodList = KubernetesUtil.getInstance().getPodList(namespace);
-//        } catch (ApiException e) {
-//            log.error(e.toString(), e);
-//            throw new BusinessException(ErrorEnum.SYSTEM_MONITOR_ERROR);
-//        }
-//
-//        List<BackendSystemMonitorPodListVO> result = Lists.newArrayList();
-//        List<V1Pod> items = v1PodList.getItems();
-//        if (CollectionUtils.isEmpty(items)) {
-//            return result;
-//        }
-//
-//        items.forEach(item -> {
-//            String name = "<none>";
-//            String ready = "<none>";
-//            String status = "<none>";
-//            String restarts = "<none>";
-//            String age = "<none>";
-//            String ip = "<none>";
-//            String node = "<none>";
-//            String nominatedNode = "<none>";
-//            String readinessGates = "<none>";
-//
-//            // name
-//            V1ObjectMeta metadata = item.getMetadata();
-//            if (metadata != null) {
-//                name = metadata.getName();
-//            }
-//
-//            V1PodStatus v1PodStatus = item.getStatus();
-//            if (v1PodStatus != null) {
-//                // ready
-//                List<V1ContainerStatus> containerStatusList = v1PodStatus.getContainerStatuses();
-//                if (!CollectionUtils.isEmpty(containerStatusList)) {
-//                    int readyCount = 0;
-//                    int totalCount = containerStatusList.size();
-//                    for (V1ContainerStatus containerStatus : containerStatusList) {
-//                        if (containerStatus.getReady()) {
-//                            readyCount++;
-//                        }
-//                    }
-//                    ready = readyCount + "/" + totalCount;
-//                }
-//                // status
-//                status = item.getStatus().getPhase();
-//
-//                OffsetDateTime lastRestartTime = v1PodStatus.getStartTime();
-//                if (lastRestartTime != null) {
-//                    // restarts
-//                    if (!CollectionUtils.isEmpty(containerStatusList)) {
-//                        V1ContainerStatus firstContainerStatus = v1PodStatus.getContainerStatuses().get(0);
-//                        Duration lastRestartTimeduration = Duration.between(lastRestartTime, OffsetDateTime.now());
-//                        StringBuilder restartStringBuilder = new StringBuilder(String.valueOf(firstContainerStatus.getRestartCount()));
-//                        if (lastRestartTimeduration.toMinutes() < 60) {
-//                            restartStringBuilder.append(" (").append(lastRestartTimeduration.toMinutes()).append("m ago)");
-//                        } else if (lastRestartTimeduration.toHours() < 24) {
-//                            restartStringBuilder.append(" (").append(lastRestartTimeduration.toHours()).append("h ago)");
-//                        } else {
-//                            restartStringBuilder.append(" (").append(lastRestartTimeduration.toDays()).append("d ago)");
-//                        }
-//                        restarts = restartStringBuilder.toString();
-//                    }
-//
-//                    // age
-//                    Duration duration = Duration.between(lastRestartTime, OffsetDateTime.now(ZoneOffset.UTC));
-//                    long totalSeconds = duration.getSeconds();
-//                    long days = totalSeconds / (60 * 60 * 24);
-//                    long hours = (totalSeconds % (60 * 60 * 24)) / (60 * 60);
-//                    age = days + "d" + hours + "h";
-//                }
-//
-//                // ip
-//                ip = v1PodStatus.getPodIP();
-//
-//                // nominatedNodeName
-//                if (StringUtils.hasLength(v1PodStatus.getNominatedNodeName())) {
-//                    nominatedNode = v1PodStatus.getNominatedNodeName();
-//                }
-//            }
-//
-//            V1PodSpec spec = item.getSpec();
-//            if (spec != null) {
-//                // node
-//                node = spec.getNodeName();
-//
-//                // readinessGates
-//                List<V1PodReadinessGate> readinessGateList = spec.getReadinessGates();
-//                if (!CollectionUtils.isEmpty(readinessGateList)) {
-//                    readinessGates = readinessGateList
-//                            .stream()
-//                            .map(V1PodReadinessGate::getConditionType)
-//                            .collect(Collectors.joining(","));
-//                }
-//            }
-//
-//            BackendSystemMonitorPodListVO vo = new BackendSystemMonitorPodListVO();
-//            vo.setName(name);
-//            vo.setReady(ready);
-//            vo.setStatus(status);
-//            vo.setRestarts(restarts);
-//            vo.setAge(age);
-//            vo.setIp(ip);
-//            vo.setNode(node);
-//            vo.setNominatedNode(nominatedNode);
-//            vo.setReadinessGates(readinessGates);
-//            result.add(vo);
-//        });
-//
-//        return result;
-//    }
+    /**
+     * 获取本机硬盘信息
+     *
+     * @return 后台系统监控硬盘VO对象列表
+     */
+    public List<BackendSystemMonitorHardDiskVO> findHardDiskInfo() {
+        OperatingSystem os = systemInfo.getOperatingSystem();
+        FileSystem fileSystem = os.getFileSystem();
+        List<OSFileStore> fileStores = fileSystem.getFileStores();
+        List<BackendSystemMonitorHardDiskVO> result = Lists.newArrayList();
+        for (OSFileStore store : fileStores) {
+            long total = store.getTotalSpace();
+            long usable = store.getUsableSpace();
+            long used = total - usable;
+
+            BackendSystemMonitorHardDiskVO vo = new BackendSystemMonitorHardDiskVO();
+            vo.setMountPoint(store.getMount());
+            vo.setFileSystem(store.getType());
+            vo.setTotalSize(formatSize(total));
+            vo.setAvailableSize(formatSize(usable));
+            vo.setUsedSize(formatSize(used));
+            vo.setUsedPercent(total > 0 ? scale2(used * 100.0 / total) + "%" : "-");
+            result.add(vo);
+        }
+        return result;
+    }
+
+    /**
+     * 获取本机磁盘、网络IO速率
+     * <p>
+     * 通过两次请求之间的采样差值计算平均速率，首次调用返回0
+     *
+     * @return 后台系统监控磁盘网络IO VO对象
+     */
+    public synchronized BackendSystemMonitorIOVO findIOInfo() {
+        HardwareAbstractionLayer hal = systemInfo.getHardware();
+        long diskReadBytes = 0;
+        long diskWriteBytes = 0;
+        long networkRecvBytes = 0;
+        long networkSendBytes = 0;
+        for (HWDiskStore diskStore : hal.getDiskStores()) {
+            if (diskStore.updateAttributes()) {
+                diskReadBytes += diskStore.getReadBytes();
+                diskWriteBytes += diskStore.getWriteBytes();
+            }
+        }
+        for (NetworkIF networkIF : hal.getNetworkIFs()) {
+            if (networkIF.updateAttributes()) {
+                networkRecvBytes += networkIF.getBytesRecv();
+                networkSendBytes += networkIF.getBytesSent();
+            }
+        }
+
+        long now = System.currentTimeMillis();
+        BackendSystemMonitorIOVO vo = new BackendSystemMonitorIOVO();
+        if (prevIOSampleTime > 0 && now > prevIOSampleTime) {
+            double seconds = (now - prevIOSampleTime) / 1000.0;
+            // 计数器可能被重置（如网卡重启），差值不为负
+            vo.setDiskReadRate(formatRate(Math.max(0, diskReadBytes - prevDiskReadBytes) / seconds));
+            vo.setDiskWriteRate(formatRate(Math.max(0, diskWriteBytes - prevDiskWriteBytes) / seconds));
+            vo.setNetworkRecvRate(formatRate(Math.max(0, networkRecvBytes - prevNetworkRecvBytes) / seconds));
+            vo.setNetworkSendRate(formatRate(Math.max(0, networkSendBytes - prevNetworkSendBytes) / seconds));
+        } else {
+            vo.setDiskReadRate("0KB/s");
+            vo.setDiskWriteRate("0KB/s");
+            vo.setNetworkRecvRate("0KB/s");
+            vo.setNetworkSendRate("0KB/s");
+        }
+        prevDiskReadBytes = diskReadBytes;
+        prevDiskWriteBytes = diskWriteBytes;
+        prevNetworkRecvBytes = networkRecvBytes;
+        prevNetworkSendBytes = networkSendBytes;
+        prevIOSampleTime = now;
+        return vo;
+    }
 
     // ********************************私有函数********************************
 
-    // ********************************公共函数********************************
+    /**
+     * 保留两位小数
+     */
+    private double scale2(double value) {
+        return BigDecimal.valueOf(value).setScale(2, RoundingMode.HALF_UP).doubleValue();
+    }
 
     /**
-     * 根据主机的ip地址获取主机相关信息
-     *
-     * @param ipAddr 主机ip地址
-     * @return 主机信息map
+     * 将字节数格式化为可读大小（参照df -h风格）
      */
-    public KubernetesProperties.KubernetesNode findK8sNodeInfoByIpAddr(String ipAddr) {
-        List<KubernetesProperties.KubernetesNode> nodeList = kubernetesProperties.getNodeList();
-        for (KubernetesProperties.KubernetesNode node : nodeList) {
-            String ip = node.getIpAddr();
-            if (ip.equalsIgnoreCase(ipAddr)) {
-                return node;
-            }
+    private String formatSize(long bytes) {
+        if (bytes < 0) {
+            return "-";
         }
-        return null;
+        if (bytes < 1024) {
+            return bytes + "B";
+        }
+        double value = bytes;
+        String[] units = {"B", "K", "M", "G", "T", "P"};
+        int unitIndex = 0;
+        while (value >= 1024 && unitIndex < units.length - 1) {
+            value = value / 1024;
+            unitIndex++;
+        }
+        return scale2(value) + units[unitIndex];
     }
+
+    /**
+     * 将速率（字节/秒）格式化为可读字符串
+     */
+    private String formatRate(double bytesPerSecond) {
+        if (bytesPerSecond < 0) {
+            return "-";
+        }
+        if (bytesPerSecond < 1024) {
+            return scale2(bytesPerSecond) + "B/s";
+        }
+        if (bytesPerSecond < 1024 * 1024) {
+            return scale2(bytesPerSecond / 1024) + "KB/s";
+        }
+        if (bytesPerSecond < 1024 * 1024 * 1024) {
+            return scale2(bytesPerSecond / 1024 / 1024) + "MB/s";
+        }
+        return scale2(bytesPerSecond / 1024 / 1024 / 1024) + "GB/s";
+    }
+
+    // ********************************公共函数********************************
 
 }

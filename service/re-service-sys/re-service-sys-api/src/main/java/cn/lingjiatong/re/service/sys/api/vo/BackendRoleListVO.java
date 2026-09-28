@@ -36,6 +36,12 @@ public class BackendRoleListVO {
     private String description;
 
     /**
+     * 备注
+     */
+    @Schema(description = "备注")
+    private String remark;
+
+    /**
      * 创建时间
      */
     @Schema(description = "创建时间")

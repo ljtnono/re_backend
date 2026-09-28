@@ -28,6 +28,12 @@ public class BackendRoleSaveDTO {
     private String description;
 
     /**
+     * 备注
+     */
+    @Schema(description = "备注")
+    private String remark;
+
+    /**
      * 角色菜单id集合
      */
     @Schema(description = "角色菜单id集合")

@@ -93,17 +93,6 @@ public interface BackendRoleFeignClient {
     @GetMapping("/backend/api/v1/role/pageList")
     ResultVO<Page<BackendRoleListVO>> findRolePageList(@SpringQueryMap BackendRolePageListDTO dto);
 
-    /**
-     * 后台获取角色的菜单树
-     *
-     * @param roleId 角色id
-     * @return 角色菜单树VO对象
-     */
-    @GetMapping("/backend/api/v1/role/menuTree/{roleId}")
-    ResultVO<BackendRoleMenuTreeVO> findRoleMenuTree(@PathVariable("roleId") Long roleId);
-
-
-
     // ********************************私有函数********************************
     // ********************************公用函数********************************
 

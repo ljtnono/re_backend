@@ -91,13 +91,6 @@ public class BackendRoleController implements BackendRoleFeignClient {
         return ResultVO.success(backendRoleService.findRolePageList(dto, currentUser));
     }
 
-    @Override
-    @GetMapping("/backend/api/v1/role/menuTree/{roleId}")
-    public ResultVO<BackendRoleMenuTreeVO> findRoleMenuTree(@PathVariable("roleId") Long roleId) {
-        User currentUser = SaUserUtils.getCurrentUser();
-        return ResultVO.success(backendRoleService.findRoleMenuTree(roleId, currentUser));
-    }
-
 
     // ********************************私有函数********************************
     // ********************************公用函数********************************
