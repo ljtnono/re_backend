@@ -79,6 +79,24 @@ public interface BackendUserFeignClient {
     @PutMapping("/backend/api/v1/user/updatePassword")
     ResultVO<?> updatePassword(@RequestBody BackendUserUpdatePasswordDTO dto);
 
+    /**
+     * 发送忘记密码邮箱验证码
+     *
+     * @param dto 后台忘记密码发送验证码DTO对象
+     * @return 通用返回VO对象
+     */
+    @PostMapping("/backend/api/v1/user/forgetPassword/sendCode")
+    ResultVO<?> sendForgetPasswordCode(@RequestBody BackendUserForgetPasswordSendCodeDTO dto);
+
+    /**
+     * 忘记密码重置密码
+     *
+     * @param dto 后台忘记密码重置密码DTO对象
+     * @return 通用返回VO对象
+     */
+    @PostMapping("/backend/api/v1/user/forgetPassword/reset")
+    ResultVO<?> resetPasswordByEmailCode(@RequestBody BackendUserForgetPasswordResetDTO dto);
+
     // ********************************修改类接口********************************
 
     /**

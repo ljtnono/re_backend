@@ -99,6 +99,30 @@ public class UserController {
         return backendUserFeignClient.updatePassword(dto);
     }
 
+    /**
+     * 发送忘记密码邮箱验证码
+     *
+     * @param dto 后台忘记密码发送验证码DTO对象
+     * @return 通用消息返回对象
+     */
+    @PostMapping("/forgetPassword/sendCode")
+    @Operation(summary = "发送忘记密码邮箱验证码", method = "POST")
+    public ResultVO<?> sendForgetPasswordCode(@RequestBody BackendUserForgetPasswordSendCodeDTO dto) {
+        return backendUserFeignClient.sendForgetPasswordCode(dto);
+    }
+
+    /**
+     * 忘记密码重置密码
+     *
+     * @param dto 后台忘记密码重置密码DTO对象
+     * @return 通用消息返回对象
+     */
+    @PostMapping("/forgetPassword/reset")
+    @Operation(summary = "忘记密码重置密码", method = "POST")
+    public ResultVO<?> resetPasswordByEmailCode(@RequestBody BackendUserForgetPasswordResetDTO dto) {
+        return backendUserFeignClient.resetPasswordByEmailCode(dto);
+    }
+
     // ********************************修改类接口********************************
 
     /**

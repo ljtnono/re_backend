@@ -23,6 +23,10 @@ public enum RedisCacheKeyEnum {
     EMAIL_UPDATE_PASSWORD_CODE("re:email:passwordCode:"),
     // 修改密码邮箱验证码发送频率限制key，拼接用户id
     EMAIL_UPDATE_PASSWORD_SEND_RATE_LIMIT("re:email:passwordRateLimit:"),
+    // 忘记密码邮箱验证码key，拼接用户名
+    EMAIL_FORGET_PASSWORD_CODE("re:email:forgetPasswordCode:"),
+    // 忘记密码邮箱验证码发送频率限制key，拼接用户名
+    EMAIL_FORGET_PASSWORD_SEND_RATE_LIMIT("re:email:forgetPasswordRateLimit:"),
 
     // ********************************文章相关********************************
 

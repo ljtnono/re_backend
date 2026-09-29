@@ -78,6 +78,20 @@ public class BackendUserController implements BackendUserFeignClient {
         return ResultVO.success();
     }
 
+    @Override
+    @PostMapping("/backend/api/v1/user/forgetPassword/sendCode")
+    public ResultVO<?> sendForgetPasswordCode(@RequestBody BackendUserForgetPasswordSendCodeDTO dto) {
+        backendUserService.sendForgetPasswordCode(dto);
+        return ResultVO.success();
+    }
+
+    @Override
+    @PostMapping("/backend/api/v1/user/forgetPassword/reset")
+    public ResultVO<?> resetPasswordByEmailCode(@RequestBody BackendUserForgetPasswordResetDTO dto) {
+        backendUserService.resetPasswordByEmailCode(dto);
+        return ResultVO.success();
+    }
+
     // ********************************修改类接口********************************
 
     @Override

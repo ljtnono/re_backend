@@ -45,8 +45,7 @@ public class UserLoginVO {
         /**
          * 用户id
          */
-        @JsonIgnore
-        @Schema(hidden = true)
+        @Schema(description = "用户id")
         private Long id;
 
         /**

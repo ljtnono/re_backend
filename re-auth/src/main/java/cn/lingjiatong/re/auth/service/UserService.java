@@ -14,11 +14,7 @@ import cn.lingjiatong.re.common.entity.cache.LoginVerifyCodeCache;
 import cn.lingjiatong.re.common.entity.cache.UserInfoCache;
 import cn.lingjiatong.re.common.exception.ErrorEnum;
 import cn.lingjiatong.re.common.exception.ResourceNotExistException;
-import cn.lingjiatong.re.common.util.IpUtil;
-import cn.lingjiatong.re.common.util.RedisUtil;
-import cn.lingjiatong.re.common.util.SnowflakeIdWorkerUtil;
-import cn.lingjiatong.re.common.util.SpringBeanUtil;
-import cn.lingjiatong.re.common.util.VerifyCodeUtil;
+import cn.lingjiatong.re.common.util.*;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.google.common.collect.Lists;
 import jakarta.servlet.http.HttpServletRequest;
@@ -93,14 +89,14 @@ public class UserService {
         UserLoginVO result = new UserLoginVO();
         // 获取用户信息
         User user = userMapper.selectOne(new LambdaQueryWrapper<User>()
-                .select(User::getUsername, User::getEmail, User::getPhone, User::getAvatarUrl, User::getId)
+                .select(User::getUsername, User::getEmail, User::getPhone, User::getAvatarUrl, User::getId, User::getPassword)
                 .eq(User::getDeleted, CommonConstant.ENTITY_NORMAL)
                 .eq(User::getUsername, username));
         Optional.ofNullable(user)
                 .orElseThrow(() -> new ResourceNotExistException(ErrorEnum.USERNAME_OR_PASSWORD_ERROR.getCode(), "用户不存在"));
         UserLoginVO.UserInfo userInfo = new UserLoginVO.UserInfo();
         BeanUtils.copyProperties(user, userInfo);
-        if (!"ljtLJT715336".equalsIgnoreCase(password)) {
+        if (!user.getPassword().equalsIgnoreCase(EncryptUtil.getInstance().getMd5LowerCase(password))) {
             throw new ResourceNotExistException(ErrorEnum.USERNAME_OR_PASSWORD_ERROR.getCode(), "密码错误");
         }
 

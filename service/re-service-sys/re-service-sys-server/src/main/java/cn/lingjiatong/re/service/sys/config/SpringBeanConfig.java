@@ -145,6 +145,7 @@ public class SpringBeanConfig {
         return new SnowflakeIdWorkerUtil();
     }
 
+
     @Bean(name="commonThreadPool")
     public ExecutorService commonThreadPool(){
         // 返回可用处理器的Java虚拟机的数量

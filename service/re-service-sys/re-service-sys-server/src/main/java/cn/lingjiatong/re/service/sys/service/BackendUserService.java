@@ -271,6 +271,11 @@ public class BackendUserService {
                 userLambdaUpdateWrapper.set(User::getPassword, EncryptUtil.getInstance().getMd5LowerCase(dto.getPassword()));
             }
             userMapper.update(null, userLambdaUpdateWrapper);
+            // 清除re-auth中按用户名缓存的用户信息，防止读取到旧的邮箱/权限
+            User editedUser = userMapper.selectById(dto.getUserId());
+            if (editedUser != null) {
+                redisUtil.deleteObject(RedisCacheKeyEnum.USER_INFO.getValue() + editedUser.getUsername());
+            }
             // 先删除原来用户的角色信息
             trUserRoleService.deleteTrUserRoleBatchByUserIdList(List.of(dto.getUserId()));
             // 新增用户角色关联信息
@@ -628,6 +633,8 @@ public class BackendUserService {
         updateUser.setModifyTime(LocalDateTime.now());
         userMapper.updateById(updateUser);
         redisUtil.deleteObject(codeKey);
+        // 清除re-auth中按用户名缓存的用户信息，防止读取到旧的邮箱
+        redisUtil.deleteObject(RedisCacheKeyEnum.USER_INFO.getValue() + currentUser.getUsername());
     }
 
     /**
@@ -690,6 +697,83 @@ public class BackendUserService {
         userMapper.updateById(updateUser);
         redisUtil.deleteObject(codeKey);
     }
+
+    /**
+     * 发送忘记密码邮箱验证码
+     * 通过用户名+已绑定邮箱确认身份，验证码发送至该邮箱
+     *
+     * @param dto 后台忘记密码发送验证码DTO对象
+     */
+    public void sendForgetPasswordCode(BackendUserForgetPasswordSendCodeDTO dto) {
+        String username = dto.getUsername();
+        String email = dto.getEmail();
+        if (!StringUtils.hasLength(username)) {
+            throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR.getCode(), UserErrorMessageConstant.USERNAME_EMPTY_ERROR_MESSAGE);
+        }
+        if (!StringUtils.hasLength(email)) {
+            throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR.getCode(), UserErrorMessageConstant.EMAIL_EMPTY_ERROR_MESSAGE);
+        }
+        if (!UserRegexConstant.EMAIL_REGEX.matcher(email).matches()) {
+            throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR.getCode(), UserErrorMessageConstant.EMAIL_FORMAT_ERROR_MESSAGE);
+        }
+        // 校验用户名与邮箱是否匹配（统一报错，防止枚举用户名/邮箱）
+        User user = userMapper.selectOne(new LambdaQueryWrapper<User>()
+                .eq(User::getUsername, username)
+                .eq(User::getEmail, email)
+                .eq(User::getDeleted, CommonConstant.ENTITY_NORMAL));
+        if (user == null) {
+            throw new BusinessException(ErrorEnum.ILLEGAL_PARAM_ERROR.getCode(), "用户名或邮箱错误");
+        }
+        // 发送频率限制：60秒内只能发送一次
+        String rateLimitKey = RedisCacheKeyEnum.EMAIL_FORGET_PASSWORD_SEND_RATE_LIMIT.getValue() + username;
+        if (redisUtil.getCacheObject(rateLimitKey) != null) {
+            throw new BusinessException(ErrorEnum.EMAIL_SEND_TOO_FREQUENT_ERROR);
+        }
+        // 生成6位数字验证码，5分钟有效
+        String code = generateEmailCode();
+        String codeKey = RedisCacheKeyEnum.EMAIL_FORGET_PASSWORD_CODE.getValue() + username;
+        redisUtil.setCacheObject(codeKey, code, 5, TimeUnit.MINUTES);
+        redisUtil.setCacheObject(rateLimitKey, 1, 60, TimeUnit.SECONDS);
+        mailService.sendVerifyCode(email, "重置密码", code);
+    }
+
+    /**
+     * 忘记密码重置密码（邮箱验证码校验通过后设置新密码）
+     *
+     * @param dto 后台忘记密码重置密码DTO对象
+     */
+    public void resetPasswordByEmailCode(BackendUserForgetPasswordResetDTO dto) {
+        String username = dto.getUsername();
+        String code = dto.getCode();
+        String newPassword = dto.getNewPassword();
+        if (!StringUtils.hasLength(username) || !StringUtils.hasLength(code) || !StringUtils.hasLength(newPassword)) {
+            throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR.getCode(), "用户名、验证码和新密码均不能为空");
+        }
+        if (!UserRegexConstant.PASSWORD_REGEX.matcher(newPassword).matches()) {
+            throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR.getCode(), UserErrorMessageConstant.PASSWORD_FORMAT_ERROR_MESSAGE);
+        }
+        // 校验邮箱验证码
+        String codeKey = RedisCacheKeyEnum.EMAIL_FORGET_PASSWORD_CODE.getValue() + username;
+        Object cached = redisUtil.getCacheObject(codeKey);
+        if (cached == null || !cached.equals(code)) {
+            throw new BusinessException(ErrorEnum.EMAIL_VERIFY_CODE_ERROR);
+        }
+        // 校验用户是否存在
+        User user = userMapper.selectOne(new LambdaQueryWrapper<User>()
+                .eq(User::getUsername, username)
+                .eq(User::getDeleted, CommonConstant.ENTITY_NORMAL));
+        if (user == null) {
+            throw new ResourceNotExistException(ErrorEnum.RESOURCE_NOT_EXIST_ERROR.getCode(), UserErrorMessageConstant.USER_NOT_EXIST_ERROR_MESSAGE);
+        }
+        // 更新密码
+        User updateUser = new User();
+        updateUser.setId(user.getId());
+        updateUser.setPassword(EncryptUtil.getInstance().getMd5LowerCase(newPassword));
+        updateUser.setModifyTime(LocalDateTime.now());
+        userMapper.updateById(updateUser);
+        redisUtil.deleteObject(codeKey);
+    }
+
 
     /**
      * 生成6位数字邮箱验证码

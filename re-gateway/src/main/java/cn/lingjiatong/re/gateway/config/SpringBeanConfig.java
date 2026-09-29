@@ -105,6 +105,9 @@ public class SpringBeanConfig {
                         // 认证模块
                         "/re-auth/user/refreshVerifyCode",
                         "/re-auth/user/login",
+                        // 忘记密码（未登录场景）
+                        "/api-backend/user/forgetPassword/sendCode",
+                        "/api-backend/user/forgetPassword/reset",
                         // Swagger文档相关
                         "/swagger-ui/**",
                         "/swagger-ui.html",
