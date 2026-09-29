@@ -100,6 +100,18 @@ public class UserController {
     }
 
     /**
+     * 更新当前用户头像
+     *
+     * @param dto 后台用户更新头像DTO对象
+     * @return 通用消息返回对象
+     */
+    @PutMapping("/avatar")
+    @Operation(summary = "更新当前用户头像", method = "PUT")
+    public ResultVO<?> updateAvatar(@RequestBody BackendUserUpdateAvatarDTO dto) {
+        return backendUserFeignClient.updateAvatar(dto);
+    }
+
+    /**
      * 发送忘记密码邮箱验证码
      *
      * @param dto 后台忘记密码发送验证码DTO对象

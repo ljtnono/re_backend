@@ -80,6 +80,15 @@ public interface BackendUserFeignClient {
     ResultVO<?> updatePassword(@RequestBody BackendUserUpdatePasswordDTO dto);
 
     /**
+     * 更新当前用户头像
+     *
+     * @param dto 后台用户更新头像DTO对象
+     * @return 通用返回VO对象
+     */
+    @PutMapping("/backend/api/v1/user/avatar")
+    ResultVO<?> updateAvatar(@RequestBody BackendUserUpdateAvatarDTO dto);
+
+    /**
      * 发送忘记密码邮箱验证码
      *
      * @param dto 后台忘记密码发送验证码DTO对象

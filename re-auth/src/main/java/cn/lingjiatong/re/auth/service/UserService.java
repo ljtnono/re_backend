@@ -219,6 +219,7 @@ public class UserService {
             userInfo.setUsername(cache.getUsername());
             userInfo.setEmail(cache.getEmail());
             userInfo.setPhone(cache.getPhone());
+            userInfo.setAvatarUrl(cache.getAvatarUrl());
             userInfo.setPermissionIdList(cache.getPermissionIdList());
             return userInfo;
         }
@@ -285,6 +286,7 @@ public class UserService {
             cache.setUsername(userInfo.getUsername());
             cache.setEmail(userInfo.getEmail());
             cache.setPhone(userInfo.getPhone());
+            cache.setAvatarUrl(userInfo.getAvatarUrl());
             cache.setRoleIdList(roleIdList);
             cache.setPermissionIdList(userInfo.getPermissionIdList());
             cache.setAccessToken(tokenInfo.getAccessToken());

@@ -79,6 +79,14 @@ public class BackendUserController implements BackendUserFeignClient {
     }
 
     @Override
+    @PutMapping("/backend/api/v1/user/avatar")
+    public ResultVO<?> updateAvatar(@RequestBody BackendUserUpdateAvatarDTO dto) {
+        User currentUser = SaUserUtils.getCurrentUser();
+        backendUserService.updateAvatar(dto.getAvatarUrl(), currentUser);
+        return ResultVO.success();
+    }
+
+    @Override
     @PostMapping("/backend/api/v1/user/forgetPassword/sendCode")
     public ResultVO<?> sendForgetPasswordCode(@RequestBody BackendUserForgetPasswordSendCodeDTO dto) {
         backendUserService.sendForgetPasswordCode(dto);

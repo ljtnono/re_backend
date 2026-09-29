@@ -702,6 +702,25 @@ public class BackendUserService {
     }
 
     /**
+     * 更新当前用户头像
+     *
+     * @param avatarUrl 头像文件地址
+     * @param currentUser 当前登录用户
+     */
+    public void updateAvatar(String avatarUrl, User currentUser) {
+        if (!StringUtils.hasLength(avatarUrl)) {
+            throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR.getCode(), "头像地址不能为空");
+        }
+        User updateUser = new User();
+        updateUser.setId(currentUser.getId());
+        updateUser.setAvatarUrl(avatarUrl);
+        updateUser.setModifyTime(LocalDateTime.now());
+        userMapper.updateById(updateUser);
+        // 清除re-auth中按用户名缓存的用户信息，防止读取到旧的头像
+        redisUtil.deleteObject(RedisCacheKeyEnum.USER_INFO.getValue() + currentUser.getUsername());
+    }
+
+    /**
      * 发送忘记密码邮箱验证码
      * 通过用户名+已绑定邮箱确认身份，验证码发送至该邮箱
      *

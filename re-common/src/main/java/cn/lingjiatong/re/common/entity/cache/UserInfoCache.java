@@ -39,6 +39,11 @@ public class UserInfoCache {
     private String phone;
 
     /**
+     * 用户头像
+     */
+    private String avatarUrl;
+
+    /**
      * 角色列表
      */
     private List<Long> roleIdList;

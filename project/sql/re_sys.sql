@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 8.4.4, for Linux (x86_64)
+-- MySQL dump 10.13  Distrib 8.4.11, for Linux (x86_64)
 --
 -- Host: localhost    Database: re_sys
 -- ------------------------------------------------------
--- Server version	8.4.4
+-- Server version	8.4.11
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -16,6 +16,14 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
+-- Current Database: `re_sys`
+--
+
+CREATE DATABASE /*!32312 IF NOT EXISTS*/ `re_sys` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
+
+USE `re_sys`;
+
+--
 -- Table structure for table `menu`
 --
 
@@ -24,13 +32,13 @@ DROP TABLE IF EXISTS `menu`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `menu` (
   `id` bigint NOT NULL COMMENT '主键id',
-  `project_name` varchar(20) COLLATE utf8mb4_general_ci NOT NULL COMMENT '菜单所属项目名称',
+  `project_name` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '菜单所属项目名称',
   `parent_id` bigint NOT NULL COMMENT '父菜单id，没有则为-1',
   `title` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '菜单标题',
   `icon` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '菜单的图标',
-  `route_path` varchar(200) COLLATE utf8mb4_general_ci NOT NULL COMMENT '菜单路由路径',
-  `route_name` varchar(100) COLLATE utf8mb4_general_ci NOT NULL COMMENT '菜单路由名称',
-  `component_path` varchar(200) COLLATE utf8mb4_general_ci NOT NULL COMMENT '菜单组件路径',
+  `route_path` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '菜单路由路径',
+  `route_name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '菜单路由名称',
+  `component_path` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '菜单组件路径',
   PRIMARY KEY (`id`),
   UNIQUE KEY `uidx_route_path` (`route_path`),
   UNIQUE KEY `uidx_route_name` (`route_name`)
@@ -89,9 +97,9 @@ DROP TABLE IF EXISTS `permission`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `permission` (
   `id` bigint NOT NULL COMMENT '主键id',
-  `project_name` varchar(20) COLLATE utf8mb4_general_ci NOT NULL COMMENT '权限所属项目名称',
+  `project_name` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '权限所属项目名称',
   `menu_id` bigint NOT NULL COMMENT '权限所属菜单id，不存在则为-1',
-  `name` varchar(50) COLLATE utf8mb4_general_ci NOT NULL COMMENT '权限名称',
+  `name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '权限名称',
   `expression` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '权限表达式',
   PRIMARY KEY (`id`),
   UNIQUE KEY `uidx_menu_id_name_expression` (`menu_id`,`name`,`expression`)
@@ -119,7 +127,7 @@ CREATE TABLE `role` (
   `id` bigint NOT NULL COMMENT '主键id，雪花算法',
   `name` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '角色名',
   `description` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '角色描述',
-  `remark` longtext COMMENT '备注',
+  `remark` longtext COLLATE utf8mb4_general_ci COMMENT '备注',
   `create_time` datetime NOT NULL COMMENT '创建时间',
   `modify_time` datetime NOT NULL COMMENT '最后修改时间',
   PRIMARY KEY (`id`),
@@ -362,7 +370,7 @@ CREATE TABLE `user` (
   `username` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '用户名，4-20位字符串只允许英文和数字下划线',
   `password` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '密码，md5加密形式',
   `phone` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '手机号码',
-  `email` varchar(20) COLLATE utf8mb4_general_ci NOT NULL COMMENT '用户邮箱',
+  `email` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '用户邮箱',
   `avatar_url` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci COMMENT '用户头像访问url',
   `create_time` datetime NOT NULL COMMENT '创建时间',
   `modify_time` datetime NOT NULL COMMENT '最后修改时间',
@@ -379,7 +387,7 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES (1,'lingjiatong','80cea81e681679a81634e2b1846e6cb8','15337106753','ljtnono@gmail.com','http://f.lingjiatong.cn:30090/rootelement/sys/avatar.gif','2020-08-24 00:42:24','2020-08-24 00:42:24',0),(1105503425254141952,'ling','80cea81e681679a81634e2b1846e6cb8',NULL,'ljtnono@163.com','http://re.lingjiatong.cn:30090/rootelement/aniya/01.png','2023-05-09 14:35:56','2023-05-09 14:35:56',0),(1320757353921007616,'ceshi111','80cea81e681679a81634e2b1846e6cb8',NULL,'893@qq.com','http://re.lingjiatong.cn:30090/rootelement/aniya/28.png','2024-12-23 14:18:12','2024-12-23 14:18:12',0);
+INSERT INTO `user` VALUES (1,'lingjiatong','ab31421c3ce177913bb0afed014ca64e','15337106753','1419476124@qq.com','http://f.lingjiatong.cn:30090/rootelement/sys/avatar.gif','2020-08-24 00:42:24','2026-09-29 15:44:23',0),(1105503425254141952,'ling','80cea81e681679a81634e2b1846e6cb8',NULL,'ljtnono@gmail.com','http://re.lingjiatong.cn:30090/rootelement/aniya/01.png','2023-05-09 14:35:56','2023-05-09 14:35:56',0),(1320757353921007616,'ceshi111','80cea81e681679a81634e2b1846e6cb8',NULL,'893@qq.com','http://re.lingjiatong.cn:30090/rootelement/aniya/28.png','2024-12-23 14:18:12','2024-12-23 14:18:12',0);
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -401,7 +409,7 @@ CREATE TABLE `user_login_log` (
   `modify_time` datetime NOT NULL COMMENT '最后修改时间',
   PRIMARY KEY (`id`),
   KEY `idx_user_id` (`user_id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=1427299280160342017 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='用户登录日志表';
+) ENGINE=InnoDB AUTO_INCREMENT=1554519259160305665 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='用户登录日志表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -410,7 +418,7 @@ CREATE TABLE `user_login_log` (
 
 LOCK TABLES `user_login_log` WRITE;
 /*!40000 ALTER TABLE `user_login_log` DISABLE KEYS */;
-INSERT INTO `user_login_log` VALUES (1410288392291823616,1,'lingjiatong','2025-08-27 15:42:35','10.244.0.0','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36','2025-08-27 15:42:35','2025-08-27 15:42:35'),(1424071969755676672,1,'lingjiatong','2025-10-04 16:33:36','10.244.0.0','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36','2025-10-04 16:33:36','2025-10-04 16:33:36'),(1426599513516195840,1,'lingjiatong','2025-10-11 15:57:09','10.244.0.0','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36','2025-10-11 15:57:09','2025-10-11 15:57:09'),(1426600019374424064,1,'lingjiatong','2025-10-11 15:59:10','10.244.0.0','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36','2025-10-11 15:59:10','2025-10-11 15:59:10'),(1427298814278025216,1,'lingjiatong','2025-10-13 14:15:55','10.244.0.0','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36','2025-10-13 14:15:55','2025-10-13 14:15:55'),(1427299280160342016,1,'lingjiatong','2025-10-13 14:17:46','10.244.0.0','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36','2025-10-13 14:17:46','2025-10-13 14:17:46');
+INSERT INTO `user_login_log` VALUES (1410288392291823616,1,'lingjiatong','2025-08-27 15:42:35','10.244.0.0','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36','2025-08-27 15:42:35','2025-08-27 15:42:35'),(1424071969755676672,1,'lingjiatong','2025-10-04 16:33:36','10.244.0.0','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36','2025-10-04 16:33:36','2025-10-04 16:33:36'),(1426599513516195840,1,'lingjiatong','2025-10-11 15:57:09','10.244.0.0','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36','2025-10-11 15:57:09','2025-10-11 15:57:09'),(1426600019374424064,1,'lingjiatong','2025-10-11 15:59:10','10.244.0.0','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36','2025-10-11 15:59:10','2025-10-11 15:59:10'),(1427298814278025216,1,'lingjiatong','2025-10-13 14:15:55','10.244.0.0','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36','2025-10-13 14:15:55','2025-10-13 14:15:55'),(1427299280160342016,1,'lingjiatong','2025-10-13 14:17:46','10.244.0.0','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36','2025-10-13 14:17:46','2025-10-13 14:17:46'),(1554161515110662144,1,'lingjiatong','2026-09-28 16:03:00','127.0.0.1','Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36','2026-09-28 16:03:00','2026-09-28 16:03:00'),(1554165385446621184,1,'lingjiatong','2026-09-28 16:18:23','127.0.0.1','Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36','2026-09-28 16:18:23','2026-09-28 16:18:23'),(1554169624235380736,1,'lingjiatong','2026-09-28 16:35:13','127.0.0.1','Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36','2026-09-28 16:35:13','2026-09-28 16:35:13'),(1554185566021550080,1,'lingjiatong','2026-09-28 17:38:34','127.0.0.1','Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36','2026-09-28 17:38:34','2026-09-28 17:38:34'),(1554431332766015488,1,'lingjiatong','2026-09-29 09:55:10','127.0.0.1','Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36','2026-09-29 09:55:10','2026-09-29 09:55:10'),(1554497344693641216,1,'lingjiatong','2026-09-29 14:17:28','127.0.0.1','Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36','2026-09-29 14:17:28','2026-09-29 14:17:28'),(1554500803845214208,1,'lingjiatong','2026-09-29 14:31:13','127.0.0.1','Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36','2026-09-29 14:31:13','2026-09-29 14:31:13'),(1554503410747793408,1,'lingjiatong','2026-09-29 14:41:34','127.0.0.1','Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36','2026-09-29 14:41:34','2026-09-29 14:41:34'),(1554513913071067136,1,'lingjiatong','2026-09-29 15:23:18','127.0.0.1','Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36','2026-09-29 15:23:18','2026-09-29 15:23:18'),(1554517274050740224,1,'lingjiatong','2026-09-29 15:36:40','127.0.0.1','Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36','2026-09-29 15:36:40','2026-09-29 15:36:40'),(1554517500320858112,1,'lingjiatong','2026-09-29 15:37:34','127.0.0.1','Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36','2026-09-29 15:37:34','2026-09-29 15:37:34'),(1554519259160305664,1,'lingjiatong','2026-09-29 15:44:33','127.0.0.1','Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36','2026-09-29 15:44:33','2026-09-29 15:44:33');
 /*!40000 ALTER TABLE `user_login_log` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -423,4 +431,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-03-25 17:22:22
+-- Dump completed on 2026-09-29 16:20:35

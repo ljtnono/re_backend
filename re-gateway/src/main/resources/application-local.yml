@@ -40,6 +40,10 @@ spring:
           uri: lb://api-frontend
           predicates:
             - Path=/api-frontend/**
+        - id: api-file
+          uri: lb://api-file
+          predicates:
+            - Path=/api-file/**
   config:
     import:
       - optional:nacos:${spring.application.name}.${spring.cloud.nacos.config.file-extension}
