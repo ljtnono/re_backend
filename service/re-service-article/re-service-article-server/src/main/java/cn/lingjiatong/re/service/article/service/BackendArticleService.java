@@ -482,7 +482,8 @@ public class BackendArticleService {
             throw new ResourceNotExistException(ErrorEnum.RESOURCE_NOT_EXIST_ERROR);
         }
         BackendArticleDetailVO result = new BackendArticleDetailVO();
-        result.setId(article.getId());
+        // id是雪花算法生成的Long，序列化为JSON数字会超出JS安全整数范围导致精度丢失，这里转成字符串传输
+        result.setId(String.valueOf(article.getId()));
         result.setTitle(article.getTitle());
         result.setSummary(article.getSummary());
         result.setMarkdownContent(article.getMarkdownContent());

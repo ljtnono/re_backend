@@ -20,7 +20,7 @@ public class BackendArticleDetailVO {
      * 文章id
      */
     @Schema(description = "文章id")
-    private Long id;
+    private String id;
 
     /**
      * 文章标题

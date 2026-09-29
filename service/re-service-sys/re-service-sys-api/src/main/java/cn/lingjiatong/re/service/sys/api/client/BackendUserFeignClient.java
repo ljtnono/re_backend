@@ -44,6 +44,41 @@ public interface BackendUserFeignClient {
     @DeleteMapping("/backend/api/v1/user/deleteBatch")
     ResultVO<?> deleteUserBatch(@RequestBody BackendUserPhysicDeleteBatchDTO dto);
 
+    /**
+     * 发送绑定邮箱验证码
+     *
+     * @param dto 后台绑定邮箱发送验证码DTO对象
+     * @return 通用返回VO对象
+     */
+    @PostMapping("/backend/api/v1/user/bindEmail/sendCode")
+    ResultVO<?> sendBindEmailCode(@RequestBody BackendUserBindEmailSendCodeDTO dto);
+
+    /**
+     * 确认绑定邮箱
+     *
+     * @param dto 后台绑定邮箱确认DTO对象
+     * @return 通用返回VO对象
+     */
+    @PostMapping("/backend/api/v1/user/bindEmail/confirm")
+    ResultVO<?> bindEmail(@RequestBody BackendUserBindEmailConfirmDTO dto);
+
+    /**
+     * 发送修改密码邮箱验证码（发送到已绑定邮箱）
+     *
+     * @return 通用返回VO对象
+     */
+    @PostMapping("/backend/api/v1/user/updatePassword/sendCode")
+    ResultVO<?> sendUpdatePasswordEmailCode();
+
+    /**
+     * 个人修改密码
+     *
+     * @param dto 后台个人修改密码DTO对象
+     * @return 通用返回VO对象
+     */
+    @PutMapping("/backend/api/v1/user/updatePassword")
+    ResultVO<?> updatePassword(@RequestBody BackendUserUpdatePasswordDTO dto);
+
     // ********************************修改类接口********************************
 
     /**

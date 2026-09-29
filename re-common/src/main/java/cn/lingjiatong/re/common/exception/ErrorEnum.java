@@ -73,6 +73,11 @@ public enum ErrorEnum {
     ROUTE_NAME_EXIST_ERROR_MESSAGE(600007, "菜单路由名称已存在"),
     ROUTE_PATH_EXIST_ERROR_MESSAGE(600008, "菜单路由路径已存在"),
     MENU_PERMISSION_EXIST_ERROR_MESSAGE(600009, "菜单权限已存在"),
+    EMAIL_VERIFY_CODE_ERROR(600010, "邮箱验证码错误或已过期"),
+    EMAIL_SEND_TOO_FREQUENT_ERROR(600011, "验证码发送过于频繁，请稍后再试"),
+    EMAIL_NOT_BOUND_ERROR(600012, "未绑定邮箱，请先绑定邮箱"),
+    OLD_PASSWORD_ERROR(600013, "当前密码错误"),
+    EMAIL_SEND_FAIL_ERROR(600014, "邮件发送失败"),
 
     //#################### 未知异常信息 ####################//
     UNKNOWN_ERROR(-1, "未知系统异常"),

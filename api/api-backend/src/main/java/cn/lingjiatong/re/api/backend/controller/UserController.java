@@ -52,6 +52,53 @@ public class UserController {
         return backendUserFeignClient.deleteUserBatch(dto);
     }
 
+    /**
+     * 发送绑定邮箱验证码
+     *
+     * @param dto 后台绑定邮箱发送验证码DTO对象
+     * @return 通用消息返回对象
+     */
+    @PostMapping("/bindEmail/sendCode")
+    @Operation(summary = "发送绑定邮箱验证码", method = "POST")
+    public ResultVO<?> sendBindEmailCode(@RequestBody BackendUserBindEmailSendCodeDTO dto) {
+        return backendUserFeignClient.sendBindEmailCode(dto);
+    }
+
+    /**
+     * 确认绑定邮箱
+     *
+     * @param dto 后台绑定邮箱确认DTO对象
+     * @return 通用消息返回对象
+     */
+    @PostMapping("/bindEmail/confirm")
+    @Operation(summary = "确认绑定邮箱", method = "POST")
+    public ResultVO<?> bindEmail(@RequestBody BackendUserBindEmailConfirmDTO dto) {
+        return backendUserFeignClient.bindEmail(dto);
+    }
+
+    /**
+     * 发送修改密码邮箱验证码
+     *
+     * @return 通用消息返回对象
+     */
+    @PostMapping("/updatePassword/sendCode")
+    @Operation(summary = "发送修改密码邮箱验证码", method = "POST")
+    public ResultVO<?> sendUpdatePasswordEmailCode() {
+        return backendUserFeignClient.sendUpdatePasswordEmailCode();
+    }
+
+    /**
+     * 个人修改密码
+     *
+     * @param dto 后台个人修改密码DTO对象
+     * @return 通用消息返回对象
+     */
+    @PutMapping("/updatePassword")
+    @Operation(summary = "个人修改密码", method = "PUT")
+    public ResultVO<?> updatePassword(@RequestBody BackendUserUpdatePasswordDTO dto) {
+        return backendUserFeignClient.updatePassword(dto);
+    }
+
     // ********************************修改类接口********************************
 
     /**

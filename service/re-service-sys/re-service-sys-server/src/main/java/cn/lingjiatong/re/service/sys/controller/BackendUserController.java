@@ -46,6 +46,38 @@ public class BackendUserController implements BackendUserFeignClient {
         return ResultVO.success();
     }
 
+    @Override
+    @PostMapping("/backend/api/v1/user/bindEmail/sendCode")
+    public ResultVO<?> sendBindEmailCode(@RequestBody BackendUserBindEmailSendCodeDTO dto) {
+        User currentUser = SaUserUtils.getCurrentUser();
+        backendUserService.sendBindEmailCode(dto, currentUser);
+        return ResultVO.success();
+    }
+
+    @Override
+    @PostMapping("/backend/api/v1/user/bindEmail/confirm")
+    public ResultVO<?> bindEmail(@RequestBody BackendUserBindEmailConfirmDTO dto) {
+        User currentUser = SaUserUtils.getCurrentUser();
+        backendUserService.bindEmail(dto, currentUser);
+        return ResultVO.success();
+    }
+
+    @Override
+    @PostMapping("/backend/api/v1/user/updatePassword/sendCode")
+    public ResultVO<?> sendUpdatePasswordEmailCode() {
+        User currentUser = SaUserUtils.getCurrentUser();
+        backendUserService.sendUpdatePasswordEmailCode(currentUser);
+        return ResultVO.success();
+    }
+
+    @Override
+    @PutMapping("/backend/api/v1/user/updatePassword")
+    public ResultVO<?> updatePassword(@RequestBody BackendUserUpdatePasswordDTO dto) {
+        User currentUser = SaUserUtils.getCurrentUser();
+        backendUserService.updatePassword(dto, currentUser);
+        return ResultVO.success();
+    }
+
     // ********************************修改类接口********************************
 
     @Override

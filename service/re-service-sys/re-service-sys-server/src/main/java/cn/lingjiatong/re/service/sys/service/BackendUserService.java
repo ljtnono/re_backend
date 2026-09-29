@@ -32,6 +32,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -67,6 +68,8 @@ public class BackendUserService {
     private PermissionMapper permissionMapper;
     @Autowired
     private TrUserRoleMapper trUserRoleMapper;
+    @Autowired
+    private MailService mailService;
 
 
 
@@ -556,4 +559,148 @@ public class BackendUserService {
         return user;
     }
 
+
+    // ********************************查询类接口********************************
+
+    /**
+     * 发送绑定邮箱验证码
+     *
+     * @param dto 后台绑定邮箱发送验证码DTO对象
+     * @param currentUser 当前登录用户
+     */
+    public void sendBindEmailCode(BackendUserBindEmailSendCodeDTO dto, User currentUser) {
+        String email = dto.getEmail();
+        if (!StringUtils.hasLength(email)) {
+            throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR.getCode(), UserErrorMessageConstant.EMAIL_EMPTY_ERROR_MESSAGE);
+        }
+        if (!UserRegexConstant.EMAIL_REGEX.matcher(email).matches()) {
+            throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR.getCode(), UserErrorMessageConstant.EMAIL_FORMAT_ERROR_MESSAGE);
+        }
+        // 判断邮箱是否被其他用户占用
+        Long emailUsedCount = userMapper.selectCount(new LambdaQueryWrapper<User>()
+                .eq(User::getEmail, email)
+                .eq(User::getDeleted, CommonConstant.ENTITY_NORMAL));
+        if (emailUsedCount != null && emailUsedCount > 0) {
+            throw new BusinessException(ErrorEnum.EMAIL_OCCUPY_BY_OTHER_USER_ERROR);
+        }
+        // 发送频率限制：60秒内只能发送一次
+        String rateLimitKey = RedisCacheKeyEnum.EMAIL_BIND_SEND_RATE_LIMIT.getValue() + currentUser.getId();
+        if (redisUtil.getCacheObject(rateLimitKey) != null) {
+            throw new BusinessException(ErrorEnum.EMAIL_SEND_TOO_FREQUENT_ERROR);
+        }
+        // 生成6位数字验证码，5分钟有效，同时记录目标邮箱防止换绑
+        String code = generateEmailCode();
+        String codeKey = RedisCacheKeyEnum.EMAIL_BIND_CODE.getValue() + currentUser.getId();
+        redisUtil.setCacheObject(codeKey, email + ":" + code, 5, TimeUnit.MINUTES);
+        redisUtil.setCacheObject(rateLimitKey, 1, 60, TimeUnit.SECONDS);
+        mailService.sendVerifyCode(email, "绑定邮箱", code);
+    }
+
+    /**
+     * 确认绑定邮箱
+     *
+     * @param dto 后台绑定邮箱确认DTO对象
+     * @param currentUser 当前登录用户
+     */
+    public void bindEmail(BackendUserBindEmailConfirmDTO dto, User currentUser) {
+        String email = dto.getEmail();
+        String code = dto.getCode();
+        if (!StringUtils.hasLength(email) || !StringUtils.hasLength(code)) {
+            throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR.getCode(), "邮箱和验证码不能为空");
+        }
+        // 校验验证码
+        String codeKey = RedisCacheKeyEnum.EMAIL_BIND_CODE.getValue() + currentUser.getId();
+        Object cached = redisUtil.getCacheObject(codeKey);
+        if (cached == null || !cached.equals(email + ":" + code)) {
+            throw new BusinessException(ErrorEnum.EMAIL_VERIFY_CODE_ERROR);
+        }
+        // 再次判断邮箱是否被其他用户占用
+        Long emailUsedCount = userMapper.selectCount(new LambdaQueryWrapper<User>()
+                .eq(User::getEmail, email)
+                .eq(User::getDeleted, CommonConstant.ENTITY_NORMAL));
+        if (emailUsedCount != null && emailUsedCount > 0) {
+            throw new BusinessException(ErrorEnum.EMAIL_OCCUPY_BY_OTHER_USER_ERROR);
+        }
+        // 绑定邮箱
+        User updateUser = new User();
+        updateUser.setId(currentUser.getId());
+        updateUser.setEmail(email);
+        updateUser.setModifyTime(LocalDateTime.now());
+        userMapper.updateById(updateUser);
+        redisUtil.deleteObject(codeKey);
+    }
+
+    /**
+     * 发送修改密码邮箱验证码（发送到已绑定邮箱）
+     *
+     * @param currentUser 当前登录用户
+     */
+    public void sendUpdatePasswordEmailCode(User currentUser) {
+        User user = userMapper.selectById(currentUser.getId());
+        if (user == null || !StringUtils.hasLength(user.getEmail())) {
+            throw new BusinessException(ErrorEnum.EMAIL_NOT_BOUND_ERROR);
+        }
+        // 发送频率限制：60秒内只能发送一次
+        String rateLimitKey = RedisCacheKeyEnum.EMAIL_UPDATE_PASSWORD_SEND_RATE_LIMIT.getValue() + currentUser.getId();
+        if (redisUtil.getCacheObject(rateLimitKey) != null) {
+            throw new BusinessException(ErrorEnum.EMAIL_SEND_TOO_FREQUENT_ERROR);
+        }
+        String code = generateEmailCode();
+        String codeKey = RedisCacheKeyEnum.EMAIL_UPDATE_PASSWORD_CODE.getValue() + currentUser.getId();
+        redisUtil.setCacheObject(codeKey, code, 5, TimeUnit.MINUTES);
+        redisUtil.setCacheObject(rateLimitKey, 1, 60, TimeUnit.SECONDS);
+        mailService.sendVerifyCode(user.getEmail(), "修改密码", code);
+    }
+
+    /**
+     * 个人修改密码
+     *
+     * @param dto 后台个人修改密码DTO对象
+     * @param currentUser 当前登录用户
+     */
+    public void updatePassword(BackendUserUpdatePasswordDTO dto, User currentUser) {
+        String oldPassword = dto.getOldPassword();
+        String newPassword = dto.getNewPassword();
+        String emailCode = dto.getEmailCode();
+        if (!StringUtils.hasLength(oldPassword) || !StringUtils.hasLength(newPassword) || !StringUtils.hasLength(emailCode)) {
+            throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR.getCode(), "当前密码、新密码和邮箱验证码均不能为空");
+        }
+        if (!UserRegexConstant.PASSWORD_REGEX.matcher(newPassword).matches()) {
+            throw new ParamErrorException(ErrorEnum.ILLEGAL_PARAM_ERROR.getCode(), UserErrorMessageConstant.PASSWORD_FORMAT_ERROR_MESSAGE);
+        }
+        // 校验邮箱验证码
+        String codeKey = RedisCacheKeyEnum.EMAIL_UPDATE_PASSWORD_CODE.getValue() + currentUser.getId();
+        Object cached = redisUtil.getCacheObject(codeKey);
+        if (cached == null || !cached.equals(emailCode)) {
+            throw new BusinessException(ErrorEnum.EMAIL_VERIFY_CODE_ERROR);
+        }
+        // 校验当前密码（数据库存储为MD5加密形式）
+        User user = userMapper.selectById(currentUser.getId());
+        if (user == null) {
+            throw new ResourceNotExistException(ErrorEnum.RESOURCE_NOT_EXIST_ERROR.getCode(), UserErrorMessageConstant.USER_NOT_EXIST_ERROR_MESSAGE);
+        }
+        if (!EncryptUtil.getInstance().getMd5LowerCase(oldPassword).equalsIgnoreCase(user.getPassword())) {
+            throw new BusinessException(ErrorEnum.OLD_PASSWORD_ERROR);
+        }
+        // 更新密码
+        User updateUser = new User();
+        updateUser.setId(currentUser.getId());
+        updateUser.setPassword(EncryptUtil.getInstance().getMd5LowerCase(newPassword));
+        updateUser.setModifyTime(LocalDateTime.now());
+        userMapper.updateById(updateUser);
+        redisUtil.deleteObject(codeKey);
+    }
+
+    /**
+     * 生成6位数字邮箱验证码
+     *
+     * @return 验证码
+     */
+    private String generateEmailCode() {
+        StringBuilder code = new StringBuilder();
+        for (int i = 0; i < 6; i++) {
+            code.append(new Random().nextInt(10));
+        }
+        return code.toString();
+    }
 }

@@ -46,6 +46,19 @@ spring:
 mybatis-plus:
   mapper-locations: classpath:/mapper/**.xml
 
+# 邮件发送配置（绑定邮箱、修改密码验证码），请填写真实的SMTP信息
+spring.mail:
+  host: smtp.qq.com
+  port: 465
+  username: 935188400@qq.com
+  # SMTP授权码（不是邮箱登录密码）
+  password: cdzeazlagrvpbbdi
+  protocol: smtp
+  properties:
+    mail.smtp.auth: true
+    mail.smtp.ssl.enable: true
+    mail.smtp.socketFactory.class: javax.net.ssl.SSLSocketFactory
+
 minio:
   endpoint: http://localhost:30606
   accessKey: re-minio
