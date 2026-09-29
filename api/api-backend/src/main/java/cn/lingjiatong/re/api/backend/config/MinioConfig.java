@@ -1,5 +1,6 @@
 package cn.lingjiatong.re.api.backend.config;
 
+import cn.lingjiatong.re.common.constant.MinioConstant;
 import cn.lingjiatong.re.common.util.MinioUtil;
 import io.minio.MinioClient;
 import lombok.Data;
@@ -53,6 +54,12 @@ public class MinioConfig {
 
     @Bean
     public MinioUtil minioUtil(@Autowired MinioClient minioClient) {
-        return new MinioUtil(minioClient);
+        MinioUtil minioUtil = new MinioUtil(minioClient);
+        // 启动时确保存储桶存在：yml配置的桶 + 代码中实际使用的常量桶
+        minioUtil.initBucket(bucketName);
+        if (!MinioConstant.MINIO_BUCKET_NAME.equals(bucketName)) {
+            minioUtil.initBucket(MinioConstant.MINIO_BUCKET_NAME);
+        }
+        return minioUtil;
     }
 }

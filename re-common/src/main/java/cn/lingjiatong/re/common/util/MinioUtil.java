@@ -41,6 +41,31 @@ public class MinioUtil {
     private void createBucket(String bucketName) throws Exception {
         if (!bucketExists(bucketName)) {
             minioClient.makeBucket(MakeBucketArgs.builder().bucket(bucketName).build());
+            log.info("==========MinIO存储桶[{}]不存在，已自动创建", bucketName);
+        }
+    }
+
+    /**
+     * 存储桶公共读策略（允许匿名访问对象，上传仍需要凭证）
+     */
+    private static final String BUCKET_PUBLIC_READ_POLICY =
+            "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"AWS\":[\"*\"]},\"Action\":[\"s3:GetObject\"],\"Resource\":[\"arn:aws:s3:::%s/*\"]}]}";
+
+    /**
+     * 初始化Bucket（启动时调用，不抛异常，避免MinIO暂时不可用导致服务启动失败）
+     * 桶不存在则创建，同时设置公共读策略（业务层上传后会去掉预签名参数直接访问，桶必须是公共读）
+     *
+     * @param bucketName 存储桶名称
+     */
+    public void initBucket(String bucketName) {
+        try {
+            createBucket(bucketName);
+            minioClient.setBucketPolicy(SetBucketPolicyArgs.builder()
+                    .bucket(bucketName)
+                    .config(String.format(BUCKET_PUBLIC_READ_POLICY, bucketName))
+                    .build());
+        } catch (Exception e) {
+            log.error("==========初始化MinIO存储桶[{}]失败：{}", bucketName, e.getMessage());
         }
     }
 

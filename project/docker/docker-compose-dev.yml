@@ -11,6 +11,8 @@ services:
       --character-set-server=utf8mb4
       --collation-server=utf8mb4_unicode_ci
       --sql_mode=STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION
+    volumes:
+      - ./data/mysql:/var/lib/mysql
     networks:
       - re-network
     restart: always
@@ -21,6 +23,8 @@ services:
     ports:
       - "30602:6379"
     command: redis-server --appendonly yes
+    volumes:
+      - ./data/redis:/data
     networks:
       - re-network
     restart: always
@@ -39,6 +43,8 @@ services:
       - NACOS_AUTH_IDENTITY_VALUE=re-nacos
       # re#nacos2022 base64 6 times
       - NACOS_AUTH_TOKEN=VmpGU1NtVkdXblJTYmxKVVlteEtWRmxzYUVOalJsSlZVVmhvVDFac1NsZFdWM1IzWWtaV1ZVMUVhejA9
+    volumes:
+      - ./data/nacos:/home/nacos/data
     networks:
       - re-network
     restart: always
@@ -57,9 +63,10 @@ services:
       - TZ=Asia/Shanghai
     command: server /data --console-address ":9001"
     volumes:
-      - minio-data:/data
+      - ./data/minio:/data
     healthcheck:
-      test: ["CMD", "mc", "ready", "local"]
+      # 精简镜像无 mc 命令，改用 MinIO 原生健康检查端点
+      test: ["CMD-SHELL", "curl -f -s -o /dev/null http://localhost:9000/minio/health/live || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -79,12 +86,11 @@ services:
       - ES_JAVA_OPTS=-Xms512m -Xmx512m
       - xpack.security.enabled=false
       - TZ=Asia/Shanghai
+    volumes:
+      - ./data/elasticsearch:/usr/share/elasticsearch/data
     networks:
       - re-network
     restart: always
-
-volumes:
-  minio-data:
 
 networks:
   re-network:
