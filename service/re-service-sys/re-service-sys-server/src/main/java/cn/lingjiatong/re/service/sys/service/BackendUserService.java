@@ -1,5 +1,6 @@
 package cn.lingjiatong.re.service.sys.service;
 
+import cn.dev33.satoken.stp.StpUtil;
 import cn.lingjiatong.re.common.constant.*;
 import cn.lingjiatong.re.common.entity.*;
 import cn.lingjiatong.re.common.exception.*;
@@ -696,6 +697,8 @@ public class BackendUserService {
         updateUser.setModifyTime(LocalDateTime.now());
         userMapper.updateById(updateUser);
         redisUtil.deleteObject(codeKey);
+        // 密码已变更，强制该账号所有会话下线
+        StpUtil.kickout(currentUser.getUsername());
     }
 
     /**
@@ -772,6 +775,8 @@ public class BackendUserService {
         updateUser.setModifyTime(LocalDateTime.now());
         userMapper.updateById(updateUser);
         redisUtil.deleteObject(codeKey);
+        // 密码已变更，强制该账号所有会话下线
+        StpUtil.kickout(username);
     }
 
 
