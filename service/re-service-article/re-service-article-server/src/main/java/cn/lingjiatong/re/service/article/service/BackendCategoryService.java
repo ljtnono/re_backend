@@ -172,11 +172,37 @@ public class BackendCategoryService {
                     .select(fields)
                     .eq(Category::getDeleted, CommonConstant.ENTITY_NORMAL));
         }
-        return categoryList.stream().map(category -> {
+        List<BackendCategoryListVO> voList = categoryList.stream().map(category -> {
             BackendCategoryListVO vo = new BackendCategoryListVO();
             BeanUtils.copyProperties(category, vo);
             return vo;
         }).collect(Collectors.toList());
+        // 统计每个分类下的文章数量
+        java.util.Map<Long, Long> articleCountMap = findArticleCountMapByCategoryIdList(
+                voList.stream().map(BackendCategoryListVO::getId).collect(Collectors.toList()));
+        voList.forEach(vo -> vo.setArticleCount(articleCountMap.getOrDefault(vo.getId(), 0L)));
+        return voList;
+    }
+
+    /**
+     * 批量统计分类下的文章数量
+     *
+     * @param categoryIdList 分类id列表
+     * @return key为分类id，value为该分类下未删除文章数量
+     */
+    public java.util.Map<Long, Long> findArticleCountMapByCategoryIdList(List<Long> categoryIdList) {
+        if (CollectionUtils.isEmpty(categoryIdList)) {
+            return new java.util.HashMap<>();
+        }
+        List<java.util.Map<String, Object>> countList = articleMapper.selectMaps(new com.baomidou.mybatisplus.core.conditions.query.QueryWrapper<Article>()
+                .select("category_id AS categoryId", "COUNT(*) AS articleCount")
+                .in("category_id", categoryIdList)
+                .eq("is_deleted", CommonConstant.ENTITY_NORMAL)
+                .groupBy("category_id"));
+        return countList.stream().collect(Collectors.toMap(
+                item -> Long.valueOf(String.valueOf(item.get("categoryId"))),
+                item -> Long.valueOf(String.valueOf(item.get("articleCount"))),
+                (a, b) -> a));
     }
 
 }

@@ -16,6 +16,7 @@ import cn.lingjiatong.re.common.util.RandomUtil;
 import cn.lingjiatong.re.common.util.RedisUtil;
 import cn.lingjiatong.re.common.util.SnowflakeIdWorkerUtil;
 import cn.lingjiatong.re.service.article.api.dto.*;
+import cn.lingjiatong.re.service.article.api.vo.BackendArticleDetailVO;
 import cn.lingjiatong.re.service.article.api.vo.BackendArticleListVO;
 import cn.lingjiatong.re.service.article.api.vo.BackendDraftDetailVO;
 import cn.lingjiatong.re.service.article.api.vo.BackendDraftListVO;
@@ -29,6 +30,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import jakarta.annotation.Resource;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -348,6 +350,54 @@ public class BackendArticleService {
     }
 
 
+
+    /**
+     * 后端更新文章
+     *
+     * @param dto 后台文章更新接口DTO对象
+     * @param currentUser 当前用户
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public void updateArticle(BackendArticleUpdateDTO dto, User currentUser) {
+        Long articleId = dto.getArticleId();
+        if (articleId == null || articleId <= 0) {
+            throw new ParamErrorException(ErrorEnum.REQUEST_PARAM_ERROR);
+        }
+        // 校验文章参数
+        checkArticleUpdateDTO(dto);
+
+        Article article = articleMapper.selectById(articleId);
+        if (article == null) {
+            // 文章不存在、已删除或者不是当前用户的文章，统一抛出资源不存在异常，不泄露资源的存在性
+            throw new ResourceNotExistException(ErrorEnum.RESOURCE_NOT_EXIST_ERROR);
+        }
+
+        Article updateArticle = new Article();
+        updateArticle.setId(articleId);
+        updateArticle.setTitle(dto.getTitle());
+        updateArticle.setSummary(dto.getSummary());
+        updateArticle.setMarkdownContent(dto.getMarkdownContent());
+        updateArticle.setHtmlContent(dto.getHtmlContent());
+        updateArticle.setCategoryId(dto.getCategoryId());
+        updateArticle.setRecommend(dto.getRecommend().byteValue());
+        updateArticle.setTop(dto.getTop().byteValue());
+        updateArticle.setCreationType(dto.getCreationType().byteValue());
+        updateArticle.setCoverUrl(dto.getCoverUrl());
+        updateArticle.setQuoteInfo(dto.getQuoteInfo());
+        updateArticle.setTransportInfo(dto.getTransportInfo());
+        updateArticle.setModifyTime(DateUtil.getLocalDateTimeNow());
+        updateArticle.setOptUser(currentUser.getUsername());
+        articleMapper.updateById(updateArticle);
+
+        // 删除文章原有关联的标签，重新保存标签列表和文章标签关联关系
+        List<String> tagList = dto.getTagList();
+        backendTagService.deleteTrArticleTagBatch(List.of(articleId));
+        backendTagService.saveTagBatch(tagList);
+        backendTagService.saveTrArticleTag(articleId, tagList);
+
+        // TODO 更新es数据
+    }
+
     // ********************************查询类接口********************************
 
     /**
@@ -416,6 +466,43 @@ public class BackendArticleService {
     }
 
     /**
+     * 后端获取文章详情
+     *
+     * @param articleId 文章id
+     * @param currentUser 当前用户
+     * @return 后台文章详情VO对象
+     */
+    public BackendArticleDetailVO getArticleDetail(Long articleId, User currentUser) {
+        if (articleId == null || articleId <= 0) {
+            throw new ParamErrorException(ErrorEnum.REQUEST_PARAM_ERROR);
+        }
+        Article article = articleMapper.selectById(articleId);
+        if (article == null) {
+            // 文章不存在、已删除或者不是当前用户的文章，统一抛出资源不存在异常，不泄露资源的存在性
+            throw new ResourceNotExistException(ErrorEnum.RESOURCE_NOT_EXIST_ERROR);
+        }
+        BackendArticleDetailVO result = new BackendArticleDetailVO();
+        result.setId(article.getId());
+        result.setTitle(article.getTitle());
+        result.setSummary(article.getSummary());
+        result.setMarkdownContent(article.getMarkdownContent());
+        result.setHtmlContent(article.getHtmlContent());
+        result.setCategoryId(article.getCategoryId());
+        // 历史文章数据可能缺少这些字段，为空时使用默认值，避免空指针
+        result.setRecommend(article.getRecommend() == null ? ArticleConstant.ARTICLE_NOT_RECOMMEND.intValue() : article.getRecommend().intValue());
+        result.setTop(article.getTop() == null ? ArticleConstant.ARTICLE_NOT_TOP.intValue() : article.getTop().intValue());
+        result.setCreationType(article.getCreationType() == null ? ArticleConstant.ARTICLE_CREATION_YC.intValue() : article.getCreationType().intValue());
+        result.setCoverUrl(article.getCoverUrl());
+        result.setTransportInfo(article.getTransportInfo());
+        result.setQuoteInfo(article.getQuoteInfo());
+        result.setCreateTime(article.getCreateTime());
+        result.setModifyTime(article.getModifyTime());
+        Map<Long, List<String>> articleTagListMap = backendTagService.findTagListByArticleIdList(List.of(articleId));
+        result.setTagList(articleTagListMap.get(articleId));
+        return result;
+    }
+
+    /**
      * 后端获取草稿详情
      *
      * @param currentUser 当前用户
@@ -472,17 +559,53 @@ public class BackendArticleService {
      * @param dto 后台文章发布接口DTO对象
      */
     private void checkArticlePublishDTO(BackendArticlePublishDTO dto) {
-        String title = dto.getTitle();
-        String summary = dto.getSummary();
-        Long categoryId = dto.getCategoryId();
-        String coverUrl = dto.getCoverUrl();
-        Integer recommend = dto.getRecommend();
-        Integer creationType = dto.getCreationType();
-        Integer top = dto.getTop();
-        String markdownContent = dto.getMarkdownContent();
-        String transportInfo = dto.getTransportInfo();
-        List<String> tagList = dto.getTagList();
+        ArticleCommonParam commonParam = checkArticleCommonParam(dto.getTitle(), dto.getSummary(), dto.getCategoryId(),
+                dto.getCoverUrl(), dto.getRecommend(), dto.getCreationType(), dto.getTop(),
+                dto.getMarkdownContent(), dto.getTransportInfo(), dto.getTagList());
+        // 将校验后补全的默认值写回DTO对象
+        dto.setSummary(commonParam.getSummary());
+        dto.setCoverUrl(commonParam.getCoverUrl());
+        dto.setRecommend(commonParam.getRecommend());
+        dto.setCreationType(commonParam.getCreationType());
+        dto.setTop(commonParam.getTop());
+    }
 
+    /**
+     * 校验BackendArticleUpdateDTO的参数
+     *
+     * @param dto 后台文章更新接口DTO对象
+     */
+    private void checkArticleUpdateDTO(BackendArticleUpdateDTO dto) {
+        ArticleCommonParam commonParam = checkArticleCommonParam(dto.getTitle(), dto.getSummary(), dto.getCategoryId(),
+                dto.getCoverUrl(), dto.getRecommend(), dto.getCreationType(), dto.getTop(),
+                dto.getMarkdownContent(), dto.getTransportInfo(), dto.getTagList());
+        // 将校验后补全的默认值写回DTO对象
+        dto.setSummary(commonParam.getSummary());
+        dto.setCoverUrl(commonParam.getCoverUrl());
+        dto.setRecommend(commonParam.getRecommend());
+        dto.setCreationType(commonParam.getCreationType());
+        dto.setTop(commonParam.getTop());
+    }
+
+    /**
+     * 校验文章公共参数
+     * 包含后台文章发布和更新接口的公共字段校验
+     *
+     * @param title 文章标题
+     * @param summary 文章简介
+     * @param categoryId 文章所属类型id
+     * @param coverUrl 文章封面图片url
+     * @param recommend 是否设置为推荐文章 1 是 0 否
+     * @param creationType 创作类型 1 原创 2 转载
+     * @param top 是否设置为置顶 1 是 0 否
+     * @param markdownContent 文章的markdown格式内容
+     * @param transportInfo 转载文章信息
+     * @param tagList 文章标签列表
+     * @return 文章公共参数对象，包含校验后补全默认值的文章简介、封面图片url、推荐、创作类型和置顶
+     */
+    private ArticleCommonParam checkArticleCommonParam(String title, String summary, Long categoryId, String coverUrl,
+                                                       Integer recommend, Integer creationType, Integer top,
+                                                       String markdownContent, String transportInfo, List<String> tagList) {
         // 空值校验
         if (!StringUtils.hasLength(title)) {
             // 标题不能为空
@@ -495,7 +618,6 @@ public class BackendArticleService {
         if (!StringUtils.hasLength(summary)) {
             // 如果简介为空，默认获取文章的前200个字符作为文章简介
             summary = getSummaryFromMarkdownContent(markdownContent);
-            dto.setSummary(summary);
         }
 
         if (categoryId == null) {
@@ -510,22 +632,18 @@ public class BackendArticleService {
         if (!StringUtils.hasLength(coverUrl)) {
             // 封面图片url如果为空，使用默认封面
             coverUrl = ArticleConstant.DEFAULT_COVER_URL;
-            dto.setCoverUrl(coverUrl);
         }
         if (recommend == null) {
             // 如果没有设置推荐，默认设置为不推荐
             recommend = ArticleConstant.ARTICLE_NOT_RECOMMEND.intValue();
-            dto.setRecommend(recommend);
         }
         if (creationType == null) {
             // 如果没有设置是原创还是转载，那么默认是原创
             creationType = ArticleConstant.ARTICLE_CREATION_YC.intValue();
-            dto.setCreationType(creationType);
         }
         if (top == null) {
             // 如果没有设置是否置顶，那么不置顶
             top = ArticleConstant.ARTICLE_NOT_TOP.intValue();
-            dto.setTop(top);
         }
 
         // 校验规则校验
@@ -565,6 +683,14 @@ public class BackendArticleService {
                 }
             });
         }
+
+        ArticleCommonParam commonParam = new ArticleCommonParam();
+        commonParam.setSummary(summary);
+        commonParam.setCoverUrl(coverUrl);
+        commonParam.setRecommend(recommend);
+        commonParam.setCreationType(creationType);
+        commonParam.setTop(top);
+        return commonParam;
     }
 
     /**
@@ -593,6 +719,45 @@ public class BackendArticleService {
         } else {
             return result.toString();
         }
+    }
+
+    /**
+     * 文章公共参数对象
+     * 用于文章发布和更新接口的公共参数校验，保存校验后补全默认值的文章简介、封面图片url、推荐、创作类型和置顶
+     */
+    @Data
+    private static class ArticleCommonParam {
+
+        /**
+         * 文章简介
+         */
+        private String summary;
+
+        /**
+         * 文章封面图片url
+         */
+        private String coverUrl;
+
+        /**
+         * 是否设置为推荐文章
+         *
+         * 1 是 0 否
+         */
+        private Integer recommend;
+
+        /**
+         * 创作类型
+         *
+         * 1 原创 2 转载
+         */
+        private Integer creationType;
+
+        /**
+         * 是否设置为置顶
+         *
+         * 1 是 0 否
+         */
+        private Integer top;
     }
 
 }

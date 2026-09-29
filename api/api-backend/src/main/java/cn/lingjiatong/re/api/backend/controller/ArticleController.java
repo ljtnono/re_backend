@@ -3,6 +3,7 @@ package cn.lingjiatong.re.api.backend.controller;
 import cn.lingjiatong.re.common.ResultVO;
 import cn.lingjiatong.re.service.article.api.client.BackendArticleFeignClient;
 import cn.lingjiatong.re.service.article.api.dto.*;
+import cn.lingjiatong.re.service.article.api.vo.BackendArticleDetailVO;
 import cn.lingjiatong.re.service.article.api.vo.BackendArticleListVO;
 import cn.lingjiatong.re.service.article.api.vo.BackendDraftDetailVO;
 import cn.lingjiatong.re.service.article.api.vo.BackendDraftListVO;
@@ -136,6 +137,21 @@ public class ArticleController {
     }
 
 
+
+    /**
+     * 更新文章
+     *
+     * @param dto 后台文章更新接口DTO对象
+     * @return 通用消息返回对象
+     */
+    @PutMapping("/update")
+    @Operation(summary = "更新文章", method = "PUT")
+//    @PreAuthorize("hasAuthority('blog:article') && hasAuthority('blog:article:write')")
+    public ResultVO<?> updateArticle(@RequestBody BackendArticleUpdateDTO dto) {
+        log.info("==========更新文章，参数：{}", dto);
+        return backendArticleFeignClient.updateArticle(dto);
+    }
+
     // ********************************查询类接口********************************
 
     /**
@@ -152,6 +168,20 @@ public class ArticleController {
         return backendArticleFeignClient.findArticleList(dto);
     }
 
+
+    /**
+     * 后端获取文章详情
+     *
+     * @param articleId 文章id
+     * @return 后台文章详情VO对象
+     */
+    @GetMapping("/detail/{articleId}")
+    @Operation(summary = "后端获取文章详情", method = "GET")
+//    @PreAuthorize("hasAuthority('blog:article') || hasAuthority('blog:article:read')")
+    public ResultVO<BackendArticleDetailVO> getArticleDetail(@PathVariable("articleId") Long articleId) {
+        log.info("==========后端获取文章详情，参数：{}", articleId);
+        return backendArticleFeignClient.getArticleDetail(articleId);
+    }
 
     /**
      * 后端获取草稿详情

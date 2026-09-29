@@ -3,6 +3,7 @@ package cn.lingjiatong.re.service.article.api.client;
 import cn.lingjiatong.re.common.ResultVO;
 import cn.lingjiatong.re.common.config.FeignBasicAuthRequestInterceptor;
 import cn.lingjiatong.re.service.article.api.dto.*;
+import cn.lingjiatong.re.service.article.api.vo.BackendArticleDetailVO;
 import cn.lingjiatong.re.service.article.api.vo.BackendArticleListVO;
 import cn.lingjiatong.re.service.article.api.vo.BackendDraftDetailVO;
 import cn.lingjiatong.re.service.article.api.vo.BackendDraftListVO;
@@ -91,7 +92,26 @@ public interface BackendArticleFeignClient {
     @PutMapping("/backend/api/v1/article/updateDeleteBatch")
     ResultVO<?> updateArticleDeleteBatch(@RequestBody BackendArticleUpdateDeleteBatchDTO dto);
 
+
+    /**
+     * 更新文章
+     *
+     * @param dto 后台文章更新接口DTO对象
+     * @return 通用消息返回对象
+     */
+    @PutMapping("/backend/api/v1/article/update")
+    ResultVO<?> updateArticle(@RequestBody BackendArticleUpdateDTO dto);
+
     // ********************************查询类接口********************************
+
+    /**
+     * 后端获取文章详情
+     *
+     * @param articleId 文章id
+     * @return 后台文章详情VO对象
+     */
+    @GetMapping("/backend/api/v1/article/detail/{articleId}")
+    ResultVO<BackendArticleDetailVO> getArticleDetail(@PathVariable("articleId") Long articleId);
 
     /**
      * 后端获取草稿详情

@@ -5,6 +5,7 @@ import cn.lingjiatong.re.common.entity.User;
 import cn.lingjiatong.re.common.util.SaUserUtils;
 import cn.lingjiatong.re.service.article.api.client.BackendArticleFeignClient;
 import cn.lingjiatong.re.service.article.api.dto.*;
+import cn.lingjiatong.re.service.article.api.vo.BackendArticleDetailVO;
 import cn.lingjiatong.re.service.article.api.vo.BackendArticleListVO;
 import cn.lingjiatong.re.service.article.api.vo.BackendDraftDetailVO;
 import cn.lingjiatong.re.service.article.api.vo.BackendDraftListVO;
@@ -89,7 +90,23 @@ public class BackendArticleController implements BackendArticleFeignClient {
         return ResultVO.success();
     }
 
+
+    @Override
+    @PutMapping("/backend/api/v1/article/update")
+    public ResultVO<?> updateArticle(@RequestBody BackendArticleUpdateDTO dto) {
+        User currentUser = SaUserUtils.getCurrentUser();
+        backendArticleService.updateArticle(dto, currentUser);
+        return ResultVO.success();
+    }
+
     // ********************************查询类接口********************************
+
+    @Override
+    @GetMapping("/backend/api/v1/article/detail/{articleId}")
+    public ResultVO<BackendArticleDetailVO> getArticleDetail(@PathVariable("articleId") Long articleId) {
+        User currentUser = SaUserUtils.getCurrentUser();
+        return ResultVO.success(backendArticleService.getArticleDetail(articleId, currentUser));
+    }
 
     @Override
     @GetMapping("/backend/api/v1/article/draft/{draftId}")

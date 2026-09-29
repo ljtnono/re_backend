@@ -41,6 +41,12 @@ public class BackendCategoryListVO {
     private Long favorite;
 
     /**
+     * 分类下文章数量
+     */
+    @Schema(description = "分类下文章数量")
+    private Long articleCount;
+
+    /**
      * 创建时间
      */
     @Schema(description = "创建时间")
