@@ -340,10 +340,6 @@ public class FrontendArticleService {
     public Page<FrontendArticleListVO> findArticleList(FrontendArticleListDTO dto) {
         Long categoryId = dto.getCategoryId();
         Long tagId = dto.getTagId();
-        // 请求参数有误
-        if (categoryId == null && tagId == null) {
-            throw new ParamErrorException(ErrorEnum.REQUEST_PARAM_ERROR);
-        }
 
         List<String> orderFieldList = dto.getOrderFieldList();
         List<Byte> orderFlagList = dto.getOrderFlagList();
