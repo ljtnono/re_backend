@@ -19,7 +19,7 @@ import java.time.LocalDateTime;
  */
 @Data
 @Document(indexName = "sp_toutiao_rb")
-@TableName(value = "sp_toutiao_rb", schema = "re_spider")
+@TableName(value = "sp_toutiao_rb")
 public class SpToutiaoRb {
 
     @Id

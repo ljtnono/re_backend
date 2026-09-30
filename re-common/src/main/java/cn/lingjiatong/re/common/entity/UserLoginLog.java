@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
  * Date: 2023/3/15 14:50
  */
 @Data
-@TableName(value = "user_login_log", schema = "re_sys")
+@TableName(value = "user_login_log")
 public class UserLoginLog {
 
     /**

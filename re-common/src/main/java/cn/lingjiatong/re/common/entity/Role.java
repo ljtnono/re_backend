@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
  * Date: 2022/10/22 18:46
  */
 @Data
-@TableName(value = "role", schema = "re_sys")
+@TableName(value = "role")
 public class Role {
 
     /**

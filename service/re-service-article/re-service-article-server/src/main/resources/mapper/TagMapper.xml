@@ -20,11 +20,11 @@
     <select id="findFrontendTagListByArticleId" resultType="java.lang.String">
         SELECT
             `name`
-        FROM re_article.tag t
+        FROM tag t
         <where>
             t.is_deleted = ${@cn.lingjiatong.re.common.constant.CommonConstant@ENTITY_NORMAL}
             <if test="articleId != null">
-                AND t.id IN (SELECT tat.tag_id FROM re_article.tr_article_tag tat WHERE tat.article_id = #{articleId, jdbcType=BIGINT})
+                AND t.id IN (SELECT tat.tag_id FROM tr_article_tag tat WHERE tat.article_id = #{articleId, jdbcType=BIGINT})
             </if>
         </where>
     </select>
@@ -35,8 +35,8 @@
             GROUP_CONCAT(t.name) AS tagNameStr,
             tat.article_id
         FROM
-            re_article.tr_article_tag tat
-        LEFT JOIN re_article.tag t ON tat.tag_id = t.id
+            tr_article_tag tat
+        LEFT JOIN tag t ON tat.tag_id = t.id
         <if test="articleIdList != null and articleIdList.size() != 0">
             WHERE
             tat.article_id IN
@@ -53,8 +53,8 @@
             t.id,
             t.name,
             COUNT(DISTINCT tat.article_id) AS article_count
-        FROM re_article.tag t
-        LEFT JOIN re_article.tr_article_tag tat ON t.id = tat.tag_id
+        FROM tag t
+        LEFT JOIN tr_article_tag tat ON t.id = tat.tag_id
         WHERE t.is_deleted = ${@cn.lingjiatong.re.common.constant.CommonConstant@ENTITY_NORMAL}
         GROUP BY t.id
     </select>

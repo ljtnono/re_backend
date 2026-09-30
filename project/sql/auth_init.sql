@@ -1,5 +1,5 @@
 SET NAMES utf8mb4;
-USE re_sys;
+USE re;
 -- 权限、菜单、路由相关表初始化sql脚本
 
 -- 路由表

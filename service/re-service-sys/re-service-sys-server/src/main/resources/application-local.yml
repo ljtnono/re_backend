@@ -21,7 +21,7 @@ spring:
       primary: master
       datasource:
         master:
-          url: jdbc:mysql://localhost:30601/re_sys
+          url: jdbc:mysql://localhost:30601/re
           username: root
           password: re#mysql2022
           driver-class-name: com.mysql.cj.jdbc.Driver

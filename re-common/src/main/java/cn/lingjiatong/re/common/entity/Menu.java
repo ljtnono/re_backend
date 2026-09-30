@@ -13,7 +13,7 @@ import lombok.Data;
  * Date: 2022/12/29 22:02
  */
 @Data
-@TableName(value = "menu", schema = "re_sys")
+@TableName(value = "menu")
 public class Menu {
 
     /**

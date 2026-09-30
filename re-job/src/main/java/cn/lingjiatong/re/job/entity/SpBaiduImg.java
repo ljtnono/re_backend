@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
  * Date: 2022/10/14 00:53
  */
 @Data
-@TableName(value = "sp_baidu_img", schema = "re_spider")
+@TableName(value = "sp_baidu_img")
 public class SpBaiduImg {
 
     /**

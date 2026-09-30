@@ -15,7 +15,7 @@ import java.util.Collection;
  * Date: 2022/10/15 22:53
  */
 @Data
-@TableName(value = "user", schema = "re_sys")
+@TableName(value = "user")
 public class User {
 
     /**

@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
  * Date: 2022/10/11 00:26
  */
 @Data
-@TableName(value = "sys_friend_link", schema = "re_sys")
+@TableName(value = "sys_friend_link")
 public class SysFriendLink {
 
     /**

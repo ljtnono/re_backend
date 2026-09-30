@@ -14,7 +14,7 @@ import lombok.ToString;
  */
 @Data
 @ToString(callSuper = true)
-@TableName(value = "sys_config", schema = "re_sys")
+@TableName(value = "sys_config")
 @Schema(description = "系统配置实体类")
 public class SysConfig {
 

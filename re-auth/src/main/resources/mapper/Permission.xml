@@ -21,12 +21,12 @@
             p.name,
             p.expression,
             p.menu_id
-        FROM re_sys.permission p
+        FROM permission p
         <where>
             p.id IN (
                 SELECT
                     permission_id
-                FROM re_sys.tr_role_permission trp
+                FROM tr_role_permission trp
                 <where>
                     trp.role_id IN
                     <foreach collection="roleIdList" item="roleId" open="(" close=")" separator=",">

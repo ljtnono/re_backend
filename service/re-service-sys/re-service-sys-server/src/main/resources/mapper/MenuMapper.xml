@@ -25,7 +25,7 @@
             m.route_path,
             m.route_name,
             m.component_path
-        FROM re_sys.menu m
+        FROM menu m
         <where>
             <if test="dto.searchCondition != null and dto.searchCondition != ''">
                 m.title LIKE CONCAT('%', #{dto.searchCondition, jdbcType=VARCHAR}, '%')

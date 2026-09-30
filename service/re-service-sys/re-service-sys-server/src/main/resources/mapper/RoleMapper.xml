@@ -18,7 +18,7 @@
             r.remark,
             r.create_time,
             r.modify_time
-        FROM re_sys.role r
+        FROM role r
         <where>
             <if test="dto.searchCondition != null and dto.searchCondition != ''">
                 AND
@@ -38,7 +38,7 @@
     <select id="findRolePageListTotal" resultType="long">
         SELECT
             COUNT(*)
-        FROM re_sys.role r
+        FROM role r
         <where>
             <if test="dto.searchCondition != null and dto.searchCondition != ''">
                 AND

@@ -19,9 +19,9 @@
             u.create_time,
             u.modify_time,
             u.is_deleted AS deleted
-        FROM re_sys.user u
-        LEFT JOIN re_sys.tr_user_role tur ON tur.user_id = u.id
-        LEFT JOIN re_sys.role r ON r.id = tur.role_id
+        FROM user u
+        LEFT JOIN tr_user_role tur ON tur.user_id = u.id
+        LEFT JOIN role r ON r.id = tur.role_id
         <where>
             <if test="dto.searchCondition != null and dto.searchCondition != ''">
                 AND
@@ -43,7 +43,7 @@
     <select id="findUserListTotal" resultType="long">
         SELECT
             COUNT(*)
-        FROM re_sys.user u
+        FROM user u
         <where>
             <if test="dto.searchCondition != null and dto.searchCondition != ''">
                 AND
@@ -61,7 +61,7 @@
     <!-- 批量更新用户删除状态 -->
     <update id="updateUserDeleteStatusBatch">
         UPDATE
-            re_sys.user u
+            user u
         SET is_deleted = #{dto.deleteStatus, jdbcType=TINYINT}
         <where>
             u.id IN
@@ -76,8 +76,8 @@
         SELECT
             r.id,
             r.name
-        FROM re_sys.tr_user_role tur
-        LEFT JOIN re_sys.role r ON r.id = tur.role_id
+        FROM tr_user_role tur
+        LEFT JOIN role r ON r.id = tur.role_id
         WHERE tur.user_id = #{id, jdbcType=BIGINT}
     </select>
 </mapper>
