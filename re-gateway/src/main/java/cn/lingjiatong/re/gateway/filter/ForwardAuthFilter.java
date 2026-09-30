@@ -43,6 +43,15 @@ public class ForwardAuthFilter implements GlobalFilter {
                 Object loginId = StpUtil.getLoginIdByToken(token);
                 if (loginId != null) {
                     requestBuilder.header("X-User-Username", loginId.toString());
+                    // 从Sa-Token账号会话中获取userId一并透传，供下游服务使用
+                    try {
+                        Object userId = StpUtil.getSessionByLoginId(loginId).get("userId");
+                        if (userId != null) {
+                            requestBuilder.header("X-User-Id", userId.toString());
+                        }
+                    } catch (Exception e) {
+                        log.debug("获取账号会话中的userId失败: {}", e.getMessage());
+                    }
                 }
             } catch (Exception e) {
                 log.debug("解析JWT获取loginId失败: {}", e.getMessage());

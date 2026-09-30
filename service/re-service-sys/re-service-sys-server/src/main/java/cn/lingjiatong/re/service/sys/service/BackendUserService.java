@@ -35,6 +35,7 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import cn.lingjiatong.re.common.util.AvatarGenerateUtil;
 
 /**
  * 后台用户模块service层
@@ -94,7 +95,7 @@ public class BackendUserService {
         user.setUsername(dto.getUsername());
         user.setPassword(EncryptUtil.getInstance().getMd5LowerCase(dto.getPassword()));
         user.setEmail(dto.getEmail());
-        user.setAvatarUrl(dto.getAvatarUrl());
+        user.setAvatarUrl(resolveAvatarUrl(dto.getAvatarUrl(), dto.getUsername()));
         user.setPhone(dto.getPhone());
         user.setCreateTime(LocalDateTime.now(ZoneId.of("Asia/Shanghai")));
         user.setModifyTime(LocalDateTime.now(ZoneId.of("Asia/Shanghai")));
@@ -107,6 +108,25 @@ public class BackendUserService {
         trUserRole.setRoleId(dto.getRoleId());
         trUserRoleService.saveTrUserRole(trUserRole);
 
+    }
+
+    /**
+     * 解析用户头像地址：未传入头像时生成用户名首字母纯色背景默认头像（base64 data URI）
+     *
+     * @param avatarUrl 前端传入的头像地址，可为空
+     * @param username  用户名
+     * @return 头像地址，生成失败时返回null
+     */
+    private String resolveAvatarUrl(String avatarUrl, String username) {
+        if (avatarUrl != null && !avatarUrl.trim().isEmpty()) {
+            return avatarUrl;
+        }
+        try {
+            return AvatarGenerateUtil.generateDefaultAvatarDataUri(username);
+        } catch (Exception e) {
+            log.error("==========生成用户[{}]默认头像失败：{}", username, e.getMessage(), e);
+            return null;
+        }
     }
 
     // ********************************删除类接口********************************
