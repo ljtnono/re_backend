@@ -32,7 +32,7 @@ public interface TagMapper extends BaseMapper<Tag> {
      * @param articleId 文章id
      * @return 文章标签列表
      */
-    List<String> findFrontendTagListByArticleId(@Param("articleId") Long articleId);
+    List<FrontendTagListVO> findFrontendTagListByArticleId(@Param("articleId") Long articleId);
 
     /**
      * 根据文章id列表查询文章的标签名列表

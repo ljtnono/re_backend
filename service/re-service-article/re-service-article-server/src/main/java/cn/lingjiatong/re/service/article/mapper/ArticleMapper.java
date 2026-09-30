@@ -89,6 +89,23 @@ public interface ArticleMapper extends BaseMapper<Article> {
     long findFrontendArticleRecommendListTotal();
 
     /**
+     * 前端搜索文章列表
+     *
+     * @param dto 前端搜索文章列表DTO对象
+     * @param page 分页对象
+     * @return 前端搜索文章列表VO对象分页对象
+     */
+    Page<FrontendArticleSearchListVO> findFrontendArticleSearch(Page<?> page, @Param("dto") FrontendArticleSearchDTO dto);
+
+    /**
+     * 前端搜索文章列表-查询总数
+     *
+     * @param dto 前端搜索文章列表DTO对象
+     * @return 前端搜索文章列表-总数
+     */
+    long findFrontendArticleSearchTotal(@Param("dto") FrontendArticleSearchDTO dto);
+
+    /**
      * 前端分页获取文章列表
      *
      * @param page 分页对象

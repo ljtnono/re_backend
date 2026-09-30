@@ -105,7 +105,7 @@ public class FrontendArticleService {
         }
 
         // 获取标签列表
-        List<String> tagList = tagMapper.findFrontendTagListByArticleId(articleId);
+        List<FrontendTagListVO> tagList = tagMapper.findFrontendTagListByArticleId(articleId);
         result.setTagList(tagList);
         return result;
     }
@@ -228,105 +228,37 @@ public class FrontendArticleService {
      * @return 前端搜索文章列表VO对象分页对象
      */
     public EsPage<FrontendArticleSearchListVO> search(FrontendArticleSearchDTO dto) {
-        // 从文章标签列表、文章简介、文章markdown内容中分词查询
+        // 基于数据库模糊查询（标题、简介、markdown内容），按照最后修改时间倒序
+        Page<?> page = new Page<>(dto.getPageNum(), dto.getPageSize());
+        // 不查询总数
+        page.setSearchCount(false);
+        Page<FrontendArticleSearchListVO> searchPage = articleMapper.findFrontendArticleSearch(page, dto);
+        long total = articleMapper.findFrontendArticleSearchTotal(dto);
+        page.setTotal(total);
+
+        // 查询文章作者
+        List<FrontendArticleSearchListVO> records = searchPage.getRecords();
+        if (!CollectionUtils.isEmpty(records)) {
+            List<Long> userIdList = records.stream()
+                    .map(FrontendArticleSearchListVO::getUserId)
+                    .collect(Collectors.toList());
+            Map<Long, String> userMap = Maps.newHashMap();
+
+            ResultVO<List<FrontendUserListVO>> resultVO = frontendUserFeignClient.findUserListByUserIdList(userIdList);
+            if (!ResultVO.CODE_SUCCESS.equals(resultVO.getCode()) || !ResultVO.MESSAGE_SUCCESS.equals(resultVO.getMessage())) {
+                throw new BusinessException(ErrorEnum.COMMON_SERVER_ERROR);
+            }
+
+            List<FrontendUserListVO> voList = resultVO.getData();
+            voList.forEach(vo -> userMap.put(Long.valueOf(vo.getId()), vo.getUsername()));
+            records.forEach(record -> record.setAuthor(userMap.get(record.getUserId())));
+        }
+
         EsPage<FrontendArticleSearchListVO> esPage = new EsPage<>();
         esPage.setCurrent(dto.getPageNum());
         esPage.setSize(dto.getPageSize());
-//
-//        ScoreSortBuilder scoreSortBuilder = SortBuilders
-//                .scoreSort()
-//                .order(SortOrder.DESC);
-//        FieldSortBuilder fieldSortBuilder = SortBuilders.fieldSort("modifyTime")
-//                .order(SortOrder.DESC);
-//        PageRequest pageRequest = PageRequest.of(dto.getPageNum() - 1, dto.getPageSize());
-//        BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery()
-//                .should(QueryBuilders.matchQuery("title", dto.getSearchCondition()))
-//                .should(QueryBuilders.matchQuery("summary", dto.getSearchCondition()))
-//                .should(QueryBuilders.matchQuery("markdownContent", dto.getSearchCondition()))
-//                // 最少满足一个条件
-//                .minimumShouldMatch(1)
-//                // 查询非隐藏的数据
-//                .must(QueryBuilders.matchQuery("deleted", CommonConstant.ENTITY_NORMAL));
-//
-//        NativeSearchQuery query = new NativeSearchQueryBuilder()
-//                .withQuery(queryBuilder)
-//                // 分页查询
-//                .withPageable(pageRequest)
-//                // 根据匹配评分倒序
-//                .withSort(scoreSortBuilder)
-//                // 根据最后修改时间倒序
-//                .withSort(fieldSortBuilder)
-//                // 高亮
-//                .withHighlightFields(new HighlightBuilder.Field("*").fragmentSize(200).preTags("<font color=\"#ff55ae\">").postTags("</font>"))
-//                // 只获取部分字段
-//                .withSourceFilter(new FetchSourceFilter(new String[]{"id", "summary", "title", "categoryId", "author", "userId", "coverUrl", "view", "favorite", "modifyTime"}, null))
-//                .build();
-//        // 设置追踪总数
-//        query.setTrackTotalHits(true);
-//        // 获取高亮数据并返回
-//        SearchHits<ESArticle> searchHits = elasticsearchRestTemplate.search(query, ESArticle.class);
-//        List<SearchHit<ESArticle>> searchHitList = searchHits.getSearchHits();
-//        List<FrontendArticleSearchListVO> records = Lists.newArrayList();
-//        // 取出高亮字段并返回
-//        searchHitList.forEach(searchHit -> {
-//            ESArticle esArticle = searchHit.getContent();
-//            FrontendArticleSearchListVO vo = new FrontendArticleSearchListVO();
-//            Map<String, List<String>> highlightFields = searchHit.getHighlightFields();
-//            List<String> titleHighlightList = highlightFields.get("title");
-//            List<String> summaryHighlightList = highlightFields.get("summary");
-//            List<String> markdownContentHighlightList = highlightFields.get("markdownContent");
-//            BeanUtils.copyProperties(esArticle, vo);
-//            vo.setId(String.valueOf(esArticle.getId()));
-//            if (!CollectionUtils.isEmpty(titleHighlightList)) {
-//                esArticle.setTitle(titleHighlightList.get(0));
-//                vo.setTitle(esArticle.getTitle());
-//            }
-//            if (!CollectionUtils.isEmpty(summaryHighlightList)) {
-//                esArticle.setSummary(summaryHighlightList.get(0));
-//                vo.setSummary(esArticle.getSummary());
-//            }
-//            if (!CollectionUtils.isEmpty(markdownContentHighlightList)) {
-//                esArticle.setMarkdownContent(markdownContentHighlightList.get(0));
-//                vo.setSummary(esArticle.getMarkdownContent());
-//            }
-//            records.add(vo);
-//        });
-//
-//        // 查询文章的作者、文章的分类名
-//        if (!CollectionUtils.isEmpty(records)) {
-//            List<Long> userIdList = records.stream()
-//                    .map(FrontendArticleSearchListVO::getUserId)
-//                    .collect(Collectors.toList());
-//            Map<Long, String> articleAuthorMap = Maps.newHashMap();
-//            Map<Long, String> userMap = Maps.newHashMap();
-//
-//            ResultVO<List<FrontendUserListVO>> resultVO = frontendUserFeignClient.findUserListByUserIdList(userIdList);
-//            if (!ResultVO.CODE_SUCCESS.equals(resultVO.getCode()) || !ResultVO.MESSAGE_SUCCESS.equals(resultVO.getMessage())) {
-//                throw new BusinessException(ErrorEnum.COMMON_SERVER_ERROR);
-//            }
-//
-//            List<FrontendUserListVO> voList = resultVO.getData();
-//            voList.forEach(vo -> {
-//                userMap.put(Long.valueOf(vo.getId()), vo.getUsername());
-//            });
-//            records.forEach(record -> {
-//                articleAuthorMap.put(Long.valueOf(record.getId()), userMap.get(record.getUserId()));
-//            });
-//
-//            try {
-//                records.forEach(record -> {
-//                    Long id = Long.valueOf(record.getId());
-//                    String author = articleAuthorMap.get(id);
-//                    record.setAuthor(author);
-//                });
-//            } catch (Exception e) {
-//                log.error(e.toString(), e);
-//                throw new BusinessException(ErrorEnum.COMMON_SERVER_ERROR);
-//            }
-//        }
-//        esPage.setTotal(searchHits.getTotalHits());
-//        esPage.setRecords(records);
-        // 设置高亮字段
+        esPage.setTotal(total);
+        esPage.setRecords(records);
         return esPage;
     }
 

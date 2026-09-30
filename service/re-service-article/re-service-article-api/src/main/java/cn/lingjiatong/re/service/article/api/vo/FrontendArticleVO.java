@@ -117,6 +117,6 @@ public class FrontendArticleVO {
      * 文章标签列表
      */
     @Schema(description = "文章标签列表")
-    private List<String> tagList;
+    private List<FrontendTagListVO> tagList;
 
 }

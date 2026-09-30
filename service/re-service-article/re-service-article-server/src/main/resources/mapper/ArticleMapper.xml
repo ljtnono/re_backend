@@ -154,6 +154,46 @@
         AND a.is_recommend = ${@cn.lingjiatong.re.common.constant.ArticleConstant@ARTICLE_RECOMMEND}
     </select>
 
+    <!-- 前端搜索文章列表 -->
+    <select id="findFrontendArticleSearch" resultType="cn.lingjiatong.re.service.article.api.vo.FrontendArticleSearchListVO">
+        SELECT
+            a.id,
+            a.title,
+            a.summary,
+            c.name AS category,
+            a.cover_url,
+            a.user_id,
+            a.view,
+            a.favorite,
+            a.modify_time
+        FROM article a
+        LEFT JOIN category c ON c.id = a.category_id
+        WHERE a.is_deleted = ${@cn.lingjiatong.re.common.constant.CommonConstant@ENTITY_NORMAL}
+        <if test="dto.searchCondition != null and dto.searchCondition != ''">
+            AND (
+                a.title LIKE CONCAT('%', #{dto.searchCondition, jdbcType=VARCHAR}, '%')
+                OR a.summary LIKE CONCAT('%', #{dto.searchCondition, jdbcType=VARCHAR}, '%')
+                OR a.markdown_content LIKE CONCAT('%', #{dto.searchCondition, jdbcType=VARCHAR}, '%')
+            )
+        </if>
+        ORDER BY a.modify_time DESC
+    </select>
+
+    <!-- 前端搜索文章列表-查询总数 -->
+    <select id="findFrontendArticleSearchTotal" resultType="long">
+        SELECT
+            COUNT(DISTINCT a.id)
+        FROM article a
+        WHERE a.is_deleted = ${@cn.lingjiatong.re.common.constant.CommonConstant@ENTITY_NORMAL}
+        <if test="dto.searchCondition != null and dto.searchCondition != ''">
+            AND (
+                a.title LIKE CONCAT('%', #{dto.searchCondition, jdbcType=VARCHAR}, '%')
+                OR a.summary LIKE CONCAT('%', #{dto.searchCondition, jdbcType=VARCHAR}, '%')
+                OR a.markdown_content LIKE CONCAT('%', #{dto.searchCondition, jdbcType=VARCHAR}, '%')
+            )
+        </if>
+    </select>
+
     <!-- 前端分页获取文章列表 -->
     <select id="findArticleList" resultType="cn.lingjiatong.re.service.article.api.vo.FrontendArticleListVO">
         SELECT

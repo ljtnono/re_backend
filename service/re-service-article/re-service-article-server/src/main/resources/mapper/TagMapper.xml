@@ -17,9 +17,10 @@
 
 
     <!-- 根据文章id获取文章所有的标签列表 -->
-    <select id="findFrontendTagListByArticleId" resultType="java.lang.String">
+    <select id="findFrontendTagListByArticleId" resultType="cn.lingjiatong.re.service.article.api.vo.FrontendTagListVO">
         SELECT
-            `name`
+            t.id,
+            t.name
         FROM tag t
         <where>
             t.is_deleted = ${@cn.lingjiatong.re.common.constant.CommonConstant@ENTITY_NORMAL}
