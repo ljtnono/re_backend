@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
  * @author Ling, Jiatong
  */
 @Data
-@TableName(value = "atk_users", schema = "re_article")
+@TableName(value = "users", schema = "artalk")
 public class AtkUser {
 
     /**

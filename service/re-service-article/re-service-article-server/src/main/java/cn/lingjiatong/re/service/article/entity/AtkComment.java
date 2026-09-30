@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
  * @author Ling, Jiatong
  */
 @Data
-@TableName(value = "atk_comments", schema = "re_article")
+@TableName(value = "comments", schema = "artalk")
 public class AtkComment {
 
     /**
@@ -98,4 +98,16 @@ public class AtkComment {
      */
     @TableField("vote_down")
     private Long voteDown;
+
+    /**
+     * 根评论id，用于嵌套回复树
+     */
+    @TableField("root_id")
+    private Long rootId;
+
+    /**
+     * 用户邮箱是否已验证
+     */
+    @TableField("is_verified")
+    private Boolean verified;
 }
