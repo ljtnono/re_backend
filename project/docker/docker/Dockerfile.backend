@@ -1,0 +1,28 @@
+# 后端微服务通用多阶段构建文件
+# 由 docker-compose-server.yml 传入 MODULE / JAR_NAME 两个构建参数
+# MODULE: maven 模块路径（相对仓库根目录）
+# JAR_NAME: spring-boot-maven-plugin 打包后的 jar 名（pom 中 finalName）
+
+# ---------- 构建阶段 ----------
+FROM maven:3.9-eclipse-temurin-21 AS build
+ARG MODULE
+ARG JAR_NAME
+WORKDIR /src
+COPY . .
+# -pl 指定模块，-am 连带构建依赖模块
+# nacos-server-addr 会被 maven filtering 注入 application-prd.yml（容器网络内用服务名 nacos）
+RUN mvn -B -ntp -pl ${MODULE} -am package -DskipTests -P prod -Dnacos-server-addr=nacos:8848 \
+    && ls -lh /src/${MODULE}/target/${JAR_NAME}.jar
+
+# ---------- 运行阶段 ----------
+FROM eclipse-temurin:21-jre
+ARG JAR_NAME
+ENV LANG=C.UTF-8 \
+    TZ=Asia/Shanghai
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends tzdata curl \
+    && ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
+    && rm -rf /var/lib/apt/lists/*
+COPY --from=build /src/${MODULE}/target/${JAR_NAME}.jar /app.jar
+EXPOSE 8080
+ENTRYPOINT ["java", "-Xms512m", "-Xmx512m", "-Duser.timezone=Asia/Shanghai", "-jar", "/app.jar"]
