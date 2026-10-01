@@ -1,4 +1,4 @@
-FROM eclipse-temurin:21-jre
+FROM amazoncorretto:21-alpine
 ENV TZ=Asia/Shanghai
 MAINTAINER lingjiatong 935188400@qq.com
 ENV LANG C.UTF-8
