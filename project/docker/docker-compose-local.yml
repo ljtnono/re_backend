@@ -13,6 +13,8 @@ services:
       --sql_mode=STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION
     volumes:
       - ./data/mysql:/var/lib/mysql
+      # 首次启动（空数据目录）自动执行 init-sql/init.sql，若本地已有数据会自动跳过
+      - ./init-sql:/docker-entrypoint-initdb.d:ro
     networks:
       - re-network
     restart: always
@@ -91,6 +93,33 @@ services:
     networks:
       - re-network
     restart: always
+
+  artalk:
+    image: artalk/artalk-go:latest
+    container_name: re-artalk
+    ports:
+      - "30610:23366"
+    environment:
+      - TZ=Asia/Shanghai
+      - ATK_LOCALE=zh-CN
+      # 与 re_frontend 前端 Artalk.init 的 site 参数保持一致
+      - ATK_SITE_DEFAULT=re_frontend
+      # 本地开发 vite dev server 端口（re_frontend 为 8081）
+      - ATK_TRUSTED_DOMAINS=http://localhost:8081 http://127.0.0.1:8081
+      - ATK_DB_TYPE=mysql
+      - ATK_DB_HOST=re-mysql
+      - ATK_DB_PORT=3306
+      - ATK_DB_USER=artalk
+      - ATK_DB_PASSWORD=re#artalk2022
+      - ATK_DB_NAME=artalk
+      - ATK_DB_CHARSET=utf8mb4
+    volumes:
+      - ./data/artalk:/data
+    networks:
+      - re-network
+    restart: always
+    depends_on:
+      - mysql
 
 networks:
   re-network:

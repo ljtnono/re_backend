@@ -1,5 +1,5 @@
 # 根元素博客 - 服务器版编排
-# 在 docker-compose-dev.yml 基础上扩展，中间件端口映射与开发环境完全一致：
+# 在 docker-compose-local.yml 基础上扩展，中间件端口映射与开发环境完全一致：
 #   mysql:30601 redis:30602 nacos:30603/31603/30605 minio:30606/30607 es:30608/30609 artalk:30610
 # 新增：后端 6 个微服务 + 前端 re-frontend / re-admin
 # 用法见同目录 README.md

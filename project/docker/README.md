@@ -1,6 +1,6 @@
 # 根元素博客 - 服务器单机部署文档
 
-在 `docker-compose-dev.yml` 基础上扩展：中间件端口映射与开发环境完全一致，
+在 `docker-compose-local.yml`（本地一键部署）基础上扩展：中间件端口映射与开发环境完全一致，
 新增后端 6 个微服务和 re-frontend / re-admin 前端。
 服务器通过家宽公网 IP + DDNS 提供访问，路由器按下方端口表做端口转发即可。
 
@@ -23,7 +23,17 @@
 | **re-frontend** | **30151** | 博客前台 |
 | **re-admin** | **30150** | 管理后台 |
 
-## 二、公网链路（一次性）
+## 二、本地一键部署
+
+```bash
+cd re_backend/project/docker
+docker compose -f docker-compose-local.yml up -d
+```
+
+中间件端口与开发环境一致（30601-30610），首次启动自动执行 `init-sql/init.sql` 建库。
+> 注意：与 re_local 仓库的 compose 是等价的二选一关系，端口和容器名相同，**不要同时跑**。
+
+## 三、公网链路（一次性）
 
 1. **公网 IP**：打运营商客服要「公网 IP + 光猫桥接」，路由器 PPPoE 拨号
 2. **DDNS**：用 DNSPod/阿里云 API 把 `re.lingjiatong.cn` 解析到家中动态 IP
@@ -33,7 +43,7 @@
 4. **HTTPS（可选）**：家宽 80/443 被封，要 HTTPS 就先用非标端口跑起来，
    再用 acme.sh DNS-01（DNSPod API）签证书，然后自行套一层 nginx/caddy 反代或在路由器终结 TLS
 
-## 三、部署步骤
+## 四、部署步骤
 
 ### 1. 克隆代码（三个仓库同级）
 ```bash
@@ -96,7 +106,7 @@ UPDATE article SET markdown_content = REPLACE(markdown_content, 'http://localhos
 UPDATE article SET html_content = REPLACE(html_content, 'http://localhost:30606', 'http://re.lingjiatong.cn:30606');
 ```
 
-## 四、验证
+## 五、验证
 
 ```bash
 docker compose -f docker-compose-server.yml ps      # 全部 running
@@ -105,7 +115,7 @@ curl "http://127.0.0.1:9100/api-frontend/article/list?pageNum=1&pageSize=1"   # 
 
 浏览器：外网打开 `http://re.lingjiatong.cn:30151`（博客）、`:30150`（后台）。
 
-## 五、运维
+## 六、运维
 
 ```bash
 cd ~/code/re_backend/project/docker
@@ -115,7 +125,7 @@ docker compose -f docker-compose-server.yml up -d re-gateway   # 重建单个服
 
 更新代码：三个仓库 `git pull` → 重新跑 `build-frontend.sh`（或单独 build 变更的镜像）→ `docker compose up -d`。
 
-## 六、安全提醒
+## 七、安全提醒
 
 - 后台 `re-admin`（30150）建议只对家里 IP 开放路由器转发，或套 Basic Auth
 - Nacos 控制台（30603）、Minio 控制台（30607）默认口令较简单，公网暴露的话务必改强密码
