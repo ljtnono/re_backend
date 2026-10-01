@@ -194,6 +194,10 @@ spring:
           max-idle: 16
           max-active: 32
           min-idle: 8
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 50MB
 minio:
   # 内部SDK连接地址（docker网络内）
   endpoint: http://re-minio:9000
@@ -235,6 +239,10 @@ spring:
           max-idle: 16
           max-active: 32
           min-idle: 8
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 50MB
 minio:
   # 内部SDK连接地址（docker网络内）
   endpoint: http://re-minio:9000
