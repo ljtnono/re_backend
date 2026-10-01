@@ -9,10 +9,14 @@ set -e
 ROOT=$(cd "$(dirname "$0")" && pwd)
 cd "$ROOT"
 
-# 从 pom.xml 读取应用版本号，作为镜像 tag（与 compose 中 ${RE_VERSION} 对应）
-VERSION=$(sed -n 's:.*<re-version>\(.*\)</re-version>.*:\1:p' "$ROOT/pom.xml" | head -1 | xargs)
+# 版本号作为镜像 tag（与 compose 中 ${RE_VERSION} 对应）。
+# 优先级：环境变量 RE_VERSION（如 Jenkins 发版传入）> pom.xml 的 <re-version>
+VERSION="${RE_VERSION:-}"
 if [ -z "$VERSION" ]; then
-    echo "!! 未能从 pom.xml 解析 <re-version>，默认使用 latest"
+    VERSION=$(sed -n 's:.*<re-version>\(.*\)</re-version>.*:\1:p' "$ROOT/pom.xml" | head -1 | xargs)
+fi
+if [ -z "$VERSION" ]; then
+    echo "!! 未能解析版本号（RE_VERSION 环境变量与 pom.xml <re-version> 均为空），默认使用 latest"
     VERSION="latest"
 fi
 echo "==> 应用版本：$VERSION"
