@@ -103,9 +103,10 @@ public class UserService {
         // 执行Sa-Token登录，使用用户名作为登录ID
         StpUtil.login(userInfo.getUsername());
         // 在Session中存储额外用户信息，供下游服务使用
-        StpUtil.getSession().set("userId", userInfo.getId());
-        StpUtil.getSession().set("email", userInfo.getEmail());
-        StpUtil.getSession().set("phone", userInfo.getPhone());
+        // 注意：phone/email 可能为 null，而 SaSession 底层 ConcurrentHashMap 不允许 null 值
+        Optional.ofNullable(userInfo.getId()).ifPresent(id -> StpUtil.getSession().set("userId", id));
+        Optional.ofNullable(userInfo.getEmail()).ifPresent(email -> StpUtil.getSession().set("email", email));
+        Optional.ofNullable(userInfo.getPhone()).ifPresent(phone -> StpUtil.getSession().set("phone", phone));
 
         List<Long> roleIdList = roleService.findRoleListByUserId(userInfo.getId())
                 .stream()

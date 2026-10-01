@@ -272,6 +272,8 @@
             <id>dev</id>
             <properties>
                 <profiles.active>dev</profiles.active>
+                <!-- nacos 命名空间：与开发环境共用一个 -->
+                <nacos-namespace>ee7675c4-d2cc-48ab-8c8f-bd4461099886</nacos-namespace>
             </properties>
             <activation>
                 <activeByDefault>true</activeByDefault>
@@ -281,12 +283,16 @@
             <id>prod</id>
             <properties>
                 <profiles.active>prod</profiles.active>
+                <!-- nacos prod 命名空间 -->
+                <nacos-namespace>f2cc4448-831f-41da-9aa8-b89d4a81d90c</nacos-namespace>
             </properties>
         </profile>
         <profile>
             <id>local</id>
             <properties>
                 <profiles.active>local</profiles.active>
+                <!-- nacos 命名空间：本地开发环境 -->
+                <nacos-namespace>ee7675c4-d2cc-48ab-8c8f-bd4461099886</nacos-namespace>
             </properties>
         </profile>
     </profiles>

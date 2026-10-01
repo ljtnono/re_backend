@@ -9,7 +9,7 @@ package cn.lingjiatong.re.common.constant;
 public enum ProfileEnum {
 
     // 生产环境
-    PRD("prd"),
+    PRD("prod"),
     // 开发环境
     DEV("dev"),
     // 本地环境

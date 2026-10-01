@@ -1,3 +1,7 @@
+# 根元素博客 - 本地一键部署编排（与 docker-compose-server.yml 等价，用法见 README.md）
+# 中间件端口映射与开发环境完全一致：mysql:30601 redis:30602 nacos:30603/31603/30605
+#   minio:30606/30607 es:30608/30609 artalk:30610
+# 首次启动自动完成：MySQL 建库（init-sql/init.sql）-> Nacos 导入配置（nacos-init 服务）
 services:
   mysql:
     image: mysql:8
@@ -15,6 +19,12 @@ services:
       - ./data/mysql:/var/lib/mysql
       # 首次启动（空数据目录）自动执行 init-sql/init.sql，若本地已有数据会自动跳过
       - ./init-sql:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -uroot -p're#mysql2022' --silent"]
+      interval: 5s
+      timeout: 5s
+      retries: 60
+      start_period: 30s
     networks:
       - re-network
     restart: always
@@ -45,11 +55,27 @@ services:
       - NACOS_AUTH_IDENTITY_VALUE=re-nacos
       # re#nacos2022 base64 6 times
       - NACOS_AUTH_TOKEN=VmpGU1NtVkdXblJTYmxKVVlteEtWRmxzYUVOalJsSlZVVmhvVDFac1NsZFdWM1IzWWtaV1ZVMUVhejA9
-    volumes:
-      - ./data/nacos:/home/nacos/data
+      # 使用 MySQL 存储（替代内嵌 derby），库表与配置由 init-sql/init.sql 初始化
+      - SPRING_DATASOURCE_PLATFORM=mysql
+      - MYSQL_SERVICE_HOST=re-mysql
+      - MYSQL_SERVICE_PORT=3306
+      - MYSQL_SERVICE_DB_NAME=nacos
+      - MYSQL_SERVICE_USER=root
+      - MYSQL_SERVICE_PASSWORD=re#mysql2022
+      - MYSQL_DATABASE_NUM=1
+      - MYSQL_SERVICE_DB_PARAM=characterEncoding=utf8&connectTimeout=1000&socketTimeout=3000&autoReconnect=true&useSSL=false&allowPublicKeyRetrieval=true
     networks:
       - re-network
     restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://127.0.0.1:8848/nacos/v1/console/health/readiness || curl -sf 'http://127.0.0.1:8848/nacos/v1/ns/operator/metrics?keyword=nacos'"]
+      interval: 5s
+      timeout: 5s
+      retries: 60
+      start_period: 60s
+    depends_on:
+      mysql:
+        condition: service_healthy
 
   minio:
     # 原 bitnamicharts/minio:17.0.21 镜像是损坏的占位manifest（仅75kB无二进制），
@@ -104,8 +130,8 @@ services:
       - ATK_LOCALE=zh-CN
       # 与 re_frontend 前端 Artalk.init 的 site 参数保持一致
       - ATK_SITE_DEFAULT=re_frontend
-      # 本地开发 vite dev server 端口（re_frontend 为 8081）
-      - ATK_TRUSTED_DOMAINS=http://localhost:8081 http://127.0.0.1:8081
+      # CORS 可信域名：既兼容 vite dev server（8081），也兼容容器部署的前台（30151）
+      - ATK_TRUSTED_DOMAINS=http://localhost:8081 http://127.0.0.1:8081 http://localhost:30151 http://127.0.0.1:30151
       - ATK_DB_TYPE=mysql
       - ATK_DB_HOST=re-mysql
       - ATK_DB_PORT=3306
@@ -120,6 +146,126 @@ services:
     restart: always
     depends_on:
       - mysql
+
+  # #################### 后端微服务 ####################
+  # 镜像默认本地已构建好（各服务自身 Dockerfile + 仓库根目录 build.sh），compose 只负责运行
+  # 服务间互访直接用容器名（如 re-mysql:3306），端口映射仅供外部访问
+  re-gateway:
+    image: re-gateway:latest
+    container_name: re-gateway
+    ports:
+      - "9100:9100"
+    environment:
+      - TZ=Asia/Shanghai
+    networks:
+      - re-network
+    restart: always
+    depends_on:
+      nacos:
+        condition: service_healthy
+
+  re-auth:
+    image: re-auth:latest
+    container_name: re-auth
+    ports:
+      - "9104:9104"
+    environment:
+      - TZ=Asia/Shanghai
+    networks:
+      - re-network
+    restart: always
+    depends_on:
+      nacos:
+        condition: service_healthy
+
+  re-service-sys:
+    image: re-service-sys:latest
+    container_name: re-service-sys
+    ports:
+      - "9111:9111"
+    environment:
+      - TZ=Asia/Shanghai
+    networks:
+      - re-network
+    restart: always
+    depends_on:
+      nacos:
+        condition: service_healthy
+
+  re-service-article:
+    image: re-service-article:latest
+    container_name: re-service-article
+    ports:
+      - "9112:9112"
+    environment:
+      - TZ=Asia/Shanghai
+    networks:
+      - re-network
+    restart: always
+    depends_on:
+      nacos:
+        condition: service_healthy
+
+  api-backend:
+    image: api-backend:latest
+    container_name: api-backend
+    ports:
+      - "9101:9101"
+    environment:
+      - TZ=Asia/Shanghai
+    networks:
+      - re-network
+    restart: always
+    depends_on:
+      nacos:
+        condition: service_healthy
+
+  api-file:
+    image: api-file:latest
+    container_name: api-file
+    ports:
+      - "9103:9103"
+    environment:
+      - TZ=Asia/Shanghai
+    networks:
+      - re-network
+    restart: always
+    depends_on:
+      nacos:
+        condition: service_healthy
+
+  api-frontend:
+    image: api-frontend:latest
+    container_name: api-frontend
+    ports:
+      - "9102:9102"
+    environment:
+      - TZ=Asia/Shanghai
+    networks:
+      - re-network
+    restart: always
+    depends_on:
+      nacos:
+        condition: service_healthy
+
+  # #################### 前端（镜像由 build-frontend.sh 构建） ####################
+  re-frontend:
+    image: re-frontend:latest
+    container_name: re-frontend
+    ports:
+      - "30151:80"
+    networks:
+      - re-network
+    restart: always
+
+  re-admin:
+    image: re-admin:latest
+    container_name: re-admin
+    ports:
+      - "30150:80"
+    networks:
+      - re-network
+    restart: always
 
 networks:
   re-network:

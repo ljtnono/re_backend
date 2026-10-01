@@ -20,6 +20,12 @@ services:
       - ./data/mysql:/var/lib/mysql
       # 首次启动（空数据目录）时自动执行 init-sql/init.sql：建 artalk 库 -> 导入 re 主库 -> 权限路由表
       - ./init-sql:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -uroot -p're#mysql2022' --silent"]
+      interval: 5s
+      timeout: 5s
+      retries: 60
+      start_period: 30s
     networks:
       - re-network
     restart: always
@@ -50,11 +56,27 @@ services:
       - NACOS_AUTH_IDENTITY_VALUE=re-nacos
       # re#nacos2022 base64 6 times
       - NACOS_AUTH_TOKEN=VmpGU1NtVkdXblJTYmxKVVlteEtWRmxzYUVOalJsSlZVVmhvVDFac1NsZFdWM1IzWWtaV1ZVMUVhejA9
-    volumes:
-      - ./data/nacos:/home/nacos/data
+      # 使用 MySQL 存储（替代内嵌 derby），库表与配置由 init-sql/init.sql 初始化
+      - SPRING_DATASOURCE_PLATFORM=mysql
+      - MYSQL_SERVICE_HOST=re-mysql
+      - MYSQL_SERVICE_PORT=3306
+      - MYSQL_SERVICE_DB_NAME=nacos
+      - MYSQL_SERVICE_USER=root
+      - MYSQL_SERVICE_PASSWORD=re#mysql2022
+      - MYSQL_DATABASE_NUM=1
+      - MYSQL_SERVICE_DB_PARAM=characterEncoding=utf8&connectTimeout=1000&socketTimeout=3000&autoReconnect=true&useSSL=false&allowPublicKeyRetrieval=true
     networks:
       - re-network
     restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://127.0.0.1:8848/nacos/v1/console/health/readiness || curl -sf 'http://127.0.0.1:8848/nacos/v1/ns/operator/metrics?keyword=nacos'"]
+      interval: 5s
+      timeout: 5s
+      retries: 60
+      start_period: 60s
+    depends_on:
+      mysql:
+        condition: service_healthy
 
   minio:
     # 原 bitnamicharts/minio:17.0.21 镜像是损坏的占位manifest（仅75kB无二进制），
@@ -141,7 +163,8 @@ services:
       - re-network
     restart: always
     depends_on:
-      - nacos
+      nacos:
+        condition: service_healthy
 
   re-auth:
     image: re-auth:latest
@@ -154,7 +177,8 @@ services:
       - re-network
     restart: always
     depends_on:
-      - nacos
+      nacos:
+        condition: service_healthy
 
   re-service-sys:
     image: re-service-sys:latest
@@ -167,7 +191,8 @@ services:
       - re-network
     restart: always
     depends_on:
-      - nacos
+      nacos:
+        condition: service_healthy
 
   re-service-article:
     image: re-service-article:latest
@@ -180,7 +205,8 @@ services:
       - re-network
     restart: always
     depends_on:
-      - nacos
+      nacos:
+        condition: service_healthy
 
   api-backend:
     image: api-backend:latest
@@ -193,7 +219,8 @@ services:
       - re-network
     restart: always
     depends_on:
-      - nacos
+      nacos:
+        condition: service_healthy
 
   api-file:
     image: api-file:latest
@@ -206,7 +233,22 @@ services:
       - re-network
     restart: always
     depends_on:
-      - nacos
+      nacos:
+        condition: service_healthy
+
+  api-frontend:
+    image: api-frontend:latest
+    container_name: api-frontend
+    ports:
+      - "9102:9102"
+    environment:
+      - TZ=Asia/Shanghai
+    networks:
+      - re-network
+    restart: always
+    depends_on:
+      nacos:
+        condition: service_healthy
 
   # #################### 前端（镜像由 build-frontend.sh 构建） ####################
   re-frontend:

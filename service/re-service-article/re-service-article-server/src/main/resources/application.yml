@@ -3,6 +3,20 @@ spring:
     name: re-service-article-server
   profiles:
     active: @profiles.active@
+  cloud:
+    nacos:
+      config:
+        namespace: @nacos-namespace@
+        server-addr: @nacos-server-addr@
+        file-extension: yaml
+      discovery:
+        namespace: @nacos-namespace@
+        server-addr: @nacos-server-addr@
+  config:
+    import:
+      - optional:nacos:re-service-article-server.yaml
+      - optional:nacos:re-service-article-server-prod.yaml
+      - optional:nacos:re-service-article-server-local.yaml
 feign:
   client:
     config:

@@ -17,6 +17,7 @@
 | **re-gateway** | **9100** | 后端网关（前端 API 入口） |
 | re-auth | 9104 | 认证服务 |
 | api-backend | 9101 | 后台管理 API |
+| api-frontend | 9102 | 博客前台 API |
 | api-file | 9103 | 文件服务 |
 | re-service-sys | 9111 | 系统服务 |
 | re-service-article | 9112 | 文章服务 |
@@ -30,7 +31,11 @@ cd re_backend/project/docker
 docker compose -f docker-compose-local.yml up -d
 ```
 
-中间件端口与开发环境一致（30601-30610），首次启动自动执行 `init-sql/init.sql` 建库。
+中间件端口与开发环境一致（30601-30610），首次启动（空数据目录）自动执行 `init-sql/init.sql`：
+1. 创建 artalk / nacos / re 三个库
+2. nacos 库：建表 + prod 命名空间 + **各微服务的运行配置**（config_info 表，容器内网地址版）
+3. re 库：建表 + 默认用户/角色/权限/菜单/路由数据
+
 > 注意：与 re_local 仓库的 compose 是等价的二选一关系，端口和容器名相同，**不要同时跑**。
 
 ## 三、公网链路（一次性）
@@ -72,21 +77,13 @@ bash ~/code/re_backend/project/docker/build-frontend.sh
 ```
 > 后端先用 maven 打包 jar，再使用各服务自己的 Dockerfile 构建镜像（服务器上需 JDK21 + maven + docker）。
 
-### 4. Nacos 配置改容器内网地址（关键步骤！）
-后端服务跑在容器里，Nacos 里现有的 `localhost:30601` 这类地址访问不到中间件，
-需要改成**容器名**（容器间通过 re-network 互访，端口映射只是给外部用的）：
-
-浏览器打开 `http://服务器IP:30603/nacos`，进命名空间 `f2cc4448-831f-41da-9aa8-b89d4a81d90c`，
-逐个修改 `*-prod.yaml`：
-
-| 配置项 | 改为 |
-| --- | --- |
-| MySQL 地址 `localhost:30601` | `re-mysql:3306` |
-| Redis 地址 `localhost:30602` | `re-redis:6379` |
-| Minio 服务端地址 `localhost:30606` | `re-minio:9000` |
-| Minio 对外 URL（生成给前端的文件链接） | `http://re.lingjiatong.cn:30606` |
-
-> 改完配置会自动刷新（@RefreshScope），不确定就 `docker compose restart`。
+### 4. Nacos 配置（初始化在 init.sql，一般无需操作）
+- Nacos 使用 MySQL 存储（不再用内嵌 derby），库表与初始配置由 `init-sql/init.sql` 写入：
+  prod 命名空间（`f2cc4448-831f-41da-9aa8-b89d4a81d90c`）下的 7 个 `*-prod.yaml`
+  （数据源、redis、minio、es、sa-token 等，**已是容器内网地址**：`re-mysql:3306`、
+  `re-redis:6379`、`re-minio:9000`、`re-elasticsearch:9200`）
+- 要修改配置：直接在 Nacos 控制台编辑（持久化到 MySQL，立即生效或 restart 后生效），
+  同时建议同步修改 `init-sql/init.sql` 里对应的 `config_info` 记录，保持全新部署的默认值一致
 
 ### 5. 启动
 ```bash
@@ -99,7 +96,7 @@ docker compose -f docker-compose-server.yml up -d
 > 如果你直接把开发机的 `./data/mysql` 整个拷贝过来，初始化会自动跳过。
 
 **默认账号**：
-- 后台 `re-admin`：用户名 `admin` / 密码 `admin`（内置超级管理员角色，首次登录后请立即修改）
+- 后台 `re-admin`：用户名 `admin` / 密码 `adminADMIN+++`（内置超级管理员角色，首次登录后请立即修改）
 - 评论系统 artalk：默认无管理员，首次部署后执行以下命令创建（交互式输入用户名/邮箱/密码）：
   ```bash
   docker exec -it re-artalk artalk admin

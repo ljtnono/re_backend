@@ -198,7 +198,7 @@ public class SpringBeanConfig {
         if (ProfileEnum.LOCAL.getName().equalsIgnoreCase(profile)) {
             resource = new ClassPathResource("redission/redission-local.yml");
         } else if (ProfileEnum.PRD.getName().equalsIgnoreCase(profile)) {
-            resource = new ClassPathResource("redission/redission-prd.yml");
+            resource = new ClassPathResource("redission/redission-prod.yml");
         } else {
             resource = new ClassPathResource("redission/redission-dev.yml");
         }

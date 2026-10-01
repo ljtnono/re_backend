@@ -3,6 +3,20 @@ spring:
     name: re-job
   profiles:
     active: @profiles.active@
+  cloud:
+    nacos:
+      config:
+        namespace: @nacos-namespace@
+        server-addr: @nacos-server-addr@
+        file-extension: yaml
+      discovery:
+        namespace: @nacos-namespace@
+        server-addr: @nacos-server-addr@
+  config:
+    import:
+      - optional:nacos:re-job.yaml
+      - optional:nacos:re-job-prod.yaml
+      - optional:nacos:re-job-local.yaml
 feign:
   client:
     config:

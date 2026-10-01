@@ -3,3 +3,17 @@ spring:
     name: re-gateway
   profiles:
     active: @profiles.active@
+  cloud:
+    nacos:
+      config:
+        namespace: @nacos-namespace@
+        server-addr: @nacos-server-addr@
+        file-extension: yaml
+      discovery:
+        namespace: @nacos-namespace@
+        server-addr: @nacos-server-addr@
+  config:
+    import:
+      - optional:nacos:re-gateway.yaml
+      - optional:nacos:re-gateway-prod.yaml
+      - optional:nacos:re-gateway-local.yaml

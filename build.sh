@@ -17,6 +17,7 @@ ALL_SERVICES=(
   "service/re-service-article/re-service-article-server:re-service-article"
   "api/api-backend:api-backend"
   "api/api-file:api-file"
+  "api/api-frontend:api-frontend"
 )
 
 # 解析参数 -> 需要构建的 模块:镜像 列表

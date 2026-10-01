@@ -3,6 +3,20 @@ spring:
     name: api-backend
   profiles:
     active: @profiles.active@
+  cloud:
+    nacos:
+      config:
+        namespace: @nacos-namespace@
+        server-addr: @nacos-server-addr@
+        file-extension: yaml
+      discovery:
+        namespace: @nacos-namespace@
+        server-addr: @nacos-server-addr@
+  config:
+    import:
+      - optional:nacos:api-backend.yaml
+      - optional:nacos:api-backend-prod.yaml
+      - optional:nacos:api-backend-local.yaml
   main:
     allow-circular-references: true
 feign:

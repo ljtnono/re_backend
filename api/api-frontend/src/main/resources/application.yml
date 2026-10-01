@@ -3,6 +3,20 @@ spring:
     name: api-frontend
   profiles:
     active: @profiles.active@
+  cloud:
+    nacos:
+      config:
+        namespace: @nacos-namespace@
+        server-addr: @nacos-server-addr@
+        file-extension: yaml
+      discovery:
+        namespace: @nacos-namespace@
+        server-addr: @nacos-server-addr@
+  config:
+    import:
+      - optional:nacos:api-frontend.yaml
+      - optional:nacos:api-frontend-prod.yaml
+      - optional:nacos:api-frontend-local.yaml
 feign:
   client:
     config:

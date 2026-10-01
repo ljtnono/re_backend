@@ -3,6 +3,20 @@ spring:
     name: api-file
   profiles:
     active: @profiles.active@
+  cloud:
+    nacos:
+      config:
+        namespace: @nacos-namespace@
+        server-addr: @nacos-server-addr@
+        file-extension: yaml
+      discovery:
+        namespace: @nacos-namespace@
+        server-addr: @nacos-server-addr@
+  config:
+    import:
+      - optional:nacos:api-file.yaml
+      - optional:nacos:api-file-prod.yaml
+      - optional:nacos:api-file-local.yaml
 
 sa-token:
   same-token:

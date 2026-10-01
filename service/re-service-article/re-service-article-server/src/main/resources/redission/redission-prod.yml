@@ -1,5 +1,5 @@
 singleServerConfig:
-  address: redis://redis-extern.common.svc.cluster.local:6379
+  address: redis://re-redis:6379
   # 连接空闲超时，单位：毫秒
   idleConnectionTimeout: 10000
   # 连接超时，单位：毫秒
@@ -11,7 +11,7 @@ singleServerConfig:
   # 命令重试发送时间间隔，单位：毫秒
   retryInterval: 1500
   # 密码
-  password: re#redis2022
+  password: null
   # 单个连接最大订阅数量
   subscriptionsPerConnection: 5
   # 客户端名称

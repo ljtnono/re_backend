@@ -3,6 +3,20 @@ spring:
     name: re-auth
   profiles:
     active: @profiles.active@
+  cloud:
+    nacos:
+      config:
+        namespace: @nacos-namespace@
+        server-addr: @nacos-server-addr@
+        file-extension: yaml
+      discovery:
+        namespace: @nacos-namespace@
+        server-addr: @nacos-server-addr@
+  config:
+    import:
+      - optional:nacos:re-auth.yaml
+      - optional:nacos:re-auth-prod.yaml
+      - optional:nacos:re-auth-local.yaml
 feign:
   client:
     config:
