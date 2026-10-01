@@ -130,15 +130,9 @@ services:
       - mysql
 
   # #################### 后端微服务 ####################
-  # 统一用 docker/Dockerfile.backend 多阶段构建（容器内 mvn package）
+  # 镜像默认本地已构建好（docker/Dockerfile.backend + build-frontend.sh），compose 只负责运行
   # 服务间互访直接用容器名（如 re-mysql:3306），端口映射仅供外部访问
   re-gateway:
-    build:
-      context: ../..
-      dockerfile: project/docker/docker/Dockerfile.backend
-      args:
-        MODULE: re-gateway
-        JAR_NAME: re-gateway
     image: re-gateway:latest
     container_name: re-gateway
     ports:
@@ -152,12 +146,6 @@ services:
       - nacos
 
   re-auth:
-    build:
-      context: ../..
-      dockerfile: project/docker/docker/Dockerfile.backend
-      args:
-        MODULE: re-auth
-        JAR_NAME: re-auth
     image: re-auth:latest
     container_name: re-auth
     ports:
@@ -171,12 +159,6 @@ services:
       - nacos
 
   re-service-sys:
-    build:
-      context: ../..
-      dockerfile: project/docker/docker/Dockerfile.backend
-      args:
-        MODULE: service/re-service-sys/re-service-sys-server
-        JAR_NAME: re-service-sys-server
     image: re-service-sys:latest
     container_name: re-service-sys
     ports:
@@ -190,12 +172,6 @@ services:
       - nacos
 
   re-service-article:
-    build:
-      context: ../..
-      dockerfile: project/docker/docker/Dockerfile.backend
-      args:
-        MODULE: service/re-service-article/re-service-article-server
-        JAR_NAME: re-service-article-server
     image: re-service-article:latest
     container_name: re-service-article
     ports:
@@ -209,12 +185,6 @@ services:
       - nacos
 
   api-backend:
-    build:
-      context: ../..
-      dockerfile: project/docker/docker/Dockerfile.backend
-      args:
-        MODULE: api/api-backend
-        JAR_NAME: api-backend
     image: api-backend:latest
     container_name: api-backend
     ports:
@@ -228,12 +198,6 @@ services:
       - nacos
 
   api-file:
-    build:
-      context: ../..
-      dockerfile: project/docker/docker/Dockerfile.backend
-      args:
-        MODULE: api/api-file
-        JAR_NAME: api-file
     image: api-file:latest
     container_name: api-file
     ports:

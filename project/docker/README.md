@@ -110,7 +110,7 @@ curl "http://127.0.0.1:9100/api-frontend/article/list?pageNum=1&pageSize=1"   # 
 ```bash
 cd ~/code/re_backend/project/docker
 docker compose -f docker-compose-server.yml logs -f re-gateway
-docker compose -f docker-compose-server.yml up -d --build re-gateway   # 更新单个服务
+docker compose -f docker-compose-server.yml up -d re-gateway   # 重建单个服务（镜像已提前构建好）
 ```
 
 更新代码：三个仓库 `git pull` → 重新跑 `build-frontend.sh`（或单独 build 变更的镜像）→ `docker compose up -d`。
