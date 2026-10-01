@@ -168,6 +168,9 @@ public class BackendTagService {
      * @param tagNameList 标签名列表
      */
     public void saveTrArticleTag(Long articleId, List<String> tagNameList) {
+        if (CollectionUtils.isEmpty(tagNameList)) {
+            return;
+        }
         List<Long> tagIdList = tagMapper.selectList(new LambdaQueryWrapper<Tag>()
                         .select(Tag::getId)
                         .in(Tag::getName, tagNameList))

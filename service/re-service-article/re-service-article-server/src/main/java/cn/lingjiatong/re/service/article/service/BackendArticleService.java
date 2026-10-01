@@ -139,10 +139,12 @@ public class BackendArticleService {
             BeanUtils.copyProperties(article, esArticle);
             esArticle.setTagList(tagList);
 //            elasticsearchRestTemplate.save(esArticle);
-            // 删除草稿
-            redisUtil.deleteObject(RedisCacheKeyEnum.ARTICLE_DRAFT.getValue()
-                    .replaceAll("username", currentUser.getUsername())
-                    .replaceAll("draftId", draftId));
+            // 删除草稿（直接发布无草稿时跳过）
+            if (StringUtils.hasLength(draftId)) {
+                redisUtil.deleteObject(RedisCacheKeyEnum.ARTICLE_DRAFT.getValue()
+                        .replaceAll("username", currentUser.getUsername())
+                        .replaceAll("draftId", draftId));
+            }
         } catch (Exception e) {
             // 出现异常，需要删除之前插入的文章标签列表和文章标签关系信息
             log.error(e.toString(), e);
