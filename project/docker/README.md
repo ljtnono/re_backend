@@ -94,11 +94,22 @@ cd ~/code/re_backend/project/docker
 cp .env.example .env   # 至少把 ARTALK_TRUSTED_DOMAINS 改成博客的外网地址
 docker compose -f docker-compose-server.yml up -d
 ```
-> 首次启动 MySQL 会自动执行 `init-sql/init.sql`（artalk 建库 → 导入 re 主库 → 权限路由表），
+> 首次启动 MySQL 会自动执行 `init-sql/init.sql`（artalk 建库 → 导入 re 主库表结构 + 默认用户/角色/权限/菜单/路由数据），
 > 需要几分钟，看 `docker logs re-mysql`。
 > 如果你直接把开发机的 `./data/mysql` 整个拷贝过来，初始化会自动跳过。
 
-### 6. 旧数据图片地址迁移（如果是从开发库拷的数据）
+**默认账号**：
+- 后台 `re-admin`：用户名 `admin` / 密码 `admin`（内置超级管理员角色，首次登录后请立即修改）
+- 评论系统 artalk：默认无管理员，首次部署后执行以下命令创建（交互式输入用户名/邮箱/密码）：
+  ```bash
+  docker exec -it re-artalk artalk admin
+  ```
+
+### 6. artalk 首次配置（可选）
+artalk 控制中心默认站点名等可在 `docker exec -it re-artalk vi /data/artalk.yml` 中调整，
+修改后 `docker restart re-artalk` 生效。
+
+### 7. 旧数据图片地址迁移（如果是从开发库拷的数据）
 开发时文件 URL 存的是 `http://localhost:30606/...`，公网需要替换：
 ```sql
 UPDATE article SET cover_url = REPLACE(cover_url, 'http://localhost:30606', 'http://re.lingjiatong.cn:30606');
