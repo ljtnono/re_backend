@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
 public interface ArticleConstant {
 
     // 默认封面图片
-    String DEFAULT_COVER_URL = "http://f.lingjiatong.cn:30090/rootelement/sys/default_article_cover.gif";
+    String DEFAULT_COVER_URL = "http://re.lingjiatong.cn:30606/rootelement/sys/default_article_cover.png";
     // 校验标题的正则表达式
     Pattern TITLE_REGEX = Pattern.compile("^[\\u4e00-\\u9fa5\\S\\s,.，。‘’“”'()（）]{4,100}$");
     // 校验简介的正则表达式
