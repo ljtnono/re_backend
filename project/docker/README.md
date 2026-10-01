@@ -99,6 +99,10 @@ docker compose -f docker-compose-server.yml up -d
 > 首次启动 MySQL 会自动执行 `init-sql/init.sql`（artalk 建库 → 导入 re 主库表结构 + 默认用户/角色/权限/菜单/路由数据），
 > 需要几分钟，看 `docker logs re-mysql`。
 > 如果你直接把开发机的 `./data/mysql` 整个拷贝过来，初始化会自动跳过。
+>
+> **注意**：ES 数据目录 `./data/elasticsearch` 要求属主为容器内 elasticsearch 用户（uid 1000）。
+> 首次启动若 `re-elasticsearch` 循环重启报 `AccessDeniedException .../data/node.lock`，执行：
+> `sudo chown -R 1000:1000 data/elasticsearch && docker restart re-elasticsearch`
 
 **默认账号**：
 - 后台 `re-admin`：用户名 `admin` / 密码 `adminADMIN+++`（内置超级管理员角色，首次登录后请立即修改）
