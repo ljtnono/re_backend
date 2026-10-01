@@ -1,33 +1,24 @@
-# 根元素博客 - 服务器单机版全量编排
-# 用法：见同目录 README.md
-# 唯一对外端口：8443（家宽 80/443 被封，路由器需将外部 8443 转发到本机 8443）
-name: re-server
-
-networks:
-  re-network:
-    driver: bridge
-
-volumes:
-  mysql-data:
-  redis-data:
-  nacos-data:
-  minio-data:
-  artalk-data:
-
+# 根元素博客 - 服务器版编排
+# 在 docker-compose-dev.yml 基础上扩展，中间件端口映射与开发环境完全一致：
+#   mysql:30601 redis:30602 nacos:30603/31603/30605 minio:30606/30607 es:30608/30609 artalk:30610
+# 新增：后端 6 个微服务 + 前端 re-frontend / re-admin
+# 用法见同目录 README.md
 services:
-  # #################### 基础设施 ####################
   mysql:
     image: mysql:8
+    container_name: re-mysql
+    ports:
+      - "30601:3306"
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-re#mysql2022}
+      MYSQL_ROOT_PASSWORD: 're#mysql2022'
       TZ: Asia/Shanghai
     command:
       --character-set-server=utf8mb4
       --collation-server=utf8mb4_unicode_ci
       --sql_mode=STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION
     volumes:
-      - mysql-data:/var/lib/mysql
-      # 首次启动自动执行（按文件名顺序）：建 artalk 库 -> 导入 re 主库 -> 权限路由表
+      - ./data/mysql:/var/lib/mysql
+      # 首次启动（空数据目录）时自动执行：建 artalk 库 -> 导入 re 主库 -> 权限路由表
       - ./init-sql:/docker-entrypoint-initdb.d:ro
       - ../sql/re.sql:/docker-entrypoint-initdb.d/90-re.sql:ro
       - ../sql/auth_init.sql:/docker-entrypoint-initdb.d/91-auth-init.sql:ro
@@ -37,65 +28,101 @@ services:
 
   redis:
     image: redis:8.4
+    container_name: re-redis
+    ports:
+      - "30602:6379"
     command: redis-server --appendonly yes
     volumes:
-      - redis-data:/data
+      - ./data/redis:/data
     networks:
       - re-network
     restart: always
 
   nacos:
     image: nacos/nacos-server:v3.1.1
+    container_name: re-nacos
+    ports:
+      - "30603:8848"
+      - "31603:9848"
+      - "30605:8080"
     environment:
       - PREFER_HOST_MODE=hostname
       - MODE=standalone
       - NACOS_AUTH_IDENTITY_KEY=re-nacos
       - NACOS_AUTH_IDENTITY_VALUE=re-nacos
-      # re#nacos2022 base64 6 次，生产环境请用 .env 覆盖
-      - NACOS_AUTH_TOKEN=${NACOS_AUTH_TOKEN:-VmpGU1NtVkdXblJTYmxKVVlteEtWRmxzYUVOalJsSlZVVmhvVDFac1NsZFdWM1IzWWtaV1ZVMUVhejA9}
-      - TZ=Asia/Shanghai
-    ports:
-      # 仅绑定本机回环，供 ssh 隧道访问控制台，不暴露公网
-      - "127.0.0.1:8848:8848"
+      # re#nacos2022 base64 6 times
+      - NACOS_AUTH_TOKEN=VmpGU1NtVkdXblJTYmxKVVlteEtWRmxzYUVOalJsSlZVVmhvVDFac1NsZFdWM1IzWWtaV1ZVMUVhejA9
     volumes:
-      - nacos-data:/home/nacos/data
+      - ./data/nacos:/home/nacos/data
     networks:
       - re-network
     restart: always
 
   minio:
-    # 官方 minio 镜像精简版无 mc 命令且 console 需要独立配置，使用 fullui 变体
+    # 原 bitnamicharts/minio:17.0.21 镜像是损坏的占位manifest（仅75kB无二进制），
+    # 容器会永远卡在Created状态，改用本地已有的 yuchenhui/minio 镜像
     image: yuchenhui/minio:RELEASE.2025-10-15T17-29-55Z-fullui
+    container_name: re-minio
+    ports:
+      - "30606:9000"
+      - "30607:9001"
     environment:
-      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-re-minio}
-      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-re#minio2022}
-      TZ: Asia/Shanghai
+      - MINIO_ROOT_USER=re-minio
+      - MINIO_ROOT_PASSWORD=re#minio2022
+      - TZ=Asia/Shanghai
     command: server /data --console-address ":9001"
     volumes:
-      - minio-data:/data
+      - ./data/minio:/data
+    healthcheck:
+      # 精简镜像无 mc 命令，改用 MinIO 原生健康检查端点
+      test: ["CMD-SHELL", "curl -f -s -o /dev/null http://localhost:9000/minio/health/live || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
     networks:
       - re-network
     restart: always
-    # bucket 由后端服务启动时自动创建（MinioUtil.initBucket），无需手动
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.15.3
+    container_name: re-elasticsearch
+    ports:
+      - "30608:9200"
+      - "30609:9300"
+    environment:
+      - discovery.type=single-node
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+      - xpack.security.enabled=false
+      - TZ=Asia/Shanghai
+    volumes:
+      - ./data/elasticsearch:/usr/share/elasticsearch/data
+    networks:
+      - re-network
+    restart: always
 
   artalk:
     image: artalk/artalk-go:latest
+    container_name: re-artalk
+    ports:
+      - "30610:23366"
     environment:
       - TZ=Asia/Shanghai
       - ATK_LOCALE=zh-CN
       # 与 re_frontend 前端 Artalk.init 的 site 参数保持一致
       - ATK_SITE_DEFAULT=re_frontend
-      # 前端页面域名白名单（CORS），必须与浏览器访问地址完全一致（含端口）
-      - ATK_TRUSTED_DOMAINS=https://re.lingjiatong.cn:8443
+      # 前端页面域名白名单（CORS 可信域名，多个用空格分隔），必须与浏览器访问地址完全一致
+      - ATK_TRUSTED_DOMAINS=${ARTALK_TRUSTED_DOMAINS:-http://localhost:30151 http://127.0.0.1:30151}
+      # 使用同一 compose 中的 re-mysql 作为数据源
       - ATK_DB_TYPE=mysql
-      - ATK_DB_HOST=mysql
+      - ATK_DB_HOST=re-mysql
       - ATK_DB_PORT=3306
       - ATK_DB_USER=artalk
-      - ATK_DB_PASSWORD=${ARTALK_DB_PASSWORD:-re#artalk2022}
+      - ATK_DB_PASSWORD=re#artalk2022
       - ATK_DB_NAME=artalk
       - ATK_DB_CHARSET=utf8mb4
     volumes:
-      - artalk-data:/data
+      - ./data/artalk:/data
     networks:
       - re-network
     restart: always
@@ -103,8 +130,27 @@ services:
       - mysql
 
   # #################### 后端微服务 ####################
-  # 统一用 docker/Dockerfile.backend 多阶段构建：
-  #   mvn package -P prod -Dnacos-server-addr=nacos:8848
+  # 统一用 docker/Dockerfile.backend 多阶段构建（容器内 mvn package）
+  # 服务间互访直接用容器名（如 re-mysql:3306），端口映射仅供外部访问
+  re-gateway:
+    build:
+      context: ../..
+      dockerfile: project/docker/docker/Dockerfile.backend
+      args:
+        MODULE: re-gateway
+        JAR_NAME: re-gateway
+    image: re-gateway:latest
+    container_name: re-gateway
+    ports:
+      - "9100:9100"
+    environment:
+      - TZ=Asia/Shanghai
+    networks:
+      - re-network
+    restart: always
+    depends_on:
+      - nacos
+
   re-auth:
     build:
       context: ../..
@@ -113,6 +159,9 @@ services:
         MODULE: re-auth
         JAR_NAME: re-auth
     image: re-auth:latest
+    container_name: re-auth
+    ports:
+      - "9104:9104"
     environment:
       - TZ=Asia/Shanghai
     networks:
@@ -129,6 +178,9 @@ services:
         MODULE: service/re-service-sys/re-service-sys-server
         JAR_NAME: re-service-sys-server
     image: re-service-sys:latest
+    container_name: re-service-sys
+    ports:
+      - "9111:9111"
     environment:
       - TZ=Asia/Shanghai
     networks:
@@ -145,6 +197,9 @@ services:
         MODULE: service/re-service-article/re-service-article-server
         JAR_NAME: re-service-article-server
     image: re-service-article:latest
+    container_name: re-service-article
+    ports:
+      - "9112:9112"
     environment:
       - TZ=Asia/Shanghai
     networks:
@@ -161,6 +216,9 @@ services:
         MODULE: api/api-backend
         JAR_NAME: api-backend
     image: api-backend:latest
+    container_name: api-backend
+    ports:
+      - "9101:9101"
     environment:
       - TZ=Asia/Shanghai
     networks:
@@ -177,6 +235,9 @@ services:
         MODULE: api/api-file
         JAR_NAME: api-file
     image: api-file:latest
+    container_name: api-file
+    ports:
+      - "9103:9103"
     environment:
       - TZ=Asia/Shanghai
     networks:
@@ -185,56 +246,25 @@ services:
     depends_on:
       - nacos
 
-  re-gateway:
-    build:
-      context: ../..
-      dockerfile: project/docker/docker/Dockerfile.backend
-      args:
-        MODULE: re-gateway
-        JAR_NAME: re-gateway
-    image: re-gateway:latest
-    ports:
-      # 仅绑定本机回环，便于服务器上直接 curl 调试
-      - "127.0.0.1:9100:9100"
-    environment:
-      - TZ=Asia/Shanghai
-    networks:
-      - re-network
-    restart: always
-    depends_on:
-      - re-auth
-      - re-service-sys
-      - re-service-article
-      - api-backend
-      - api-file
-
   # #################### 前端（镜像由 build-frontend.sh 构建） ####################
   re-frontend:
     image: re-frontend:latest
+    container_name: re-frontend
+    ports:
+      - "30151:80"
     networks:
       - re-network
     restart: always
 
   re-admin:
     image: re-admin:latest
+    container_name: re-admin
+    ports:
+      - "30150:80"
     networks:
       - re-network
     restart: always
 
-  # #################### 入口反代（唯一对外服务） ####################
-  re-entry:
-    image: openresty/openresty:alpine
-    ports:
-      - "8443:8443"
-    volumes:
-      - ./nginx/re-entry.conf:/etc/nginx/conf.d/re-entry.conf:ro
-      - ./certs:/etc/nginx/certs:ro
-    networks:
-      - re-network
-    restart: always
-    depends_on:
-      - re-frontend
-      - re-admin
-      - re-gateway
-      - artalk
-      - minio
+networks:
+  re-network:
+    driver: bridge
