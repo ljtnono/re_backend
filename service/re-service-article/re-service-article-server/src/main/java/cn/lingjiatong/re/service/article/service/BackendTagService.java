@@ -67,26 +67,26 @@ public class BackendTagService {
                 .select(Tag::getName)
                 .in(Tag::getName, tagList));
 
+        // 已存在的标签名集合（existTagList 为空表示全部为新增标签，原实现把构建逻辑
+        // 写在非空判断内，导致库中无任何标签时新标签全部被丢弃）
+        List<String> tagNameList = CollectionUtils.isEmpty(existTagList)
+                ? Lists.newArrayList()
+                : existTagList.stream().map(Tag::getName).collect(Collectors.toList());
+
         List<Tag> tagListToSave = Lists.newArrayList();
-        if (!CollectionUtils.isEmpty(existTagList)) {
-            List<String> tagNameList = existTagList
-                    .stream()
-                    .map(Tag::getName)
-                    .collect(Collectors.toList());
-            // 移除已经存在的
-            tagList.stream()
-                    .filter(t -> !tagNameList.contains(t))
-                    .forEach(tag -> {
-                        Tag t = new Tag();
-                        t.setId(snowflakeIdWorkerUtil.nextId());
-                        t.setCreateTime(DateUtil.getLocalDateTimeNow());
-                        t.setModifyTime(DateUtil.getLocalDateTimeNow());
-                        t.setOptUser(UserConstant.SUPER_ADMIN_USER);
-                        t.setName(tag);
-                        t.setDeleted(CommonConstant.ENTITY_NORMAL);
-                        tagListToSave.add(t);
-                    });
-        }
+        // 移除已经存在的
+        tagList.stream()
+                .filter(t -> !tagNameList.contains(t))
+                .forEach(tag -> {
+                    Tag t = new Tag();
+                    t.setId(snowflakeIdWorkerUtil.nextId());
+                    t.setCreateTime(DateUtil.getLocalDateTimeNow());
+                    t.setModifyTime(DateUtil.getLocalDateTimeNow());
+                    t.setOptUser(UserConstant.SUPER_ADMIN_USER);
+                    t.setName(tag);
+                    t.setDeleted(CommonConstant.ENTITY_NORMAL);
+                    tagListToSave.add(t);
+                });
         return tagListToSave;
     }
 

@@ -57,6 +57,12 @@
             <artifactId>mybatis-plus-extension</artifactId>
             <version>${mybatis-plus.version}</version>
         </dependency>
+        <!-- Spring事务感知的SqlSession管理（MybatisBatchUtils批量会话需要） -->
+        <dependency>
+            <groupId>org.mybatis</groupId>
+            <artifactId>mybatis-spring</artifactId>
+            <version>3.0.5</version>
+        </dependency>
         <!-- aop -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
