@@ -617,7 +617,7 @@ CREATE TABLE `category` (
   `is_deleted` tinyint(1) NOT NULL COMMENT '是否删除 0 正常 1 已删除',
   `opt_user` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '操作用户',
   PRIMARY KEY (`id`) USING BTREE,
-  UNIQUE KEY `uidx_name` (`name`) USING BTREE
+  KEY `idx_name` (`name`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='博客分类';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -850,7 +850,7 @@ CREATE TABLE `tag` (
   `is_deleted` tinyint(1) NOT NULL COMMENT '是否删除 0 正常 1 已删除',
   `opt_user` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '操作用户',
   PRIMARY KEY (`id`) USING BTREE,
-  UNIQUE KEY `uidx_name` (`name`) USING BTREE
+  KEY `idx_name` (`name`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='博客标签';
 /*!40101 SET character_set_client = @saved_cs_client */;
 

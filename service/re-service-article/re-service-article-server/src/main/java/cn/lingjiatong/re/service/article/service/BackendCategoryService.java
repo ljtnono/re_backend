@@ -19,6 +19,7 @@ import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -79,7 +80,12 @@ public class BackendCategoryService {
         category.setModifyTime(LocalDateTime.now(ZoneId.of("Asia/Shanghai")));
         category.setDeleted(CommonConstant.ENTITY_NORMAL);
         category.setOptUser(currentUser.getUsername());
-        categoryMapper.insert(category);
+        try {
+            categoryMapper.insert(category);
+        } catch (DuplicateKeyException e) {
+            // 并发下可能穿透上面的预校验（如双击、重试），统一抛友好业务异常
+            throw new BusinessException(ErrorEnum.CATEGORY_NAME_EXIST_ERROR);
+        }
     }
 
     // ********************************删除类接口********************************
@@ -134,12 +140,17 @@ public class BackendCategoryService {
         if (nameExistCount > 0) {
             throw new BusinessException(ErrorEnum.CATEGORY_NAME_EXIST_ERROR);
         }
-        categoryMapper.update(null, new LambdaUpdateWrapper<Category>()
-                .set(Category::getName, name)
-                .set(Category::getModifyTime, LocalDateTime.now(ZoneId.of("Asia/Shanghai")))
-                .set(Category::getOptUser, currentUser.getUsername())
-                .eq(Category::getId, id)
-                .eq(Category::getDeleted, CommonConstant.ENTITY_NORMAL));
+        try {
+            categoryMapper.update(null, new LambdaUpdateWrapper<Category>()
+                    .set(Category::getName, name)
+                    .set(Category::getModifyTime, LocalDateTime.now(ZoneId.of("Asia/Shanghai")))
+                    .set(Category::getOptUser, currentUser.getUsername())
+                    .eq(Category::getId, id)
+                    .eq(Category::getDeleted, CommonConstant.ENTITY_NORMAL));
+        } catch (DuplicateKeyException e) {
+            // 并发下可能穿透上面的预校验，统一抛友好业务异常
+            throw new BusinessException(ErrorEnum.CATEGORY_NAME_EXIST_ERROR);
+        }
     }
 
     // ********************************查询类接口********************************
