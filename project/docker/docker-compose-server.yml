@@ -17,7 +17,7 @@ services:
       --collation-server=utf8mb4_unicode_ci
       --sql_mode=STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION
     volumes:
-      - ./data/mysql:/var/lib/mysql
+      - ${DATA_DIR:-./data}/mysql:/var/lib/mysql
       # 首次启动（空数据目录）时自动执行 init-sql/init.sql：建 artalk 库 -> 导入 re 主库 -> 权限路由表
       - ./init-sql:/docker-entrypoint-initdb.d:ro
     healthcheck:
@@ -37,7 +37,7 @@ services:
       - "30602:6379"
     command: redis-server --appendonly yes
     volumes:
-      - ./data/redis:/data
+      - ${DATA_DIR:-./data}/redis:/data
     networks:
       - re-network
     restart: always
@@ -92,7 +92,7 @@ services:
       - TZ=Asia/Shanghai
     command: server /data --console-address ":9001"
     volumes:
-      - ./data/minio:/data
+      - ${DATA_DIR:-./data}/minio:/data
     healthcheck:
       # 精简镜像无 mc 命令，改用 MinIO 原生健康检查端点
       test: ["CMD-SHELL", "curl -f -s -o /dev/null http://localhost:9000/minio/health/live || exit 1"]
@@ -116,7 +116,7 @@ services:
       - xpack.security.enabled=false
       - TZ=Asia/Shanghai
     volumes:
-      - ./data/elasticsearch:/usr/share/elasticsearch/data
+      - ${DATA_DIR:-./data}/elasticsearch:/usr/share/elasticsearch/data
     networks:
       - re-network
     restart: always
@@ -142,7 +142,7 @@ services:
       - ATK_DB_NAME=artalk
       - ATK_DB_CHARSET=utf8mb4
     volumes:
-      - ./data/artalk:/data
+      - ${DATA_DIR:-./data}/artalk:/data
     networks:
       - re-network
     restart: always
