@@ -8,7 +8,9 @@ import cn.lingjiatong.re.common.util.MinioUtil;
 import cn.lingjiatong.re.common.util.UrlUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Optional;
@@ -26,6 +28,13 @@ public class FileService {
     @Autowired
     private MinioUtil minioUtil;
 
+    /**
+     * MinIO 浏览器/前端访问的公网地址（区别于内部SDK连接地址 minio.endpoint），
+     * 为空时回退到用内部endpoint生成的预签名地址
+     */
+    @Value("${minio.url:}")
+    private String minioPublicUrl;
+
     // ********************************新增类接口********************************
 
     /**
@@ -40,6 +49,11 @@ public class FileService {
         try {
             String objectName =  MinioConstant.ARTICLE_QUOTE_FOLDER + "/" + file.getOriginalFilename();
             minioUtil.uploadFile(MinioConstant.MINIO_BUCKET_NAME, file, objectName, file.getContentType());
+            // 优先使用公网地址拼接（bucket为公共读，无需签名参数），
+            // 避免把docker内网地址（如http://re-minio:9000）返回给前端导致浏览器无法访问
+            if (StringUtils.hasLength(minioPublicUrl)) {
+                return minioPublicUrl + "/" + MinioConstant.MINIO_BUCKET_NAME + "/" + objectName;
+            }
             String urlWithParam = minioUtil.getPresignedObjectUrl(MinioConstant.MINIO_BUCKET_NAME, objectName);
             return UrlUtil.removeUrlParameter(urlWithParam);
         } catch (Exception e) {

@@ -195,10 +195,13 @@ spring:
           max-active: 32
           min-idle: 8
 minio:
+  # 内部SDK连接地址（docker网络内）
   endpoint: http://re-minio:9000
+  # 浏览器/前端访问的公网地址（本地为宿主机映射端口，服务器部署改为域名反代地址）
+  url: http://127.0.0.1:30606
   accessKey: re-minio
   secretKey: re#minio2022
-  bucketName: re
+  bucketName: rootelement
 
 # Sa-Token配置
 sa-token:
@@ -233,10 +236,13 @@ spring:
           max-active: 32
           min-idle: 8
 minio:
+  # 内部SDK连接地址（docker网络内）
   endpoint: http://re-minio:9000
+  # 浏览器/前端访问的公网地址（本地为宿主机映射端口，服务器部署改为域名反代地址）
+  url: http://127.0.0.1:30606
   accessKey: re-minio
   secretKey: re#minio2022
-  bucketName: re
+  bucketName: rootelement
 
 # Sa-Token配置
 sa-token:
@@ -411,10 +417,13 @@ mybatis-plus:
   mapper-locations: classpath:/mapper/**.xml
 
 minio:
+  # 内部SDK连接地址（docker网络内）
   endpoint: http://re-minio:9000
+  # 浏览器/前端访问的公网地址（本地为宿主机映射端口，服务器部署改为域名反代地址）
+  url: http://127.0.0.1:30606
   accessKey: re-minio
   secretKey: re#minio2022
-  bucketName: re
+  bucketName: rootelement
 
 # Sa-Token配置
 sa-token:
@@ -482,10 +491,13 @@ spring.mail:
     mail.smtp.socketFactory.class: javax.net.ssl.SSLSocketFactory
 
 minio:
+  # 内部SDK连接地址（docker网络内）
   endpoint: http://re-minio:9000
+  # 浏览器/前端访问的公网地址（本地为宿主机映射端口，服务器部署改为域名反代地址）
+  url: http://127.0.0.1:30606
   accessKey: re-minio
   secretKey: re#minio2022
-  bucketName: re
+  bucketName: rootelement
 
 # Sa-Token配置
 sa-token:
@@ -520,10 +532,13 @@ spring:
           max-active: 32
           min-idle: 8
 minio:
+  # 内部SDK连接地址（docker网络内）
   endpoint: http://re-minio:9000
+  # 浏览器/前端访问的公网地址（本地为宿主机映射端口，服务器部署改为域名反代地址）
+  url: http://127.0.0.1:30606
   accessKey: re-minio
   secretKey: re#minio2022
-  bucketName: re
+  bucketName: rootelement
 
 # Sa-Token配置
 sa-token:
