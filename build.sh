@@ -9,6 +9,23 @@ set -e
 ROOT=$(cd "$(dirname "$0")" && pwd)
 cd "$ROOT"
 
+# 从 pom.xml 读取应用版本号，作为镜像 tag（与 compose 中 ${RE_VERSION} 对应）
+VERSION=$(sed -n 's:.*<re-version>\(.*\)</re-version>.*:\1:p' "$ROOT/pom.xml" | head -1 | xargs)
+if [ -z "$VERSION" ]; then
+    echo "!! 未能从 pom.xml 解析 <re-version>，默认使用 latest"
+    VERSION="latest"
+fi
+echo "==> 应用版本：$VERSION"
+
+# 同步版本号到 docker 编排目录的 .env（供 compose 引用镜像 tag）
+ENV_FILE="$ROOT/project/docker/.env"
+touch "$ENV_FILE"
+if grep -q '^RE_VERSION=' "$ENV_FILE" 2>/dev/null; then
+    sed -i "s/^RE_VERSION=.*/RE_VERSION=$VERSION/" "$ENV_FILE"
+else
+    echo "RE_VERSION=$VERSION" >> "$ENV_FILE"
+fi
+
 # 模块路径:镜像名 映射（镜像名需与 docker-compose-server.yml 中一致）
 ALL_SERVICES=(
   "re-gateway:re-gateway"
@@ -48,7 +65,7 @@ mvn -B -ntp ${MODULES} -am package -DskipTests -P prod -Dnacos-server-addr=re-na
 for pair in "${TARGETS[@]}"; do
     module=${pair%%:*}; image=${pair##*:}
     echo "==> docker build $image（$module/Dockerfile）"
-    docker build -t "$image:latest" "$ROOT/$module"
+    docker build -t "$image:$VERSION" "$ROOT/$module"
 done
 
 echo "==> 全部后端镜像构建完成"

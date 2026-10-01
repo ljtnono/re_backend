@@ -151,7 +151,7 @@ services:
   # 镜像默认本地已构建好（各服务自身 Dockerfile + 仓库根目录 build.sh），compose 只负责运行
   # 服务间互访直接用容器名（如 re-mysql:3306），端口映射仅供外部访问
   re-gateway:
-    image: re-gateway:latest
+    image: re-gateway:${RE_VERSION}
     container_name: re-gateway
     ports:
       - "9100:9100"
@@ -165,7 +165,7 @@ services:
         condition: service_healthy
 
   re-auth:
-    image: re-auth:latest
+    image: re-auth:${RE_VERSION}
     container_name: re-auth
     ports:
       - "9104:9104"
@@ -179,7 +179,7 @@ services:
         condition: service_healthy
 
   re-service-sys:
-    image: re-service-sys:latest
+    image: re-service-sys:${RE_VERSION}
     container_name: re-service-sys
     ports:
       - "9111:9111"
@@ -193,7 +193,7 @@ services:
         condition: service_healthy
 
   re-service-article:
-    image: re-service-article:latest
+    image: re-service-article:${RE_VERSION}
     container_name: re-service-article
     ports:
       - "9112:9112"
@@ -207,7 +207,7 @@ services:
         condition: service_healthy
 
   api-backend:
-    image: api-backend:latest
+    image: api-backend:${RE_VERSION}
     container_name: api-backend
     ports:
       - "9101:9101"
@@ -221,7 +221,7 @@ services:
         condition: service_healthy
 
   api-file:
-    image: api-file:latest
+    image: api-file:${RE_VERSION}
     container_name: api-file
     ports:
       - "9103:9103"
@@ -235,7 +235,7 @@ services:
         condition: service_healthy
 
   api-frontend:
-    image: api-frontend:latest
+    image: api-frontend:${RE_VERSION}
     container_name: api-frontend
     ports:
       - "9102:9102"
@@ -250,7 +250,7 @@ services:
 
   # #################### 前端（镜像由 build-frontend.sh 构建） ####################
   re-frontend:
-    image: re-frontend:latest
+    image: re-frontend:${RE_FRONTEND_VERSION}
     container_name: re-frontend
     ports:
       - "30151:80"
@@ -259,7 +259,7 @@ services:
     restart: always
 
   re-admin:
-    image: re-admin:latest
+    image: re-admin:${RE_ADMIN_VERSION}
     container_name: re-admin
     ports:
       - "30150:80"

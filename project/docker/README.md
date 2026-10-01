@@ -77,6 +77,11 @@ bash ~/code/re_backend/project/docker/build-frontend.sh
 ```
 > 后端先用 maven 打包 jar，再使用各服务自己的 Dockerfile 构建镜像（服务器上需 JDK21 + maven + docker）。
 
+**镜像版本规则**：所有应用镜像按各自的应用版本号打 tag，不再是 `latest`——
+后端取 `re_backend/pom.xml` 的 `<re-version>`，前端取各自 `package.json` 的 `version`。
+构建脚本会把版本号写入本目录的 `.env`（`RE_VERSION` / `RE_ADMIN_VERSION` / `RE_FRONTEND_VERSION`），
+compose 通过 `${...}` 引用。发新版时先改 pom.xml / package.json 的版本号再构建即可。
+
 ### 4. Nacos 配置（初始化在 init.sql，一般无需操作）
 - Nacos 使用 MySQL 存储（不再用内嵌 derby），库表与初始配置由 `init-sql/init.sql` 写入：
   prod 命名空间（`f2cc4448-831f-41da-9aa8-b89d4a81d90c`）下的 7 个 `*-prod.yaml`
