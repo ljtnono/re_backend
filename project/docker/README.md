@@ -84,7 +84,7 @@ cd ~/code/re_backend/project/docker
 cp .env.example .env   # 至少把 ARTALK_TRUSTED_DOMAINS 改成博客的外网地址
 docker compose -f docker-compose-server.yml up -d
 ```
-> 首次启动 MySQL 会自动初始化（artalk 建库 → 导入 48MB 的 re.sql → 权限路由表），
+> 首次启动 MySQL 会自动执行 `init-sql/init.sql`（artalk 建库 → 导入 re 主库 → 权限路由表），
 > 需要几分钟，看 `docker logs re-mysql`。
 > 如果你直接把开发机的 `./data/mysql` 整个拷贝过来，初始化会自动跳过。
 

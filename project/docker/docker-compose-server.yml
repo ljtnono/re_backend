@@ -18,10 +18,8 @@ services:
       --sql_mode=STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION
     volumes:
       - ./data/mysql:/var/lib/mysql
-      # 首次启动（空数据目录）时自动执行：建 artalk 库 -> 导入 re 主库 -> 权限路由表
+      # 首次启动（空数据目录）时自动执行 init-sql/init.sql：建 artalk 库 -> 导入 re 主库 -> 权限路由表
       - ./init-sql:/docker-entrypoint-initdb.d:ro
-      - ../sql/re.sql:/docker-entrypoint-initdb.d/90-re.sql:ro
-      - ../sql/auth_init.sql:/docker-entrypoint-initdb.d/91-auth-init.sql:ro
     networks:
       - re-network
     restart: always
