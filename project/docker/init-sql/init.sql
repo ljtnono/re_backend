@@ -198,7 +198,7 @@ minio:
   # 内部SDK连接地址（docker网络内）
   endpoint: http://re-minio:9000
   # 浏览器/前端访问的公网地址（本地为宿主机映射端口，服务器部署改为域名反代地址）
-  url: http://127.0.0.1:30606
+  url: http://re.lingjiatong.cn:30606
   accessKey: re-minio
   secretKey: re#minio2022
   bucketName: rootelement
@@ -239,7 +239,7 @@ minio:
   # 内部SDK连接地址（docker网络内）
   endpoint: http://re-minio:9000
   # 浏览器/前端访问的公网地址（本地为宿主机映射端口，服务器部署改为域名反代地址）
-  url: http://127.0.0.1:30606
+  url: http://re.lingjiatong.cn:30606
   accessKey: re-minio
   secretKey: re#minio2022
   bucketName: rootelement
@@ -420,7 +420,7 @@ minio:
   # 内部SDK连接地址（docker网络内）
   endpoint: http://re-minio:9000
   # 浏览器/前端访问的公网地址（本地为宿主机映射端口，服务器部署改为域名反代地址）
-  url: http://127.0.0.1:30606
+  url: http://re.lingjiatong.cn:30606
   accessKey: re-minio
   secretKey: re#minio2022
   bucketName: rootelement
@@ -494,7 +494,7 @@ minio:
   # 内部SDK连接地址（docker网络内）
   endpoint: http://re-minio:9000
   # 浏览器/前端访问的公网地址（本地为宿主机映射端口，服务器部署改为域名反代地址）
-  url: http://127.0.0.1:30606
+  url: http://re.lingjiatong.cn:30606
   accessKey: re-minio
   secretKey: re#minio2022
   bucketName: rootelement
@@ -535,7 +535,7 @@ minio:
   # 内部SDK连接地址（docker网络内）
   endpoint: http://re-minio:9000
   # 浏览器/前端访问的公网地址（本地为宿主机映射端口，服务器部署改为域名反代地址）
-  url: http://127.0.0.1:30606
+  url: http://re.lingjiatong.cn:30606
   accessKey: re-minio
   secretKey: re#minio2022
   bucketName: rootelement
