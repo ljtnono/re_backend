@@ -128,7 +128,7 @@ services:
       - mysql
 
   # #################### 后端微服务 ####################
-  # 镜像默认本地已构建好（docker/Dockerfile.backend + build-frontend.sh），compose 只负责运行
+  # 镜像默认本地已构建好（各服务自身 Dockerfile + 仓库根目录 build.sh），compose 只负责运行
   # 服务间互访直接用容器名（如 re-mysql:3306），端口映射仅供外部访问
   re-gateway:
     image: re-gateway:latest

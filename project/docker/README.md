@@ -70,7 +70,7 @@ VITE_API_BASE_URL=http://re.lingjiatong.cn:9100
 ```bash
 bash ~/code/re_backend/project/docker/build-frontend.sh
 ```
-> 后端镜像用多阶段构建（容器内 mvn package），首次要下载 maven 依赖，耐心等。
+> 后端先用 maven 打包 jar，再使用各服务自己的 Dockerfile 构建镜像（服务器上需 JDK21 + maven + docker）。
 
 ### 4. Nacos 配置改容器内网地址（关键步骤！）
 后端服务跑在容器里，Nacos 里现有的 `localhost:30601` 这类地址访问不到中间件，
