@@ -798,6 +798,28 @@ CREATE TABLE `sys_config` (
   `value` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '配置值',
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='系统配置表';
+
+-- ----------------------------
+-- Records of sys_config
+-- ----------------------------
+INSERT INTO `sys_config` VALUES
+(1,'header部分LOGO图片地址','HEADER_LOGO_URL','http://re.lingjiatong.cn:30606/rootelement/sys/header_logo.png'),
+(2,'网站作者网名','NICK_NAME','杂技程序员老凌'),
+(3,'作者头像图片地址','AVATAR_URL','http://re.lingjiatong.cn:30606/rootelement/sys/avatar.gif'),
+(4,'关于作者页面个人简介描述','ABOUT_AUTHOR','Java菜鸟一枚\n\n喜欢折腾各种技术，web、linux、数据库、前端等\n\n爱生活、爱科学、爱设计、爱编程\n\nTalk is cheap, show me the code'),
+(5,'邮件ICON链接地址','SEND_ME_EMAIL','https://mail.qq.com/cgi-bin/loginpage'),
+(6,'个人github首页','GITHUB_AUTHOR','https://github.com/ljtnono'),
+(7,'footer部分版权声明','FOOTER_COPYRIGHT','本站的文章和资源来自互联网或者站长的原创，按照 CC BY -NC -SA 3.0 CN 协议发布和共享，转载或引用本站文章应遵循相同协议。如果有侵犯版权的资源请尽快联系站长，我们会在24h内删除有争议的资源。'),
+(8,'footer部分网站驱动图片地址，url以逗号隔开','FOOTER_DRIVER','https://res.hc-cdn.com/cnpm-header-and-footer/2.0.6/base/header-china/components/images/logo.svg, https://img.alicdn.com/tfs/TB13DzOjXP7gK0jSZFjXXc5aXXa-212-48.png, https://labs.mysql.com/common/logos/mysql-logo.svg?v2, https://redis.com/wp-content/themes/wpx/assets/images/icon-redis.svg, https://nginx.org/nginx.png, https://tomcat.apache.org/res/images/tomcat.png'),
+(9,'作者微信图片地址','AUTHOR_WX_QRCODE_URL','http://re.lingjiatong.cn:30606/rootelement/sys/author_wx_qrcode.jpeg'),
+(10,'footer部分关于本站','FOOTER_ABOUT_WEBSITE','根元素,Java,css,html,爬虫,网络,IT,技术,博客 Talk is cheap, show me the code'),
+(11,'网站备案号','WEBSITE_ICP_CODE','鄂ICP备18013706号'),
+(12,'本项目github地址','GITHUB_WEBSITE','https://github.com/ljtnono/re_frontend'),
+(13,'作者微信号','AUTHOR_WX','wxlive_zzz'),
+(14,'作者qq号','AUTHOR_QQ','935188400'),
+(15,'作者github用户名','AUTHOR_GITHUB_USERNAME','ppjt'),
+(16,'作者微信支付码','AUTHOR_WX_PAY_QRCODE_URL','http://re.lingjiatong.cn:30606/rootelement/sys/wx_pay_qrcode.jpeg'),
+(17,'作者支付宝支付码','AUTHOR_ALIPAY_PAY_QRCODE_URL','http://re.lingjiatong.cn:30606/rootelement/sys/alipay_pay_qrcode.jpeg');
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 
