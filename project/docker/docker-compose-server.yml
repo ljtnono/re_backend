@@ -122,7 +122,7 @@ services:
     restart: always
 
   artalk:
-    image: artalk/artalk-go:latest
+    image: artalk/artalk-go:2.10.0 # 与 re_frontend 前端 npm artalk 版本保持一致，勿用 latest（缓存可能过期）
     container_name: re-artalk
     ports:
       - "30610:23366"
@@ -142,6 +142,7 @@ services:
       - ATK_DB_NAME=artalk
       - ATK_DB_CHARSET=utf8mb4
     volumes:
+      # 注意：不要往该数据卷里放 artalk.yml，配置文件会覆盖下方 env 配置（曾因此误走 sqlite）
       - ${DATA_DIR:-./data}/artalk:/data
     networks:
       - re-network
